@@ -1,0 +1,8 @@
+images/
+pkg/
+src/
+bin/
+!bin/README.md
+*~
+!vendor/src
+*.json

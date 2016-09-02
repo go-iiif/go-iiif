@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- https://github.com/mejackreed/Leaflet-IIIF -->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <link rel="stylesheet" href="leaflet.css" />
+  <script src="jquery-3.1.0.min.js"></script>  
+  <script src="leaflet.js"></script>
+  <script src="leaflet-iiif.js"></script>
+  <style text="text/css">
+    html, body, #map{
+    height: 100%;
+    margin: 0;
+    }
+    
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script>
+
+    var map = L.map('map', {
+    center: [0, 0],
+    crs: L.CRS.Simple,
+    zoom: 0,
+    });
+
+    // adjust accordingly
+    var info = 'http://localhost:8080/184512_5f7f47e5b3c66207_x.jpg/info.json';
+    map.addLayer(L.tileLayer.iiif(info));
+  </script>
+</body>
+</html>
