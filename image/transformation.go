@@ -3,60 +3,11 @@ package image
 import (
 	"errors"
 	"fmt"
-	"log"
+	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	"math"
-	"regexp"
 	"strconv"
 	"strings"
 )
-
-var regionError = "IIIF 2.1 `region` argument is not recognized: %#v"
-var sizeError = "IIIF 2.1 `size` argument is not recognized: %#v"
-var qualityError = "IIIF 2.1 `quality` and `format` arguments were expected: %#v"
-var rotationError = "IIIF 2.1 `rotation` argument is not recognized: %#v"
-var rotationMissing = "libvips cannot rotate angle that isn't a multiple of 90: %#v"
-
-var re_alpha *regexp.Regexp
-var re_region *regexp.Regexp
-var re_size *regexp.Regexp
-var re_rotation *regexp.Regexp
-var re_quality *regexp.Regexp
-
-func init() {
-
-	var err error
-
-	re_alpha, err = regexp.Compile(`^[a-z]+$`)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	re_region, err = regexp.Compile(`^(?:pct\:)?\d+\,\d+\,\d+\,\d+$`)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	re_rotation, err = regexp.Compile(`^\!?\d+`)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	re_quality, err = regexp.Compile(`^(?:color|grey|bitonal|default|dither)$`)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	re_size, err = regexp.Compile(`^(?:(?:max|full)|(?:\d+\,\d+)|(?:\!\d+\,\d+)|(\d+\,)|(\,\d+)|(pct\:\d+))$`)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-}
 
 type RegionInstruction struct {
 	X      int
@@ -77,71 +28,8 @@ type RotationInstruction struct {
 	Angle int64
 }
 
-// full
-// square
-// x,y,w,h (in pixels)
-// pct:x,y,w,h (in percents)
-
-func IsValidRegion(region string) (bool, error) {
-
-	if !re_region.MatchString(region) {
-		return false, errors.New("Invalid region parameter")
-	}
-
-	return true, nil
-}
-
-// max, full
-// w,h (deform)
-// !w,h (best fit within size)
-// w, (force width)
-// ,h (force height)
-// pct:n (resize)
-
-func IsValidSize(size string) (bool, error) {
-
-	if !re_size.MatchString(size) {
-		return false, errors.New("Invalid size parameter")
-	}
-	return true, nil
-}
-
-// n angle clockwise in degrees
-// !n angle clockwise in degrees with a flip (beforehand)
-
-func IsValidRotation(rotation string) (bool, error) {
-
-	if !re_rotation.MatchString(rotation) {
-		return false, errors.New("Invalid size parameter")
-	}
-
-	parsed, err := strconv.ParseInt(strings.Trim(rotation, "!"), 10, 64)
-
-	if err != nil {
-		return false, err
-	}
-
-	if parsed > 360 {
-		return false, errors.New("Invalid rotation parameter")
-	}
-
-	return true, nil
-}
-
-func IsValidQuality(quality string) (bool, error) {
-
-	if !re_quality.MatchString(quality) {
-		return false, errors.New("Invalid quality parameter")
-	}
-
-	return true, nil
-}
-
-func IsValidFormat(format string) (bool, error) {
-	return true, nil
-}
-
 type Transformation struct {
+	level    iiiflevel.Level
 	Region   string
 	Size     string
 	Rotation string
@@ -149,42 +37,43 @@ type Transformation struct {
 	Format   string
 }
 
-func NewTransformation(region string, size string, rotation string, quality string, format string) (*Transformation, error) {
+func NewTransformation(level iiiflevel.Level, region string, size string, rotation string, quality string, format string) (*Transformation, error) {
 
 	var ok bool
 	var err error
 
-	ok, err = IsValidRegion(region)
+	ok, err = level.IsValidImageRegion(region)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = IsValidSize(size)
+	ok, err = level.IsValidImageSize(size)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = IsValidRotation(rotation)
+	ok, err = level.IsValidImageRotation(rotation)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = IsValidQuality(quality)
+	ok, err = level.IsValidImageQuality(quality)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = IsValidFormat(format)
+	ok, err = level.IsValidImageFormat(format)
 
 	if !ok {
 		return nil, err
 	}
 
 	t := Transformation{
+		level:    level,
 		Region:   region,
 		Size:     size,
 		Rotation: rotation,
@@ -368,6 +257,8 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 
 func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 
+	sizeError := "IIIF 2.1 `size` argument is not recognized: %#v"
+
 	w := 0
 	h := 0
 	force := false
@@ -459,6 +350,8 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 }
 
 func (t *Transformation) RotationInstructions(im Image) (*RotationInstruction, error) {
+
+	rotationError := "IIIF 2.1 `rotation` argument is not recognized: %#v"
 
 	flip := strings.HasPrefix(t.Rotation, "!")
 	angle, err := strconv.ParseInt(strings.Trim(t.Rotation, "!"), 10, 64)

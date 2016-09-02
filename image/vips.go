@@ -4,8 +4,6 @@ package image
 // https://github.com/jcupitt/libvips
 
 import (
-	"errors"
-	"fmt"
 	"github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
 )
@@ -144,20 +142,20 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		return nil
 	}
 
+	// PLEASE FIX ME
+	// var rotationMissing = "libvips cannot rotate angle that isn't a multiple of 90: %#v"
+
 	opts.Flip = ri.Flip
 	opts.Rotate = bimg.Angle(ri.Angle % 360)
 
 	if t.Quality == "color" || t.Quality == "default" {
 		// do nothing.
 	} else if t.Quality == "gray" {
-		// FIXME: causes segmentation fault (core dumped)
-		//options.Interpretation = bimg.InterpretationGREY16
 		opts.Interpretation = bimg.InterpretationBW
 	} else if t.Quality == "bitonal" {
 		opts.Interpretation = bimg.InterpretationBW
 	} else {
-		message := fmt.Sprintf(qualityError, t.Quality)
-		return errors.New(message)
+		// this should be trapped above
 	}
 
 	_, err = im.bimg.Process(opts)

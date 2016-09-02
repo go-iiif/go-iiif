@@ -1,4 +1,7 @@
 {
+    "iiif": {
+	"level": "2"
+    },
     "graphics": {
 	"source": { "name": "VIPS" }
     },

@@ -26,6 +26,7 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/mux"	
 	@GOPATH=$(GOPATH) go get -u "github.com/allegro/bigcache"
 	@GOPATH=$(GOPATH) go get -u "gopkg.in/h2non/bimg.v1"
+	@GOPATH=$(GOPATH) go get -u "github.com/koyachi/go-atkinson"
 
 vendor: deps
 	if test ! -d vendor; then mkdir vendor; fi

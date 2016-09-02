@@ -58,14 +58,14 @@ func ProfileHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
 
-		l, err := iiiflevel.NewLevel2(r.Host)
+		level, err := iiiflevel.NewLevelFromConfig(config.IIIF, r.Host)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		b, err := json.Marshal(l)
+		b, err := json.Marshal(level)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -156,7 +156,14 @@ func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 		quality := vars["quality"]
 		format := vars["format"]
 
-		transformation, err := iiifimage.NewTransformation(region, size, rotation, quality, format)
+		level, err := iiiflevel.NewLevelFromConfig(config.IIIF, r.Host)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		transformation, err := iiifimage.NewTransformation(level, region, size, rotation, quality, format)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -218,6 +225,13 @@ func main() {
 	// before we start serving images (20160901/thisisaaronland)
 
 	_, err = iiifsource.NewSourceFromConfig(config.Images)
+
+	if err != nil {
+		log.Fatal(err)
+		os.Exit(1)
+	}
+
+	_, err = iiiflevel.NewLevelFromConfig(config.IIIF, *host)
 
 	if err != nil {
 		log.Fatal(err)
