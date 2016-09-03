@@ -14,7 +14,7 @@ type DiskSource struct {
 	cache iiifcache.Cache
 }
 
-func NewDiskSource(config iiifconfig.Config) (*DiskSource, error) {
+func NewDiskSource(config *iiifconfig.Config) (*DiskSource, error) {
 
 	cfg := config.Images
 

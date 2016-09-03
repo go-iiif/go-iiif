@@ -1,6 +1,6 @@
 {
     "level": {
-    	"compliance": "2",
+    	"compliance": "2"
     },
     "profile": {
          "sizes": [ { "label": "x", "max": 640 }, { "label": "n", "max": 320 } ],

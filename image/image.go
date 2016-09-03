@@ -22,7 +22,7 @@ type Dimensions interface {
 
 func NewImageFromConfig(config *iiifconfig.Config, id string) (Image, error) {
 
-	source, err := iiifsource.NewSourceFromConfig(config.Images)
+	source, err := iiifsource.NewSourceFromConfig(config)
 
 	if err != nil {
 		return nil, err

@@ -9,7 +9,7 @@ type Source interface {
 	Read(uri string) ([]byte, error)
 }
 
-func NewSourceFromConfig(config iiifconfig.Config) (Source, error) {
+func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 
 	cfg := config.Images
 

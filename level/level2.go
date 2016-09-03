@@ -135,7 +135,7 @@ func init() {
 
 }
 
-func NewLevel2(config iiifconfig.Config, host string) (*Level2, error) {
+func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
 
 	id := fmt.Sprintf("http://%s/level2.json", host)
 

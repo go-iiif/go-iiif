@@ -14,7 +14,7 @@ type Level interface {
 	IsValidImageFormat(string) (bool, error)
 }
 
-func NewLevelFromConfig(config iiifconfig.Config, host string) (Level, error) {
+func NewLevelFromConfig(config *iiifconfig.Config, host string) (Level, error) {
 
 	compliance := config.Level.Compliance
 

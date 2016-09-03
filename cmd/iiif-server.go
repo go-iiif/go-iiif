@@ -224,7 +224,7 @@ func main() {
 	// See this - we're just going to make sure we have a valid source
 	// before we start serving images (20160901/thisisaaronland)
 
-	_, err = iiifsource.NewSourceFromConfig(config.Images)
+	_, err = iiifsource.NewSourceFromConfig(config)
 
 	if err != nil {
 		log.Fatal(err)

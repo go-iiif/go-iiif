@@ -10,7 +10,7 @@ type Cache interface {
 	Unset(string) error
 }
 
-func NewCacheFromConfig(config iiifconfig.Config) (Cache, error) {
+func NewCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
 
 	cfg := config.Derivatives.Cache
 
