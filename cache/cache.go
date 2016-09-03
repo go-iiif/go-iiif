@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"github.com/thisisaaronland/go-iiif/config"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 )
 
 type Cache interface {
@@ -10,7 +10,9 @@ type Cache interface {
 	Unset(string) error
 }
 
-func NewCacheFromConfig(cfg config.CacheConfig) (Cache, error) {
+func NewCacheFromConfig(config iiifconfig.Config) (Cache, error) {
+
+	cfg := config.Derivatives.Cache
 
 	if cfg.Name == "Disk" {
 		cache, err := NewDiskCache(cfg)

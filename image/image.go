@@ -8,7 +8,7 @@ import (
 
 type Image interface {
 	Identifier() string
-	Transform(*Transformation) error
+	Transform(*Transformation) error // http://iiif.io/api/image/2.1/#order-of-implementation
 	Body() []byte
 	Format() string
 	ContentType() string

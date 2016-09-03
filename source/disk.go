@@ -1,8 +1,8 @@
 package source
 
 import (
-	"github.com/thisisaaronland/go-iiif/cache"
-	"github.com/thisisaaronland/go-iiif/config"
+	iiifcache "github.com/thisisaaronland/go-iiif/cache"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,12 +11,14 @@ import (
 type DiskSource struct {
 	Source
 	root  string
-	cache cache.Cache
+	cache iiifcache.Cache
 }
 
-func NewDiskSource(cfg config.ImagesConfig) (*DiskSource, error) {
+func NewDiskSource(config iiifconfig.Config) (*DiskSource, error) {
 
-	ch, err := cache.NewCacheFromConfig(cfg.Cache)
+	cfg := config.Images
+
+	ch, err := iiifcache.NewCacheFromConfig(config)
 
 	if err != nil {
 		return nil, err

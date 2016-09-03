@@ -58,7 +58,7 @@ func ProfileHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
 
-		level, err := iiiflevel.NewLevelFromConfig(config.IIIF, r.Host)
+		level, err := iiiflevel.NewLevelFromConfig(config, r.Host)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -125,7 +125,7 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
-	cache, err := iiifcache.NewCacheFromConfig(config.Derivatives.Cache)
+	cache, err := iiifcache.NewCacheFromConfig(config)
 
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 		quality := vars["quality"]
 		format := vars["format"]
 
-		level, err := iiiflevel.NewLevelFromConfig(config.IIIF, r.Host)
+		level, err := iiiflevel.NewLevelFromConfig(config, r.Host)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -231,7 +231,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	_, err = iiiflevel.NewLevelFromConfig(config.IIIF, *host)
+	_, err = iiiflevel.NewLevelFromConfig(config, *host)
 
 	if err != nil {
 		log.Fatal(err)

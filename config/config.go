@@ -6,14 +6,14 @@ import (
 )
 
 type Config struct {
-        IIIF	    IIIFConfig	      `json:"iiif"`
+        Level	    LevelConfig	      `json:"level"`
         Graphics    GraphicsConfig    `json:"graphics"`
 	Images      ImagesConfig      `json:"images"`
 	Derivatives DerivativesConfig `json:"derivatives"`
 }
 
-type IIIFConfig struct {
-     Level string `json:"level"`
+type LevelConfig struct {
+     Compliance string `json:"level"`
 }
 
 type ImagesConfig struct {

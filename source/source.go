@@ -2,17 +2,19 @@ package source
 
 import (
 	"errors"
-	"github.com/thisisaaronland/go-iiif/config"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 )
 
 type Source interface {
 	Read(uri string) ([]byte, error)
 }
 
-func NewSourceFromConfig(cfg config.ImagesConfig) (Source, error) {
+func NewSourceFromConfig(config iiifconfig.Config) (Source, error) {
+
+	cfg := config.Images
 
 	if cfg.Source.Name == "Disk" {
-		cache, err := NewDiskSource(cfg)
+		cache, err := NewDiskSource(config)
 		return cache, err
 	} else {
 		err := errors.New("Unknown source type")

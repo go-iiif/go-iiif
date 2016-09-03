@@ -1,6 +1,10 @@
 {
-    "iiif": {
-	"level": "2"
+    "level": {
+    	"compliance": "2",
+    },
+    "profile": {
+         "sizes": [ { "label": "x", "max": 640 }, { "label": "n", "max": 320 } ],
+    	 "tiles": { "width" : 512, "scalefactors" : [1,2,4,8,16] }
     },
     "graphics": {
 	"source": { "name": "VIPS" }

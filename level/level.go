@@ -14,27 +14,27 @@ type Level interface {
 	IsValidImageFormat(string) (bool, error)
 }
 
-func NewLevelFromConfig(config iiifconfig.IIIFConfig, host string) (Level, error) {
+func NewLevelFromConfig(config iiifconfig.Config, host string) (Level, error) {
 
-	version := config.Level
+	compliance := config.Level.Compliance
 
-	if version == "0" {
+	if compliance == "0" {
 
-		message := fmt.Sprintf("Unsupported level '%s'", version)
+		message := fmt.Sprintf("Unsupported compliance level '%s'", compliance)
 		return nil, errors.New(message)
 
-	} else if version == "1" {
+	} else if compliance == "1" {
 
-		message := fmt.Sprintf("Unsupported level '%s'", version)
+		message := fmt.Sprintf("Unsupported compliance level '%s'", compliance)
 
 		return nil, errors.New(message)
-	} else if version == "2" {
+	} else if compliance == "2" {
 
 		return NewLevel2(config, host)
 
 	} else {
 
-		message := fmt.Sprintf("Invalid level '%s'", version)
+		message := fmt.Sprintf("Invalid compliance level '%s'", compliance)
 		return nil, errors.New(message)
 
 	}
