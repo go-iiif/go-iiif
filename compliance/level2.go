@@ -1,9 +1,12 @@
 package compliance
 
+// http://iiif.io/api/image/2.1/compliance/
+
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"regexp"
 )
 
@@ -69,7 +72,7 @@ type Level2Compliance struct {
 	spec Level2ComplianceSpec
 }
 
-func NewLevel2Compliance() (*Level2Compliance, error) {
+func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 
 	spec := Level2ComplianceSpec{}
 	err := json.Unmarshal([]byte(level2_spec), &spec)

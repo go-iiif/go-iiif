@@ -1,28 +1,24 @@
 package level
 
-// http://iiif.io/api/image/2.1/compliance/
-
 import (
-	"errors"
 	"fmt"
 	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"log"
-	"regexp"
-	"strconv"
-	"strings"
 )
 
 type Level2 struct {
-	Level
-	Context   string   `json:@profile`
-	Id        string   `json:"@id"`
-	Type      string   `json:"@type"` // Optional or iiif:Image
-	Formats   []string `json:"formats"`
-	Qualities []string `json:"qualities"`
-	Supports  []string `json:"supports"`
+	Level      `json:"omit"`
+	Context    string                    `json:@profile`
+	Id         string                    `json:"@id"`
+	Type       string                    `json:"@type"` // Optional or iiif:Image
+	Formats    []string                  `json:"formats"`
+	Qualities  []string                  `json:"qualities"`
+	Supports   []string                  `json:"supports"`
+	compliance iiifcompliance.Compliance `json:"omit"`
 }
 
+/*
 var re_alpha *regexp.Regexp
 var re_region *regexp.Regexp
 var re_size *regexp.Regexp
@@ -51,14 +47,6 @@ func init() {
 		log.Fatal(err)
 	}
 
-	/*
-		re_quality, err = regexp.Compile(`^(?:color|grey|bitonal|default|dither)$`)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
-
 	re_size, err = regexp.Compile(`^(?:(?:max|full)|(?:\d+\,\d+)|(?:\!\d+\,\d+)|(\d+\,)|(\,\d+)|(pct\:\d+))$`)
 
 	if err != nil {
@@ -67,9 +55,11 @@ func init() {
 
 }
 
+*/
+
 func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
 
-	compliance, err := iiifcompliance.NewLevel2Compliance()
+	compliance, err := iiifcompliance.NewLevel2Compliance(config)
 
 	if err != nil {
 		log.Fatal(err)
@@ -78,16 +68,23 @@ func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
 	id := fmt.Sprintf("http://%s/level2.json", host)
 
 	l := Level2{
-		Context:   "http://iiif.io/api/image/2/context.json",
-		Id:        id,
-		Type:      "iiif:ImageProfile",
-		Formats:   compliance.Formats(),
-		Qualities: compliance.Qualities(),
-		Supports:  []string{},
+		Context:    "http://iiif.io/api/image/2/context.json",
+		Id:         id,
+		Type:       "iiif:ImageProfile",
+		Formats:    compliance.Formats(),
+		Qualities:  compliance.Qualities(),
+		Supports:   []string{},
+		compliance: compliance,
 	}
 
 	return &l, nil
 }
+
+func (l *Level2) Compliance() iiifcompliance.Compliance {
+	return l.compliance
+}
+
+/*
 
 // full
 // square
@@ -194,3 +191,5 @@ func (l *Level2) IsValidImageFormat(format string) (bool, error) {
 
 	return true, nil
 }
+
+*/

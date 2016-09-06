@@ -3,15 +3,12 @@ package level
 import (
 	"errors"
 	"fmt"
+	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 )
 
 type Level interface {
-	IsValidImageRegion(string) (bool, error)
-	IsValidImageSize(string) (bool, error)
-	IsValidImageRotation(string) (bool, error)
-	IsValidImageQuality(string) (bool, error)
-	IsValidImageFormat(string) (bool, error)
+	Compliance() iiifcompliance.Compliance
 }
 
 func NewLevelFromConfig(config *iiifconfig.Config, host string) (Level, error) {

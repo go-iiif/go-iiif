@@ -42,31 +42,31 @@ func NewTransformation(level iiiflevel.Level, region string, size string, rotati
 	var ok bool
 	var err error
 
-	ok, err = level.IsValidImageRegion(region)
+	ok, err = level.Compliance().IsValidImageRegion(region)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.IsValidImageSize(size)
+	ok, err = level.Compliance().IsValidImageSize(size)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.IsValidImageRotation(rotation)
+	ok, err = level.Compliance().IsValidImageRotation(rotation)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.IsValidImageQuality(quality)
+	ok, err = level.Compliance().IsValidImageQuality(quality)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.IsValidImageFormat(format)
+	ok, err = level.Compliance().IsValidImageFormat(format)
 
 	if !ok {
 		return nil, err
