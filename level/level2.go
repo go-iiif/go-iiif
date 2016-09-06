@@ -3,7 +3,7 @@ package level
 // http://iiif.io/api/image/2.1/compliance/
 
 import (
-       "encoding/json"
+	"encoding/json"
 	"errors"
 	"fmt"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
@@ -14,11 +14,11 @@ import (
 )
 
 type ComplianceDetails struct {
-	Name     string `json:"name"`
-	Syntax   string `json:"syntax"`
-	Required bool   `json:"required"`
-	Supported bool  `json:"supported"`
-	Match    string `json:"match,omitempty"`
+	Name      string `json:"name"`
+	Syntax    string `json:"syntax"`
+	Required  bool   `json:"required"`
+	Supported bool   `json:"supported"`
+	Match     string `json:"match,omitempty"`
 }
 
 type Level2ImageCompliance struct {
@@ -72,7 +72,7 @@ var compliance_spec = `{
 	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$" },
 	     		"color": { "syntax": "color",   "required": false, "supported": false, "match": "^colou?r$" },
 	     		"gray": { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$" },			
-	     		"bitonal" { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$" }
+	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$" }
              },
 	     "format": {
 	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
@@ -84,6 +84,8 @@ var compliance_spec = `{
        	     	       "webp": { "syntax": "webp", "required": false, "supported": false, "match": "^webp$" }
 	     }	     
     }
+}`
+
     /*
     "http": [
     	    { "feature": "base URI redirects", "name": "baseUriRedirect", "required": true, "supported": 1 },
@@ -93,7 +95,6 @@ var compliance_spec = `{
 	    { "feature": "canonical link header", "name": "canonicalLinkHeader", "required": false, "supported": 0 }
     ]
     */	    
-}`
 
 var re_alpha *regexp.Regexp
 var re_region *regexp.Regexp
@@ -105,7 +106,7 @@ func init() {
 
 	var err error
 
-     	c := Level2Compliance{}
+	c := Level2Compliance{}
 	err = json.Unmarshal([]byte(compliance_spec), &c)
 
 	if err != nil {

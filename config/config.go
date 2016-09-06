@@ -13,7 +13,7 @@ type Config struct {
 }
 
 type LevelConfig struct {
-     Compliance string `json:"level"`
+     Compliance string `json:"compliance"`
 }
 
 type ImagesConfig struct {
