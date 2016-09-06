@@ -8,14 +8,14 @@ import (
 )
 
 type Level2 struct {
-	Level      `json:"omit"`
+	Level      `json:"-"`
 	Context    string                    `json:@profile`
 	Id         string                    `json:"@id"`
 	Type       string                    `json:"@type"` // Optional or iiif:Image
 	Formats    []string                  `json:"formats"`
 	Qualities  []string                  `json:"qualities"`
 	Supports   []string                  `json:"supports"`
-	compliance iiifcompliance.Compliance `json:"omit"`
+	compliance iiifcompliance.Compliance `json:"-"`
 }
 
 /*
