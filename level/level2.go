@@ -69,7 +69,7 @@ func init() {
 
 func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
 
-	_, err := iiifcompliance.NewLevel2Compliance()
+	compliance, err := iiifcompliance.NewLevel2Compliance()
 
 	if err != nil {
 		log.Fatal(err)
@@ -81,8 +81,8 @@ func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
 		Context:   "http://iiif.io/api/image/2/context.json",
 		Id:        id,
 		Type:      "iiif:ImageProfile",
-		Formats:   []string{"jpg", "png", "webp"},
-		Qualities: []string{"gray", "default"},
+		Formats:   compliance.Formats(),
+		Qualities: compliance.Qualities(),
 		Supports:  []string{},
 	}
 

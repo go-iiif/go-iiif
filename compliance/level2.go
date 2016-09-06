@@ -2,6 +2,9 @@ package compliance
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
+	"regexp"
 )
 
 var level2_spec = `{
@@ -82,39 +85,69 @@ func NewLevel2Compliance() (*Level2Compliance, error) {
 	return &compliance, nil
 }
 
-func (c *Level2Compliance) IsValidImageRegion(region string) bool {
+func (c *Level2Compliance) IsValidImageRegion(region string) (bool, error) {
 
-	return true
+	return c.isvalid(c.spec.Image.Region, region)
 }
 
-func (c *Level2Compliance) IsValidImageSize(size string) bool {
+func (c *Level2Compliance) IsValidImageSize(size string) (bool, error) {
 
-	return true
+	return c.isvalid(c.spec.Image.Size, size)
 }
 
-func (c *Level2Compliance) IsValidImageRotation(rotation string) bool {
+func (c *Level2Compliance) IsValidImageRotation(rotation string) (bool, error) {
 
-	return true
+	return c.isvalid(c.spec.Image.Rotation, rotation)
 }
 
-func (c *Level2Compliance) IsValidImageQuality(quality string) bool {
+func (c *Level2Compliance) IsValidImageQuality(quality string) (bool, error) {
 
-	return true
+	return c.isvalid(c.spec.Image.Quality, quality)
 }
 
-func (c *Level2Compliance) IsValidImageFormat(format string) bool {
+func (c *Level2Compliance) IsValidImageFormat(format string) (bool, error) {
 
-	return true
+	return c.isvalid(c.spec.Image.Format, format)
 }
 
 func (c *Level2Compliance) Formats() []string {
 
-	return c.properties(c.spec.Image["Format"])
+	return c.properties(c.spec.Image.Format)
 }
 
 func (c *Level2Compliance) Qualities() []string {
 
-	return c.properties(c.spec.Image["Quality"])
+	return c.properties(c.spec.Image.Quality)
+}
+
+func (c *Level2Compliance) isvalid(sect map[string]ComplianceDetails, property string) (bool, error) {
+
+	ok := false
+
+	for _, details := range sect {
+
+		if !details.Supported {
+			continue
+		}
+
+		re, err := regexp.Compile(details.Match)
+
+		if err != nil {
+			return false, err
+		}
+
+		if re.MatchString(property) {
+			ok = true
+			break
+		}
+	}
+
+	if !ok {
+		message := fmt.Sprintf("Invalid IIIF 2.1 ...")
+		return false, errors.New(message)
+	}
+
+	return true, nil
 }
 
 func (c *Level2Compliance) properties(sect map[string]ComplianceDetails) []string {

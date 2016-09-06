@@ -19,10 +19,10 @@ type ImageCompliance struct {
 type Compliance interface {
 	Formats() []string
 	Qualities() []string
-	IsValidImageRegion(string) bool
-	IsValidImageSize(string) bool
-	IsValidImageRotation(string) bool
-	IsValidImageQuality(string) bool
-	IsValidImageFormat(string) bool
+	IsValidImageRegion(string) (bool, error)
+	IsValidImageSize(string) (bool, error)
+	IsValidImageRotation(string) (bool, error)
+	IsValidImageQuality(string) (bool, error)
+	IsValidImageFormat(string) (bool, error)
 	Spec() ([]byte, error)
 }
