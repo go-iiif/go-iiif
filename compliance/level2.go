@@ -107,6 +107,32 @@ func (c *Level2Compliance) IsValidImageFormat(format string) bool {
 	return true
 }
 
+func (c *Level2Compliance) Formats() []string {
+
+	return c.properties(c.spec.Image["Format"])
+}
+
+func (c *Level2Compliance) Qualities() []string {
+
+	return c.properties(c.spec.Image["Quality"])
+}
+
+func (c *Level2Compliance) properties(sect map[string]ComplianceDetails) []string {
+
+	properties := make([]string, 0)
+
+	for name, details := range sect {
+
+		if !details.Supported {
+			continue
+		}
+
+		properties = append(properties, name)
+	}
+
+	return properties
+}
+
 func (c *Level2Compliance) Spec() ([]byte, error) {
 
 	return json.Marshal(c.spec)
