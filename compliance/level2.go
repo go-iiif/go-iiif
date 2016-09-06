@@ -1,7 +1,7 @@
 package compliance
 
 import (
-       "encoding/json"
+	"encoding/json"
 )
 
 var level2_spec = `{
@@ -47,7 +47,7 @@ var level2_spec = `{
     }
 }`
 
-    /*
+/*
     "http": [
     	    { "feature": "base URI redirects", "name": "baseUriRedirect", "required": true, "supported": 1 },
 	    { "feature": "CORS", "name": "cors", "required": true, "supported": 1 },
@@ -55,62 +55,59 @@ var level2_spec = `{
 	    { "feature": "profile link header", "name": "profileLinkHeader", "required": false, "supported": 0 },
 	    { "feature": "canonical link header", "name": "canonicalLinkHeader", "required": false, "supported": 0 }
     ]
-    */	    
+*/
 
 type Level2ComplianceSpec struct {
-	Image Level2ImageCompliance `json:"image"`
-}
-
-type Level2ImageCompliance struct {
-	Region   map[string]ComplianceDetails `json:"region"`
-	Size     map[string]ComplianceDetails `json:"size"`
-	Rotation map[string]ComplianceDetails `json:"rotation"`
-	Quality  map[string]ComplianceDetails `json:"quality"`
-	Format   map[string]ComplianceDetails `json:"format"`
+	Image ImageCompliance `json:"image"`
 }
 
 type Level2Compliance struct {
-        Compliance
+	Compliance
 	spec Level2ComplianceSpec
 }
 
 func NewLevel2Compliance() (*Level2Compliance, error) {
 
-     spec := Level2ComplianceSpec{}
-     err := json.Unmarshal(spec)
+	spec := Level2ComplianceSpec{}
+	err := json.Unmarshal([]byte(level2_spec), &spec)
 
-     if err != nil {
-     	return nil, err
-     }
+	if err != nil {
+		return nil, err
+	}
 
-     compliance := Level2Compliance{
-     		spec: spec
-     }
+	compliance := Level2Compliance{
+		spec: spec,
+	}
 
-     return &compliance, nil
+	return &compliance, nil
 }
 
-func (c *Level2Compliance) IsValidImageRegion (region string) bool {
+func (c *Level2Compliance) IsValidImageRegion(region string) bool {
 
+	return true
 }
 
-func (c *Level2Compliance) IsValidImageSize (size string) bool {
+func (c *Level2Compliance) IsValidImageSize(size string) bool {
 
+	return true
 }
 
-func (c *Level2Compliance) IsValidImageRotation (rotation string) bool {
+func (c *Level2Compliance) IsValidImageRotation(rotation string) bool {
 
+	return true
 }
 
-func (c *Level2Compliance) IsValidImageQuality (quality string) bool {
+func (c *Level2Compliance) IsValidImageQuality(quality string) bool {
 
+	return true
 }
 
-func (c *Level2Compliance) IsValidImageFormat (format string) bool {
+func (c *Level2Compliance) IsValidImageFormat(format string) bool {
 
+	return true
 }
 
-func (c *Level2Compliance) Spec() (string, error) {
+func (c *Level2Compliance) Spec() ([]byte, error) {
 
-     return json.Marshal(c.spec)
+	return json.Marshal(c.spec)
 }

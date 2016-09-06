@@ -9,6 +9,7 @@ self:   prep rmdeps
 	mkdir -p src/github.com/thisisaaronland/go-iiif
 	cp iiif.go src/github.com/thisisaaronland/go-iiif/
 	cp -r cache src/github.com/thisisaaronland/go-iiif/
+	cp -r compliance src/github.com/thisisaaronland/go-iiif/
 	cp -r config src/github.com/thisisaaronland/go-iiif/
 	cp -r image src/github.com/thisisaaronland/go-iiif/
 	cp -r level src/github.com/thisisaaronland/go-iiif/
@@ -37,8 +38,9 @@ vendor: deps
 
 fmt:
 	go fmt *.go
-	go fmt cmd/*.go
 	go fmt cache/*.go
+	go fmt cmd/*.go
+	go fmt compliance/*.go
 	go fmt image/*.go
 	go fmt level/*.go
 	go fmt profile/*.go

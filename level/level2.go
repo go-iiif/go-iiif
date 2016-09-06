@@ -3,11 +3,10 @@ package level
 // http://iiif.io/api/image/2.1/compliance/
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"log"
 	"regexp"
 	"strconv"
@@ -70,8 +69,7 @@ func init() {
 
 func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
 
-	compliance := Level2Compliance{}
-	err = json.Unmarshal([]byte(compliance_spec), &compliance)
+	_, err := iiifcompliance.NewLevel2Compliance()
 
 	if err != nil {
 		log.Fatal(err)
