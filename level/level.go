@@ -26,7 +26,6 @@ func NewLevelFromConfig(config *iiifconfig.Config, host string) (Level, error) {
 	} else if compliance == "1" {
 
 		message := fmt.Sprintf("Unsupported compliance level '%s'", compliance)
-
 		return nil, errors.New(message)
 	} else if compliance == "2" {
 

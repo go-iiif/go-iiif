@@ -3,6 +3,7 @@ package level
 // http://iiif.io/api/image/2.1/compliance/
 
 import (
+       "encoding/json"
 	"errors"
 	"fmt"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
@@ -16,15 +17,16 @@ type ComplianceDetails struct {
 	Name     string `json:"name"`
 	Syntax   string `json:"syntax"`
 	Required bool   `json:"required"`
+	Supported bool  `json:"supported"`
 	Match    string `json:"match,omitempty"`
 }
 
 type Level2ImageCompliance struct {
-	Region   []ComplianceDetails `json:"region"`
-	Size     []ComplianceDetails `json:"size"`
-	Rotation []ComplianceDetails `json:"rotation"`
-	Quality  []ComplianceDetails `json:"quality"`
-	Format   []ComplianceDetails `json:"format"`
+	Region   map[string]ComplianceDetails `json:"region"`
+	Size     map[string]ComplianceDetails `json:"size"`
+	Rotation map[string]ComplianceDetails `json:"rotation"`
+	Quality  map[string]ComplianceDetails `json:"quality"`
+	Format   map[string]ComplianceDetails `json:"format"`
 }
 
 type Level2Compliance struct {
@@ -43,52 +45,54 @@ type Level2 struct {
 
 var compliance_spec = `{
     "image": {
-    	     "region": [
-	     	       { "name": "",             "syntax": "full",        "required": 1, "match": "^full$" },
-		       { "name": "regionByPx",   "syntax": "x,y,w,h",     "required": 1, "match": "^\d+\,\d+\,\d+\,\d+$" },
-		       { "name": "regionByPct",  "syntax": "pct:x,y,w,h", "required": 1, "match": "^pct\:\d+\,\d+\,\d+\,\d+$" },
-		       { "name": "regionSquare", "syntax": "square",      "required": 0, "match": "^square$" }
+    	     "region": {
+	     	       "full": { "syntax": "full",        "required": true, "match": "^full$" },
+		       "regionByPx": { "syntax": "x,y,w,h",     "required": true, "match": "^\\d+\\,\\d+\\,\\d+\\,\\d+$" },
+		       "regionByPct": {  "syntax": "pct:x,y,w,h", "required": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
+		       "regionSquare": { "syntax": "square",      "required": false, "match": "^square$" }
 	     },
-	     "size": [
-	     		{ "name": "",                  "syntax": "full",  "required": 1, "match": "^full$" },
-	     		{ "name": "",                  "syntax": "max",   "required": 0, "match": "^max$" },
-	     		{ "name": "sizeByW",           "syntax": "w,",    "required": 1, "match": "^\d+\,$" },			
-	     		{ "name": "sizeByH",           "syntax": ",h",    "required": 1, "match": "^\,\d+$" },
-	     		{ "name": "sizeByPct",         "syntax": "pct:n", "required": 1, "match": "^pct\:\d+(\.\d+)?$" },			
-	     		{ "name": "sizeByConfinedWh",  "syntax": "!w,h",  "required": 1, "match": "" },
-	     		{ "name": "sizeByDistortedWh", "syntax": "w,h",   "required": 1, "match": "" },			
-	     		{ "name": "sizeByWh",          "syntax": "w,h",   "required": 1, "match": "" },
-	     		{ "name": "sizeAboveFull",     "syntax": "",      "required": 0, "match": "" }
-	     ],
-	     "rotation": [
-	     		{ "name": "",                  "syntax": "0",          "required": 1, "match": "" },
-	     		{ "name": "rotationBy90s",     "syntax": "90,180,270", "required": 1, "match": "" },
-	     		{ "name": "rotationArbitrary", "syntax": "",           "required": 0, "match": "" },			
-	     		{ "name": "mirroring",         "syntax": "!n",         "required": 1, "match": "" }
-	     ],
-	     "quality": [
-	     		{ "name": "", "syntax": "default", "required": 1, "match": "" },
-	     		{ "name": "", "syntax": "color",   "required": 0, "match": "" },
-	     		{ "name": "", "syntax": "gray",    "required": 0, "match": "" },			
-	     		{ "name": "", "syntax": "bitonal", "required": 1, "match": "" }
-             ],
-	     "format": [
-	     	       { "name": "", "syntax": "jpg",  "required": 1, "match": "" },
-       	     	       { "name": "", "syntax": "png",  "required": 1, "match": "" },
-       	     	       { "name": "", "syntax": "tif",  "required": 0, "match": "" },
-      	     	       { "name": "", "syntax": "gif",  "required": 0, "match": "" },
-       	     	       { "name": "", "syntax": "pdf",  "required": 0, "match": "" },
-      	     	       { "name": "", "syntax": "jp2",  "required": 0, "match": "" },
-       	     	       { "name": "", "syntax": "webp", "required": 0, "match": "" },
-	     ]	     
-    },
+	     "size": {
+	     		"full": {              "syntax": "full",  "required": true, "supported": true, "match": "^full$" },
+	     		"max": {               "syntax": "max",   "required": false, "supported": true, "match": "^max$" },
+	     		"sizeByW": {           "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
+	     		"sizeByH": {           "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
+	     		"sizeByPct": {         "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },			
+	     		"sizeByConfinedWh": {  "syntax": "!w,h",  "required": true, "supported": true, "match": "" },
+	     		"sizeByDistortedWh": { "syntax": "w,h",   "required": true, "supported": true, "match": "" },			
+	     		"sizeByWh": {          "syntax": "w,h",   "required": true, "supported": true, "match": "" },
+	     		"sizeAboveFull": {     "syntax": "",      "required": false, "supported": false, "match": "" }
+	     },
+	     "rotation": {
+	     		"none": {              "syntax": "0",          "required": true, "supported": true, "match": "" },
+	     		"rotationBy90s": {     "syntax": "90,180,270", "required": true, "supported": true, "match": "" },
+	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "" },			
+	     		"mirroring": {         "syntax": "!n",         "required": true, "supported": true, "match": "" }
+	     },
+	     "quality": {
+	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$" },
+	     		"color": { "syntax": "color",   "required": false, "supported": false, "match": "^colou?r$" },
+	     		"gray": { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$" },			
+	     		"bitonal" { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$" }
+             },
+	     "format": {
+	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
+       	     	       "png": { "syntax": "png",  "required": true, "supported": true, "match": "^png$" },
+       	     	       "tif": { "syntax": "tif",  "required": false, "supported": false, "match": "^tiff?$" },
+      	     	       "gif": { "syntax": "gif",  "required": false, "supported": false, "match": "^gif$" },
+       	     	       "pdf": { "syntax": "pdf",  "required": false, "supported": false, "match": "^pdf$" },
+      	     	       "jp2": { "syntax": "jp2",  "required": false, "supported": false, "match": "^jp2$" },
+       	     	       "webp": { "syntax": "webp", "required": false, "supported": false, "match": "^webp$" }
+	     }	     
+    }
+    /*
     "http": [
-    	    { "feature": "base URI redirects", "name": "baseUriRedirect", "required": 1 },
-	    { "feature": "CORS", "name": "cors", "required": 1 },
-	    { "feature": "json-ld media type", "name": "jsonldMediaType", "required": 1 },
-	    { "feature": "profile link header", "name": "profileLinkHeader", "required": 0 },
-	    { "feature": "canonical link header", "name": "canonicalLinkHeader", "required": 0 }
-    ]	    
+    	    { "feature": "base URI redirects", "name": "baseUriRedirect", "required": true, "supported": 1 },
+	    { "feature": "CORS", "name": "cors", "required": true, "supported": 1 },
+	    { "feature": "json-ld media type", "name": "jsonldMediaType", "required": true, "supported": 1 },
+	    { "feature": "profile link header", "name": "profileLinkHeader", "required": false, "supported": 0 },
+	    { "feature": "canonical link header", "name": "canonicalLinkHeader", "required": false, "supported": 0 }
+    ]
+    */	    
 }`
 
 var re_alpha *regexp.Regexp
@@ -100,6 +104,13 @@ var re_quality *regexp.Regexp
 func init() {
 
 	var err error
+
+     	c := Level2Compliance{}
+	err = json.Unmarshal([]byte(compliance_spec), &c)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	re_alpha, err = regexp.Compile(`^[a-z]+$`)
 
