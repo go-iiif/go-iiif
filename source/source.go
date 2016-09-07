@@ -13,6 +13,10 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 
 	cfg := config.Images
 
+	// note that there is no "Memory" source or at least not yet
+	// since it assumes you're passing it []bytes and not a config
+	// file (20160907/thisisaaronland)
+
 	if cfg.Source.Name == "Disk" {
 		cache, err := NewDiskSource(config)
 		return cache, err
