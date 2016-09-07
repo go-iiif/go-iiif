@@ -4,7 +4,7 @@ package image
 // https://github.com/jcupitt/libvips
 
 import (
-	"fmt"
+	_ "fmt"
 	"github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
 )
