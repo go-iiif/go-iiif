@@ -33,7 +33,7 @@ var level2_spec = `{
 	     "rotation": {
 	     		"none":              { "syntax": "0",          "required": true, "supported": true, "match": "^0$" },
 	     		"rotationBy90s":     { "syntax": "90,180,270", "required": true, "supported": true, "match": "^(?:90|180|270)$" },
-	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "^\\d+(?:\\.\\d+)?$" },			
+	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "^\\d+\\.\\d+$" },			
 	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" }
 	     },
 	     "quality": {
@@ -70,13 +70,12 @@ type Level2ComplianceSpec struct {
 
 type Level2Compliance struct {
 	Compliance
-	spec Level2ComplianceSpec
+	spec *Level2ComplianceSpec
 }
 
 func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 
-	spec := Level2ComplianceSpec{}
-	err := json.Unmarshal([]byte(level2_spec), &spec)
+	spec, err := NewLevel2ComplianceSpec(config)
 
 	if err != nil {
 		return nil, err
@@ -87,6 +86,109 @@ func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 	}
 
 	return &compliance, nil
+}
+
+func NewLevel2ComplianceSpec(config *iiifconfig.Config) (*Level2ComplianceSpec, error) {
+
+	spec := Level2ComplianceSpec{}
+	err := json.Unmarshal([]byte(level2_spec), &spec)
+
+	if err != nil {
+		return nil, err
+	}
+
+	feature_block := func(block string) (map[string]ComplianceDetails, error) {
+
+		var possible map[string]ComplianceDetails
+
+		if block == "region" {
+			possible = spec.Image.Region
+		} else if block == "size" {
+			possible = spec.Image.Size
+		} else if block == "rotation" {
+			possible = spec.Image.Rotation
+		} else if block == "quality" {
+			possible = spec.Image.Quality
+		} else if block == "format" {
+			possible = spec.Image.Format
+		} else {
+			message := fmt.Sprintf("Unknown block %s", block)
+			return nil, errors.New(message)
+		}
+
+		return possible, nil
+	}
+
+	toggle_features := func(stuff iiifconfig.FeaturesToggle, toggle bool) error {
+
+		for block, features := range stuff {
+
+			possible, err := feature_block(block)
+
+			if err != nil {
+				return err
+			}
+
+			for _, f := range features {
+
+				details, ok := possible[f]
+
+				if !ok {
+					message := fmt.Sprintf("Undefined feature %s for block (%s)", f, block)
+					return errors.New(message)
+				}
+
+				details.Supported = toggle
+				possible[f] = details
+			}
+		}
+
+		return nil
+	}
+
+	append_features := func(stuff iiifconfig.FeaturesAppend) error {
+
+		for block, features := range stuff {
+
+			possible, err := feature_block(block)
+
+			if err != nil {
+				return err
+			}
+
+			for name, details := range features {
+
+				possible[name] = ComplianceDetails{
+					Syntax:    details.Syntax,
+					Required:  details.Required,
+					Supported: details.Supported,
+					Match:     details.Match,
+				}
+			}
+		}
+
+		return nil
+	}
+
+	err = append_features(config.Features.Append)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = toggle_features(config.Features.Enable, true)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = toggle_features(config.Features.Disable, false)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &spec, err
 }
 
 func (c *Level2Compliance) IsValidImageRegion(region string) (bool, error) {
@@ -145,13 +247,9 @@ func (c *Level2Compliance) isvalid(property string, value string) (bool, error) 
 
 	ok := false
 
-	for _, details := range sect {
+	for name, details := range sect {
 
 		// log.Printf("%s %t (%s = %s)", name, details.Supported, property, value)
-
-		if !details.Supported {
-			continue
-		}
 
 		re, err := regexp.Compile(details.Match)
 
@@ -159,16 +257,23 @@ func (c *Level2Compliance) isvalid(property string, value string) (bool, error) 
 			return false, err
 		}
 
-		if re.MatchString(value) {
-
-			// log.Printf("%s %s MATCH %s", name, property, value)
-			ok = true
-			break
+		if !re.MatchString(value) {
+			continue
 		}
+
+		if !details.Supported {
+			message := fmt.Sprintf("Unsupported IIIF 2.1 feature (%s) %s", name, value)
+			return false, errors.New(message)
+		}
+
+		// log.Printf("%s %s MATCH %s", name, property, value)
+		ok = true
+		break
+
 	}
 
 	if !ok {
-		message := fmt.Sprintf("Invalid IIIF 2.1 property (%s) %s", property, value)
+		message := fmt.Sprintf("Invalid IIIF 2.1 feature property %s %s", property, value)
 		return false, errors.New(message)
 	}
 

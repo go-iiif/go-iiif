@@ -9,6 +9,11 @@
     "graphics": {
 	"source": { "name": "VIPS" }
     },
+    "features": {
+	"enable": {},
+	"disable": { "rotation": [ "rotationArbitrary"] },
+	"append": {}
+    },
     "images": {
 	"source": { "name": "Disk", "path": "/path/to/images" },
 	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }

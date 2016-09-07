@@ -4,9 +4,9 @@ package image
 // https://github.com/jcupitt/libvips
 
 import (
+	"fmt"
 	"github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
-	"log"
 )
 
 type VIPSImage struct {
@@ -83,6 +83,8 @@ func (im *VIPSImage) Dimensions() (Dimensions, error) {
 
 	return &d, nil
 }
+
+// https://godoc.org/github.com/h2non/bimg#Options
 
 func (im *VIPSImage) Transform(t *Transformation) error {
 

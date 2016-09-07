@@ -8,12 +8,30 @@ import (
 type Config struct {
         Level	    LevelConfig	      `json:"level"`
         Graphics    GraphicsConfig    `json:"graphics"`
+        Features    FeaturesConfig    `json:"features"`
 	Images      ImagesConfig      `json:"images"`
 	Derivatives DerivativesConfig `json:"derivatives"`
 }
 
 type LevelConfig struct {
      Compliance string `json:"compliance"`
+}
+
+type FeaturesConfig struct {
+     Enable FeaturesToggle `json:"enable"`
+     Disable FeaturesToggle `json:"disable"`
+     Append FeaturesAppend `json:"append"`
+}
+
+type FeaturesToggle map[string][]string
+
+type FeaturesAppend map[string]map[string]FeaturesDetails
+
+type FeaturesDetails struct {
+	Syntax    string `json:"syntax"`
+	Required  bool   `json:"required"`
+	Supported bool   `json:"supported"`
+	Match     string `json:"match,omitempty"`
 }
 
 type ImagesConfig struct {
