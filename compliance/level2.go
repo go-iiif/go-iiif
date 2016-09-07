@@ -1,5 +1,6 @@
 package compliance
 
+// http://iiif.io/api/image/2.1/
 // http://iiif.io/api/image/2.1/compliance/
 
 import (
@@ -7,38 +8,38 @@ import (
 	"errors"
 	"fmt"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	_ "log"
 	"regexp"
 )
 
 var level2_spec = `{
     "image": {
     	     "region": {
-	     	       "full": { "syntax": "full",        "required": true, "match": "^full$" },
-		       "regionByPx": { "syntax": "x,y,w,h",     "required": true, "match": "^\\d+\\,\\d+\\,\\d+\\,\\d+$" },
-		       "regionByPct": {  "syntax": "pct:x,y,w,h", "required": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
-		       "regionSquare": { "syntax": "square",      "required": false, "match": "^square$" }
+	     	       "full":         { "syntax": "full",        "required": true, "supported": true, "match": "^full$" },
+		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^\\d+\\,\\d+\\,\\d+\\,\\d+$" },
+		       "regionByPct":  { "syntax": "pct:x,y,w,h", "required": true, "supported": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
+		       "regionSquare": { "syntax": "square",      "required": false, "supported": false, "match": "^square$" }
 	     },
 	     "size": {
-	     		"full": {              "syntax": "full",  "required": true, "supported": true, "match": "^full$" },
-	     		"max": {               "syntax": "max",   "required": false, "supported": true, "match": "^max$" },
-	     		"sizeByW": {           "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
-	     		"sizeByH": {           "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
-	     		"sizeByPct": {         "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },			
-	     		"sizeByConfinedWh": {  "syntax": "!w,h",  "required": true, "supported": true, "match": "" },
-	     		"sizeByDistortedWh": { "syntax": "w,h",   "required": true, "supported": true, "match": "" },			
-	     		"sizeByWh": {          "syntax": "w,h",   "required": true, "supported": true, "match": "" },
-	     		"sizeAboveFull": {     "syntax": "",      "required": false, "supported": false, "match": "" }
+	     		"full":              { "syntax": "full",  "required": true, "supported": true, "match": "^full$" },
+	     		"max":               { "syntax": "max",   "required": false, "supported": true, "match": "^max$" },
+	     		"sizeByW":           { "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
+	     		"sizeByH":           { "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
+	     		"sizeByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },			
+	     		"sizeByConfinedWh":  { "syntax": "!w,h",  "required": true, "supported": true, "match": "^\\!\\d+\\,\\d+$" },
+	     		"sizeByDistortedWh": { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" },
+	     		"sizeByWh":          { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" }
 	     },
 	     "rotation": {
-	     		"none": {              "syntax": "0",          "required": true, "supported": true, "match": "" },
-	     		"rotationBy90s": {     "syntax": "90,180,270", "required": true, "supported": true, "match": "" },
-	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "" },			
-	     		"mirroring": {         "syntax": "!n",         "required": true, "supported": true, "match": "" }
+	     		"none":              { "syntax": "0",          "required": true, "supported": true, "match": "^0$" },
+	     		"rotationBy90s":     { "syntax": "90,180,270", "required": true, "supported": true, "match": "^(?:90|180|270)$" },
+	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "^\\d+(?:\\.\\d+)?$" },			
+	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" }
 	     },
 	     "quality": {
 	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$" },
-	     		"color": { "syntax": "color",   "required": false, "supported": false, "match": "^colou?r$" },
-	     		"gray": { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$" },			
+	     		"color":   { "syntax": "color",   "required": false, "supported": false, "match": "^colou?r$" },
+	     		"gray":    { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$" },			
 	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$" }
              },
 	     "format": {
@@ -90,27 +91,27 @@ func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 
 func (c *Level2Compliance) IsValidImageRegion(region string) (bool, error) {
 
-	return c.isvalid(c.spec.Image.Region, region)
+	return c.isvalid("region", region)
 }
 
 func (c *Level2Compliance) IsValidImageSize(size string) (bool, error) {
 
-	return c.isvalid(c.spec.Image.Size, size)
+	return c.isvalid("size", size)
 }
 
 func (c *Level2Compliance) IsValidImageRotation(rotation string) (bool, error) {
 
-	return c.isvalid(c.spec.Image.Rotation, rotation)
+	return c.isvalid("rotation", rotation)
 }
 
 func (c *Level2Compliance) IsValidImageQuality(quality string) (bool, error) {
 
-	return c.isvalid(c.spec.Image.Quality, quality)
+	return c.isvalid("quality", quality)
 }
 
 func (c *Level2Compliance) IsValidImageFormat(format string) (bool, error) {
 
-	return c.isvalid(c.spec.Image.Format, format)
+	return c.isvalid("format", format)
 }
 
 func (c *Level2Compliance) Formats() []string {
@@ -123,11 +124,30 @@ func (c *Level2Compliance) Qualities() []string {
 	return c.properties(c.spec.Image.Quality)
 }
 
-func (c *Level2Compliance) isvalid(sect map[string]ComplianceDetails, property string) (bool, error) {
+func (c *Level2Compliance) isvalid(property string, value string) (bool, error) {
+
+	var sect map[string]ComplianceDetails
+
+	if property == "region" {
+		sect = c.spec.Image.Region
+	} else if property == "size" {
+		sect = c.spec.Image.Size
+	} else if property == "rotation" {
+		sect = c.spec.Image.Rotation
+	} else if property == "quality" {
+		sect = c.spec.Image.Quality
+	} else if property == "format" {
+		sect = c.spec.Image.Format
+	} else {
+		message := fmt.Sprintf("Unknown property %s", property)
+		return false, errors.New(message)
+	}
 
 	ok := false
 
 	for _, details := range sect {
+
+		// log.Printf("%s %t (%s = %s)", name, details.Supported, property, value)
 
 		if !details.Supported {
 			continue
@@ -139,14 +159,16 @@ func (c *Level2Compliance) isvalid(sect map[string]ComplianceDetails, property s
 			return false, err
 		}
 
-		if re.MatchString(property) {
+		if re.MatchString(value) {
+
+			// log.Printf("%s %s MATCH %s", name, property, value)
 			ok = true
 			break
 		}
 	}
 
 	if !ok {
-		message := fmt.Sprintf("Invalid IIIF 2.1 ...")
+		message := fmt.Sprintf("Invalid IIIF 2.1 property (%s) %s", property, value)
 		return false, errors.New(message)
 	}
 
