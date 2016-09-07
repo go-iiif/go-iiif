@@ -80,15 +80,3 @@ then
 
     cd -
 fi
-
-# install go-iiif
-
-git clone https://github.com/thisisaaronland/iiif.git
-cd iiif
-export GOPATH=`pwd`
-/usr/local/bin/go get "github.com/gorilla/mux"
-/usr/local/bin/go get "gopkg.in/h2non/bimg.v1"
-/usr/local/bin/go build
-cp ./iiif /usr/local/bin/iiif
-cd -
-chown -R ubuntu.ubuntu iiif
