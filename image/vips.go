@@ -6,6 +6,7 @@ package image
 import (
 	"github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
+	"log"
 )
 
 type VIPSImage struct {
