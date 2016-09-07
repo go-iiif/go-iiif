@@ -15,7 +15,7 @@ self:   prep rmdeps
 	cp -r level src/github.com/thisisaaronland/go-iiif/
 	cp -r profile src/github.com/thisisaaronland/go-iiif/
 	cp -r source src/github.com/thisisaaronland/go-iiif/
-	cp -r tiles src/github.com/thisisaaronland/go-iiif/
+	cp -r tile src/github.com/thisisaaronland/go-iiif/
 	cp -r vendor/src/* src/
 
 rmdeps:
@@ -46,7 +46,8 @@ fmt:
 	go fmt level/*.go
 	go fmt profile/*.go
 	go fmt source/*.go
-	go fmt tiles/*.go
+	go fmt tile/*.go
 
 bin: 	self
 	@GOPATH=$(GOPATH) go build -o bin/iiif-server cmd/iiif-server.go
+	@GOPATH=$(GOPATH) go build -o bin/iiif-tile-seed cmd/iiif-tile-seed.go
