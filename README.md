@@ -42,11 +42,16 @@ There is a [sample config file](config.json.example) included with this repo.
 
 ```
 {
-    "iiif": {
-	"level": "2"
+    "level": {
+    	"compliance": "2"
     },
     "graphics": {
 	"source": { "name": "VIPS" }
+    },
+    "features": {
+	"enable": {},
+	"disable": { "rotation": [ "rotationArbitrary"] },
+	"append": {}
     },
     "images": {
 	"source": { "name": "Disk", "path": "/path/to/images" },
