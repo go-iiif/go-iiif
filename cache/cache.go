@@ -10,9 +10,19 @@ type Cache interface {
 	Unset(string) error
 }
 
-func NewCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
+func NewImagesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
+
+	cfg := config.Images.Cache
+	return NewCacheFromConfig(cfg)
+}
+
+func NewDerivativesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
 
 	cfg := config.Derivatives.Cache
+	return NewCacheFromConfig(cfg)
+}
+
+func NewCacheFromConfig(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	if cfg.Name == "Disk" {
 		cache, err := NewDiskCache(cfg)

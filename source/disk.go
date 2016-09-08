@@ -18,7 +18,7 @@ func NewDiskSource(config *iiifconfig.Config) (*DiskSource, error) {
 
 	cfg := config.Images
 
-	ch, err := iiifcache.NewCacheFromConfig(config)
+	ch, err := iiifcache.NewImagesCacheFromConfig(config)
 
 	if err != nil {
 		return nil, err

@@ -3,6 +3,7 @@ package cache
 import (
 	"github.com/thisisaaronland/go-iiif/config"
 	"io/ioutil"
+	_ "log"
 	"os"
 	"path"
 	"path/filepath"

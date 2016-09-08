@@ -125,7 +125,7 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
-	cache, err := iiifcache.NewCacheFromConfig(config)
+	cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
 
 	if err != nil {
 		return nil, err

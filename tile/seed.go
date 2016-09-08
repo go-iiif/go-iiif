@@ -43,7 +43,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 	crops := make([]*iiifimage.Transformation, 0)
 
-	// https://github.com/zimeon/iiif/blob/master/iiif/static.py#L21
+	// what follows was copied from
 	// https://github.com/cmoa/iiif_s3/blob/master/lib/iiif_s3/builder.rb#L165-L199
 
 	ty := int(math.Floor(float64(h) / float64(ts.height*sf)))
@@ -89,8 +89,6 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			}
 
 			crops = append(crops, transformation)
-
-			fmt.Println(transformation.ToURI(im.Identifier()))
 		}
 
 	}
