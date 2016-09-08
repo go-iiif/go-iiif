@@ -38,7 +38,7 @@ var level2_spec = `{
 	     },
 	     "quality": {
 	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$" },
-	     		"color":   { "syntax": "color",   "required": false, "supported": false, "match": "^colou?r$" },
+	     		"color":   { "syntax": "color",   "required": false, "supported": true, "match": "^colou?r$" },
 	     		"gray":    { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$" },			
 	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$" }
              },
