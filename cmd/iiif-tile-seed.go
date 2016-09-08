@@ -9,6 +9,7 @@ import (
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	iiiftile "github.com/thisisaaronland/go-iiif/tile"
 	"log"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -17,6 +18,7 @@ func main() {
 
 	var cfg = flag.String("config", ".", "config")
 	var sf = flag.Int("scale-factor", 4, "...")
+	var refresh = flag.Bool("refresh", false, "...")
 
 	flag.Parse()
 
@@ -64,8 +66,21 @@ func main() {
 			log.Fatal(err)
 		}
 
-		wg := new(sync.WaitGroup)
+		source, err := iiifsource.NewMemorySource(image.Body())
 
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		procs := runtime.NumCPU() * 2
+
+		ch := make(chan bool, procs)
+
+		for i := 0; i < procs; i++ {
+			ch <- true
+		}
+
+		wg := new(sync.WaitGroup)
 		ta := time.Now()
 
 		for _, transformation := range crops {
@@ -74,16 +89,28 @@ func main() {
 
 			go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
 
-				defer wg.Done()
+				<-ch
 
-				source, _ := iiifsource.NewMemorySource(im.Body())
+				defer func() {
+					wg.Done()
+					ch <- true
+				}()
+
+				uri := tr.ToURI(im.Identifier())
+
+				if !*refresh {
+					_, err := cache.Get(uri)
+
+					if err == nil {
+						return
+					}
+				}
+
 				tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, "cache")
 
 				t1 := time.Now()
 				err = tmp.Transform(tr)
 				t2 := time.Since(t1)
-
-				uri := tr.ToURI(im.Identifier())
 
 				log.Println(uri, t2, err)
 
@@ -97,6 +124,6 @@ func main() {
 		wg.Wait()
 
 		tb := time.Since(ta)
-		log.Println(id, tb)
+		log.Printf("generated %d crops in %v", len(crops), tb)
 	}
 }
