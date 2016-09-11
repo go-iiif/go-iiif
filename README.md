@@ -14,13 +14,15 @@ There is a detailed [setup script](ubuntu/setup.sh) available for Ubuntu. Once y
 $> make bin
 ```
 
+## Usage
+
+`go-iiif` was designed to expose all of its functionality outside of the included tools although that hasn't been documented yet. The [source code for the iiif-tile-seed tool](cmd/iiif-tile-seed.go) is a good place to start poking around if you're curious.
+
 ## Tools
 
 ### iiif-server
 
-`iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API]().
-
-Let's assume you have a copy of [this image](https://collection.cooperhewitt.org/objects/18382391/) in the `images.source.path` directory defined in your config file.
+`iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API](). For example:
 
 ```
 $> bin/iiif-server -config config.json
