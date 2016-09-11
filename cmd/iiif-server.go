@@ -133,6 +133,8 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 
 		if err == nil {
 
+			// log.Println("CACHE HIT", rel_path)
+
 			source, _ := iiifsource.NewMemorySource(body)
 			image, _ := iiifimage.NewImageFromConfigWithSource(config, source, "cache")
 

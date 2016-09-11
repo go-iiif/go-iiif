@@ -211,6 +211,29 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 			Y:      int(y),
 		}
 
+		/*
+
+			Because otherwise you end up with stuff like this:
+
+			./bin/iiif-tile-seed -config config.json -scale-factor 4 184512_5f7f47e5b3c66207_x.jpg
+			2016/09/11 07:35:18 184512_5f7f47e5b3c66207_x.jpg
+			2016/09/11 07:35:18 184512_5f7f47e5b3c66207_x.jpg/3072,2048,1024,1024/full/0/default.jpg 5.125935ms extract_area: bad extract area
+			2016/09/11 07:35:18 184512_5f7f47e5b3c66207_x.jpg/3072,0,1024,1024/full/0/default.jpg 2.667272ms extract_area: bad extract area
+			2016/09/11 07:35:18 184512_5f7f47e5b3c66207_x.jpg/3072,1024,1024,1024/full/0/default.jpg 393.638µs extract_area: bad extract area
+
+			It's possible this is best moved in to the specific packages (like vips.go) where this is
+			actually a problem... (20160911/thisisaaronland)
+
+		*/
+
+		if instruction.X+instruction.Width > width {
+			instruction.Width = width - instruction.X
+		}
+
+		if instruction.Y+instruction.Height > height {
+			instruction.Height = height - instruction.Y
+		}
+
 		return &instruction, nil
 
 	}

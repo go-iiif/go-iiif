@@ -77,9 +77,9 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			}
 
 			region := fmt.Sprintf("%d,%d,%d,%d", foo["x"], foo["y"], foo["width"], foo["height"])
-			size := "full"
+			size := fmt.Sprintf("%d,", ts.width) // but maybe some client will send 'full' or what...?
 			rotation := "0"
-			quality := "default"
+			quality := "color" // but maybe some client will send 'default'?
 			format := "jpg"
 
 			transformation, err := iiifimage.NewTransformation(ts.level, region, size, rotation, quality, format)
