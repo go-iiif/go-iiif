@@ -59,9 +59,9 @@ $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Transforms
 ## iiif-tile-seed
 
 ```
-$> iiif-tile-seed -options /path/to/source/image.jpg
+$> ./bin/iiif-tile-seed -options /path/to/source/image.jpg
 
-Usage of iiif-tile-seed:
+Usage of ./bin/iiif-tile-seed:
   -config string
     	  Path to a valid go-iiif config file
   -refresh
