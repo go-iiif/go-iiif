@@ -110,12 +110,8 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		   (20160910/thisisaaronland)
 		*/
 
-		if opts.Top == 0 {
-			opts.Top = 1
-		}
-
-		if opts.Left == 0 {
-			opts.Left = 1
+		if opts.Top == 0 && opts.Left == 0{
+			opts.Top = -1
 		}
 
 		_, err = im.bimg.Process(opts)
