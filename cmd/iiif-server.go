@@ -185,7 +185,11 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 			}
 
 			go func() {
-				images_cache.Set(id, image.Body())
+				err := images_cache.Set(id, image.Body())
+
+				if err != nil {
+					log.Printf("unable to set cache for %s because: %s\n", id, err.Error())
+				}
 			}()
 		}
 
