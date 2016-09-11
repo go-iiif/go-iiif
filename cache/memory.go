@@ -15,6 +15,7 @@ type MemoryCache struct {
 	size     int
 	maxsize  int
 	sizemap  map[string]int
+	keys     []string
 	lock     *sync.Mutex
 }
 
@@ -29,6 +30,7 @@ func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 	size := 0
 	maxsize := limit * 1024 * 1024
 
+	keys := make([]string, 0)
 	sizemap := make(map[string]int)
 
 	lock := new(sync.Mutex)
@@ -36,10 +38,13 @@ func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 	mc := MemoryCache{
 		provider: gc,
 		size:     size,
+		keys:     keys,
 		maxsize:  maxsize,
 		sizemap:  sizemap,
 		lock:     lock,
 	}
+
+	gc.OnEvicted(mc.OnEvicted)
 
 	return &mc, nil
 }
@@ -60,6 +65,12 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 	mc.lock.Lock()
 	defer mc.lock.Unlock()
 
+	_, ok := mc.sizemap[key]
+
+	if ok {
+		return nil
+	}
+
 	size := len(data)
 
 	if size > mc.maxsize {
@@ -68,18 +79,31 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 
 	if size+mc.size > mc.maxsize {
 
-		// please prune me here...
-		return errors.New("No more space!")
+		for mc.size > mc.maxsize-size {
+
+			for _, k := range mc.keys {
+				mc.Unset(k)
+			}
+		}
+
 	}
 
 	mc.size += size
 	mc.sizemap[key] = size
+	mc.keys = append(mc.keys, key)
 
 	mc.provider.Set(key, data, gocache.DefaultExpiration)
+
 	return nil
 }
 
 func (mc *MemoryCache) Unset(key string) error {
+
+	mc.provider.Delete(key)
+	return nil
+}
+
+func (mc *MemoryCache) OnEvicted(key string, value interface{}) {
 
 	mc.lock.Lock()
 	defer mc.lock.Unlock()
@@ -89,11 +113,14 @@ func (mc *MemoryCache) Unset(key string) error {
 
 	delete(mc.sizemap, key)
 
-	mc.provider.Delete(key)
-	return nil
-}
+	new_keys := make([]string, 0)
 
-func (mc *MemoryCache) Prune() error {
+	for _, k := range mc.keys {
 
-	return nil
+		if k != key {
+			new_keys = append(new_keys, k)
+		}
+	}
+
+	mc.keys = new_keys
 }
