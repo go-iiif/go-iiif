@@ -6,13 +6,15 @@ _And by "forked" I mean that `greut` and I decided that [it was best](https://gi
 
 ## Setup
 
-Currently all the image processing is handled by the [bimg](https://github.com/h2non/bimg/) Go package which requires the [libvips](http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS) C library be installed. Eventually there will be pure-Go alternatives for wrangling images.
+Currently all the image processing is handled by the [bimg](https://github.com/h2non/bimg/) Go package which requires the [libvips](http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS) C library be installed. There is a detailed [setup script](ubuntu/setup.sh) available for Ubuntu.
 
-There is a detailed [setup script](ubuntu/setup.sh) available for Ubuntu. Once you have thingss like`Go` and `libvips` installed just type:
+Eventually there will be pure-Go alternatives for wrangling images. Otherwise all other depedencies are included with this repository in the [vendor](vendor) directory.
 
 ```
 $> make bin
 ```
+
+Once you have things like`Go` and `libvips` installed just type:
 
 ## Usage
 
