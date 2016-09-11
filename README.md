@@ -2,9 +2,13 @@
 
 ![spanking cat](misc/go-iiif-spanking-cat.png)
 
+## What is this?
+
 This is a fork [@greut's iiif](https://github.com/greut/iiif) package that moves most of the processing logic in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
 
-I did this to better understand some of the decisions behind (and to address my own concerns about) version 2 of the [IIIF Image API](http://iiif.io/api/image/2.1/index.html). For the time being this package will probably not support the other IIIF Metadata or Publication APIs. Honestly, as of this writing it may still be lacking some parts of Image API but it's a start and it does all the basics.
+I did this to better understand some of the decisions behind (and to address my own concerns about) version 2 of the [IIIF Image API](http://iiif.io/api/image/2.1/index.html).
+
+For the time being this package will probably not support the other IIIF Metadata or Publication APIs. Honestly, as of this writing it may still be lacking some parts of Image API but it's a start and it does all the basics.
 
 _And by "forked" I mean that [@greut](https://github.com/greut) and I decided that [it was best](https://github.com/greut/iiif/pull/2) for this code and his code to wave at each other across the divide but not necessarily to hold hands._
 
@@ -59,8 +63,6 @@ $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Cache
     "CacheHit": 4,
     "CacheMiss": 16,
     "CacheSet": 16,
-        "MCacheInuse": 1200,
-        "MCacheSys": 16384,
 
 $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Transforms
     "TransformsAvgTimeMS": 1833.875,
