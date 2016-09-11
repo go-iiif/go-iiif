@@ -14,7 +14,11 @@ There is a detailed [setup script](ubuntu/setup.sh) available for Ubuntu. Once y
 $> make bin
 ```
 
-## iiif-server
+## Tools
+
+### iiif-server
+
+`iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API]().
 
 Let's assume you have a copy of [this image](https://collection.cooperhewitt.org/objects/18382391/) in the `images.source.path` directory defined in your config file.
 
@@ -28,21 +32,21 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/pct:41.6,7.5,40,70/full/0/d
 curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 ```
 
-### Endpoints
+#### Endpoints
 
-#### GET /level2.json
-
-_Please write me_
-
-#### GET /{ID}/info.json
+##### GET /level2.json
 
 _Please write me_
 
-#### GET /{ID}/{REGION}/{SIZE}/{ROTATION}/{QUALITY}.{FORMAT}
+##### GET /{ID}/info.json
 
 _Please write me_
 
-#### GET /debug/vars
+##### GET /{ID}/{REGION}/{SIZE}/{ROTATION}/{QUALITY}.{FORMAT}
+
+_Please write me_
+
+##### GET /debug/vars
 
 ```
 $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Cache
@@ -56,7 +60,11 @@ $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Transforms
     "TransformsCount": 16,
 ```
 
-## iiif-tile-seed
+#### Notes
+
+* TLS is [not supported yet](https://github.com/thisisaaronland/go-iiif/issues/5).
+
+### iiif-tile-seed
 
 ```
 $> ./bin/iiif-tile-seed -options /path/to/source/image.jpg
