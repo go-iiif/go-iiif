@@ -53,6 +53,12 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 		for ypos := 0; ypos < tx; ypos++ {
 
+			/*
+				this is the data structure used by iiif_s3 and it's not
+				clear how much of it is actually necessary here
+				(20160911/thisisaaronland)
+			*/
+
 			foo := make(map[string]int)
 
 			foo["scale_factor"] = sf
@@ -76,8 +82,33 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 				foo["ysize"] = int(math.Ceil(float64(foo["height"]) / float64(sf)))
 			}
 
-			region := fmt.Sprintf("%d,%d,%d,%d", foo["x"], foo["y"], foo["width"], foo["height"])
-			size := fmt.Sprintf("%d,", ts.width) // but maybe some client will send 'full' or what...?
+			/*
+
+				this logic is repeated again in image/transformation.go but unlike there
+				we are simply doing it here in order to generate a cache URI that works
+				with the leaflet plugin... I think? (20160911/thisisaaronland)
+
+			*/
+
+			_x := foo["x"]
+			_y := foo["y"]
+			_w := foo["width"]
+			_h := foo["height"]
+
+			_s := ts.width
+
+			if _x+_w > w {
+				_s = w - _x
+			}
+
+			if _y+_h > h {
+				_s = h - _y
+			}
+
+			// fmt.Printf("%d,%d,%d,%d\t%d\n", _x, _y, _w, _h, _s)
+
+			region := fmt.Sprintf("%d,%d,%d,%d", _x, _y, _w, _h)
+			size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
 			rotation := "0"
 			quality := "color" // but maybe some client will send 'default'?
 			format := "jpg"

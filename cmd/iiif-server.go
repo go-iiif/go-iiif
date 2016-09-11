@@ -17,7 +17,37 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
+	"sync/atomic"
+	"time"
 )
+
+var cacheHit *expvar.Int
+var cacheMiss *expvar.Int
+var cacheSet *expvar.Int
+
+var transformsCount *expvar.Int
+var transformsAvgTime *expvar.Float
+
+var transforms_counter int64
+var transforms_timer int64
+
+var timers_mu *sync.Mutex
+
+func init() {
+
+	cacheHit = expvar.NewInt("CacheHit")
+	cacheMiss = expvar.NewInt("CacheMiss")
+	cacheSet = expvar.NewInt("CacheSet")
+
+	transformsCount = expvar.NewInt("TransformsCount")
+	transformsAvgTime = expvar.NewFloat("TransformsAvgTimeMS")
+
+	transforms_counter = 0
+	transforms_timer = 0
+
+	timers_mu = new(sync.Mutex)
+}
 
 func ExpvarHandlerFunc(host string) (http.HandlerFunc, error) {
 
@@ -25,8 +55,9 @@ func ExpvarHandlerFunc(host string) (http.HandlerFunc, error) {
 
 		remote := strings.Split(r.RemoteAddr, ":")
 
-		if remote[0] != host {
+		if remote[0] != "127.0.0.1" && remote[0] != host {
 
+			log.Printf("host '%s' remote '%s'\n", remote[0], host)
 			http.Error(w, "No soup for you!", http.StatusForbidden)
 			return
 		}
@@ -129,11 +160,18 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 
 		rel_path := r.URL.Path
 
+		/*
+
+			for example:
+			./bin/iiif-tile-seed -config config.json -scale-factors 1,2,4,8 -refresh 184512_5f7f47e5b3c66207_x.jpg
+
+		*/
+
 		body, err := derivatives_cache.Get(rel_path)
 
 		if err == nil {
 
-			// log.Println("CACHE HIT", rel_path)
+			cacheHit.Add(1)
 
 			source, _ := iiifsource.NewMemorySource(body)
 			image, _ := iiifimage.NewImageFromConfigWithSource(config, source, "cache")
@@ -173,23 +211,46 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 			return
 		}
 
-		// something something something maybe sendfile something something
-		// (20160901/thisisaaronland)
-		//
-		// log.Printf("%s %t\n", id, transformation.HasTransformation())
+		/*
+			something something something maybe sendfile something something
+			(20160901/thisisaaronland)
+		*/
 
 		if transformation.HasTransformation() {
 
+			cacheMiss.Add(1)
+
+			t1 := time.Now()
 			err = image.Transform(transformation)
+			t2 := time.Since(t1)
 
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 
+			go func(t time.Duration) {
+
+				ns := t.Nanoseconds()
+				ms := ns / (int64(time.Millisecond) / int64(time.Nanosecond))
+
+				timers_mu.Lock()
+
+				counter := atomic.AddInt64(&transforms_counter, 1)
+				timer := atomic.AddInt64(&transforms_timer, ms)
+
+				avg := float64(timer) / float64(counter)
+
+				transformsCount.Add(1)
+				transformsAvgTime.Set(avg)
+
+				timers_mu.Unlock()
+			}(t2)
+
 			go func(k string, im iiifimage.Image) {
 
 				derivatives_cache.Set(k, im.Body())
+				cacheSet.Add(1)
 
 			}(rel_path, image)
 		}
@@ -216,8 +277,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// See this - we're just going to make sure we have a valid source
-	// before we start serving images (20160901/thisisaaronland)
+	/*
+
+		See this - we're just going to make sure we have a valid source
+		before we start serving images (20160901/thisisaaronland)
+
+	*/
 
 	_, err = iiifsource.NewSourceFromConfig(config)
 
@@ -231,9 +296,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Okay now we're going to set up global cache thingies for source images
-	// and derivatives mostly to account for the fact that in-memory cache
-	// thingies need to be... well, global
+	/*
+
+		Okay now we're going to set up global cache thingies for source images
+		and derivatives mostly to account for the fact that in-memory cache
+		thingies need to be... well, global
+
+	*/
 
 	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
 

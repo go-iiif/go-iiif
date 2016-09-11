@@ -16,13 +16,7 @@ There is a detailed [setup script](ubuntu/setup.sh) available for Ubuntu. Once y
 $> make bin
 ```
 
-## Example
-
-### In your own code
-
-_Please write me._
-
-### As an HTTP pony
+## iiif-server
 
 Let's assume you have a copy of [this image](https://collection.cooperhewitt.org/objects/18382391/) in your `/path/to/images` source directory.
 
@@ -36,30 +30,70 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/pct:41.6,7.5,40,70/full/0/d
 curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png > /path/to/rotate.jpg
 ```
 
+### Endpoints
+
+#### GET /debug/vars
+
+```
+$> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Cache
+    "CacheHit": 4,
+    "CacheMiss": 16,
+    "CacheSet": 16,
+        "MCacheInuse": 1200,
+        "MCacheSys": 16384,
+$> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Transforms
+    "TransformsAvgTimeMS": 1833.875,
+    "TransformsCount": 16,
+```
+
+#### GET /{ID}/{REGION}/{SIZE}/{ROTATION}/{QUALITY}.{FORMAT}
+
+_Please write me_
+
+#### GET /{ID}/info.json
+
+_Please write me_
+
+#### GET /level2.json
+
+_Please write me_
+
+## iiif-tile-seed
+
+```
+Usage of ./bin/iiif-tile-seed:
+  -config string
+    	  Path to a valid go-iiif config file
+  -refresh
+	Refresh a tile even if already exists (default false)
+  -scale-factors string
+    		 A comma-separated list of scale factors to seed tiles with (default "4")
+```
+
 ## Config files
 
 There is a [sample config file](config.json.example) included with this repo.
 
 ```
 {
-    "level": {
-    	"compliance": "2"
-    },
-    "graphics": {
-	"source": { "name": "VIPS" }
-    },
-    "features": {
-	"enable": {},
-	"disable": { "rotation": [ "rotationArbitrary"] },
-	"append": {}
-    },
-    "images": {
-	"source": { "name": "Disk", "path": "/path/to/images" },
-	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
-    },
-    "derivatives": {
-	"cache": { "name": "Disk", "path": "/path/to/derivatives-cache" }
-    }
+	"level": {
+		"compliance": "2"
+	},
+	"graphics": {
+		"source": { "name": "VIPS" }
+	},
+	"features": {
+		"enable": {},
+		"disable": { "rotation": [ "rotationArbitrary"] },
+		"append": {}
+	},
+	"images": {
+		"source": { "name": "Disk", "path": "/path/to/images" },
+		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+	},
+	"derivatives": {
+		"cache": { "name": "Disk", "path": "/path/to/derivatives-cache" }
+	}
 }
 ```
 
@@ -205,3 +239,7 @@ information would be much better linked with a Cache system.
 ### [Level2 profile](http://iiif.io/api/image/2.1/#profile-description)
 
 It provides meta-informations about the service. **(incomplete)**
+
+## See also
+
+* http://iiif.io/api/image/2.1/

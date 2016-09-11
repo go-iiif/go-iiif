@@ -10,17 +10,23 @@ import (
 	iiiftile "github.com/thisisaaronland/go-iiif/tile"
 	"log"
 	"runtime"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
 
 func main() {
 
-	var cfg = flag.String("config", ".", "config")
-	var sf = flag.Int("scale-factor", 4, "...")
-	var refresh = flag.Bool("refresh", false, "...")
+	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
+	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
+	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 
 	flag.Parse()
+
+	if *cfg == "" {
+		log.Fatal("Missing config file")
+	}
 
 	config, err := iiifconfig.NewConfigFromFile(*cfg)
 
@@ -54,80 +60,90 @@ func main() {
 		log.Fatal(err)
 	}
 
-	for _, id := range ids {
+	for _, s := range strings.Split(*sf, ",") {
 
-		log.Println(id)
-
-		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, id)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		crops, err := ts.TileSizes(image, *sf)
+		s = strings.Trim(s, " ")
+		scale, err := strconv.Atoi(s)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		source, err := iiifsource.NewMemorySource(image.Body())
+		for _, id := range ids {
 
-		if err != nil {
-			log.Fatal(err)
-		}
+			log.Println(id)
 
-		procs := runtime.NumCPU() * 2
+			image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, id)
 
-		ch := make(chan bool, procs)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-		for i := 0; i < procs; i++ {
-			ch <- true
-		}
+			crops, err := ts.TileSizes(image, scale)
 
-		wg := new(sync.WaitGroup)
-		ta := time.Now()
+			if err != nil {
+				log.Fatal(err)
+			}
 
-		for _, transformation := range crops {
+			source, err := iiifsource.NewMemorySource(image.Body())
 
-			wg.Add(1)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-			go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
+			procs := runtime.NumCPU() * 2
 
-				<-ch
+			ch := make(chan bool, procs)
 
-				defer func() {
-					wg.Done()
-					ch <- true
-				}()
+			for i := 0; i < procs; i++ {
+				ch <- true
+			}
 
-				uri, _ := tr.ToURI(im.Identifier())
+			wg := new(sync.WaitGroup)
+			ta := time.Now()
 
-				if !*refresh {
-					_, err := derivatives_cache.Get(uri)
+			for _, transformation := range crops {
+
+				wg.Add(1)
+
+				go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
+
+					<-ch
+
+					defer func() {
+						wg.Done()
+						ch <- true
+					}()
+
+					uri, _ := tr.ToURI(im.Identifier())
+
+					if !*refresh {
+						_, err := derivatives_cache.Get(uri)
+
+						if err == nil {
+							return
+						}
+					}
+
+					tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, "cache")
+
+					t1 := time.Now()
+					err = tmp.Transform(tr)
+					t2 := time.Since(t1)
+
+					log.Println(uri, t2, err)
 
 					if err == nil {
-						return
+						derivatives_cache.Set(uri, tmp.Body())
 					}
-				}
 
-				tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, "cache")
+				}(image, transformation, wg)
+			}
 
-				t1 := time.Now()
-				err = tmp.Transform(tr)
-				t2 := time.Since(t1)
+			wg.Wait()
 
-				log.Println(uri, t2, err)
-
-				if err == nil {
-					derivatives_cache.Set(uri, tmp.Body())
-				}
-
-			}(image, transformation, wg)
+			tb := time.Since(ta)
+			log.Printf("generated %d crops in %v", len(crops), tb)
 		}
-
-		wg.Wait()
-
-		tb := time.Since(ta)
-		log.Printf("generated %d crops in %v", len(crops), tb)
 	}
 }
