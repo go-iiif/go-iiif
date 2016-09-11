@@ -1,5 +1,7 @@
 # go-iiif
 
+![spanking cat](misc/go-iiif-spanking-cat.png)
+
 This is a fork `greut`'s [iiif](https://github.com/greut/iiif) package that moves most of the processing logic in to discrete Go packages and defines source, derivative and graphics details in a JSON config file. There is also an additional caching layer for both source images and derivatives.
 
 _And by "forked" I mean that `greut` and I decided that [it was best](https://github.com/greut/iiif/pull/2) for this code and his code to wave at each other across the divide but not necessarily to hold hands._
@@ -10,11 +12,11 @@ Currently all the image processing is handled by the [bimg](https://github.com/h
 
 Eventually there will be pure-Go alternatives for wrangling images. Otherwise all other depedencies are included with this repository in the [vendor](vendor) directory.
 
+Once you have things like`Go` and `libvips` installed just type:
+
 ```
 $> make bin
 ```
-
-Once you have things like`Go` and `libvips` installed just type:
 
 ## Usage
 
