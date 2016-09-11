@@ -72,7 +72,7 @@ Usage of ./bin/iiif-tile-seed:
 
 ## Config files
 
-There is a [sample config file](config.json.example) included with this repo.
+There is a [sample config file](config.json.example) included with this repo. For example:
 
 ```
 {
@@ -88,18 +88,32 @@ There is a [sample config file](config.json.example) included with this repo.
 		"append": {}
 	},
 	"images": {
-		"source": { "name": "Disk", "path": "/path/to/images" },
+		"source": { "name": "Disk", "path": "example/images" },
 		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
 	},
 	"derivatives": {
-		"cache": { "name": "Disk", "path": "/path/to/derivatives-cache" }
+		"cache": { "name": "Disk", "path": "example/cache" }
 	}
 }
 ```
 
 _More better documentation to follow but in the meantime..._
 
+### level
+
+```
+	"level": {
+		"compliance": "2"
+	}
+```
+
 ### graphics
+
+```
+	"graphics": {
+		"source": { "name": "VIPS" }
+	}
+```
 
 Details about how images should be processed.
 
@@ -113,7 +127,24 @@ Details about what will do the actual image processing.
 
 * VIPS - currently there is only VIPS which is which is an interface to the [libvips](http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS) library.
 
+### features
+
+```
+	"features": {
+		"enable": {},
+		"disable": { "rotation": [ "rotationArbitrary"] },
+		"append": {}
+	}
+```
+
 ### images
+
+```
+	"images": {
+		"source": { "name": "Disk", "path": "example/images" },
+		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+	}
+```
 
 Details about source images.
 
@@ -156,6 +187,12 @@ This is only valid for `Memory` caches and indicates the maximum number of secon
 This is only valid for `Memory` caches and indicates the maximum number of megabytes the cache should hold at any one time.
 
 ### derivatives
+
+```
+	"derivatives": {
+		"cache": { "name": "Disk", "path": "example/cache" }
+	}
+```
 
 Details about derivative images.
 
