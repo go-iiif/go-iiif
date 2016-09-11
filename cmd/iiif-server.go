@@ -128,7 +128,7 @@ func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 	cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
 
 	if err != nil {
-		return nil, err
+		log.Fatal(err)
 	}
 
 	f := func(w http.ResponseWriter, r *http.Request) {
@@ -218,7 +218,6 @@ func main() {
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	// See this - we're just going to make sure we have a valid source
@@ -228,35 +227,30 @@ func main() {
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	_, err = iiiflevel.NewLevelFromConfig(config, *host)
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	ProfileHandler, err := ProfileHandlerFunc(config)
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	InfoHandler, err := InfoHandlerFunc(config)
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	ImageHandler, err := ImageHandlerFunc(config)
 
 	if err != nil {
 		log.Fatal(err)
-		os.Exit(1)
 	}
 
 	router := mux.NewRouter()

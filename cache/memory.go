@@ -3,6 +3,7 @@ package cache
 import (
 	"github.com/allegro/bigcache"
 	"github.com/thisisaaronland/go-iiif/config"
+	"log"
 	"time"
 )
 
@@ -51,9 +52,13 @@ func NewMemoryCache(cfg config.CacheConfig) (*MemoryCache, error) {
 
 func (mc *MemoryCache) Get(key string) ([]byte, error) {
 
+	log.Println("GET", key)
+
 	rsp, err := mc.cache.Get(key)
 
 	if err != nil {
+
+		log.Println("MISS", key)
 		return nil, err
 	}
 
@@ -62,7 +67,14 @@ func (mc *MemoryCache) Get(key string) ([]byte, error) {
 
 func (mc *MemoryCache) Set(key string, body []byte) error {
 
-	mc.cache.Set(key, body)
+	log.Println("SET", key)
+	err := mc.cache.Set(key, body)
+
+	if err != nil {
+
+		log.Println("FAIL", err)
+		return err
+	}
 
 	return nil
 }
