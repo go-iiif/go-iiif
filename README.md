@@ -89,32 +89,7 @@ Usage of ./bin/iiif-tile-seed:
 
 ## Config files
 
-There is a [sample config file](config.json.example) included with this repo. For example:
-
-```
-{
-	"level": {
-		"compliance": "2"
-	},
-	"graphics": {
-		"source": { "name": "VIPS" }
-	},
-	"features": {
-		"enable": {},
-		"disable": { "rotation": [ "rotationArbitrary"] },
-		"append": {}
-	},
-	"images": {
-		"source": { "name": "Disk", "path": "example/images" },
-		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
-	},
-	"derivatives": {
-		"cache": { "name": "Disk", "path": "example/cache" }
-	}
-}
-```
-
-_More better documentation to follow but in the meantime..._
+There is a [sample config file](config.json.example) included with this repo. Proper documentation is being written but right now the easiest way to understand config files is that consist of five top-level groupings, with nested section-specific details. They are:
 
 ### level
 
@@ -124,6 +99,8 @@ _More better documentation to follow but in the meantime..._
 	}
 ```
 
+Indicates which level of IIIF Image API compliance the server (or associated tools) should support. Basically, there is no reason to ever change this right now.
+
 ### graphics
 
 ```
@@ -132,17 +109,7 @@ _More better documentation to follow but in the meantime..._
 	}
 ```
 
-Details about how images should be processed.
-
-#### source
-
-Where to find source images.
-
-##### name
-
-Details about what will do the actual image processing.
-
-* VIPS - currently there is only VIPS which is which is an interface to the [libvips](http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS) library.
+Details about how images should be processed. Because only [libvips]() is supported for image processing right now there is no reason to ever change this.
 
 ### features
 
