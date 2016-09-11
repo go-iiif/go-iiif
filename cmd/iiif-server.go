@@ -123,19 +123,13 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 	return http.HandlerFunc(f), nil
 }
 
-func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
-
-	cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache) (http.HandlerFunc, error) {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
 
 		rel_path := r.URL.Path
 
-		body, err := cache.Get(rel_path)
+		body, err := derivatives_cache.Get(rel_path)
 
 		if err == nil {
 
@@ -170,12 +164,32 @@ func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 			return
 		}
 
-		image, err := iiifimage.NewImageFromConfig(config, id)
+		/* sudo put me in a function */
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		var image iiifimage.Image
+
+		body, err = images_cache.Get(id)
+
+		if err == nil {
+
+			source, _ := iiifsource.NewMemorySource(body)
+			image, _ = iiifimage.NewImageFromConfigWithSource(config, source, "cache")
+
+		} else {
+
+			image, err = iiifimage.NewImageFromConfig(config, id)
+
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			go func() {
+				images_cache.Set(id, image.Body())
+			}()
 		}
+
+		/* end of sudo put me in a function */
 
 		// something something something maybe sendfile something something
 		// (20160901/thisisaaronland)
@@ -193,7 +207,7 @@ func ImageHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 			go func(k string, im iiifimage.Image) {
 
-				cache.Set(k, im.Body())
+				derivatives_cache.Set(k, im.Body())
 
 			}(rel_path, image)
 		}
@@ -235,6 +249,22 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Okay now we're going to set up global cache thingies for source images
+	// and derivatives mostly to account for the fact that in-memory cache
+	// thingies need to be... well, global
+
+	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ProfileHandler, err := ProfileHandlerFunc(config)
 
 	if err != nil {
@@ -247,7 +277,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ImageHandler, err := ImageHandlerFunc(config)
+	ImageHandler, err := ImageHandlerFunc(config, images_cache, derivatives_cache)
 
 	if err != nil {
 		log.Fatal(err)

@@ -1,50 +1,28 @@
 package cache
 
 import (
-	"github.com/allegro/bigcache"
-	"github.com/thisisaaronland/go-iiif/config"
+	"errors"
+	gocache "github.com/patrickmn/go-cache"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"log"
 	"time"
 )
 
 type MemoryCache struct {
 	Cache
-	cache *bigcache.BigCache
+	provider *gocache.Cache
 }
 
-func NewMemoryCache(cfg config.CacheConfig) (*MemoryCache, error) {
+func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 
-	ttl := cfg.TTL
-	limit := cfg.Limit
+	// ttl := cfg.TTL
+	// limit := cfg.Limit
+	// window := time.Duration(ttl) * time.Second
 
-	/*
-	   ttl, err := strconv.Atoi(cfg.TTL)
-
-	   if err != nil {
-	   	   return nil, err
-	   }
-
-	   limit, err := strconv.Atoi(cfg.Limit)
-
-	   if err != nil {
-	   	   return nil, err
-	   }
-	*/
-
-	window := time.Duration(ttl) * time.Second
-
-	bconfig := bigcache.DefaultConfig(10 * time.Minute)
-	bconfig.LifeWindow = window
-	bconfig.HardMaxCacheSize = limit
-
-	bcache, err := bigcache.NewBigCache(bconfig)
-
-	if err != nil {
-		return nil, err
-	}
+	gc := gocache.New(5*time.Minute, 30*time.Second)
 
 	mc := MemoryCache{
-		cache: bcache,
+		provider: gc,
 	}
 
 	return &mc, nil
@@ -54,32 +32,27 @@ func (mc *MemoryCache) Get(key string) ([]byte, error) {
 
 	log.Println("GET", key)
 
-	rsp, err := mc.cache.Get(key)
+	data, ok := mc.provider.Get(key)
 
-	if err != nil {
+	if !ok {
 
 		log.Println("MISS", key)
-		return nil, err
+		return nil, errors.New("cache miss")
 	}
 
-	return rsp, nil
+	return data.([]byte), nil
 }
 
-func (mc *MemoryCache) Set(key string, body []byte) error {
+func (mc *MemoryCache) Set(key string, data []byte) error {
 
 	log.Println("SET", key)
-	err := mc.cache.Set(key, body)
-
-	if err != nil {
-
-		log.Println("FAIL", err)
-		return err
-	}
+	mc.provider.Set(key, data, gocache.DefaultExpiration)
 
 	return nil
 }
 
 func (mc *MemoryCache) Unset(key string) error {
 
+	mc.provider.Delete(key)
 	return nil
 }
