@@ -96,9 +96,9 @@ func (t *Transformation) ToURI(id string) string {
 	}
 
 	/*
-	for i, v := range nodes {
-	    nodes[i] = url.QueryEscape(v)
-	}
+		for i, v := range nodes {
+		    nodes[i] = url.QueryEscape(v)
+		}
 	*/
 
 	return fmt.Sprintf("%s.%s", strings.Join(nodes, "/"), t.Format)

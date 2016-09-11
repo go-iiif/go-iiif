@@ -105,14 +105,26 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 			Top:        rgi.Y,
 		}
 
+		/*
+		   So here's a thing that we need to do because... computers?
+		   (20160910/thisisaaronland)
+		*/
+
+		if opts.Top == 0 {
+			opts.Top = 1
+		}
+
+		if opts.Left == 0 {
+			opts.Left = 1
+		}
+
 		_, err = im.bimg.Process(opts)
 
 		if err != nil {
 			return err
 		}
-	}
 
-	// QUESTION: after Process what are the dimensions of im.bimg ?
+	}
 
 	dims, err := im.Dimensions()
 
