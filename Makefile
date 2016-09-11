@@ -25,10 +25,12 @@ build:	fmt bin
 
 deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/facebookgo/grace/gracehttp"
-	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/mux"	
-	@GOPATH=$(GOPATH) go get -u "github.com/allegro/bigcache"
+	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/context"
+	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/mux"
+	@GOPATH=$(GOPATH) go get -u "github.com/patrickmn/go-cache"
 	@GOPATH=$(GOPATH) go get -u "gopkg.in/h2non/bimg.v1"
 	@GOPATH=$(GOPATH) go get -u "github.com/koyachi/go-atkinson"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-sanitize"
 
 vendor: deps
 	if test ! -d vendor; then mkdir vendor; fi
