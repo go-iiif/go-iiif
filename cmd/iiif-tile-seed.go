@@ -96,7 +96,7 @@ func main() {
 					ch <- true
 				}()
 
-				uri := tr.ToURI(im.Identifier())
+				uri, _ := tr.ToURI(im.Identifier())
 
 				if !*refresh {
 					_, err := cache.Get(uri)

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	// "net/url"
 	"math"
+	"net/url"
 	"strconv"
 	"strings"
 )
@@ -85,7 +85,7 @@ func NewTransformation(level iiiflevel.Level, region string, size string, rotati
 	return &t, nil
 }
 
-func (t *Transformation) ToURI(id string) string {
+func (t *Transformation) ToURI(id string) (string, error) {
 
 	nodes := []string{
 		id,
@@ -95,13 +95,21 @@ func (t *Transformation) ToURI(id string) string {
 		t.Quality,
 	}
 
-	/*
-		for i, v := range nodes {
-		    nodes[i] = url.QueryEscape(v)
-		}
-	*/
+	for i, v := range nodes {
 
-	return fmt.Sprintf("%s.%s", strings.Join(nodes, "/"), t.Format)
+		// https://github.com/mrap/stringutil/blob/master/urlencode.go
+
+		u, err := url.Parse(v)
+
+		if err != nil {
+			return "", err
+		}
+
+		nodes[i] = u.String()
+	}
+
+	uri := fmt.Sprintf("%s.%s", strings.Join(nodes, "/"), t.Format)
+	return uri, nil
 }
 
 func (t *Transformation) HasTransformation() bool {
