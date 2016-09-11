@@ -2,6 +2,7 @@ package image
 
 import (
 	"errors"
+	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 )
@@ -18,6 +19,43 @@ type Image interface {
 type Dimensions interface {
 	Height() int
 	Width() int
+}
+
+func NewImageFromConfigWithCache(config *iiifconfig.Config, cache iiifcache.Cache, id string) (Image, error) {
+
+	var image Image
+
+	body, err := cache.Get(id)
+
+	if err == nil {
+
+		source, err := iiifsource.NewMemorySource(body)
+
+		if err != nil {
+			return nil, err
+		}
+
+		image, err = NewImageFromConfigWithSource(config, source, "cache")
+
+		if err != nil {
+			return nil, err
+		}
+
+	} else {
+
+		image, err = NewImageFromConfig(config, id)
+
+		if err != nil {
+			return nil, err
+		}
+
+		go func() {
+			cache.Set(id, image.Body())
+		}()
+	}
+
+	return image, nil
+
 }
 
 func NewImageFromConfig(config *iiifconfig.Config, id string) (Image, error) {

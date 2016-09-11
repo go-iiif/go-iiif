@@ -34,13 +34,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cache.Get("foo")
+	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	ids := flag.Args()
 
@@ -54,7 +58,7 @@ func main() {
 
 		log.Println(id)
 
-		image, err := iiifimage.NewImageFromConfig(config, id)
+		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, id)
 
 		if err != nil {
 			log.Fatal(err)
@@ -99,7 +103,7 @@ func main() {
 				uri, _ := tr.ToURI(im.Identifier())
 
 				if !*refresh {
-					_, err := cache.Get(uri)
+					_, err := derivatives_cache.Get(uri)
 
 					if err == nil {
 						return
@@ -115,7 +119,7 @@ func main() {
 				log.Println(uri, t2, err)
 
 				if err == nil {
-					cache.Set(uri, tmp.Body())
+					derivatives_cache.Set(uri, tmp.Body())
 				}
 
 			}(image, transformation, wg)

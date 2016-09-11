@@ -164,36 +164,12 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 			return
 		}
 
-		/* sudo put me in a function */
+		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, id)
 
-		var image iiifimage.Image
-
-		body, err = images_cache.Get(id)
-
-		if err == nil {
-
-			source, _ := iiifsource.NewMemorySource(body)
-			image, _ = iiifimage.NewImageFromConfigWithSource(config, source, "cache")
-
-		} else {
-
-			image, err = iiifimage.NewImageFromConfig(config, id)
-
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-
-			go func() {
-				err := images_cache.Set(id, image.Body())
-
-				if err != nil {
-					log.Printf("unable to set cache for %s because: %s\n", id, err.Error())
-				}
-			}()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-
-		/* end of sudo put me in a function */
 
 		// something something something maybe sendfile something something
 		// (20160901/thisisaaronland)
