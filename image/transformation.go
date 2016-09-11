@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
+	// "net/url"
 	"math"
 	"strconv"
 	"strings"
@@ -93,6 +94,12 @@ func (t *Transformation) ToURI(id string) string {
 		t.Rotation,
 		t.Quality,
 	}
+
+	/*
+	for i, v := range nodes {
+	    nodes[i] = url.QueryEscape(v)
+	}
+	*/
 
 	return fmt.Sprintf("%s.%s", strings.Join(nodes, "/"), t.Format)
 }
