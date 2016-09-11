@@ -11,12 +11,13 @@ import (
 
 type MemoryCache struct {
 	Cache
-	provider *gocache.Cache
-	size     int
-	maxsize  int
-	sizemap  map[string]int
-	keys     []string
-	lock     *sync.Mutex
+	provider      *gocache.Cache
+	size          int
+	maxsize       int
+	sizemap       map[string]int
+	keys          []string
+	lock          *sync.Mutex
+	eviction_lock *sync.Mutex
 }
 
 func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
@@ -33,15 +34,26 @@ func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 	keys := make([]string, 0)
 	sizemap := make(map[string]int)
 
+	/*
+
+		see this - it's two separate locking mechanisms - that's because we need to account
+		for the sizemap and maxsize properties being updated during multiple Set events, one
+		of which may be trying purge old records to make room and/or the normal gocache janitor
+		cleaning up expired documents (20160911/thisisaaronland)
+
+	*/
+
 	lock := new(sync.Mutex)
+	ev_lock := new(sync.Mutex)
 
 	mc := MemoryCache{
-		provider: gc,
-		size:     size,
-		keys:     keys,
-		maxsize:  maxsize,
-		sizemap:  sizemap,
-		lock:     lock,
+		provider:      gc,
+		size:          size,
+		keys:          keys,
+		maxsize:       maxsize,
+		sizemap:       sizemap,
+		lock:          lock,
+		eviction_lock: ev_lock,
 	}
 
 	gc.OnEvicted(mc.OnEvicted)
@@ -88,6 +100,9 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 
 	}
 
+	mc.eviction_lock.Lock()
+	defer mc.eviction_lock.Unlock()
+
 	mc.size += size
 	mc.sizemap[key] = size
 	mc.keys = append(mc.keys, key)
@@ -105,8 +120,8 @@ func (mc *MemoryCache) Unset(key string) error {
 
 func (mc *MemoryCache) OnEvicted(key string, value interface{}) {
 
-	mc.lock.Lock()
-	defer mc.lock.Unlock()
+	mc.eviction_lock.Lock()
+	defer mc.eviction_lock.Unlock()
 
 	size, _ := mc.sizemap[key]
 	mc.size -= size
