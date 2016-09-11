@@ -1,0 +1,1 @@
+This is where the default cache config will try to store images, but they should not be checked in to Git.

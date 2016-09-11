@@ -2,8 +2,6 @@
 
 This is a fork `greut`'s [iiif](https://github.com/greut/iiif) package that moves most of the processing logic in to discrete Go packages and defines source, derivative and graphics details in a JSON config file. There is also an additional caching layer for both source images and derivatives.
 
-It mostly works but it still a work in progress.
-
 _And by "forked" I mean that `greut` and I decided that [it was best](https://github.com/greut/iiif/pull/2) for this code and his code to wave at each other across the divide but not necessarily to hold hands._
 
 ## Setup
@@ -18,19 +16,31 @@ $> make bin
 
 ## iiif-server
 
-Let's assume you have a copy of [this image](https://collection.cooperhewitt.org/objects/18382391/) in your `/path/to/images` source directory.
+Let's assume you have a copy of [this image](https://collection.cooperhewitt.org/objects/18382391/) in the `images.source.path` directory defined in your config file.
 
 ```
 $> bin/iiif-server -config config.json
 2016/09/01 15:45:07 Serving 127.0.0.1:8080 with pid 12075
 
-curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/0/default.jpg > /path/to/full.jpg
-curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/125,15,200,200/full/0/default.jpg > /path/to/small.jpg
-curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/pct:41.6,7.5,40,70/full/0/default.jpg > /path/to/crop.jpg
-curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png > /path/to/rotate.jpg
+curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/0/default.jpg
+curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/125,15,200,200/full/0/default.jpg
+curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/pct:41.6,7.5,40,70/full/0/default.jpg
+curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 ```
 
 ### Endpoints
+
+#### GET /level2.json
+
+_Please write me_
+
+#### GET /{ID}/info.json
+
+_Please write me_
+
+#### GET /{ID}/{REGION}/{SIZE}/{ROTATION}/{QUALITY}.{FORMAT}
+
+_Please write me_
 
 #### GET /debug/vars
 
@@ -46,22 +56,12 @@ $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Transforms
     "TransformsCount": 16,
 ```
 
-#### GET /{ID}/{REGION}/{SIZE}/{ROTATION}/{QUALITY}.{FORMAT}
-
-_Please write me_
-
-#### GET /{ID}/info.json
-
-_Please write me_
-
-#### GET /level2.json
-
-_Please write me_
-
 ## iiif-tile-seed
 
 ```
-Usage of ./bin/iiif-tile-seed:
+$> iiif-tile-seed -options /path/to/source/image.jpg
+
+Usage of iiif-tile-seed:
   -config string
     	  Path to a valid go-iiif config file
   -refresh
@@ -243,3 +243,6 @@ It provides meta-informations about the service. **(incomplete)**
 ## See also
 
 * http://iiif.io/api/image/2.1/
+* https://github.com/greut/iiif/
+* https://github.com/h2non/bimg/
+* http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS

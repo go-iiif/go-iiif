@@ -2,10 +2,6 @@
     "level": {
     	"compliance": "2"
     },
-    "profile": {
-         "sizes": [ { "label": "x", "max": 640 }, { "label": "n", "max": 320 } ],
-    	 "tiles": { "width" : 512, "scalefactors" : [1,2,4,8,16] }
-    },
     "graphics": {
 	"source": { "name": "VIPS" }
     },
@@ -15,10 +11,10 @@
 	"append": {}
     },
     "images": {
-	"source": { "name": "Disk", "path": "/path/to/images" },
+	"source": { "name": "Disk", "path": "example/images" },
 	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
     },
     "derivatives": {
-	"cache": { "name": "Disk", "path": "/path/to/derivatives-cache" }
+	"cache": { "name": "Disk", "path": "example/cache/images" }
     }
 }
