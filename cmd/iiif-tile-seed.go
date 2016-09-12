@@ -142,6 +142,7 @@ func main() {
 
 			wg.Wait()
 
+			// generate info.json here – https://github.com/thisisaaronland/go-iiif/issues/7
 			tb := time.Since(ta)
 			log.Printf("generated %d crops in %v", len(crops), tb)
 		}
