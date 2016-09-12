@@ -109,7 +109,7 @@ Indicates which level of IIIF Image API compliance the server (or associated too
 	}
 ```
 
-Details about how images should be processed. Because only [libvips]() is supported for image processing right now there is no reason to ever change this.
+Details about how images should be processed. Because only [libvips]() is supported for image processing right now there is no reason to change this.
 
 ### features
 

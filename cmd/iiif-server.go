@@ -13,6 +13,7 @@ import (
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
+	"github.com/whosonfirst/go-sanitize"
 	"log"
 	"net/http"
 	"os"
@@ -115,12 +116,17 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
 
+		opts := sanitize.DefaultOptions()
+
 		vars := mux.Vars(r)
 
-		id, err := iiifimage.ScrubIdentifier(vars["identifier"])
+		id := vars["identifier"]
+		id, _ = sanitize.SanitizeString(id, opts)
+
+		id, err := iiifimage.ScrubIdentifier(id)
 
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
@@ -181,14 +187,26 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 			return
 		}
 
+		opts := sanitize.DefaultOptions()
 		vars := mux.Vars(r)
+
 		id := vars["identifier"]
+		id, _ = sanitize.SanitizeString(id, opts)
 
 		region := vars["region"]
+		region, _ = sanitize.SanitizeString(region, opts)
+
 		size := vars["size"]
+		size, _ = sanitize.SanitizeString(size, opts)
+
 		rotation := vars["rotation"]
+		rotation, _ = sanitize.SanitizeString(rotation, opts)
+
 		quality := vars["quality"]
+		quality, _ = sanitize.SanitizeString(quality, opts)
+
 		format := vars["format"]
+		format, _ = sanitize.SanitizeString(format, opts)
 
 		level, err := iiiflevel.NewLevelFromConfig(config, r.Host)
 
@@ -198,6 +216,13 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 		}
 
 		transformation, err := iiifimage.NewTransformation(level, region, size, rotation, quality, format)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		id, err = iiifimage.ScrubIdentifier(id)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
