@@ -58,6 +58,16 @@ _Please write me_
 
 ##### GET /debug/vars
 
+This exposes all the usual Go [expvar](https://golang.org/pkg/expvar/) debugging output along with the following additional properies:
+
+* CacheHit - _the total number of (derivative) images successfully returned from cache_
+* CacheMiss - _the total number of (derivative) images not found in the cache_
+* CacheSet - _the total number of (derivative) images added to the cache_
+* TransformsAvgTimeMS - _the average amount of time in milliseconds to transforms a source image in to a derivative_
+* TransformsCount - _the total number of source images transformed in to a derivative_
+
+For example:
+
 ```
 $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Cache
     "CacheHit": 4,
@@ -69,11 +79,15 @@ $> curl -s 127.0.0.1:8080/debug/vars | python -mjson.tool | grep Transforms
     "TransformsCount": 16,
 ```
 
+_Note: This endpoint is only available from the machine the server is running on._
+
 #### Notes
 
 * TLS is [not supported yet](https://github.com/thisisaaronland/go-iiif/issues/5).
 
 ### iiif-tile-seed
+
+Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF]() plugin.
 
 ```
 $> ./bin/iiif-tile-seed -options /path/to/source/image.jpg
