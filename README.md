@@ -30,8 +30,6 @@ $> make bin
 
 ### iiif-server
 
-`iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API](). For example:
-
 ```
 $> bin/iiif-server -config config.json
 2016/09/01 15:45:07 Serving 127.0.0.1:8080 with pid 12075
@@ -41,6 +39,8 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/125,15,200,200/full/0/defau
 curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/pct:41.6,7.5,40,70/full/0/default.jpg
 curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 ```
+
+`iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API](). For example:
 
 #### Endpoints
 
@@ -85,8 +85,6 @@ _Note: This endpoint is only available from the machine the server is running on
 
 ### iiif-tile-seed
 
-Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF]() plugin.
-
 ```
 $> ./bin/iiif-tile-seed -options /path/to/source/image.jpg
 
@@ -98,6 +96,8 @@ Usage of ./bin/iiif-tile-seed:
   -scale-factors string
     		 A comma-separated list of scale factors to seed tiles with (default "4")
 ```
+
+Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF]() plugin.
 
 ## Config files
 
