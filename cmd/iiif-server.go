@@ -321,11 +321,11 @@ func EndpointFromRequest(r *http.Request) string {
 
 func main() {
 
-	var host = flag.String("host", "localhost", "Define the hostname")
-	var port = flag.Int("port", 8080, "Define which TCP port to use")
-	var example = flag.Bool("example", false, "...")
-	var root = flag.String("example-root", "example", "...")
-	var cfg = flag.String("config", ".", "config")
+	var cfg = flag.String("config", ".", "The path to a valid JSON config file")
+	var host = flag.String("host", "localhost", "Bind the server to this host")
+	var port = flag.Int("port", 8080, "Bind the server to this port")
+	var example = flag.Bool("example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
+	var root = flag.String("example-root", "example", "An explicit path to a folder containing example assets")
 
 	flag.Parse()
 
