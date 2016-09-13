@@ -129,7 +129,7 @@ func main() {
 						}
 					}
 
-					tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, "cache")
+					tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, im.Identifier())
 
 					t1 := time.Now()
 					err = tmp.Transform(tr)

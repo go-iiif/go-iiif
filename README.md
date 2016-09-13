@@ -218,6 +218,17 @@ This is only valid for `Memory` caches and indicates the maximum number of secon
 
 This is only valid for `Memory` caches and indicates the maximum number of megabytes the cache should hold at any one time.
 
+## Example
+
+![spanking cat](misc/go-iiif-example.png)
+
+_This section is presented as-is. Currently it is just work in progress notes._
+
+```
+$> /bin/iiif-tile-seed -config config.json -endpoint http://localhost:8082 -scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg
+$> ./bin/iiif-server -config config.json -port 8082 -example
+```
+
 ## IIIF image API 2.1
 
 The API specifications can be found on [iiif.io](http://iiif.io/api/image/2.1/index.html).

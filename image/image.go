@@ -35,7 +35,7 @@ func NewImageFromConfigWithCache(config *iiifconfig.Config, cache iiifcache.Cach
 			return nil, err
 		}
 
-		image, err = NewImageFromConfigWithSource(config, source, "cache")
+		image, err = NewImageFromConfigWithSource(config, source, id)
 
 		if err != nil {
 			return nil, err
