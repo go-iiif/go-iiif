@@ -1,5 +1,13 @@
 package level
 
+/*
+
+Things I am not sure about include the relationship of level/*.go and compliance/*.go which are
+very much related but somehow seem like they should be in separate namespaces. I'm not sure...
+(20160912/thisisaaronland)
+
+*/
+
 import (
 	"errors"
 	"fmt"
