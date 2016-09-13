@@ -25,8 +25,7 @@
     zoom: 0,
     });
 
-    // adjust accordingly
-    var info = 'http://localhost:8080/184512_5f7f47e5b3c66207_x.jpg/info.json';
+    var info = 'http://' + location.host + '/184512_5f7f47e5b3c66207_x.jpg/info.json';
     map.addLayer(L.tileLayer.iiif(info));
   </script>
 </body>

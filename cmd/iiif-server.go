@@ -17,6 +17,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -52,11 +53,13 @@ func init() {
 
 func ExampleHandler(root string) (http.HandlerFunc, error) {
 
+	base := fmt.Sprintf("/%s", filepath.Base(root))
+
 	fs := http.FileServer(http.Dir(root))
 
 	f := func(w http.ResponseWriter, r *http.Request) {
 
-		fmt.Println("GET", r.URL)
+		r.URL.Path = strings.Replace(r.URL.Path, base, "", 1)
 		fs.ServeHTTP(w, r)
 	}
 
