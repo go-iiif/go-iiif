@@ -18,7 +18,7 @@ type Level2 struct {
 	compliance iiifcompliance.Compliance `json:"-"`
 }
 
-func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
+func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
 
 	compliance, err := iiifcompliance.NewLevel2Compliance(config)
 
@@ -26,7 +26,7 @@ func NewLevel2(config *iiifconfig.Config, host string) (*Level2, error) {
 		log.Fatal(err)
 	}
 
-	id := fmt.Sprintf("http://%s/level2.json", host)
+	id := fmt.Sprintf("%s/level2.json", endpoint)
 
 	l := Level2{
 		Context:    "http://iiif.io/api/image/2/context.json",

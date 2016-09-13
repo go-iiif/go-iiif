@@ -90,7 +90,8 @@ func ProfileHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
 
-		level, err := iiiflevel.NewLevelFromConfig(config, r.Host)
+		endpoint := EndpointFromRequest(r)
+		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -137,7 +138,8 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 			return
 		}
 
-		profile, err := iiifprofile.NewProfile(r.Host, image)
+		endpoint := EndpointFromRequest(r)
+		profile, err := iiifprofile.NewProfile(endpoint, image)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -208,7 +210,8 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 		format := vars["format"]
 		format, _ = sanitize.SanitizeString(format, opts)
 
-		level, err := iiiflevel.NewLevelFromConfig(config, r.Host)
+		endpoint := EndpointFromRequest(r)
+		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -286,6 +289,18 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 	}
 
 	return http.HandlerFunc(f), nil
+}
+
+func EndpointFromRequest(r *http.Request) string {
+
+	scheme := "http"
+
+	if r.TLS != nil {
+		scheme = "https"
+	}
+
+	endpoint := fmt.Sprintf("%s://%s", scheme, r.Host)
+	return endpoint
 }
 
 func main() {

@@ -19,7 +19,7 @@ type Level interface {
 	Compliance() iiifcompliance.Compliance
 }
 
-func NewLevelFromConfig(config *iiifconfig.Config, host string) (Level, error) {
+func NewLevelFromConfig(config *iiifconfig.Config, endpoint string) (Level, error) {
 
 	compliance := config.Level.Compliance
 
@@ -34,7 +34,7 @@ func NewLevelFromConfig(config *iiifconfig.Config, host string) (Level, error) {
 		return nil, errors.New(message)
 	} else if compliance == "2" {
 
-		return NewLevel2(config, host)
+		return NewLevel2(config, endpoint)
 
 	} else {
 
