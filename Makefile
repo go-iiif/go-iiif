@@ -31,6 +31,7 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "gopkg.in/h2non/bimg.v1"
 	@GOPATH=$(GOPATH) go get -u "github.com/koyachi/go-atkinson"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-sanitize"
+	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
 
 vendr: deps
 	if test ! -d vendor; then mkdir vendor; fi
