@@ -50,6 +50,19 @@ func init() {
 	timers_mu = new(sync.Mutex)
 }
 
+func ExampleHandler(root string) (http.HandlerFunc, error) {
+
+	fs := http.FileServer(http.Dir(root))
+
+	f := func(w http.ResponseWriter, r *http.Request) {
+
+		fmt.Println("GET", r.URL)
+		fs.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(f), nil
+}
+
 func ExpvarHandlerFunc(host string) (http.HandlerFunc, error) {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
@@ -307,6 +320,8 @@ func main() {
 
 	var host = flag.String("host", "localhost", "Define the hostname")
 	var port = flag.Int("port", 8080, "Define which TCP port to use")
+	var example = flag.Bool("example", false, "...")
+	var root = flag.String("example-root", "example", "...")
 	var cfg = flag.String("config", ".", "config")
 
 	flag.Parse()
@@ -382,6 +397,18 @@ func main() {
 
 	expvarHandler, _ := ExpvarHandlerFunc(*host)
 	router.HandleFunc("/debug/vars", expvarHandler)
+
+	if *example {
+
+		exampleHandler, err := ExampleHandler(*root)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// router.HandleFunc("/example", exampleHandler)
+		router.HandleFunc("/example/{ignore:.*}", exampleHandler)
+	}
 
 	endpoint := fmt.Sprintf("%s:%d", *host, *port)
 
