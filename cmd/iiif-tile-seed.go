@@ -1,11 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"fmt"
 	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
+	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	iiiftile "github.com/thisisaaronland/go-iiif/tile"
 	"log"
@@ -21,6 +24,7 @@ func main() {
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
+	var host = flag.String("host", "localhost", "The hostname that will serving these tiles, used for generating an 'info.json' for each source image")
 
 	flag.Parse()
 
@@ -142,7 +146,21 @@ func main() {
 
 			wg.Wait()
 
-			// generate info.json here – https://github.com/thisisaaronland/go-iiif/issues/7
+			profile, err := iiifprofile.NewProfile(*host, image)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			body, err := json.Marshal(profile)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			uri := fmt.Sprintf("%s/info.json", id)
+			derivatives_cache.Set(uri, body)
+
 			tb := time.Since(ta)
 			log.Printf("generated %d crops in %v", len(crops), tb)
 		}
