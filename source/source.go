@@ -20,6 +20,9 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 	if cfg.Source.Name == "Disk" {
 		cache, err := NewDiskSource(config)
 		return cache, err
+	} else if cfg.Source.Name == "URI" {
+		cache, err := NewURISource(config)
+		return cache, err
 	} else {
 		err := errors.New("Unknown source type")
 		return nil, err
