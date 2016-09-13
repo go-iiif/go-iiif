@@ -12,7 +12,13 @@
     height: 100%;
     margin: 0;
     }
-    
+
+    #map {
+     border: solid thin;
+     width:800px !important;
+     height:600px !important;
+    margin:2em;
+    }
   </style>
 </head>
 <body>
@@ -22,7 +28,8 @@
     var map = L.map('map', {
     center: [0, 0],
     crs: L.CRS.Simple,
-    zoom: 0,
+    zoom: 1,
+    minZoom: 1,
     });
 
     var info = 'http://' + location.host + '/184512_5f7f47e5b3c66207_x.jpg/info.json';

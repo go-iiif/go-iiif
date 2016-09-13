@@ -403,13 +403,24 @@ func main() {
 
 	if *example {
 
-		exampleHandler, err := ExampleHandler(*root)
+		abs_path, err := filepath.Abs(*root)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		// router.HandleFunc("/example", exampleHandler)
+		_, err = os.Stat(abs_path)
+
+		if os.IsNotExist(err) {
+			log.Fatal(err)
+		}
+
+		exampleHandler, err := ExampleHandler(abs_path)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		router.HandleFunc("/example/{ignore:.*}", exampleHandler)
 	}
 
