@@ -90,11 +90,13 @@ $> ./bin/iiif-tile-seed -options /path/to/source/image.jpg
 
 Usage of ./bin/iiif-tile-seed:
   -config string
-    	  Path to a valid go-iiif config file
+	Path to a valid go-iiif config file
+  -endpoint string
+	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
   -refresh
 	Refresh a tile even if already exists (default false)
   -scale-factors string
-    		 A comma-separated list of scale factors to seed tiles with (default "4")
+	A comma-separated list of scale factors to seed tiles with (default "4")
 ```
 
 Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF]() plugin.

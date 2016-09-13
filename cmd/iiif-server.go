@@ -321,13 +321,17 @@ func EndpointFromRequest(r *http.Request) string {
 
 func main() {
 
-	var cfg = flag.String("config", ".", "The path to a valid JSON config file")
+	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
 	var host = flag.String("host", "localhost", "Bind the server to this host")
 	var port = flag.Int("port", 8080, "Bind the server to this port")
 	var example = flag.Bool("example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
 	var root = flag.String("example-root", "example", "An explicit path to a folder containing example assets")
 
 	flag.Parse()
+
+	if *cfg == "" {
+		log.Fatal("Missing config file")
+	}
 
 	config, err := iiifconfig.NewConfigFromFile(*cfg)
 
