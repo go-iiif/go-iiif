@@ -24,5 +24,5 @@ type Compliance interface {
 	IsValidImageRotation(string) (bool, error)
 	IsValidImageQuality(string) (bool, error)
 	IsValidImageFormat(string) (bool, error)
-	Spec() ([]byte, error)
+	Spec() *Level2ComplianceSpec
 }

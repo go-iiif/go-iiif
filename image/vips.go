@@ -4,6 +4,7 @@ package image
 // https://github.com/jcupitt/libvips
 
 import (
+	"errors"
 	_ "fmt"
 	"github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
@@ -153,9 +154,6 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		return nil
 	}
 
-	// PLEASE FIX ME
-	// var rotationMissing = "libvips cannot rotate angle that isn't a multiple of 90: %#v"
-
 	opts.Flip = ri.Flip
 	opts.Rotate = bimg.Angle(ri.Angle % 360)
 
@@ -167,6 +165,24 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		opts.Interpretation = bimg.InterpretationBW
 	} else {
 		// this should be trapped above
+	}
+
+	fi, err := t.FormatInstructions(im)
+
+	if err != nil {
+		return nil
+	}
+
+	if fi.Format == "jpg" {
+		opts.Type = bimg.JPEG
+	} else if fi.Format == "png" {
+		opts.Type = bimg.PNG
+	} else if fi.Format == "webp" {
+		opts.Type = bimg.WEBP
+	} else if fi.Format == "tiff" {
+		opts.Type = bimg.TIFF
+	} else {
+		return errors.New("Unsupported image format")
 	}
 
 	_, err = im.bimg.Process(opts)

@@ -6,6 +6,7 @@ import (
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	"math"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -27,6 +28,10 @@ type SizeInstruction struct {
 type RotationInstruction struct {
 	Flip  bool
 	Angle int64
+}
+
+type FormatInstruction struct {
+	Format string
 }
 
 type Transformation struct {
@@ -403,6 +408,38 @@ func (t *Transformation) RotationInstructions(im Image) (*RotationInstruction, e
 	instruction := RotationInstruction{
 		Flip:  flip,
 		Angle: angle,
+	}
+
+	return &instruction, nil
+}
+
+func (t *Transformation) FormatInstructions(im Image) (*FormatInstruction, error) {
+
+	fmt := ""
+
+	compliance := t.level.Compliance()
+	spec := compliance.Spec()
+
+	for name, details := range spec.Image.Format {
+
+		re, err := regexp.Compile(details.Match)
+
+		if err != nil {
+			return nil, err
+		}
+
+		if re.MatchString(t.Format) {
+			fmt = name
+			break
+		}
+	}
+
+	if fmt == "" {
+		return nil, errors.New("failed to determine format")
+	}
+
+	instruction := FormatInstruction{
+		Format: fmt,
 	}
 
 	return &instruction, nil

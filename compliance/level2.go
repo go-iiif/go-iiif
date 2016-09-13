@@ -296,7 +296,7 @@ func (c *Level2Compliance) properties(sect map[string]ComplianceDetails) []strin
 	return properties
 }
 
-func (c *Level2Compliance) Spec() ([]byte, error) {
+func (c *Level2Compliance) Spec() *Level2ComplianceSpec {
 
-	return json.Marshal(c.spec)
+	return c.spec
 }
