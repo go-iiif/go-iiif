@@ -11,6 +11,8 @@ import (
 	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	iiiftile "github.com/thisisaaronland/go-iiif/tile"
+	csv "github.com/whosonfirst/go-whosonfirst-csv"
+	"io"
 	"log"
 	"runtime"
 	"strconv"
@@ -23,6 +25,7 @@ func main() {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
+	var mode = flag.String("mode", "-", "...")
 	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	var endpoint = flag.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
 
@@ -56,8 +59,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ids := flag.Args()
-
 	ts, err := iiiftile.NewTileSeed(level, 256, 256)
 
 	if err != nil {
@@ -78,112 +79,190 @@ func main() {
 		scales = append(scales, scale)
 	}
 
-	for _, id := range ids {
+	if *mode == "csv" {
 
-		var src_id string
-		var dest_id string
+		procs := runtime.NumCPU()
 
-		pointers := strings.Split(id, ",")
+		ch := make(chan bool, procs)
 
-		if len(pointers) == 2 {
-			src_id = pointers[0]
-			dest_id = pointers[1]
-		} else {
-			src_id = pointers[0]
-			dest_id = pointers[0]
+		for i := 0; i < procs; i++ {
+			ch <- true
 		}
 
-		t1 := time.Now()
+		for _, path := range flag.Args() {
 
-		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, src_id)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		for _, scale := range scales {
-
-			crops, err := ts.TileSizes(image, scale)
+			reader, err := csv.NewDictReaderFromPath(path)
 
 			if err != nil {
 				log.Fatal(err)
-			}
-
-			source, err := iiifsource.NewMemorySource(image.Body())
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			procs := runtime.NumCPU() * 2
-
-			ch := make(chan bool, procs)
-
-			for i := 0; i < procs; i++ {
-				ch <- true
 			}
 
 			wg := new(sync.WaitGroup)
-			ta := time.Now()
 
-			for _, transformation := range crops {
+			for {
+				row, err := reader.Read()
+
+				if err == io.EOF {
+					break
+				}
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				src_id, _ := row["src"]
+				dest_id, _ := row["dest"]
 
 				wg.Add(1)
 
-				go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
+				go func() {
 
 					<-ch
 
-					defer func() {
-						wg.Done()
-						ch <- true
-					}()
+					defer wg.Done()
 
-					uri, _ := tr.ToURI(dest_id)
+					t1 := time.Now()
 
-					if !*refresh {
+					err = SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
 
-						_, err := derivatives_cache.Get(uri)
+					t2 := time.Since(t1)
 
-						if err == nil {
-							return
-						}
+					if err != nil {
+						fmt.Println("ERROR", src_id, t2, err)
+					} else {
+						fmt.Println("OKAY", src_id, t2)
 					}
 
-					tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, im.Identifier())
+					ch <- true
 
-					err = tmp.Transform(tr)
-
-					if err == nil {
-						derivatives_cache.Set(uri, tmp.Body())
-					}
-
-				}(image, transformation, wg)
+				}()
 			}
 
 			wg.Wait()
-
-			tb := time.Since(ta)
-			log.Printf("generated %d crops for scale-factor %d in %v", len(crops), scale, tb)
 		}
 
-		profile, err := iiifprofile.NewProfile(*endpoint, image)
+	} else {
 
-		if err != nil {
-			log.Fatal(err)
+		for _, id := range flag.Args() {
+
+			var src_id string
+			var dest_id string
+
+			pointers := strings.Split(id, ",")
+
+			if len(pointers) == 2 {
+				src_id = pointers[0]
+				dest_id = pointers[1]
+			} else {
+				src_id = pointers[0]
+				dest_id = pointers[0]
+			}
+
+			SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
 		}
-
-		body, err := json.Marshal(profile)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		uri := fmt.Sprintf("%s/info.json", dest_id)
-		derivatives_cache.Set(uri, body)
-
-		t2 := time.Since(t1)
-		log.Printf("generated tiles for %s in %v", id, t2)
-
 	}
+}
+
+/*
+
+See this - the function signature is complete madness. We'll figure it out...
+(20160913/thisisaaronland)
+
+*/
+
+func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iiifconfig.Config, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache, scales []int, endpoint string, refresh bool) error {
+
+	// t1 := time.Now()
+
+	image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, src_id)
+
+	if err != nil {
+		return err
+	}
+
+	for _, scale := range scales {
+
+		crops, err := ts.TileSizes(image, scale)
+
+		if err != nil {
+			return err
+		}
+
+		source, err := iiifsource.NewMemorySource(image.Body())
+
+		if err != nil {
+			return err
+		}
+
+		procs := runtime.NumCPU() * 2
+
+		ch := make(chan bool, procs)
+
+		for i := 0; i < procs; i++ {
+			ch <- true
+		}
+
+		wg := new(sync.WaitGroup)
+		// ta := time.Now()
+
+		for _, transformation := range crops {
+
+			wg.Add(1)
+
+			go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
+
+				<-ch
+
+				defer func() {
+					wg.Done()
+					ch <- true
+				}()
+
+				uri, _ := tr.ToURI(dest_id)
+
+				if !refresh {
+
+					_, err := derivatives_cache.Get(uri)
+
+					if err == nil {
+						return
+					}
+				}
+
+				tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, im.Identifier())
+
+				err = tmp.Transform(tr)
+
+				if err == nil {
+					derivatives_cache.Set(uri, tmp.Body())
+				}
+
+			}(image, transformation, wg)
+		}
+
+		wg.Wait()
+
+		// tb := time.Since(ta)
+		// log.Printf("generated %d crops for scale-factor %d in %v", len(crops), scale, tb)
+	}
+
+	profile, err := iiifprofile.NewProfile(endpoint, image)
+
+	if err != nil {
+		return err
+	}
+
+	body, err := json.Marshal(profile)
+
+	if err != nil {
+		return err
+	}
+
+	uri := fmt.Sprintf("%s/info.json", dest_id)
+	derivatives_cache.Set(uri, body)
+
+	// t2 := time.Since(t1)
+	// log.Printf("generated tiles for %s in %v", src_id, t2)
+
+	return nil
 }

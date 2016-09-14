@@ -5,3 +5,4 @@ bin/
 *~
 !vendor/src
 *.json
+.gitmodules

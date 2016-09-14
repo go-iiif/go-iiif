@@ -4,7 +4,9 @@ import (
 	"github.com/jtacoma/uritemplates"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"io/ioutil"
+	_ "log"
 	"net/http"
+	_ "time"
 )
 
 type URISource struct {
@@ -45,7 +47,11 @@ func (us *URISource) Read(id string) ([]byte, error) {
 
 	req, err := http.NewRequest("GET", uri, nil)
 
+	// t1 := time.Now()
 	rsp, err := us.client.Do(req)
+
+	// t2 := time.Since(t1)
+	// log.Println("time to fetch", uri, t2)
 
 	if err != nil {
 		return nil, err
