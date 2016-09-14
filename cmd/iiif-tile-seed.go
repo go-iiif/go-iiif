@@ -158,7 +158,11 @@ func main() {
 				dest_id = pointers[0]
 			}
 
-			SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+			err := SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 }
