@@ -27,7 +27,7 @@ func NewProfile(endpoint string, im image.Image) (*Profile, error) {
 
 	p := Profile{
 		Context:  "http://iiif.io/api/image/2/context.json",
-		Id:       fmt.Sprintf("%s/%s/%s", endpoint, im.Identifier()),
+		Id:       fmt.Sprintf("%s/%s", endpoint, im.Identifier()),
 		Type:     "iiif:Image",
 		Protocol: "http://iiif.io/api/image",
 		Width:    dims.Width(),

@@ -64,6 +64,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	scales := make([]int, 0)
+
 	for _, s := range strings.Split(*sf, ",") {
 
 		s = strings.Trim(s, " ")
@@ -73,15 +75,33 @@ func main() {
 			log.Fatal(err)
 		}
 
-		for _, id := range ids {
+		scales = append(scales, scale)
+	}
 
-			log.Println(id)
+	for _, id := range ids {
 
-			image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, id)
+		var src_id string
+		var dest_id string
 
-			if err != nil {
-				log.Fatal(err)
-			}
+		pointers := strings.Split(id, ",")
+
+		if len(pointers) == 2 {
+			src_id = pointers[0]
+			dest_id = pointers[1]
+		} else {
+			src_id = pointers[0]
+			dest_id = pointers[0]
+		}
+
+		t1 := time.Now()
+
+		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, src_id)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for _, scale := range scales {
 
 			crops, err := ts.TileSizes(image, scale)
 
@@ -119,9 +139,10 @@ func main() {
 						ch <- true
 					}()
 
-					uri, _ := tr.ToURI(im.Identifier())
+					uri, _ := tr.ToURI(dest_id)
 
 					if !*refresh {
+
 						_, err := derivatives_cache.Get(uri)
 
 						if err == nil {
@@ -131,11 +152,7 @@ func main() {
 
 					tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, im.Identifier())
 
-					t1 := time.Now()
 					err = tmp.Transform(tr)
-					t2 := time.Since(t1)
-
-					log.Println(uri, t2, err)
 
 					if err == nil {
 						derivatives_cache.Set(uri, tmp.Body())
@@ -146,23 +163,27 @@ func main() {
 
 			wg.Wait()
 
-			profile, err := iiifprofile.NewProfile(*endpoint, image)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			body, err := json.Marshal(profile)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			uri := fmt.Sprintf("%s/info.json", id)
-			derivatives_cache.Set(uri, body)
-
 			tb := time.Since(ta)
-			log.Printf("generated %d crops in %v", len(crops), tb)
+			log.Printf("generated %d crops for scale-factor %d in %v", len(crops), scale, tb)
 		}
+
+		profile, err := iiifprofile.NewProfile(*endpoint, image)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		body, err := json.Marshal(profile)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		uri := fmt.Sprintf("%s/info.json", dest_id)
+		derivatives_cache.Set(uri, body)
+
+		t2 := time.Since(t1)
+		log.Printf("generated tiles for %s in %v", id, t2)
+
 	}
 }
