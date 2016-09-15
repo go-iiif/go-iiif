@@ -135,6 +135,18 @@ Details about how images should be processed. Because only [libvips]() is suppor
 	}
 ```
 
+#### features.enable
+
+_Please write me._
+
+#### features.disable
+
+_Please write me._
+
+#### features.append
+
+_Please write me._
+
 ### images
 
 ```
