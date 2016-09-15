@@ -150,39 +150,50 @@ Details about source images.
 
 Where to find source images.
 
-##### name
-
-Possible cache sources for source images are:
-
-* Disk - A locally available filesystem.
-
 _Planned future source providers include reading images via S3 or an OEmbed endpoint._ 
 
-#####  path
+##### Disk
 
-The path to a valid directory to find source images.
+```
+	"source": { "name": "Disk", "path": "example/images" }
+```
+
+##### URI
+
+```
+	"source": { "name": "URI", "path": "https://images.collection.cooperhewitt.org/{id}" }
+```
 
 #### cache
 
 Caching options for source images.
 
-##### name
+##### Disk
 
-Possible cache sources for source images are:
+```
+	"cache": { "name": "Disk", "path": "example/cache" }
+```
 
-* Disk  - Cache images to a locally available filesystem. Until it is possible to read source images from a remote location it's not clear why you would ever do this but I guess that's your business...
+Cache images to a locally available filesystem. Until it is possible to read source images from a remote location it's not clear why you would ever do this but I guess that's your business...
 
-* Memory - Cache images in memory.
+##### Memory
 
-* Null – Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
+```
+	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+```
 
-##### ttl
+Cache images in memory. Memory caches have two addition properties:
 
-This is only valid for `Memory` caches and indicates the maximum number of seconds an image should live in cache.
+* **ttl** is the maximum number of seconds an image should live in cache.
+* **limit** the maximum number of megabytes the cache should hold at any one time.
 
-##### limit
+##### Null
 
-This is only valid for `Memory` caches and indicates the maximum number of megabytes the cache should hold at any one time.
+```
+	"cache": { "name": "Null" }
+```
+
+Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
 
 ### derivatives
 
