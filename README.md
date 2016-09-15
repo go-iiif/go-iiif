@@ -168,7 +168,7 @@ Fetch source images from a locally available filesystem.
 	}
 ```
 
-Fetch source images from a remote URI. The `path` parameter must be a valid (Level 4) [URI Template](http://tools.ietf.org/html/rfc6570).
+Fetch source images from a remote URI. The `path` parameter must be a valid (Level 4) [URI Template](http://tools.ietf.org/html/rfc6570) with an `{id}` placeholder.
 
 #### images.cache
 
