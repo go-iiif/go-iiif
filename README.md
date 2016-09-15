@@ -146,32 +146,40 @@ Details about how images should be processed. Because only [libvips]() is suppor
 
 Details about source images.
 
-#### source
+#### images.source
 
 Where to find source images.
-
-_Planned future source providers include reading images via S3 or an OEmbed endpoint._ 
 
 ##### Disk
 
 ```
-	"source": { "name": "Disk", "path": "example/images" }
+	"images": {
+		"source": { "name": "Disk", "path": "example/images" }
+	}
 ```
+
+Fetch source images from a locally available filesystem.
 
 ##### URI
 
 ```
-	"source": { "name": "URI", "path": "https://images.collection.cooperhewitt.org/{id}" }
+	"images": {
+		"source": { "name": "URI", "path": "https://images.collection.cooperhewitt.org/{id}" }
+	}
 ```
 
-#### cache
+Fetch source images from a remote URI. The `path` parameter must be a valid (Level 4) [URI Template](http://tools.ietf.org/html/rfc6570).
+
+#### images.cache
 
 Caching options for source images.
 
 ##### Disk
 
 ```
-	"cache": { "name": "Disk", "path": "example/cache" }
+	"images": {
+		"cache": { "name": "Disk", "path": "example/cache" }
+	}
 ```
 
 Cache images to a locally available filesystem. Until it is possible to read source images from a remote location it's not clear why you would ever do this but I guess that's your business...
@@ -179,7 +187,9 @@ Cache images to a locally available filesystem. Until it is possible to read sou
 ##### Memory
 
 ```
-	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+	"images": {
+		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+	}
 ```
 
 Cache images in memory. Memory caches have two addition properties:
@@ -190,7 +200,9 @@ Cache images in memory. Memory caches have two addition properties:
 ##### Null
 
 ```
-	"cache": { "name": "Null" }
+	"images": {
+		"cache": { "name": "Null" }
+	}
 ```
 
 Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
@@ -205,29 +217,42 @@ Because you must define a caching layer this is here to satify the requirements 
 
 Details about derivative images.
 
-#### cache
+#### derivatives.cache
 
 Caching options for derivative images.
 
-##### name
+##### Disk
 
-Possible cache sources for derivative images are:
+```
+	"derivatives": {
+		"cache": { "name": "Disk", "path": "example/cache" }
+	}
+```
 
-* Disk - Tache derivatives to a locally available filesystem.
+Cache images to a locally available filesystem. Until it is possible to read source images from a remote location it's not clear why you would ever do this but I guess that's your business...
 
-* Memory - Cache images in memory.
+##### Memory
 
-* Null – Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
+```
+	"derivatives": {
+		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+	}
+```
 
-_Planned future caching providers include writing derivatives to S3._
+Cache images in memory. Memory caches have two addition properties:
 
-##### ttl
+* **ttl** is the maximum number of seconds an image should live in cache.
+* **limit** the maximum number of megabytes the cache should hold at any one time.
 
-This is only valid for `Memory` caches and indicates the maximum number of seconds an image should live in cache.
+##### Null
 
-##### limit
+```
+	"derivatives": {
+		"cache": { "name": "Null" }
+	}
+```
 
-This is only valid for `Memory` caches and indicates the maximum number of megabytes the cache should hold at any one time.
+Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
 
 ## Example
 
