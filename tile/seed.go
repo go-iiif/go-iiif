@@ -37,8 +37,9 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	w := dims.Width()
 	h := dims.Height()
 
-	if sf*ts.width >= w || sf*ts.height >= h {
-		return nil, errors.New("E_EXCESSIVE_SCALEFACTOR")
+	if sf*ts.width >= w && sf*ts.height >= h {
+	   	msg := fmt.Sprintf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.width, sf*ts.height)
+		return nil, errors.New(msg)
 	}
 
 	crops := make([]*iiifimage.Transformation, 0)

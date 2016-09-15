@@ -123,14 +123,14 @@ func main() {
 
 					t1 := time.Now()
 
-					err = SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+					count, err := SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
 
 					t2 := time.Since(t1)
 
 					if err != nil {
 						fmt.Println("ERROR", src_id, t2, err)
 					} else {
-						fmt.Println("OKAY", src_id, t2)
+						fmt.Println("OKAY", src_id, count, t2)
 					}
 
 					ch <- true
@@ -158,7 +158,7 @@ func main() {
 				dest_id = pointers[0]
 			}
 
-			err := SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+			_, err = SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
 
 			if err != nil {
 				log.Fatal(err)
@@ -174,14 +174,14 @@ See this - the function signature is complete madness. We'll figure it out...
 
 */
 
-func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iiifconfig.Config, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache, scales []int, endpoint string, refresh bool) error {
+func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iiifconfig.Config, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache, scales []int, endpoint string, refresh bool) (int, error) {
 
-	// t1 := time.Now()
-
+	count := 0
+	
 	image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, src_id)
 
 	if err != nil {
-		return err
+		return count, err
 	}
 
 	for _, scale := range scales {
@@ -189,13 +189,14 @@ func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iii
 		crops, err := ts.TileSizes(image, scale)
 
 		if err != nil {
-			return err
+		   	log.Println(err)
+			continue
 		}
 
 		source, err := iiifsource.NewMemorySource(image.Body())
 
 		if err != nil {
-			return err
+			return count, err
 		}
 
 		procs := runtime.NumCPU() * 2
@@ -207,7 +208,6 @@ func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iii
 		}
 
 		wg := new(sync.WaitGroup)
-		// ta := time.Now()
 
 		for _, transformation := range crops {
 
@@ -246,27 +246,25 @@ func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iii
 
 		wg.Wait()
 
-		// tb := time.Since(ta)
-		// log.Printf("generated %d crops for scale-factor %d in %v", len(crops), scale, tb)
+		// something something something using the channel above to increment count...
+		
+		count += len(crops)
 	}
 
 	profile, err := iiifprofile.NewProfile(endpoint, image)
 
 	if err != nil {
-		return err
+		return count, err
 	}
 
 	body, err := json.Marshal(profile)
 
 	if err != nil {
-		return err
+		return count, err
 	}
 
 	uri := fmt.Sprintf("%s/info.json", dest_id)
 	derivatives_cache.Set(uri, body)
 
-	// t2 := time.Since(t1)
-	// log.Printf("generated tiles for %s in %v", src_id, t2)
-
-	return nil
+	return count, nil
 }
