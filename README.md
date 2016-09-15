@@ -182,7 +182,7 @@ Caching options for source images.
 	}
 ```
 
-Cache images to a locally available filesystem. Until it is possible to read source images from a remote location it's not clear why you would ever do this but I guess that's your business...
+Cache images to a locally available filesystem.
 
 ##### Memory
 
