@@ -37,7 +37,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	w := dims.Width()
 	h := dims.Height()
 
-	if sf*ts.width >= w && sf*ts.height >= h {
+	if sf*ts.width >= w || sf*ts.height >= h {
 		return nil, errors.New("E_EXCESSIVE_SCALEFACTOR")
 	}
 
@@ -46,12 +46,15 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	// what follows was copied from
 	// https://github.com/cmoa/iiif_s3/blob/master/lib/iiif_s3/builder.rb#L165-L199
 
-	ty := int(math.Floor(float64(h) / float64(ts.height*sf)))
-	tx := int(math.Floor(float64(w) / float64(ts.width*sf)))
+	ty := int(math.Ceil(float64(h) / float64(ts.height*sf)))
+	tx := int(math.Ceil(float64(w) / float64(ts.width*sf)))
 
-	for xpos := 0; xpos < ty; xpos++ {
+	// fmt.Printf("%d / %d * %d\n", w, ts.width, sf)
+	// fmt.Printf("tx %d ty %d\n", tx, ty)
 
-		for ypos := 0; ypos < tx; ypos++ {
+	for ypos := 0; ypos < ty; ypos++ {
+
+		for xpos := 0; xpos < tx; xpos++ {
 
 			/*
 				this is the data structure used by iiif_s3 and it's not
@@ -98,14 +101,26 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			_s := ts.width
 
 			if _x+_w > w {
-				_s = w - _x
+				_w = w - _x
 			}
 
 			if _y+_h > h {
-				_s = h - _y
+				_h = h - _y
 			}
 
-			// fmt.Printf("%d,%d,%d,%d\t%d\n", _x, _y, _w, _h, _s)
+			// this bit is cribbed from leaflet-iiif.js
+
+			base := float64(ts.width * sf)
+
+			minx := float64(xpos) * base
+			maxx := math.Min(minx+base, float64(w))
+
+			diff := maxx - minx
+			sz := math.Ceil(diff / float64(sf))
+
+			_s = int(sz)
+
+			// fmt.Printf("GO %d,%d,%d,%d\tsize:%d @ %d\n", _x, _y, _w, _h, _s, sf)
 
 			region := fmt.Sprintf("%d,%d,%d,%d", _x, _y, _w, _h)
 			size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
