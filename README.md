@@ -256,7 +256,7 @@ The `supported` key is used to determine whether a given feature is enabled or n
 		}
 ```
 
-_Important: It is left to you to actually implement support for new features in the code for whichever graphics engine you are using. If you don't then any new features will be ignore at best or cause fatal errors at worst._
+_Important: It is left to you to actually implement support for new features in the code for whichever graphics engine you are using. If you don't then any new features will be ignored at best or cause fatal errors at worst._
 
 ### images
 
@@ -387,52 +387,6 @@ _This section is presented as-is. Currently it is just work in progress notes._
 $> ./bin/iiif-tile-seed -config config.json -endpoint http://localhost:8082 -scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg
 $> ./bin/iiif-server -config config.json -port 8082 -example
 ```
-
-## IIIF image API 2.1
-
-The API specifications can be found on [iiif.io](http://iiif.io/api/image/2.1/index.html).
-
-### [Size](http://iiif.io/api/image/2.1/index.html#size)
-
-* `full`: the full image **(deprecated)**
-* `max`: the full image
-* `w,h`: a potentially deformed image of `w x h` **(not supported)**
-* `!w,h`: a non-deformed image of maximum `w x h`
-* `w,`: a non-deformed image with `w` as the width
-* `,h`: a non-deformed image with `h` as the height
-* `pct:n`: a non-deformed image scaled by `n` percent
-
-### [Rotate](http://iiif.io/api/image/2.1/index.html#rotation)
-
-* `n` a clockwise rotation of `n` degrees
-* `!n` a flip is done before the rotation
-
-__limitations__ bimg only supports rotations that are multiples of 90.
-
-### [Quality](http://iiif.io/api/image/2.1/index.html#quality)
-
-* `color` image in full colour
-* `gray` image in grayscale
-* `bitonal` image in either black or white pixels **(not supported)**
-* `default` image returned in the server default quality
-
-### [Format](http://iiif.io/api/image/2.1/index.html#format)
-
-* `jpg`
-* `png`
-* `webp`
-* `tiff`
-
-__limitations__ : bimg (libvips) doesn't support writing to `jp2`, `gif` or `pdf`.
-
-### [Profile](http://iiif.io/api/image/2.1/#image-information)
-
-It provides all informations but the available `sizes` and `tiles`. The `sizes`
-information would be much better linked with a Cache system.
-
-### [Level2 profile](http://iiif.io/api/image/2.1/#profile-description)
-
-It provides meta-informations about the service. **(incomplete)**
 
 ## See also
 
