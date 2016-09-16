@@ -234,7 +234,7 @@ Individual features for a given parameter are disabled by including the paramete
 	}
 ```
 
-The data model for new features to append looks like this:
+New features are added by including their corresponding parameter name as a key to the `features.append` dictionary whose value is a model for that feature. The data model for new features to append looks like this:
 
 ```
 	NAME (STRING): {
@@ -246,7 +246,9 @@ The data model for new features to append looks like this:
 
 ```
 
-All keys are required. The `supported` key is used to determine whether a given feature is enabled or not. The `match` key is used to validate user input and should be a valid regular expression that will match that value. For example here is the compliance definition for images returned in the JPEG format:
+All keys are required.
+
+The `supported` key is used to determine whether a given feature is enabled or not. The `match` key is used to validate user input and should be a valid regular expression that will match that value. For example here is the compliance definition for images returned in the JPEG format:
 
 ```
 		"format": {
@@ -254,7 +256,7 @@ All keys are required. The `supported` key is used to determine whether a given 
 		}
 ```
 
-_Important: It is left to you to actually implement support for new features in the code for whichever graphics engine you are using. If you don't then anything additional features will be ignore at best and cause fatal errors at worst._
+_Important: It is left to you to actually implement support for new features in the code for whichever graphics engine you are using. If you don't then any new features will be ignore at best or cause fatal errors at worst._
 
 ### images
 
