@@ -14,34 +14,32 @@ import (
 
 func Format(spec *iiifcompliance.Level2ComplianceSpec) string {
 
-     rsp := ""
+	rsp := ""
 
-		image := spec.Image
+	image := spec.Image
 
-		params := map[string]map[string]iiifcompliance.ComplianceDetails{
-			"region":   image.Region,
-			"size":     image.Size,
-			"rotation": image.Rotation,
-			"quality":  image.Quality,
-			"format":   image.Format,
+	params := map[string]map[string]iiifcompliance.ComplianceDetails{
+		"region":   image.Region,
+		"size":     image.Size,
+		"rotation": image.Rotation,
+		"quality":  image.Quality,
+		"format":   image.Format,
+	}
+
+	for p, rules := range params {
+
+		rsp += fmt.Sprintf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
+		rsp += fmt.Sprintf("| feature | syntax | required | supported |\n")
+		rsp += fmt.Sprintf("|---|---|---|---|\n")
+
+		for feature, details := range rules {
+
+			rsp += fmt.Sprintf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
 		}
 
-		for p, rules := range params {
+	}
 
-			rsp += fmt.Sprintf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
-			rsp += fmt.Sprintf("| feature | syntax | required | supported |\n")
-			rsp += fmt.Sprintf("|---|---|---|---|\n")
-
-			for feature, details := range rules {
-
-				rsp += fmt.Sprintf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
-			}
-
-		}
-
-		rsp += "\n"
-		return rsp
-
+	return rsp
 }
 
 func main() {
@@ -84,9 +82,9 @@ func main() {
 	details := make([]string, 0)
 
 	for name, cfg := range configs {
-	    	 labels = append(labels, name)
-		 details = append(details, Format(cfg))
-        }
+		labels = append(labels, name)
+		details = append(details, Format(cfg))
+	}
 
 	str_labels := strings.Join(labels, " | ")
 	str_details := strings.Join(details, " | ")
