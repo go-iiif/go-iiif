@@ -145,6 +145,20 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 The default list of valid keys and features for which things may be enabled or disabled are:
 
+| current | default |
+|---|---|
+| 
+### [format](http://iiif.io/api/image/2.1/index.html#format)
+| feature | syntax | required | supported |
+|---|---|---|---|
+| jpg | jpg | true | true |
+| png | png | true | true |
+| tif | tif | false | true |
+| gif | gif | false | false |
+| pdf | pdf | false | false |
+| jp2 | jp2 | false | false |
+| webp | webp | false | true |
+
 ### [region](http://iiif.io/api/image/2.1/index.html#region)
 | feature | syntax | required | supported |
 |---|---|---|---|
@@ -156,41 +170,81 @@ The default list of valid keys and features for which things may be enabled or d
 ### [size](http://iiif.io/api/image/2.1/index.html#size)
 | feature | syntax | required | supported |
 |---|---|---|---|
+| sizeByH | ,h | true | true |
+| sizeByPct | pct:n | true | true |
 | sizeByConfinedWh | !w,h | true | true |
-| sizeByDistortedWh | w,h | true | true |
+| sizeByDistortedWh | w,h | true | false |
 | sizeByWh | w,h | true | true |
 | full | full | true | true |
 | max | max | false | true |
 | sizeByW | w, | true | true |
-| sizeByH | ,h | true | true |
-| sizeByPct | pct:n | true | true |
 
 ### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
 | feature | syntax | required | supported |
 |---|---|---|---|
-| rotationArbitrary |  | false | false |
-| mirroring | !n | true | true |
 | none | 0 | true | true |
 | rotationBy90s | 90,180,270 | true | true |
+| rotationArbitrary |  | false | false |
+| mirroring | !n | true | true |
 
 ### [quality](http://iiif.io/api/image/2.1/index.html#quality)
 | feature | syntax | required | supported |
 |---|---|---|---|
-| bitonal | bitonal | true | true |
+| bitonal | bitonal | true | false |
 | default | default | true | true |
 | color | color | false | true |
 | gray | gray | false | false |
 
+ | 
+### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
+| feature | syntax | required | supported |
+|---|---|---|---|
+| none | 0 | true | true |
+| rotationBy90s | 90,180,270 | true | true |
+| rotationArbitrary |  | false | true |
+| mirroring | !n | true | true |
+
+### [quality](http://iiif.io/api/image/2.1/index.html#quality)
+| feature | syntax | required | supported |
+|---|---|---|---|
+| default | default | true | true |
+| color | color | false | true |
+| gray | gray | false | false |
+| bitonal | bitonal | true | true |
+
 ### [format](http://iiif.io/api/image/2.1/index.html#format)
 | feature | syntax | required | supported |
 |---|---|---|---|
-| webp | webp | false | false |
 | jpg | jpg | true | true |
 | png | png | true | true |
 | tif | tif | false | false |
 | gif | gif | false | false |
 | pdf | pdf | false | false |
 | jp2 | jp2 | false | false |
+| webp | webp | false | false |
+
+### [region](http://iiif.io/api/image/2.1/index.html#region)
+| feature | syntax | required | supported |
+|---|---|---|---|
+| full | full | true | true |
+| regionByPx | x,y,w,h | true | true |
+| regionByPct | pct:x,y,w,h | true | true |
+| regionSquare | square | false | false |
+
+### [size](http://iiif.io/api/image/2.1/index.html#size)
+| feature | syntax | required | supported |
+|---|---|---|---|
+| sizeByWh | w,h | true | true |
+| full | full | true | true |
+| max | max | false | true |
+| sizeByW | w, | true | true |
+| sizeByH | ,h | true | true |
+| sizeByPct | pct:n | true | true |
+| sizeByConfinedWh | !w,h | true | true |
+| sizeByDistortedWh | w,h | true | true |
+
+ |
+
 
 #### features.enable
 
@@ -376,17 +430,6 @@ $> ./bin/iiif-server -config config.json -port 8082 -example
 ## IIIF image API 2.1
 
 The API specifications can be found on [iiif.io](http://iiif.io/api/image/2.1/index.html).
-
-### [Identifier](http://iiif.io/api/image/2.1/#identifier)
-
-* `filename`: the name of the file **(all the images are in one folder)**
-
-### [Region](http://iiif.io/api/image/2.1/index.html#region)
-
-* `full`: the full image
-* `square`: a square area in the picture (centered)
-* `x,y,w,h`: extract the specified region (as pixels)
-* `pct:x,y,w,h`: extract the specified region (as percentages)
 
 ### [Size](http://iiif.io/api/image/2.1/index.html#size)
 

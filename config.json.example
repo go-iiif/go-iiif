@@ -6,8 +6,15 @@
 	"source": { "name": "VIPS" }
     },
     "features": {
-	"enable": {},
-	"disable": { "rotation": [ "rotationArbitrary"] },
+	"enable": {
+	    "size": [ "max" ],
+	    "format": [ "webp", "tif" ]
+	},
+	"disable": {
+	    "size": [ "sizeByDistortedWh" ] ,
+	    "rotation": [ "rotationArbitrary" ],
+	    "quality": [ "bitonal" ]
+	},
 	"append": {}
     },
     "images": {

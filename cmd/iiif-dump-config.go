@@ -9,7 +9,40 @@ import (
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	"log"
+	"strings"
 )
+
+func Format(spec *iiifcompliance.Level2ComplianceSpec) string {
+
+     rsp := ""
+
+		image := spec.Image
+
+		params := map[string]map[string]iiifcompliance.ComplianceDetails{
+			"region":   image.Region,
+			"size":     image.Size,
+			"rotation": image.Rotation,
+			"quality":  image.Quality,
+			"format":   image.Format,
+		}
+
+		for p, rules := range params {
+
+			rsp += fmt.Sprintf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
+			rsp += fmt.Sprintf("| feature | syntax | required | supported |\n")
+			rsp += fmt.Sprintf("|---|---|---|---|\n")
+
+			for feature, details := range rules {
+
+				rsp += fmt.Sprintf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
+			}
+
+		}
+
+		rsp += "\n"
+		return rsp
+
+}
 
 func main() {
 
@@ -34,28 +67,31 @@ func main() {
 	}
 
 	compliance := level.Compliance()
-	spec := compliance.Spec()
+	current := compliance.Spec()
 
-	image := spec.Image
+	ideal, err := iiifcompliance.NewLevel2ComplianceSpec()
 
-	params := map[string]map[string]iiifcompliance.ComplianceDetails{
-		"region":   image.Region,
-		"size":     image.Size,
-		"rotation": image.Rotation,
-		"quality":  image.Quality,
-		"format":   image.Format,
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	for p, rules := range params {
-
-		fmt.Printf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
-		fmt.Println("| feature | syntax | required | supported |")
-		fmt.Println("|---|---|---|---|")
-
-		for feature, details := range rules {
-
-			fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
-		}
-
+	configs := map[string]*iiifcompliance.Level2ComplianceSpec{
+		"default": ideal,
+		"current": current,
 	}
+
+	labels := make([]string, 0)
+	details := make([]string, 0)
+
+	for name, cfg := range configs {
+	    	 labels = append(labels, name)
+		 details = append(details, Format(cfg))
+        }
+
+	str_labels := strings.Join(labels, " | ")
+	str_details := strings.Join(details, " | ")
+
+	fmt.Printf("| %s |\n", str_labels)
+	fmt.Printf("|---|---|\n")
+	fmt.Printf("| %s |\n", str_details)
 }

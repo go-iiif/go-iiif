@@ -1,8 +1,5 @@
 package compliance
 
-// http://iiif.io/api/image/2.1/
-// http://iiif.io/api/image/2.1/compliance/
-
 import (
 	"encoding/json"
 	"errors"
@@ -11,6 +8,9 @@ import (
 	_ "log"
 	"regexp"
 )
+
+// http://iiif.io/api/image/2.1/
+// http://iiif.io/api/image/2.1/compliance/
 
 var level2_spec = `{
     "image": {
@@ -75,7 +75,7 @@ type Level2Compliance struct {
 
 func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 
-	spec, err := NewLevel2ComplianceSpec(config)
+	spec, err := NewLevel2ComplianceSpecWithConfig(config)
 
 	if err != nil {
 		return nil, err
@@ -88,10 +88,21 @@ func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 	return &compliance, nil
 }
 
-func NewLevel2ComplianceSpec(config *iiifconfig.Config) (*Level2ComplianceSpec, error) {
+func NewLevel2ComplianceSpec() (*Level2ComplianceSpec, error) {
 
 	spec := Level2ComplianceSpec{}
 	err := json.Unmarshal([]byte(level2_spec), &spec)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &spec, nil
+}
+
+func NewLevel2ComplianceSpecWithConfig(config *iiifconfig.Config) (*Level2ComplianceSpec, error) {
+
+	spec, err := NewLevel2ComplianceSpec()
 
 	if err != nil {
 		return nil, err
@@ -188,7 +199,7 @@ func NewLevel2ComplianceSpec(config *iiifconfig.Config) (*Level2ComplianceSpec, 
 		return nil, err
 	}
 
-	return &spec, err
+	return spec, err
 }
 
 func (c *Level2Compliance) IsValidImageRegion(region string) (bool, error) {
