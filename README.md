@@ -218,7 +218,17 @@ The default list of valid keys and features for which things may be enabled or d
 
 #### features.append
 
-_Please write me._
+```
+	"features": {
+		"append": { "format": {
+			"dither": { "syntax": "dither", "required": false, "supported": true, "match": "^dither$" }
+		}}
+	}
+```
+
+```
+	STRING: { "syntax": STRING, "required": BOOLEAN, "supported": BOOLEAN, "match": STRING_REGULAR_EXPRESSION }
+```
 
 ### images
 
