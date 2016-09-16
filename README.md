@@ -145,29 +145,57 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 The default list of valid keys and features for which things may be enabled or disabled are:
 
-* region
- * full
- * regionByPx
- * regionByPct
- * regionSquare
-* size
-* rotation
- * none
- * rotationBy90s
- * rotationArbitrary
- * mirroring
-* quality
- * default
- * color
- * gray
- * bitonal
-* format
- * jpg
- * png
- * tif
- * pdf
- * jp2
- * webp
+##### region
+
+| feature | required | supported |
+|---|---|---|
+| regionByPx | true | true |
+| regionByPct | true | true |
+| regionSquare | false | false |
+| full | true | true |
+
+###### size
+
+| feature | required | supported |
+|---|---|---|
+| sizeByConfinedWh | true | true |
+| sizeByDistortedWh | true | true |
+| sizeByWh | true | true |
+| full | true | true |
+| max | false | true |
+| sizeByW | true | true |
+| sizeByH | true | true |
+| sizeByPct | true | true |
+
+##### rotation
+
+| feature | required | supported |
+|---|---|---|
+| rotationArbitrary | false | false |
+| mirroring | true | true |
+| none | true | true |
+| rotationBy90s | true | true |
+
+##### quality
+
+| feature | required | supported |
+|---|---|---|
+| default | true | true |
+| color | false | true |
+| gray | false | false |
+| bitonal | true | true |
+
+##### format
+
+| feature | required | supported |
+|---|---|---|
+| jpg | true | true |
+| png | true | true |
+| tif | false | false |
+| gif | false | false |
+| pdf | false | false |
+| jp2 | false | false |
+| webp | false | false |
 
 #### features.enable
 
