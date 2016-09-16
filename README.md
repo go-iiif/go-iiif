@@ -147,7 +147,9 @@ Here's how that dynamic plays out in reality. The table below lists all the IIIF
 
 _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) tool and if anyone can tell me how to make Markdown tables (in GitHub) render colours I would be grateful._
 
-### [region](http://iiif.io/api/image/2.1/index.html#region)
+#### feature compliance 
+
+##### [region](http://iiif.io/api/image/2.1/index.html#region)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
 | **full** | full | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
@@ -155,7 +157,7 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **regionByPx** | x,y,w,h | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 | **regionSquare** | square | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
 
-### [size](http://iiif.io/api/image/2.1/index.html#size)
+##### [size](http://iiif.io/api/image/2.1/index.html#size)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
 | **full** | full | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
@@ -167,7 +169,7 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **sizeByW** | w, | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 | **sizeByWh** | w,h | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 
-### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
+##### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
 | **mirroring** | !n | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
@@ -175,7 +177,7 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **rotationArbitrary** |  | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
 | **rotationBy90s** | 90,180,270 | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 
-### [quality](http://iiif.io/api/image/2.1/index.html#quality)
+##### [quality](http://iiif.io/api/image/2.1/index.html#quality)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
 | **bitonal** | bitonal | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:red;">false</span> |
@@ -183,7 +185,7 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **default** | default | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 | **gray** | gray | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
 
-### [format](http://iiif.io/api/image/2.1/index.html#format)
+##### [format](http://iiif.io/api/image/2.1/index.html#format)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
 | **gif** | gif | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
