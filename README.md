@@ -135,13 +135,40 @@ Details about how images should be processed. Because only [libvips]() is suppor
 	}
 ```
 
+The `features` block allows you to enable or disable specific IIIF features.
+
+For example the level 2 spec does not say GIF outputs is required so the level 2 compliance definition in `go-iiif` disables it by default. If you are using a graphics engine (not `libvips` though) that can produce GIF files you would enable it here. Likewise if you need to disable a feature that is supported by not required (for example `rotationArbitrary`) or even things that are required but can't be used for... well, that's your business right?
+
+Finally, maybe you've got an IIIF implementation that [knows how to do things not defined in the spec](https://github.com/thisisaaronland/go-iiif/issues/1). This is also where you would add them.
+
+```
+type ComplianceDetails struct {
+	Name      string `json:"name"`
+	Syntax    string `json:"syntax"`
+	Required  bool   `json:"required"`
+	Supported bool   `json:"supported"`
+	Match     string `json:"match,omitempty"`
+}
+```
+
 #### features.enable
 
-_Please write me._
+```
+	"features": {
+		"enable": { "format": [ "gif" ] }
+	}
+```
 
 #### features.disable
 
-_Please write me._
+```
+	"features": {
+		"disable": {
+			"format": [ "png" ],
+			"rotation": [ "rotationArbitrary"]
+		}
+	}
+```
 
 #### features.append
 
