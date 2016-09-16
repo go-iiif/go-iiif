@@ -145,8 +145,7 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 The default list of valid keys and features for which things may be enabled or disabled are:
 
-### region
-
+### [region](http://iiif.io/api/image/2.1/index.html#region)
 | feature | syntax | required | supported |
 |---|---|---|---|
 | full | full | true | true |
@@ -154,48 +153,44 @@ The default list of valid keys and features for which things may be enabled or d
 | regionByPct | pct:x,y,w,h | true | true |
 | regionSquare | square | false | false |
 
-### size
-
+### [size](http://iiif.io/api/image/2.1/index.html#size)
 | feature | syntax | required | supported |
 |---|---|---|---|
+| sizeByConfinedWh | !w,h | true | true |
+| sizeByDistortedWh | w,h | true | true |
 | sizeByWh | w,h | true | true |
 | full | full | true | true |
 | max | max | false | true |
 | sizeByW | w, | true | true |
 | sizeByH | ,h | true | true |
 | sizeByPct | pct:n | true | true |
-| sizeByConfinedWh | !w,h | true | true |
-| sizeByDistortedWh | w,h | true | true |
 
-### rotation
-
+### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
 | feature | syntax | required | supported |
 |---|---|---|---|
-| none | 0 | true | true |
-| rotationBy90s | 90,180,270 | true | true |
 | rotationArbitrary |  | false | false |
 | mirroring | !n | true | true |
+| none | 0 | true | true |
+| rotationBy90s | 90,180,270 | true | true |
 
-### quality
-
+### [quality](http://iiif.io/api/image/2.1/index.html#quality)
 | feature | syntax | required | supported |
 |---|---|---|---|
+| bitonal | bitonal | true | true |
 | default | default | true | true |
 | color | color | false | true |
 | gray | gray | false | false |
-| bitonal | bitonal | true | true |
 
-### format
-
+### [format](http://iiif.io/api/image/2.1/index.html#format)
 | feature | syntax | required | supported |
 |---|---|---|---|
+| webp | webp | false | false |
 | jpg | jpg | true | true |
 | png | png | true | true |
 | tif | tif | false | false |
 | gif | gif | false | false |
 | pdf | pdf | false | false |
 | jp2 | jp2 | false | false |
-| webp | webp | false | false |
 
 #### features.enable
 

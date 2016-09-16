@@ -5,6 +5,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	"log"
@@ -37,49 +38,24 @@ func main() {
 
 	image := spec.Image
 
-	fmt.Println("\n### region\n")
-	fmt.Println("| feature | syntax | required | supported |")
-	fmt.Println("|---|---|---|---|")
-
-	for feature, details := range image.Region {
-
-		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
+	params := map[string]map[string]iiifcompliance.ComplianceDetails{
+		"region":   image.Region,
+		"size":     image.Size,
+		"rotation": image.Rotation,
+		"quality":  image.Quality,
+		"format":   image.Format,
 	}
 
-	fmt.Println("\n### size\n")
-	fmt.Println("| feature | syntax | required | supported |")
-	fmt.Println("|---|---|---|---|")
+	for p, rules := range params {
 
-	for feature, details := range image.Size {
+		fmt.Printf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
+		fmt.Println("| feature | syntax | required | supported |")
+		fmt.Println("|---|---|---|---|")
 
-		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
+		for feature, details := range rules {
+
+			fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
+		}
+
 	}
-
-	fmt.Println("\n### rotation\n")
-	fmt.Println("| feature | syntax | required | supported |")
-	fmt.Println("|---|---|---|---|")
-
-	for feature, details := range image.Rotation {
-
-		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
-	}
-
-	fmt.Println("\n### quality\n")
-	fmt.Println("| feature | syntax | required | supported |")
-	fmt.Println("|---|---|---|---|")
-
-	for feature, details := range image.Quality {
-
-		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
-	}
-
-	fmt.Println("\n### format\n")
-	fmt.Println("| feature | syntax | required | supported |")
-	fmt.Println("|---|---|---|---|")
-
-	for feature, details := range image.Format {
-
-		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
-	}
-
 }
