@@ -170,7 +170,7 @@ func main() {
 			rc_html := fmt.Sprintf("<span style=\"color:%s;\">**%t**</span>", rc, details.required_config)
 			sc_html := fmt.Sprintf("<span style=\"color:%s;\">**%t**</span>", sc, details.supported_config)
 
-			fmt.Printf("| **%s** | _%s_ | %s | %s | %s | %s |\n", feature, details.syntax, rs_html, ss_html, rc_html, sc_html)
+			fmt.Printf("| **%s** | %s | _%s_ | _%s_ | %s | %s |\n", feature, details.syntax, rs_html, ss_html, rc_html, sc_html)
 		}
 
 	}
