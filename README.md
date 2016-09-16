@@ -143,11 +143,11 @@ Likewise if you need to disable a feature that is supported by not required (for
 
 Finally, maybe you've got an IIIF implementation that [knows how to do things not defined in the spec](https://github.com/thisisaaronland/go-iiif/issues/1). This is also where you would add them.
 
+#### compliance 
+
 Here's how that dynamic plays out in reality. The table below lists all the IIIF parameters and their associate features. Each feature lists its syntax and whether or not it is required and supported according to the official spec but then also according to the [example `go-iiif` config file](config.json.example), included with this repo.
 
 _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) tool and if anyone can tell me how to make Markdown tables (in GitHub) render colours I would be grateful._
-
-#### feature compliance 
 
 ##### [region](http://iiif.io/api/image/2.1/index.html#region)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |

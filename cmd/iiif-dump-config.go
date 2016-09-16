@@ -133,7 +133,7 @@ func main() {
 
 		rules := fd[p]
 
-		fmt.Printf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
+		fmt.Printf("\n##### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
 		fmt.Printf("| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |\n")
 		fmt.Printf("|---|---|---|---|---|---|\n")
 
