@@ -148,49 +148,49 @@ The default list of valid keys and features for which things may be enabled or d
 ### [region](http://iiif.io/api/image/2.1/index.html#region)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| **full** | _full_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **regionByPct** | _pct:x,y,w,h_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **regionByPx** | _x,y,w,h_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **regionSquare** | _square_ | <span style="background-color:red">false</span> | <span style="background-color:red">false</span> | <span style="background-color:red">**false**</span> | <span style="background-color:red">**false**</span> |
+| **full** | _full_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **regionByPct** | _pct:x,y,w,h_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **regionByPx** | _x,y,w,h_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **regionSquare** | _square_ | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:red;">**false**</span> |
 
 ### [size](http://iiif.io/api/image/2.1/index.html#size)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| **full** | _full_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **max** | _max_ | <span style="background-color:red">false</span> | <span style="background-color:green">true</span> | <span style="background-color:red">**false**</span> | <span style="background-color:green">**true**</span> |
-| **sizeByConfinedWh** | _!w,h_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **sizeByDistortedWh** | _w,h_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:red">**false**</span> |
-| **sizeByH** | _,h_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **sizeByPct** | _pct:n_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **sizeByW** | _w,_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **sizeByWh** | _w,h_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
+| **full** | _full_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **max** | _max_ | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">**false**</span> | <span style="color:green;">**true**</span> |
+| **sizeByConfinedWh** | _!w,h_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **sizeByDistortedWh** | _w,h_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:red;">**false**</span> |
+| **sizeByH** | _,h_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **sizeByPct** | _pct:n_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **sizeByW** | _w,_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **sizeByWh** | _w,h_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 
 ### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| **mirroring** | _!n_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **none** | _0_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **rotationArbitrary** | __ | <span style="background-color:red">false</span> | <span style="background-color:green">true</span> | <span style="background-color:red">**false**</span> | <span style="background-color:red">**false**</span> |
-| **rotationBy90s** | _90,180,270_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
+| **mirroring** | _!n_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **none** | _0_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **rotationArbitrary** | __ | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">**false**</span> | <span style="color:red;">**false**</span> |
+| **rotationBy90s** | _90,180,270_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 
 ### [quality](http://iiif.io/api/image/2.1/index.html#quality)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| **bitonal** | _bitonal_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:red">**false**</span> |
-| **color** | _color_ | <span style="background-color:red">false</span> | <span style="background-color:green">true</span> | <span style="background-color:red">**false**</span> | <span style="background-color:green">**true**</span> |
-| **default** | _default_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **gray** | _gray_ | <span style="background-color:red">false</span> | <span style="background-color:red">false</span> | <span style="background-color:red">**false**</span> | <span style="background-color:red">**false**</span> |
+| **bitonal** | _bitonal_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:red;">**false**</span> |
+| **color** | _color_ | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">**false**</span> | <span style="color:green;">**true**</span> |
+| **default** | _default_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **gray** | _gray_ | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:red;">**false**</span> |
 
 ### [format](http://iiif.io/api/image/2.1/index.html#format)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| **gif** | _gif_ | <span style="background-color:red">false</span> | <span style="background-color:red">false</span> | <span style="background-color:red">**false**</span> | <span style="background-color:red">**false**</span> |
-| **jp2** | _jp2_ | <span style="background-color:red">false</span> | <span style="background-color:red">false</span> | <span style="background-color:red">**false**</span> | <span style="background-color:red">**false**</span> |
-| **jpg** | _jpg_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **pdf** | _pdf_ | <span style="background-color:red">false</span> | <span style="background-color:red">false</span> | <span style="background-color:red">**false**</span> | <span style="background-color:red">**false**</span> |
-| **png** | _png_ | <span style="background-color:green">true</span> | <span style="background-color:green">true</span> | <span style="background-color:green">**true**</span> | <span style="background-color:green">**true**</span> |
-| **tif** | _tif_ | <span style="background-color:red">false</span> | <span style="background-color:red">false</span> | <span style="background-color:red">**false**</span> | <span style="background-color:green">**true**</span> |
-| **webp** | _webp_ | <span style="background-color:red">false</span> | <span style="background-color:red">false</span> | <span style="background-color:red">**false**</span> | <span style="background-color:green">**true**</span> |
+| **gif** | _gif_ | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:red;">**false**</span> |
+| **jp2** | _jp2_ | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:red;">**false**</span> |
+| **jpg** | _jpg_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **pdf** | _pdf_ | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:red;">**false**</span> |
+| **png** | _png_ | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **tif** | _tif_ | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:green;">**true**</span> |
+| **webp** | _webp_ | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:green;">**true**</span> |
 
 #### features.enable
 
