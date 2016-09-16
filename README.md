@@ -199,20 +199,28 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 
 ```
 	"features": {
-		"enable": { "format": [ "gif" ] }
+		"enable": {
+			"size": [ "max" ],
+			"format": [ "webp", "tif" ]
+		}
 	}
 ```
+
+Individual features for a given parameter are enabled by including the parameter name as a key to the `features.enabled` dictionary whose value is a list of specific feature names to enable.
 
 #### features.disable
 
 ```
 	"features": {
 		"disable": {
-			"format": [ "png" ],
-			"rotation": [ "rotationArbitrary"]
+			"size": [ "sizeByDistortedWh" ] ,
+			"rotation": [ "rotationArbitrary" ],
+			"quality": [ "bitonal" ]
 		}
 	}
 ```
+
+Individual features for a given parameter are disabled by including the parameter name as a key to the `features.disabled` dictionary whose value is a list of specific feature names to disabled.
 
 #### features.append
 
