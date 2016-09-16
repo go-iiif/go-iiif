@@ -146,24 +146,14 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 The list of valid keys and features for which things may be enabled or disabled are:
 
 * region
-** full
-** regionByPx
-** regionByPct
-** regionSquare
+ * full
+ * regionByPx
+ * regionByPct
+ * regionSquare
 * size
 * rotation
 * quality
 * format
-
-```
-type ComplianceDetails struct {
-	Name      string `json:"name"`
-	Syntax    string `json:"syntax"`
-	Required  bool   `json:"required"`
-	Supported bool   `json:"supported"`
-	Match     string `json:"match,omitempty"`
-}
-```
 
 #### features.enable
 
