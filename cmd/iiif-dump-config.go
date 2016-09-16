@@ -167,10 +167,18 @@ func main() {
 			rs_html := fmt.Sprintf("<span style=\"color:%s;\">%t</span>", rs, details.required_spec)
 			ss_html := fmt.Sprintf("<span style=\"color:%s;\">%t</span>", ss, details.supported_spec)
 
-			rc_html := fmt.Sprintf("<span style=\"color:%s;\">**%t**</span>", rc, details.required_config)
-			sc_html := fmt.Sprintf("<span style=\"color:%s;\">**%t**</span>", sc, details.supported_config)
+			rc_html := fmt.Sprintf("<span style=\"color:%s;\">%t</span>", rc, details.required_config)
+			sc_html := fmt.Sprintf("<span style=\"color:%s;\">%t</span>", sc, details.supported_config)
 
-			fmt.Printf("| **%s** | %s | _%s_ | _%s_ | %s | %s |\n", feature, details.syntax, rs_html, ss_html, rc_html, sc_html)
+			if details.required_config{
+			   rc_html = fmt.Sprintf("<span style=\"color:%s;\">**%t**</span>", rc, details.required_config)
+			}
+
+			if details.supported_config{
+			sc_html = fmt.Sprintf("<span style=\"color:%s;\">**%t**</span>", sc, details.supported_config)
+			}
+
+			fmt.Printf("| **%s** | %s | %s | %s | %s | %s |\n", feature, details.syntax, rs_html, ss_html, rc_html, sc_html)
 		}
 
 	}
