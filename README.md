@@ -145,53 +145,53 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 The default list of valid keys and features for which things may be enabled or disabled are:
 
-### [format](http://iiif.io/api/image/2.1/index.html#format)
-| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
-|---|---|---|---|---|---|
-| webp | webp | false | false | false | true |
-| jpg | jpg | true | true | true | true |
-| png | png | true | true | true | true |
-| tif | tif | false | false | false | true |
-| gif | gif | false | false | false | false |
-| pdf | pdf | false | false | false | false |
-| jp2 | jp2 | false | false | false | false |
 
 ### [region](http://iiif.io/api/image/2.1/index.html#region)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| regionByPx | x,y,w,h | true | true | true | true |
-| regionByPct | pct:x,y,w,h | true | true | true | true |
-| regionSquare | square | false | false | false | false |
-| full | full | true | true | true | true |
+| **full** | full | true | true | **true** | **true** |
+| **regionByPx** | x,y,w,h | true | true | **true** | **true** |
+| **regionByPct** | pct:x,y,w,h | true | true | **true** | **true** |
+| **regionSquare** | square | false | false | **false** | **false** |
 
 ### [size](http://iiif.io/api/image/2.1/index.html#size)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| max | max | false | true | false | true |
-| sizeByW | w, | true | true | true | true |
-| sizeByH | ,h | true | true | true | true |
-| sizeByPct | pct:n | true | true | true | true |
-| sizeByConfinedWh | !w,h | true | true | true | true |
-| sizeByDistortedWh | w,h | true | true | true | false |
-| sizeByWh | w,h | true | true | true | true |
-| full | full | true | true | true | true |
+| **sizeByDistortedWh** | w,h | true | true | **true** | **false** |
+| **sizeByWh** | w,h | true | true | **true** | **true** |
+| **full** | full | true | true | **true** | **true** |
+| **max** | max | false | true | **false** | **true** |
+| **sizeByW** | w, | true | true | **true** | **true** |
+| **sizeByH** | ,h | true | true | **true** | **true** |
+| **sizeByPct** | pct:n | true | true | **true** | **true** |
+| **sizeByConfinedWh** | !w,h | true | true | **true** | **true** |
 
 ### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| rotationBy90s | 90,180,270 | true | true | true | true |
-| rotationArbitrary |  | false | true | false | false |
-| mirroring | !n | true | true | true | true |
-| none | 0 | true | true | true | true |
+| **none** | 0 | true | true | **true** | **true** |
+| **rotationBy90s** | 90,180,270 | true | true | **true** | **true** |
+| **rotationArbitrary** |  | false | true | **false** | **false** |
+| **mirroring** | !n | true | true | **true** | **true** |
 
 ### [quality](http://iiif.io/api/image/2.1/index.html#quality)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
 |---|---|---|---|---|---|
-| bitonal | bitonal | true | true | true | false |
-| default | default | true | true | true | true |
-| color | color | false | true | false | true |
-| gray | gray | false | false | false | false |
+| **default** | default | true | true | **true** | **true** |
+| **color** | color | false | true | **false** | **true** |
+| **gray** | gray | false | false | **false** | **false** |
+| **bitonal** | bitonal | true | true | **true** | **false** |
 
+### [format](http://iiif.io/api/image/2.1/index.html#format)
+| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
+|---|---|---|---|---|---|
+| **gif** | gif | false | false | **false** | **false** |
+| **pdf** | pdf | false | false | **false** | **false** |
+| **jp2** | jp2 | false | false | **false** | **false** |
+| **webp** | webp | false | false | **false** | **true** |
+| **jpg** | jpg | true | true | **true** | **true** |
+| **png** | png | true | true | **true** | **true** |
+| **tif** | tif | false | false | **false** | **true** |
 
 #### features.enable
 

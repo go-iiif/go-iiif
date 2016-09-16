@@ -72,7 +72,7 @@ func main() {
 
 		for feature, details := range rules {
 
-			fd[p][feature] = F{
+			fd[p][feature] = FeatureDetails{
 				feature:          feature,
 				syntax:           details.Syntax,
 				required_spec:    details.Required,
@@ -112,7 +112,13 @@ func main() {
 
 	//
 
-	for p, rules := range fd {
+	prms := []string{
+		"region", "size", "rotation", "quality", "format",
+	}
+
+	for _, p := range prms {
+
+		rules := fd[p]
 
 		fmt.Printf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
 		fmt.Printf("| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |\n")
@@ -120,7 +126,7 @@ func main() {
 
 		for feature, details := range rules {
 
-			fmt.Printf("| %s | %s | %t | %t | %t | %t |\n", feature, details.syntax, details.required_spec, details.supported_spec, details.required_actual, details.supported_actual)
+			fmt.Printf("| **%s** | %s | %t | %t | **%t** | **%t** |\n", feature, details.syntax, details.required_spec, details.supported_spec, details.required_actual, details.supported_actual)
 		}
 
 	}
