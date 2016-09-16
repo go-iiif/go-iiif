@@ -38,7 +38,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	h := dims.Height()
 
 	if sf*ts.width >= w && sf*ts.height >= h {
-	   	msg := fmt.Sprintf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.width, sf*ts.height)
+		msg := fmt.Sprintf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.width, sf*ts.height)
 		return nil, errors.New(msg)
 	}
 

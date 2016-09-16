@@ -177,7 +177,7 @@ See this - the function signature is complete madness. We'll figure it out...
 func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iiifconfig.Config, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache, scales []int, endpoint string, refresh bool) (int, error) {
 
 	count := 0
-	
+
 	image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, src_id)
 
 	if err != nil {
@@ -189,7 +189,7 @@ func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iii
 		crops, err := ts.TileSizes(image, scale)
 
 		if err != nil {
-		   	log.Println(err)
+			log.Println(err)
 			continue
 		}
 
@@ -247,7 +247,7 @@ func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iii
 		wg.Wait()
 
 		// something something something using the channel above to increment count...
-		
+
 		count += len(crops)
 	}
 
