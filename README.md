@@ -226,9 +226,27 @@ The default list of valid keys and features for which things may be enabled or d
 	}
 ```
 
+The data model for new features to append looks like this:
+
 ```
-	STRING: { "syntax": STRING, "required": BOOLEAN, "supported": BOOLEAN, "match": REGULAR_EXPRESSION (STRING) }
+	NAME (STRING): {
+		"syntax": SYNTAX (STRING),
+		"required": BOOLEAN,
+		"supported": BOOLEAN,
+		"match": REGULAR_EXPRESSION (STRING)
+	}
+
 ```
+
+All keys are required. The `match` key is used to validate user input and should be a valid regular expression that will match that value. For example here is the compliance definition for images returned in the JPEG format:
+
+```
+		"format": {
+	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" }
+		}
+```
+
+_Important: It is left to you to actually implement support for new features in the code for whichever graphics engine you are using. If you don't then anything additional features will be ignore at best and cause fatal errors at worst._
 
 ### images
 
