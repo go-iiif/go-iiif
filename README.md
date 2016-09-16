@@ -227,7 +227,7 @@ The default list of valid keys and features for which things may be enabled or d
 ```
 
 ```
-	STRING: { "syntax": STRING, "required": BOOLEAN, "supported": BOOLEAN, "match": STRING_REGULAR_EXPRESSION }
+	STRING: { "syntax": STRING, "required": BOOLEAN, "supported": BOOLEAN, "match": REGULAR_EXPRESSION (STRING) }
 ```
 
 ### images
