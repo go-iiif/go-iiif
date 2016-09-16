@@ -246,7 +246,7 @@ The data model for new features to append looks like this:
 
 ```
 
-All keys are required. The `match` key is used to validate user input and should be a valid regular expression that will match that value. For example here is the compliance definition for images returned in the JPEG format:
+All keys are required. The `supported` key is used to determine whether a given feature is enabled or not. The `match` key is used to validate user input and should be a valid regular expression that will match that value. For example here is the compliance definition for images returned in the JPEG format:
 
 ```
 		"format": {
