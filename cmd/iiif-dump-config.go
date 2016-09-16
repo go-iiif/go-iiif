@@ -38,48 +38,48 @@ func main() {
 	image := spec.Image
 
 	fmt.Println("\n### region\n")
-	fmt.Println("| feature | required | supported |")
-	fmt.Println("|---|---|---|")
+	fmt.Println("| feature | syntax | required | supported |")
+	fmt.Println("|---|---|---|---|")
 
 	for feature, details := range image.Region {
 
-		fmt.Printf("| %s | %t | %t |\n", feature, details.Required, details.Supported)
+		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
 	}
 
 	fmt.Println("\n### size\n")
-	fmt.Println("| feature | required | supported |")
-	fmt.Println("|---|---|---|")
+	fmt.Println("| feature | syntax | required | supported |")
+	fmt.Println("|---|---|---|---|")
 
 	for feature, details := range image.Size {
 
-		fmt.Printf("| %s | %t | %t |\n", feature, details.Required, details.Supported)
+		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
 	}
 
 	fmt.Println("\n### rotation\n")
-	fmt.Println("| feature | required | supported |")
-	fmt.Println("|---|---|---|")
+	fmt.Println("| feature | syntax | required | supported |")
+	fmt.Println("|---|---|---|---|")
 
 	for feature, details := range image.Rotation {
 
-		fmt.Printf("| %s | %t | %t |\n", feature, details.Required, details.Supported)
+		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
 	}
 
 	fmt.Println("\n### quality\n")
-	fmt.Println("| feature | required | supported |")
-	fmt.Println("|---|---|---|")
+	fmt.Println("| feature | syntax | required | supported |")
+	fmt.Println("|---|---|---|---|")
 
 	for feature, details := range image.Quality {
 
-		fmt.Printf("| %s | %t | %t |\n", feature, details.Required, details.Supported)
+		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
 	}
 
 	fmt.Println("\n### format\n")
-	fmt.Println("| feature | required | supported |")
-	fmt.Println("|---|---|---|")
+	fmt.Println("| feature | syntax | required | supported |")
+	fmt.Println("|---|---|---|---|")
 
 	for feature, details := range image.Format {
 
-		fmt.Printf("| %s | %t | %t |\n", feature, details.Required, details.Supported)
+		fmt.Printf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
 	}
 
 }

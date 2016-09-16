@@ -145,57 +145,57 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 The default list of valid keys and features for which things may be enabled or disabled are:
 
-##### region
+### region
 
-| feature | required | supported |
-|---|---|---|
-| regionByPx | true | true |
-| regionByPct | true | true |
-| regionSquare | false | false |
-| full | true | true |
+| feature | syntax | required | supported |
+|---|---|---|---|
+| full | full | true | true |
+| regionByPx | x,y,w,h | true | true |
+| regionByPct | pct:x,y,w,h | true | true |
+| regionSquare | square | false | false |
 
-###### size
+### size
 
-| feature | required | supported |
-|---|---|---|
-| sizeByConfinedWh | true | true |
-| sizeByDistortedWh | true | true |
-| sizeByWh | true | true |
-| full | true | true |
-| max | false | true |
-| sizeByW | true | true |
-| sizeByH | true | true |
-| sizeByPct | true | true |
+| feature | syntax | required | supported |
+|---|---|---|---|
+| sizeByWh | w,h | true | true |
+| full | full | true | true |
+| max | max | false | true |
+| sizeByW | w, | true | true |
+| sizeByH | ,h | true | true |
+| sizeByPct | pct:n | true | true |
+| sizeByConfinedWh | !w,h | true | true |
+| sizeByDistortedWh | w,h | true | true |
 
-##### rotation
+### rotation
 
-| feature | required | supported |
-|---|---|---|
-| rotationArbitrary | false | false |
-| mirroring | true | true |
-| none | true | true |
-| rotationBy90s | true | true |
+| feature | syntax | required | supported |
+|---|---|---|---|
+| none | 0 | true | true |
+| rotationBy90s | 90,180,270 | true | true |
+| rotationArbitrary |  | false | false |
+| mirroring | !n | true | true |
 
-##### quality
+### quality
 
-| feature | required | supported |
-|---|---|---|
-| default | true | true |
-| color | false | true |
-| gray | false | false |
-| bitonal | true | true |
+| feature | syntax | required | supported |
+|---|---|---|---|
+| default | default | true | true |
+| color | color | false | true |
+| gray | gray | false | false |
+| bitonal | bitonal | true | true |
 
-##### format
+### format
 
-| feature | required | supported |
-|---|---|---|
-| jpg | true | true |
-| png | true | true |
-| tif | false | false |
-| gif | false | false |
-| pdf | false | false |
-| jp2 | false | false |
-| webp | false | false |
+| feature | syntax | required | supported |
+|---|---|---|---|
+| jpg | jpg | true | true |
+| png | png | true | true |
+| tif | tif | false | false |
+| gif | gif | false | false |
+| pdf | pdf | false | false |
+| jp2 | jp2 | false | false |
+| webp | webp | false | false |
 
 #### features.enable
 
