@@ -143,7 +143,7 @@ Likewise if you need to disable a feature that is supported by not required (for
 
 Finally, maybe you've got an IIIF implementation that [knows how to do things not defined in the spec](https://github.com/thisisaaronland/go-iiif/issues/1). This is also where you would add them.
 
-The list of valid keys and features for which things may be enabled or disabled are:
+The default list of valid keys and features for which things may be enabled or disabled are:
 
 * region
  * full
@@ -152,8 +152,22 @@ The list of valid keys and features for which things may be enabled or disabled 
  * regionSquare
 * size
 * rotation
+ * none
+ * rotationBy90s
+ * rotationArbitrary
+ * mirroring
 * quality
+ * default
+ * color
+ * gray
+ * bitonal
 * format
+ * jpg
+ * png
+ * tif
+ * pdf
+ * jp2
+ * webp
 
 #### features.enable
 
