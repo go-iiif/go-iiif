@@ -145,103 +145,52 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 The default list of valid keys and features for which things may be enabled or disabled are:
 
-| default | current |
-|---|---|
-| 
-### [quality](http://iiif.io/api/image/2.1/index.html#quality)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| default | default | true | true |
-| color | color | false | true |
-| gray | gray | false | false |
-| bitonal | bitonal | true | true |
-
 ### [format](http://iiif.io/api/image/2.1/index.html#format)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| gif | gif | false | false |
-| pdf | pdf | false | false |
-| jp2 | jp2 | false | false |
-| webp | webp | false | false |
-| jpg | jpg | true | true |
-| png | png | true | true |
-| tif | tif | false | false |
+| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
+|---|---|---|---|---|---|
+| webp | webp | false | false | false | true |
+| jpg | jpg | true | true | true | true |
+| png | png | true | true | true | true |
+| tif | tif | false | false | false | true |
+| gif | gif | false | false | false | false |
+| pdf | pdf | false | false | false | false |
+| jp2 | jp2 | false | false | false | false |
 
 ### [region](http://iiif.io/api/image/2.1/index.html#region)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| regionByPx | x,y,w,h | true | true |
-| regionByPct | pct:x,y,w,h | true | true |
-| regionSquare | square | false | false |
-| full | full | true | true |
+| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
+|---|---|---|---|---|---|
+| regionByPx | x,y,w,h | true | true | true | true |
+| regionByPct | pct:x,y,w,h | true | true | true | true |
+| regionSquare | square | false | false | false | false |
+| full | full | true | true | true | true |
 
 ### [size](http://iiif.io/api/image/2.1/index.html#size)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| sizeByConfinedWh | !w,h | true | true |
-| sizeByDistortedWh | w,h | true | true |
-| sizeByWh | w,h | true | true |
-| full | full | true | true |
-| max | max | false | true |
-| sizeByW | w, | true | true |
-| sizeByH | ,h | true | true |
-| sizeByPct | pct:n | true | true |
+| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
+|---|---|---|---|---|---|
+| max | max | false | true | false | true |
+| sizeByW | w, | true | true | true | true |
+| sizeByH | ,h | true | true | true | true |
+| sizeByPct | pct:n | true | true | true | true |
+| sizeByConfinedWh | !w,h | true | true | true | true |
+| sizeByDistortedWh | w,h | true | true | true | false |
+| sizeByWh | w,h | true | true | true | true |
+| full | full | true | true | true | true |
 
 ### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| rotationArbitrary |  | false | true |
-| mirroring | !n | true | true |
-| none | 0 | true | true |
-| rotationBy90s | 90,180,270 | true | true |
- | 
-### [region](http://iiif.io/api/image/2.1/index.html#region)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| full | full | true | true |
-| regionByPx | x,y,w,h | true | true |
-| regionByPct | pct:x,y,w,h | true | true |
-| regionSquare | square | false | false |
-
-### [size](http://iiif.io/api/image/2.1/index.html#size)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| sizeByWh | w,h | true | true |
-| full | full | true | true |
-| max | max | false | true |
-| sizeByW | w, | true | true |
-| sizeByH | ,h | true | true |
-| sizeByPct | pct:n | true | true |
-| sizeByConfinedWh | !w,h | true | true |
-| sizeByDistortedWh | w,h | true | false |
-
-### [rotation](http://iiif.io/api/image/2.1/index.html#rotation)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| rotationBy90s | 90,180,270 | true | true |
-| rotationArbitrary |  | false | false |
-| mirroring | !n | true | true |
-| none | 0 | true | true |
+| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
+|---|---|---|---|---|---|
+| rotationBy90s | 90,180,270 | true | true | true | true |
+| rotationArbitrary |  | false | true | false | false |
+| mirroring | !n | true | true | true | true |
+| none | 0 | true | true | true | true |
 
 ### [quality](http://iiif.io/api/image/2.1/index.html#quality)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| default | default | true | true |
-| color | color | false | true |
-| gray | gray | false | false |
-| bitonal | bitonal | true | false |
-
-### [format](http://iiif.io/api/image/2.1/index.html#format)
-| feature | syntax | required | supported |
-|---|---|---|---|
-| jp2 | jp2 | false | false |
-| webp | webp | false | true |
-| jpg | jpg | true | true |
-| png | png | true | true |
-| tif | tif | false | true |
-| gif | gif | false | false |
-| pdf | pdf | false | false |
- |
+| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
+|---|---|---|---|---|---|
+| bitonal | bitonal | true | true | true | false |
+| default | default | true | true | true | true |
+| color | color | false | true | false | true |
+| gray | gray | false | false | false | false |
 
 
 #### features.enable

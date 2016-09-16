@@ -9,38 +9,7 @@ import (
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	"log"
-	"strings"
 )
-
-func Format(spec *iiifcompliance.Level2ComplianceSpec) string {
-
-	rsp := ""
-
-	image := spec.Image
-
-	params := map[string]map[string]iiifcompliance.ComplianceDetails{
-		"region":   image.Region,
-		"size":     image.Size,
-		"rotation": image.Rotation,
-		"quality":  image.Quality,
-		"format":   image.Format,
-	}
-
-	for p, rules := range params {
-
-		rsp += fmt.Sprintf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
-		rsp += fmt.Sprintf("| feature | syntax | required | supported |\n")
-		rsp += fmt.Sprintf("|---|---|---|---|\n")
-
-		for feature, details := range rules {
-
-			rsp += fmt.Sprintf("| %s | %s | %t | %t |\n", feature, details.Syntax, details.Required, details.Supported)
-		}
-
-	}
-
-	return rsp
-}
 
 func main() {
 
@@ -64,32 +33,96 @@ func main() {
 		log.Fatal(err)
 	}
 
-	compliance := level.Compliance()
-	current := compliance.Spec()
+	//
 
-	ideal, err := iiifcompliance.NewLevel2ComplianceSpec()
+	type FeatureDetails struct {
+		feature          string
+		syntax           string
+		required_spec    bool
+		supported_spec   bool
+		required_actual  bool
+		supported_actual bool
+	}
+
+	fd := make(map[string]map[string]FeatureDetails)
+
+	//
+
+	spec, err := iiifcompliance.NewLevel2ComplianceSpec()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	configs := map[string]*iiifcompliance.Level2ComplianceSpec{
-		"default": ideal,
-		"current": current,
+	image := spec.Image
+
+	params := map[string]map[string]iiifcompliance.ComplianceDetails{
+		"region":   image.Region,
+		"size":     image.Size,
+		"rotation": image.Rotation,
+		"quality":  image.Quality,
+		"format":   image.Format,
 	}
 
-	labels := make([]string, 0)
-	details := make([]string, 0)
+	//
 
-	for name, cfg := range configs {
-		labels = append(labels, name)
-		details = append(details, Format(cfg))
+	for p, rules := range params {
+
+		fd[p] = make(map[string]FeatureDetails)
+
+		for feature, details := range rules {
+
+			fd[p][feature] = F{
+				feature:          feature,
+				syntax:           details.Syntax,
+				required_spec:    details.Required,
+				supported_spec:   details.Supported,
+				required_actual:  details.Required,
+				supported_actual: details.Supported,
+			}
+		}
 	}
 
-	str_labels := strings.Join(labels, " | ")
-	str_details := strings.Join(details, " | ")
+	//
 
-	fmt.Printf("| %s |\n", str_labels)
-	fmt.Printf("|---|---|\n")
-	fmt.Printf("| %s |\n", str_details)
+	compliance := level.Compliance()
+	actual := compliance.Spec()
+
+	image = actual.Image
+
+	params = map[string]map[string]iiifcompliance.ComplianceDetails{
+		"region":   image.Region,
+		"size":     image.Size,
+		"rotation": image.Rotation,
+		"quality":  image.Quality,
+		"format":   image.Format,
+	}
+
+	for p, rules := range params {
+
+		for feature, details := range rules {
+
+			_f := fd[p][feature]
+			_f.required_actual = details.Required
+			_f.supported_actual = details.Supported
+
+			fd[p][feature] = _f
+		}
+	}
+
+	//
+
+	for p, rules := range fd {
+
+		fmt.Printf("\n### [%s](http://iiif.io/api/image/2.1/index.html#%s)\n", p, p)
+		fmt.Printf("| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |\n")
+		fmt.Printf("|---|---|---|---|---|---|\n")
+
+		for feature, details := range rules {
+
+			fmt.Printf("| %s | %s | %t | %t | %t | %t |\n", feature, details.syntax, details.required_spec, details.supported_spec, details.required_actual, details.supported_actual)
+		}
+
+	}
+
 }
