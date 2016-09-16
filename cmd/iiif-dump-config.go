@@ -9,7 +9,29 @@ import (
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	"log"
+	"sort"
 )
+
+type FeatureDetails struct {
+	feature          string
+	syntax           string
+	required_spec    bool
+	supported_spec   bool
+	required_config  bool
+	supported_config bool
+}
+
+func Sorted(h map[string]FeatureDetails) []string {
+
+	keys := make([]string, 0)
+
+	for k, _ := range h {
+		keys = append(keys, k)
+	}
+
+	sort.Strings(keys)
+	return keys
+}
 
 func main() {
 
@@ -34,15 +56,6 @@ func main() {
 	}
 
 	//
-
-	type FeatureDetails struct {
-		feature          string
-		syntax           string
-		required_spec    bool
-		supported_spec   bool
-		required_actual  bool
-		supported_actual bool
-	}
 
 	fd := make(map[string]map[string]FeatureDetails)
 
@@ -77,8 +90,8 @@ func main() {
 				syntax:           details.Syntax,
 				required_spec:    details.Required,
 				supported_spec:   details.Supported,
-				required_actual:  details.Required,
-				supported_actual: details.Supported,
+				required_config:  details.Required,
+				supported_config: details.Supported,
 			}
 		}
 	}
@@ -103,8 +116,8 @@ func main() {
 		for feature, details := range rules {
 
 			_f := fd[p][feature]
-			_f.required_actual = details.Required
-			_f.supported_actual = details.Supported
+			_f.required_config = details.Required
+			_f.supported_config = details.Supported
 
 			fd[p][feature] = _f
 		}
@@ -124,9 +137,40 @@ func main() {
 		fmt.Printf("| feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |\n")
 		fmt.Printf("|---|---|---|---|---|---|\n")
 
-		for feature, details := range rules {
+		features := Sorted(rules)
 
-			fmt.Printf("| **%s** | %s | %t | %t | **%t** | **%t** |\n", feature, details.syntax, details.required_spec, details.supported_spec, details.required_actual, details.supported_actual)
+		for _, feature := range features {
+
+			details := rules[feature]
+
+			rs := "green"
+			ss := "green"
+			rc := "green"
+			sc := "green"
+
+			if !details.required_spec {
+				rs = "red"
+			}
+
+			if !details.supported_spec {
+				ss = "red"
+			}
+
+			if !details.required_config {
+				rc = "red"
+			}
+
+			if !details.supported_config {
+				sc = "red"
+			}
+
+			rs_html := fmt.Sprintf("<span style=\"background-color:%s\">%t</span>", rs, details.required_spec)
+			ss_html := fmt.Sprintf("<span style=\"background-color:%s\">%t</span>", ss, details.supported_spec)
+
+			rc_html := fmt.Sprintf("<span style=\"background-color:%s\">**%t**</span>", rc, details.required_config)
+			sc_html := fmt.Sprintf("<span style=\"background-color:%s\">**%t**</span>", sc, details.supported_config)
+
+			fmt.Printf("| **%s** | _%s_ | %s | %s | %s | %s |\n", feature, details.syntax, rs_html, ss_html, rc_html, sc_html)
 		}
 
 	}
