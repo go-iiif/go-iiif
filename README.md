@@ -422,9 +422,7 @@ Because you must define a caching layer this is here to satify the requirements 
 
 ## Example
 
-![spanking cat](misc/go-iiif-example.png)
-
-_This section is presented as-is. Currently it is just work in progress notes._
+The `iiif-server` tool comes with a canned example (consisting of exactly one image) so you can see things in the context of a slippy map. Here's what you need to do to get it set up:
 
 First, make sure have a valid `go-iiif` config file. If you don't then you can copy the example config included in this repo:
 
@@ -448,7 +446,12 @@ $> ./bin/iiif-server -config config.json -host localhost -port 8082 -example
 
 Now if you visit `http://localhost:8082/example/` in your browser you should see this:
 
+![spanking cat](misc/go-iiif-example.png)
 
+If you've pre-seed your tiles then if you open up the network console in your browser then you should see something like this, namely that the individual tiles are returned speedy and fast:
+
+![spanking cat](misc/go-iiif-example-cached.png)
+ 
 ## Performance and load testing
 
 For processing individual or small batches of images `go-iiif` ranges from pretty fast to very fast.
