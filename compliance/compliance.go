@@ -23,15 +23,15 @@ type HTTPComplianceDetails struct {
 	Supported bool   `json:"supported"`
 }
 
-type HTTPCompliance map[string]HTTPComplianceDetails
-
 /*
-   BaseUriRedirect map[string]HTTPComplianceDetails	`json:"baseUriRedirect"`
-   CORS map[string]HTTPComplianceDetails	`json:"cors"`
-   JsonLdMediaType map[string]HTTPComplianceDetails	`json:"jsonldMediaType"`
-   ProfileLinkHeader map[string]HTTPComplianceDetails	`json:"profileLinkHeader"`
-   CanonicalLinkHeader map[string]HTTPComplianceDetails	`json:"canonicalLinkHeader"`
+
+This (HTTP stuff) is here mostly to make the profile description comprehensive. If
+we ever need to do more with then I suppose it warrants a more detailed data model.
+(20160917/thisisaaronland)
+
 */
+
+type HTTPCompliance map[string]HTTPComplianceDetails
 
 type ImageCompliance struct {
 	Region   map[string]ComplianceDetails `json:"region"`
