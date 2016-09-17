@@ -454,9 +454,7 @@ If you've pre-seed your tiles then if you open up the network console in your br
  
 ## Performance and load testing
 
-For processing individual or small batches of images `go-iiif` ranges from pretty fast to very fast.
-
-For example here is a picture of Spanking Cat width a [maximum dimension of 4096 pixels](https://images.collection.cooperhewitt.org/184512_5f7f47e5b3c66207_x.jpg):
+Processing individual or small batches of images `go-iiif` ranges from pretty fast to very fast. For example here is a picture of Spanking Cat width a [maximum dimension of 4096 pixels](https://images.collection.cooperhewitt.org/184512_5f7f47e5b3c66207_x.jpg):
 
 ```
 $> ./bin/iiif-tile-seed -config config.json -refresh -scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg
