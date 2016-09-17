@@ -229,7 +229,7 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **dither** | dither | <span style="color:red;">false</span> | <span style="color:green;">false</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
 | **gray** | gray | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
 
-_Careful readers may notice the presence of an undefined (by the IIIF spec) quality named 'dither'. This is a `go-iiif` ism and is discussed in detail below in the [features.append](#featuresappend) and [non-standard features](#non-standard-features) sections._
+_Careful readers may notice the presence of an undefined (by the IIIF spec) feature named `dither`. This is a `go-iiif` -ism and discussed in detail below in the [features.append](#featuresappend) and [non-standard features](#non-standard-features) sections._
 
 ##### [format](http://iiif.io/api/image/2.1/index.html#format)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
