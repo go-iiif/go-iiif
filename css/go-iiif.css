@@ -1,14 +1,19 @@
 body {
     margin:2em;
+    font-family: sans-serif;
 }
 
 #container {
-    width:800px !important;
+    width:600px !important;
+}
+
+#container-right {
+    float:right;
 }
 
 #map {
     border: solid thin;
-    width:800px !important;
+    width:600px !important;
     height:600px !important;
 }
 

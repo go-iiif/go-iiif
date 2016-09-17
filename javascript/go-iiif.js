@@ -28,7 +28,6 @@ window.addEventListener('load', function(e){
 	});
 
 	var info = location + 'tiles/' + id + '/info.json';
-	console.log("fetch " + info);
 
 	var opts = {
 		'quality': 'color',
