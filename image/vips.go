@@ -6,7 +6,6 @@ package image
 import (
 	"errors"
 	_ "fmt"
-	"github.com/koyachi/go-atkinson"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
 	_ "log"
@@ -43,7 +42,7 @@ func NewVIPSImageFromSource(src iiifsource.Source, id string) (*VIPSImage, error
 	return &im, nil
 }
 
-func (im *VIPSImage) Read(body []byte) error {
+func (im *VIPSImage) Update(body []byte) error {
 
 	bimg := bimg.NewImage(body)
 	im.bimg = bimg
@@ -201,23 +200,14 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		return err
 	}
 
-	// none of what follows is part of the IIIF spec
+	// None of what follows is part of the IIIF spec so it's not clear
+	// to me yet how to make this in to a sane interface. For the time
+	// being since there is only lipvips we'll just take the opportunity
+	// to think about it... (20160917/thisisaaronland)
 
 	if t.Quality == "dither" {
 
-		goimg, err := IIIFImageToGolangImage(im)
-
-		if err != nil {
-			return err
-		}
-
-		dithered, err := atkinson.Dither(goimg)
-
-		if err != nil {
-			return err
-		}
-
-		err = GolangImageToIIIFImage(dithered, im)
+		err = DitherImage(im)
 
 		if err != nil {
 			return err

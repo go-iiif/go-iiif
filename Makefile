@@ -28,13 +28,15 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/context"
 	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/mux"
 	@GOPATH=$(GOPATH) go get -u "github.com/patrickmn/go-cache"
+	@GOPATH=$(GOPATH) go get -u "golang.org/x/image/tiff"
+	@GOPATH=$(GOPATH) go get -u "golang.org/x/image/webp"
 	@GOPATH=$(GOPATH) go get -u "gopkg.in/h2non/bimg.v1"
 	@GOPATH=$(GOPATH) go get -u "github.com/koyachi/go-atkinson"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-sanitize"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-csv"
 	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
 
-vendr: deps
+vendor-deps: deps
 	if test ! -d vendor; then mkdir vendor; fi
 	if test -d vendor/src; then rm -rf vendor/src; fi
 	cp -r src vendor/src

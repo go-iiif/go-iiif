@@ -10,7 +10,7 @@ import (
 type Image interface {
 	Identifier() string
 	Transform(*Transformation) error // http://iiif.io/api/image/2.1/#order-of-implementation
-	Read([]byte) error
+	Update([]byte) error
 	Body() []byte
 	Format() string
 	ContentType() string

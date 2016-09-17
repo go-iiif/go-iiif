@@ -420,6 +420,20 @@ Cache images in memory. Memory caches have two addition properties:
 
 Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
 
+## Non-standard features
+
+### dithering
+
+```
+	"append": {
+	    "quality": {
+		"dither": { "syntax": "dither", "required": false, "supported": true, "match": "^dither$" }
+	    }
+	}
+```
+
+![spanking cat](misc/go-iiif-dither.png)
+
 ## Example
 
 The `iiif-server` tool comes with a canned example (consisting of exactly one image) so you can see things in the context of a slippy map. Here's what you need to do to get it set up:
