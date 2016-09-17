@@ -1,0 +1,21 @@
+body {
+    margin:2em;
+}
+
+#container {
+    width:800px !important;
+}
+
+#map {
+    border: solid thin;
+    width:800px !important;
+    height:600px !important;
+}
+
+#image {
+    float:right;
+    margin-top:.5em;
+    border-radius: 0;
+    border: solid thin;
+    font-size:1.5em;
+}
