@@ -75,7 +75,10 @@ window.addEventListener('load', function(e){
 			
     			// window.open(body);
 		});
-		
-	});
-	
+
+	};
+
 });
+		       
+		       	
+
