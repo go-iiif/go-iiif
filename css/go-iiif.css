@@ -8,8 +8,13 @@ body {
 a {
     font-weight: 700;
     text-decoration: none;
-    color: #1dacd6;
+    color: #1ca9c9;
 }
+
+.hey-look {
+    color: #0a7e8c;
+}
+
 #container {
     width:600px !important;
 }
