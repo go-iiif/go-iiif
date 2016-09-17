@@ -1,7 +1,7 @@
 package level
 
 import (
-	"fmt"
+	_ "fmt"
 	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"log"
@@ -9,9 +9,6 @@ import (
 
 type Level2 struct {
 	Level      `json:"-"`
-	Context    string                    `json:@profile`
-	Id         string                    `json:"@id"`
-	Type       string                    `json:"@type"` // Optional or iiif:Image
 	Formats    []string                  `json:"formats"`
 	Qualities  []string                  `json:"qualities"`
 	Supports   []string                  `json:"supports"`
@@ -26,12 +23,7 @@ func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
 		log.Fatal(err)
 	}
 
-	id := fmt.Sprintf("%s/level2.json", endpoint)
-
 	l := Level2{
-		Context:    "http://iiif.io/api/image/2/context.json",
-		Id:         id,
-		Type:       "iiif:ImageProfile",
 		Formats:    compliance.Formats(),
 		Qualities:  compliance.Qualities(),
 		Supports:   compliance.Supports(),

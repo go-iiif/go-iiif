@@ -2,24 +2,25 @@ package profile
 
 import (
 	"fmt"
-	"github.com/thisisaaronland/go-iiif/image"
+	iiifimage "github.com/thisisaaronland/go-iiif/image"
+	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 )
 
 type Profile struct {
-	Context  string   `json:"@profile"`
-	Id       string   `json:"@id"`
-	Type     string   `json:"@type"` // Optional or iiif:Image
-	Protocol string   `json:"protocol"`
-	Width    int      `json:"width"`
-	Height   int      `json:"height"`
-	Profile  []string `json:"profile"`
+	Context  string        `json:"@context"`
+	Id       string        `json:"@id"`
+	Type     string        `json:"@type"` // Optional or iiif:Image
+	Protocol string        `json:"protocol"`
+	Width    int           `json:"width"`
+	Height   int           `json:"height"`
+	Profile  []interface{} `json:"profile"`
 	//	Sizes    []string `json:"sizes"` // Optional, existing/supported sizes.
 	//	Tiles    []string `json:"tiles"` // Optional
 }
 
-func NewProfile(endpoint string, im image.Image) (*Profile, error) {
+func NewProfile(endpoint string, image iiifimage.Image, level iiiflevel.Level) (*Profile, error) {
 
-	dims, err := im.Dimensions()
+	dims, err := image.Dimensions()
 
 	if err != nil {
 		return nil, err
@@ -27,14 +28,17 @@ func NewProfile(endpoint string, im image.Image) (*Profile, error) {
 
 	p := Profile{
 		Context:  "http://iiif.io/api/image/2/context.json",
-		Id:       fmt.Sprintf("%s/%s", endpoint, im.Identifier()),
+		Id:       fmt.Sprintf("%s/%s", endpoint, image.Identifier()),
 		Type:     "iiif:Image",
 		Protocol: "http://iiif.io/api/image",
 		Width:    dims.Width(),
 		Height:   dims.Height(),
-		Profile: []string{
-			fmt.Sprintf("%s/level2.json", endpoint),
+		Profile: []interface{}{
+			"http://iiif.io/api/image/2/level2.json",
+			level,
 		},
+		//Sizes: []ProfileSize{},
+		//Tiles: []ProfileTile{},
 	}
 
 	return &p, nil

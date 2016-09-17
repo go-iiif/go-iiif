@@ -41,7 +41,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	level, err := iiiflevel.NewLevelFromConfig(config, "example.com")
+	level, err := iiiflevel.NewLevelFromConfig(config, *endpoint)
 
 	if err != nil {
 		log.Fatal(err)
@@ -251,7 +251,13 @@ func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iii
 		count += len(crops)
 	}
 
-	profile, err := iiifprofile.NewProfile(endpoint, image)
+	level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
+
+	if err != nil {
+		return count, err
+	}
+
+	profile, err := iiifprofile.NewProfile(endpoint, image, level)
 
 	if err != nil {
 		return count, err

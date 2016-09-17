@@ -44,65 +44,54 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 
 #### Endpoints
 
-##### GET /level2.json
-
-```
-curl -s http://localhost:8082/level2.json | python -mjson.tool
-{
-    "@id": "http://localhost:8082/level2.json",
-    "@type": "iiif:ImageProfile",
-    "Context": "http://iiif.io/api/image/2/context.json",
-    "formats": [
-        "webp",
-        "jpg",
-        "png",
-        "tif"
-    ],
-    "qualities": [
-        "default",
-        "color"
-    ],
-    "supports": [
-        "full",
-        "regionByPx",
-        "regionByPct",
-        "sizeByPct",
-        "sizeByConfinedWh",
-        "sizeByWh",
-        "full",
-        "max",
-        "sizeByW",
-        "sizeByH",
-        "none",
-        "rotationBy90s",
-        "mirroring",
-        "baseUriRedirect",
-        "cors",
-        "jsonldMediaType"
-    ]
-}
-```
-
-Return the [profile description](http://iiif.io/api/image/2.1/#profile-description) for the IIIF server.
-
 ##### GET /{ID}/info.json
 
 ```
 curl -s http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/info.json | python -mjson.tool
 {
+    "@context": "http://iiif.io/api/image/2/context.json",
     "@id": "http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg",
-    "@profile": "http://iiif.io/api/image/2/context.json",
     "@type": "iiif:Image",
     "height": 4096,
     "profile": [
-        "http://localhost:8082/level2.json"
+        "http://iiif.io/api/image/2/level2.json",
+        {
+            "formats": [
+                "tif",
+                "webp",
+                "jpg",
+                "png"
+            ],
+            "qualities": [
+                "default",
+                "color"
+            ],
+            "supports": [
+                "full",
+                "regionByPx",
+                "regionByPct",
+                "sizeByWh",
+                "full",
+                "max",
+                "sizeByW",
+                "sizeByH",
+                "sizeByPct",
+                "sizeByConfinedWh",
+                "none",
+                "rotationBy90s",
+                "mirroring",
+                "baseUriRedirect",
+                "cors",
+                "jsonldMediaType"
+            ]
+        }
     ],
     "protocol": "http://iiif.io/api/image",
     "width": 3897
 }
 ```
 
-Return the [technical properties](http://iiif.io/api/image/2.1/#technical-properties) for an identifier.
+Return the [profile description](http://iiif.io/api/image/2.1/#profile-description) for an identifier.
 
 ##### GET /{ID}/{REGION}/{SIZE}/{ROTATION}/{QUALITY}.{FORMAT}
 

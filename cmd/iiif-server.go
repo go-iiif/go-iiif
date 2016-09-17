@@ -102,33 +102,6 @@ func ExpvarHandlerFunc(host string) (http.HandlerFunc, error) {
 	return http.HandlerFunc(f), nil
 }
 
-func ProfileHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
-
-	f := func(w http.ResponseWriter, r *http.Request) {
-
-		endpoint := EndpointFromRequest(r)
-		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		b, err := json.Marshal(level)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Write(b)
-	}
-
-	return http.HandlerFunc(f), nil
-}
-
 func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
@@ -155,7 +128,15 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 		}
 
 		endpoint := EndpointFromRequest(r)
-		profile, err := iiifprofile.NewProfile(endpoint, image)
+
+		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		profile, err := iiifprofile.NewProfile(endpoint, image, level)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -378,12 +359,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ProfileHandler, err := ProfileHandlerFunc(config)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	InfoHandler, err := InfoHandlerFunc(config)
 
 	if err != nil {
@@ -398,7 +373,6 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/level2.json", ProfileHandler)
 	router.HandleFunc("/{identifier}/info.json", InfoHandler)
 	router.HandleFunc("/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", ImageHandler)
 
