@@ -17,7 +17,7 @@
 </head>
 <body>
   
-  <div id="container" style="float:right;">
+  <div id="container" style="float:right;margin-right:2em;">
   <div id="map"></div>
   <button id="image" title="take a picture of the image">📷</button>
   </div>
@@ -25,9 +25,19 @@
     <div>
     <h2>go-iiif</h2>
 
+    <p>This is a fork of <a href="https://github.com/greut/iiif">@greut's iiif package</a> that moves most of the processing logic for the <a href="http://iiif.io/api/image/">IIIF Image API</a> in to discrete Go packages and defines source, derivative and graphics details in a JSON config file. There is an additional caching layer for both source images and derivatives.</p>
+
+    <p>This is an example of a <a href="https://github.com/mejackreed/Leaflet-IIIF">@mejackreed 's Leaflet-IIIF</a> slippymap provider used in conjunction with a series of tiles images generated using the <code>iiif-tile-seed</code> utility (and hosted on this website).</p>
+
+    <p>The tiles were generated like this:</p>
+    
     <pre style="x-overflow: scroll;">
-./bin/iiif-tile-seed -config config-example.json -refresh -endpoint https://thisisaaronland.github.io/go-iiif/tiles -scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg
-2016/09/17 22:25:59 [184512_5f7f47e5b3c66207_x.jpg] time to process 340 tiles: 1m33.924948772s
+./bin/iiif-tile-seed \
+-config config.json \
+-endpoint https://thisisaaronland.github.io/go-iiif/tiles \
+-scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg \
+-refresh
+[184512_5f7f47e5b3c66207_x.jpg] time to process 340 tiles: 1m33.924948772s
     </pre>
     
   </div>
