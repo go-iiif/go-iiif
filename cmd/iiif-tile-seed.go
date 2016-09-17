@@ -158,11 +158,17 @@ func main() {
 				dest_id = pointers[0]
 			}
 
-			_, err = SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+			t1 := time.Now()
+
+			count, err := SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+
+			t2 := time.Since(t1)
 
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			log.Printf("[%s] time to process %d tiles: %v\n", id, count, t2)
 		}
 	}
 }

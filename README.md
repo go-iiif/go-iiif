@@ -451,7 +451,28 @@ Now if you visit `http://localhost:8082/example/` in your browser you should see
 
 ## Performance and load testing
 
-For processing individual or small batches of images `go-iiif` is very fast.
+For processing individual or small batches of images `go-iiif` ranges from pretty fast to very fast.
+
+For example here is a picture of Spanking Cat width a [maximum dimension of 4096 pixels](https://images.collection.cooperhewitt.org/184512_5f7f47e5b3c66207_x.jpg):
+
+```
+$> ./bin/iiif-tile-seed -config config.json -refresh -scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg
+[184512_5f7f47e5b3c66207_x.jpg] time to process 340 tiles: 27.537429902s
+```
+
+Here is the same image but with a [maximum dimension of 2048 pixels](https://images.collection.cooperhewitt.org/184512_b812003c86c3525b_k.jpg):
+
+```
+$> ./bin/iiif-tile-seed -config config.json -refresh -scale-factors 4,2,1 184512_b812003c86c3525b_k.jpg
+[184512_b812003c86c3525b_k.jpg] time to process 84 tiles: 1.894074539s
+```
+
+Note that we are only generating tiles for three scale factors instead of four. But that's not where things slow down as we can see seeding tiles for only three scale factors for the larger image:
+
+```
+$> ./bin/iiif-tile-seed -config config.json -refresh -scale-factors 4,2,1 184512_5f7f47e5b3c66207_x.jpg
+[184512_5f7f47e5b3c66207_x.jpg] time to process 336 tiles: 26.925253066s
+```
 
 For processing large volumes of images the bottlenecks will be:
 
