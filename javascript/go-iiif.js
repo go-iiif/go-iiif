@@ -1,5 +1,7 @@
 window.addEventListener('load', function(e){
 
+	console.log("HELLO");
+	
 	var id = '184512_5f7f47e5b3c66207_x.jpg';	// disk
 	
 	var qs = window.location.search;
