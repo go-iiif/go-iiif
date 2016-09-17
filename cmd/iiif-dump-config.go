@@ -67,7 +67,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	image := spec.Image
+	//
+
+	compliance := level.Compliance()
+	actual := compliance.Spec()
+
+	image = actual.Image
 
 	params := map[string]map[string]iiifcompliance.ComplianceDetails{
 		"region":   image.Region,
@@ -98,10 +103,7 @@ func main() {
 
 	//
 
-	compliance := level.Compliance()
-	actual := compliance.Spec()
-
-	image = actual.Image
+	image := spec.Image
 
 	params = map[string]map[string]iiifcompliance.ComplianceDetails{
 		"region":   image.Region,
@@ -116,8 +118,8 @@ func main() {
 		for feature, details := range rules {
 
 			_f := fd[p][feature]
-			_f.required_config = details.Required
-			_f.supported_config = details.Supported
+			_f.required_spec = details.Required
+			_f.supported_spec = details.Supported
 
 			fd[p][feature] = _f
 		}
