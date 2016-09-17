@@ -50,8 +50,9 @@ window.addEventListener('load', function(e){
 
 			var b = document.getElementById("image");
 			b.setAttribute("disabled", "disabled");
-			
-			b.innerHTML = '<img src="images/party-parrot.gif" />';
+
+			b.innerText = 'W';
+			// b.innerHTML = '<img src="images/party-parrot.gif" />';
 			
 			var dt = new Date();
 			var iso = dt.toISOString();
