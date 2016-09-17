@@ -2,7 +2,7 @@ body {
     margin:2em;
     font-family: serif;
     font-size: 1.2em;
-    line-height: 1.3em;
+    line-height: 1.4em;
 }
 
 #container {
@@ -31,6 +31,6 @@ body {
 
 pre {
     font-size:small !important;
-    line-height: 1em !important;
+    line-height: 1.1em !important;
     color: darkslategrey;
 }
