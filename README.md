@@ -47,7 +47,7 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 ##### GET /{ID}/info.json
 
 ```
-curl -s http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/info.json | python -mjson.tool
+$> curl -s http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/info.json | python -mjson.tool
 {
     "@context": "http://iiif.io/api/image/2/context.json",
     "@id": "http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg",
@@ -95,7 +95,11 @@ Return the [profile description](http://iiif.io/api/image/2.1/#profile-descripti
 
 ##### GET /{ID}/{REGION}/{SIZE}/{ROTATION}/{QUALITY}.{FORMAT}
 
-_Please write me_
+```
+$> curl -s http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,250/0/default.jpg
+```
+
+![](misc/o-iiif-crop.jpg)
 
 ##### GET /debug/vars
 
@@ -176,7 +180,7 @@ Details about how images should be processed. Because only [libvips]() is suppor
 	}
 ```
 
-The `features` block allows you to enable or disable specific IIIF features.
+The `features` block allows you to enable or disable specific IIIF features. _Currently only image related features may be manipulated._
 
 For example the level 2 spec does not say GIF outputs is required so the level 2 compliance definition in `go-iiif` disables it by default. If you are using a graphics engine (not `libvips` though) that can produce GIF files you would enable it here.
 
