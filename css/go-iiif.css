@@ -5,6 +5,10 @@ body {
     line-height: 1.4em;
 }
 
+a {
+    font-weight: 700;
+    text-decoration: none;    
+}
 #container {
     width:600px !important;
 }
