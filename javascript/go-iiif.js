@@ -40,6 +40,11 @@ window.addEventListener('load', function(e){
 	var i = document.getElementById("image");
 	i.onclick = function(){
 		
+		var b = document.getElementById("image");
+		b.setAttribute("disabled", "disabled");
+
+		b.innerHTML = '<img src="images/party-parrot.gif" />';
+
 		leafletImage(map, function(err, canvas) {
 			
     			if (err){
@@ -47,12 +52,6 @@ window.addEventListener('load', function(e){
     				alert("Argh! There was a problem capturing your image");
     				return false;
     			}
-
-			var b = document.getElementById("image");
-			b.setAttribute("disabled", "disabled");
-
-			b.innerText = 'W';
-			// b.innerHTML = '<img src="images/party-parrot.gif" />';
 			
 			var dt = new Date();
 			var iso = dt.toISOString();
@@ -80,7 +79,7 @@ window.addEventListener('load', function(e){
 
 				var b = document.getElementById("image");
 				b.removeAttribute("disabled");
-				b.innerText = '📷<';
+				b.innerHTML = '📷<';
 			});
 			
     			// window.open(body);
