@@ -557,6 +557,10 @@ All of the notes so far have assumed that you are using `iiif-tile-seed`. If you
 * https://github.com/h2non/bimg/
 * http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS
 
+### Slippy map stuff
+
+* https://github.com/mejackreed/Leaflet-IIIF
+
 ### Other stuff
 
 * [Spanking Cat](https://collection.cooperhewitt.org/objects/18382391/)
