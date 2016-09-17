@@ -78,6 +78,17 @@ func NewTransformation(level iiiflevel.Level, region string, size string, rotati
 		return nil, err
 	}
 
+	// http://iiif.io/api/image/2.1/#canonical-uri-syntax (sigh...)
+
+	if quality == "default" {
+
+		quality, err = level.Compliance().DefaultQuality()
+
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	t := Transformation{
 		level:    level,
 		Region:   region,

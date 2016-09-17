@@ -37,10 +37,10 @@ var level2_spec = `{
 	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" }
 	     },
 	     "quality": {
-	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$" },
-	     		"color":   { "syntax": "color",   "required": false, "supported": true, "match": "^colou?r$" },
-	     		"gray":    { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$" },			
-	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$" }
+	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": false },
+	     		"color":   { "syntax": "color",   "required": false, "supported": true, "match": "^colou?r$", "default": true },
+	     		"gray":    { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$", "default": false },			
+	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$", "default": false }
              },
 	     "format": {
 	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
@@ -336,4 +336,24 @@ func (c *Level2Compliance) properties(sect map[string]ComplianceDetails) []strin
 func (c *Level2Compliance) Spec() *Level2ComplianceSpec {
 
 	return c.spec
+}
+
+func (c *Level2Compliance) DefaultQuality() (string, error) {
+
+	quality := ""
+
+	for q, details := range c.spec.Image.Quality {
+
+		if details.Supported && details.Default {
+			quality = q
+			break
+		}
+
+	}
+
+	if quality == "" {
+		return "", errors.New("Unable to determine default quality")
+	}
+
+	return quality, nil
 }
