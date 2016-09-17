@@ -16,20 +16,20 @@
   <link rel="stylesheet" type="text/css" href="css/go-iiif.css" />
 </head>
 <body>
+  
+  <div id="container" style="float:right;">
+  <div id="map"></div>
+  <button id="image" title="take a picture of the image">📷</button>
+  </div>
 
-  <div id="container-right">
+    <div>
     <h2>go-iiif</h2>
 
-    <pre>
+    <pre style="x-overflow: scroll;">
 ./bin/iiif-tile-seed -config config-example.json -refresh -endpoint https://thisisaaronland.github.io/go-iiif/tiles -scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg
 2016/09/17 22:25:59 [184512_5f7f47e5b3c66207_x.jpg] time to process 340 tiles: 1m33.924948772s
     </pre>
     
-  </div>
-  
-  <div id="container">
-  <div id="map"></div>
-  <button id="image" title="take a picture of the image">📷</button>
   </div>
 
 </body>
