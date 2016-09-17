@@ -51,21 +51,19 @@ var level2_spec = `{
       	     	       "jp2": { "syntax": "jp2",  "required": false, "supported": false, "match": "^jp2$" },
        	     	       "webp": { "syntax": "webp", "required": false, "supported": false, "match": "^webp$" }
 	     }	     
+    },
+    "http": {
+            "baseUriRedirect":     { "name": "base URI redirects",    "required": true,  "supported": true },
+	    "cors":                { "name": "CORS",                  "required": true,  "supported": true },
+	    "jsonldMediaType":     { "name": "json-ld media type",    "required": true,  "supported": true },
+	    "profileLinkHeader":   { "name": "profile link header",   "required": false, "supported": false },
+	    "canonicalLinkHeader": { "name": "canonical link header", "required": false, "supported": false }
     }
 }`
 
-/*
-    "http": [
-    	    { "feature": "base URI redirects", "name": "baseUriRedirect", "required": true, "supported": 1 },
-	    { "feature": "CORS", "name": "cors", "required": true, "supported": 1 },
-	    { "feature": "json-ld media type", "name": "jsonldMediaType", "required": true, "supported": 1 },
-	    { "feature": "profile link header", "name": "profileLinkHeader", "required": false, "supported": 0 },
-	    { "feature": "canonical link header", "name": "canonicalLinkHeader", "required": false, "supported": 0 }
-    ]
-*/
-
 type Level2ComplianceSpec struct {
 	Image ImageCompliance `json:"image"`
+	HTTP  HTTPCompliance  `json:"http"`
 }
 
 type Level2Compliance struct {
@@ -235,6 +233,34 @@ func (c *Level2Compliance) Formats() []string {
 func (c *Level2Compliance) Qualities() []string {
 
 	return c.properties(c.spec.Image.Quality)
+}
+
+func (c *Level2Compliance) Supports() []string {
+
+	supports := make([]string, 0)
+
+	for _, s := range c.properties(c.spec.Image.Region) {
+		supports = append(supports, s)
+	}
+
+	for _, s := range c.properties(c.spec.Image.Size) {
+		supports = append(supports, s)
+	}
+
+	for _, s := range c.properties(c.spec.Image.Rotation) {
+		supports = append(supports, s)
+	}
+
+	for name, details := range c.spec.HTTP {
+
+		if !details.Supported {
+			continue
+		}
+
+		supports = append(supports, name)
+	}
+
+	return supports
 }
 
 func (c *Level2Compliance) isvalid(property string, value string) (bool, error) {

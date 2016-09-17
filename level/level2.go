@@ -34,7 +34,7 @@ func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
 		Type:       "iiif:ImageProfile",
 		Formats:    compliance.Formats(),
 		Qualities:  compliance.Qualities(),
-		Supports:   []string{},
+		Supports:   compliance.Supports(),
 		compliance: compliance,
 	}
 

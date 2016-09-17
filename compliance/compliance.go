@@ -16,6 +16,22 @@ type ComplianceDetails struct {
 	Match     string `json:"match,omitempty"`
 }
 
+type HTTPComplianceDetails struct {
+	Name      string `json:"name"`
+	Required  bool   `json:"required"`
+	Supported bool   `json:"supported"`
+}
+
+type HTTPCompliance map[string]HTTPComplianceDetails
+
+/*
+   BaseUriRedirect map[string]HTTPComplianceDetails	`json:"baseUriRedirect"`
+   CORS map[string]HTTPComplianceDetails	`json:"cors"`
+   JsonLdMediaType map[string]HTTPComplianceDetails	`json:"jsonldMediaType"`
+   ProfileLinkHeader map[string]HTTPComplianceDetails	`json:"profileLinkHeader"`
+   CanonicalLinkHeader map[string]HTTPComplianceDetails	`json:"canonicalLinkHeader"`
+*/
+
 type ImageCompliance struct {
 	Region   map[string]ComplianceDetails `json:"region"`
 	Size     map[string]ComplianceDetails `json:"size"`
