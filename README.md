@@ -99,9 +99,9 @@ Return the [profile description](http://iiif.io/api/image/2.1/#profile-descripti
 $> curl -s http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,250/0/default.jpg
 ```
 
-![spanking cat, cropped](misc/go-iiif-crop.jpg)
+Return an image derived from an identifier and one or more [IIIF parameters](http://iiif.io/api/image/2.1/#image-request-parameters). For example:
 
-Return an image derived from an identifier and one or more [IIIF parameters](http://iiif.io/api/image/2.1/#image-request-parameters). 
+![spanking cat, cropped](misc/go-iiif-crop.jpg)
 
 ##### GET /debug/vars
 
