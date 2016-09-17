@@ -15,7 +15,11 @@
 	    "rotation": [ "rotationArbitrary" ],
 	    "quality": [ "bitonal" ]
 	},
-	"append": {}
+	"append": {
+	    "quality": {
+		"dither": { "syntax": "dither", "required": false, "supported": true, "match": "^dither$" }
+	    }
+	}
     },
     "images": {
 	"source": { "name": "Disk", "path": "example/images" },
