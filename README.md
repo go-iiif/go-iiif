@@ -4,7 +4,7 @@
 
 ## What is this?
 
-This is a fork [@greut's iiif](https://github.com/greut/iiif) package that moves most of the processing logic of implementing the [IIIF Image API](http://iiif.io/api/image/) in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
+This is a fork [@greut's iiif](https://github.com/greut/iiif) package that moves most of the processing logic in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
 
 I did this to better understand the architecture behind (and to address my own concerns about) version 2 of the [IIIF Image API](http://iiif.io/api/image/2.1/index.html).
 
@@ -422,7 +422,7 @@ Because you must define a caching layer this is here to satify the requirements 
 
 ## Non-standard features
 
-### dithering
+### Dithering
 
 ```
 	"append": {
@@ -433,6 +433,18 @@ Because you must define a caching layer this is here to satify the requirements 
 ```
 
 ![spanking cat](misc/go-iiif-dither.png)
+
+For example `http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dither.png`
+
+![spanking cat](misc/go-iiif-dither-detail.png)
+
+There are a few caveats about dithering images:
+
+* The first thing to know is that the dithering is a [pure Go implementation](https://github.com/koyachi/go-atkinson) so it's not handled by `lipvips`.
+* The second is that the dithering happens _after_ the `libvips` processing.
+* This is relevant because there are some image format for _output_ that Go does not support natively. For example [webp](https://godoc.org/golang.org/x/image/webp).
+* It is possible to track all of this stuff in code and juggle output formats and reprocessing (in `libvips`) but that code has not been written yet.
+* So you will need to track the sometimes still-rocky relationship between features and output formats yourself.
 
 ## Example
 

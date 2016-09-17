@@ -19,5 +19,4 @@ func DitherImage(im Image) error {
 	}
 
 	return GolangImageToIIIFImage(dithered, im)
-
 }
