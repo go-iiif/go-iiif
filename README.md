@@ -426,9 +426,24 @@ Because you must define a caching layer this is here to satify the requirements 
 
 _This section is presented as-is. Currently it is just work in progress notes._
 
+First, make sure have a valid `go-iiif` config file. If you don't then you can copy the example config included in this repo:
+
+```
+$> cp config.json.example config.json
+```
+
+Next, pre-seed some tiles for an image. You don't necessarily need to do this step but it's included to show you how it's done:
+
 ```
 $> ./bin/iiif-tile-seed -config config.json -endpoint http://localhost:8082 -scale-factors 8,4,2,1 184512_5f7f47e5b3c66207_x.jpg
-$> ./bin/iiif-server -config config.json -port 8082 -example
+```
+
+_Note how we are specifying the endpoint where these tiles will be served from. That's necessary so that we can also pre-seed a [profile description](http://iiif.io/api/image/2.1/#profile-description) for each image as well as tiles._
+
+Finally start up the `iiff-server` and be sure to pass the `-example` flag:
+
+```
+$> ./bin/iiif-server -config config.json -host localhost -port 8082 -example
 ```
 
 ## Performance and load testing

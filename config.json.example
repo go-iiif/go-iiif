@@ -22,6 +22,6 @@
 	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
     },
     "derivatives": {
-	"cache": { "name": "Disk", "path": "example/cache/images" }
+	"cache": { "name": "Disk", "path": "example/cache" }
     }
 }
