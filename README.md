@@ -40,7 +40,7 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/pct:41.6,7.5,40,70/full/0/d
 curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 ```
 
-`iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API](). For example:
+`iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API](http://iiif.io/api/image/2.1/).
 
 #### Endpoints
 
