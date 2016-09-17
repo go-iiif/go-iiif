@@ -226,8 +226,10 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **bitonal** | bitonal | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:red;">false</span> |
 | **color** | color | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
 | **default** | default | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
-| **dither** | dither | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
+| **dither** | dither | <span style="color:red;">false</span> | <span style="color:green;">false</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
 | **gray** | gray | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
+
+_Careful readers may notice the presence of an undefined (by the IIIF spec) quality named 'dither'. This is a `go-iiif` ism and is discussed in detail below in the [features.append](#featuresappend) and [non-standard features](#non-standard-features) sections._
 
 ##### [format](http://iiif.io/api/image/2.1/index.html#format)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
@@ -433,9 +435,11 @@ Because you must define a caching layer this is here to satify the requirements 
 	}
 ```
 
-![spanking cat](misc/go-iiif-dither.png)
+`go-iiif` comes with one non-standard IIIF `quality` feature by default: The ability to create a black and white "half-tone" derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms).
 
-For example `http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dither.png`
+Dithering is enabled in the [example config file](config.json.example) and you can invoke it like this: `http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dither.png`
+
+And here's what you should see:
 
 ![spanking cat](misc/go-iiif-dither-detail.png)
 
