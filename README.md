@@ -541,6 +541,10 @@ All of the notes so far have assumed that you are using `iiif-tile-seed`. If you
 * The `iiif-server` does [not support TLS](https://github.com/thisisaaronland/go-iiif/issues/5) yet.
 * There is no way to change the default `quality` parameter yet. It is `color`.
 
+## Bugs?
+
+[Probably.](https://github.com/thisisaaronland/go-iiif/issues)
+
 ## See also
 
 ### IIIF stuff
