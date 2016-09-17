@@ -451,7 +451,15 @@ Now if you visit `http://localhost:8082/example/` in your browser you should see
 If you've pre-seed your tiles then if you open up the network console in your browser then you should see something like this, namely that the individual tiles are returned speedy and fast:
 
 ![spanking cat](misc/go-iiif-example-cached.png)
- 
+
+### Generating static images 
+
+![spanking cat](misc/go-iiif-example-screenshot.png)
+
+The example included with `go-iiif` has an added super power which is to allow you to create a static image of the current state of the map/image. Just click the handy `📷` button to the bottom right of the image and you will be prompted for where you'd like to save your new image.
+
+_This is not a feature of `go-iiif`. It's entirely client-side magic but it's still pretty cool..._
+
 ## Performance and load testing
 
 ### iiif-tile-seed
