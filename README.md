@@ -390,7 +390,12 @@ $> ./bin/iiif-server -config config.json -port 8082 -example
 
 ## See also
 
+### IIIF stuff
+
 * http://iiif.io/api/image/2.1/
+
+### Go stuff
+
 * https://github.com/greut/iiif/
 * https://github.com/h2non/bimg/
 * http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS
