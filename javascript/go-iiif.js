@@ -29,8 +29,14 @@ window.addEventListener('load', function(e){
 
 	var info = location + 'tiles/' + id + '/info.json';
 	console.log("fetch " + info);
+
+	var opts = {
+		'quality': 'color',
+	};
+
+	var layer = L.tileLayer.iiif(info, opts);
 	
-	map.addLayer(L.tileLayer.iiif(info));    
+	map.addLayer(layer);    
 
 	map.on('load', function() {
 		
