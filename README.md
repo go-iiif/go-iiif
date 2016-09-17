@@ -481,7 +481,7 @@ Now if you visit `http://localhost:8082/example/` in your browser you should see
 
 ![spanking cat](misc/go-iiif-example.png)
 
-If you've pre-seed your tiles then if you open up the network console in your browser then you should see something like this, namely that the individual tiles are returned speedy and fast:
+Assuming you've pre-seed your tiles if you open up the network console in your browser then you should see something like this, namely that the individual tiles are returned speedy and fast:
 
 ![spanking cat](misc/go-iiif-example-cached.png)
 
