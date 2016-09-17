@@ -1,9 +1,8 @@
 window.addEventListener('load', function(e){
 
-	console.log("HELLO");
-	
 	var id = '184512_5f7f47e5b3c66207_x.jpg';	// disk
-	
+
+	/*
 	var qs = window.location.search;
 	qs = qs.substring(1);
 	
@@ -19,6 +18,7 @@ window.addEventListener('load', function(e){
 	if (params['id']){
 		id = params['id'];
 	}			 
+	*/
 	
 	var map = L.map('map', {
 		center: [0, 0],
@@ -26,49 +26,54 @@ window.addEventListener('load', function(e){
 		zoom: 1,
 		minZoom: 1,
 	});
-	
-	var i = document.getElementById("image");
-	i.onclick = function(){
-		
-		leafletImage(map, function(err, canvas) {
-			
-    			if (err){
-    				console.log(err);
-    				alert("Argh! There was a problem capturing your image");
-    				return false;
-    			}
-			
-			var dt = new Date();
-			var iso = dt.toISOString();
-			var iso = iso.split('T');
-			var ymd = iso[0];
-			ymd = ymd.replace("-", "", "g");
-			
-			var bounds = map.getPixelBounds();
-			var zoom = map.getZoom();
-			
-			var pos = [
-				bounds.min.x,
-				bounds.min.y,
-				bounds.max.x,
-				bounds.max.y,
-				zoom
-			];
-			
-			pos = pos.join("-");
-			
-			var name = id + "-" + ymd + "-" + pos + ".png";
-			
-    			canvas.toBlob(function(blob) {
-    				saveAs(blob, name);
-			});
-			
-    			// window.open(body);
-		});
-	};
-	
-	var info = location + '/tiles/' + id + '/info.json';
+
+	var info = location + 'tiles/' + id + '/info.json';
 	console.log("fetch " + info);
 	
 	map.addLayer(L.tileLayer.iiif(info));    
+
+	map.on('load', function() {
+		
+		var i = document.getElementById("image");
+		i.onclick = function(){
+			
+			leafletImage(map, function(err, canvas) {
+				
+    				if (err){
+    					console.log(err);
+    					alert("Argh! There was a problem capturing your image");
+    					return false;
+    				}
+				
+				var dt = new Date();
+				var iso = dt.toISOString();
+				var iso = iso.split('T');
+				var ymd = iso[0];
+				ymd = ymd.replace("-", "", "g");
+				
+				var bounds = map.getPixelBounds();
+				var zoom = map.getZoom();
+				
+				var pos = [
+					bounds.min.x,
+					bounds.min.y,
+					bounds.max.x,
+					bounds.max.y,
+					zoom
+				];
+				
+				pos = pos.join("-");
+				
+				var name = id + "-" + ymd + "-" + pos + ".png";
+				
+    				canvas.toBlob(function(blob) {
+    					saveAs(blob, name);
+				});
+				
+    				// window.open(body);
+			});
+		};
+		
+	});
+	
 });
