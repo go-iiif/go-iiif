@@ -458,7 +458,7 @@ If you've pre-seed your tiles then if you open up the network console in your br
 
 The example included with `go-iiif` has an added super power which is to allow you to create a static image of the current state of the map/image. Just click the handy `📷` button to the bottom right of the image and you will be prompted for where you'd like to save your new image.
 
-_This is not a feature of `go-iiif`. It's entirely client-side magic but it's still pretty cool..._
+_This is not a feature of `go-iiif`. It's [entirely client-side magic in your browser](example/index.js) but it's still pretty cool..._
 
 ## Performance and load testing
 
