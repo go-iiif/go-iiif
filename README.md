@@ -4,7 +4,7 @@
 
 ## What is this?
 
-This is a fork of [@greut's iiif](https://github.com/greut/iiif) package that moves most of the processing logic for the [IIIF Image API](http://iiif.io/api/image/) in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
+This is a fork of [@greut's iiif](https://github.com/greut/iiif) package that moves all of the processing logic for the [IIIF Image API](http://iiif.io/api/image/) in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
 
 I did this to better understand the architecture behind (and to address my own concerns about) version 2 of the [IIIF Image API](http://iiif.io/api/image/2.1/index.html).
 
@@ -455,7 +455,11 @@ There are a few caveats about dithering images:
 
 ## Example
 
-The `iiif-server` tool comes with a canned example (consisting of exactly one image) so you can see things in the context of a slippy map. Here's what you need to do to get it set up:
+There is a live demo of the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) slippymap provider used in conjunction with a series of tiles images generated using the `iiif-tile-seed` utility available for viewing over here:
+
+https://thisisaaronland.github.io/go-iiif/
+
+The `iiif-server` tool also comes with a canned example (consisting of exactly one image) so you can see things in the context of a slippy map. Here's what you need to do to get it set up:
 
 First, make sure have a valid `go-iiif` config file. If you don't then you can copy the example config included in this repo:
 
