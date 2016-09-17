@@ -126,10 +126,6 @@ This exposes all the usual Go [expvar](https://golang.org/pkg/expvar/) debugging
 
 _Note: This endpoint is only available from the machine the server is running on._
 
-#### Notes
-
-* TLS is [not supported yet](https://github.com/thisisaaronland/go-iiif/issues/5).
-
 ### iiif-tile-seed
 
 ```
@@ -435,6 +431,12 @@ $> ./bin/iiif-tile-seed -config config.json -endpoint http://localhost:8082 -sca
 $> ./bin/iiif-server -config config.json -port 8082 -example
 ```
 
+## Performance and load testing
+
+## Notes
+
+* The `iiif-server` does not [support TLS yet](https://github.com/thisisaaronland/go-iiif/issues/5).
+
 ## See also
 
 ### IIIF stuff
@@ -446,3 +448,7 @@ $> ./bin/iiif-server -config config.json -port 8082 -example
 * https://github.com/greut/iiif/
 * https://github.com/h2non/bimg/
 * http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS
+
+### Other stuff
+
+* [Spanking Cat](https://collection.cooperhewitt.org/objects/18382391/)
