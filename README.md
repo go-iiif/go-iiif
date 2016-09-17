@@ -435,7 +435,7 @@ Because you must define a caching layer this is here to satify the requirements 
 	}
 ```
 
-`go-iiif` comes with one non-standard IIIF `quality` feature by default: The ability to create a black and white "half-tone" derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](config.json.example) and you can invoke it like this:
+`go-iiif` comes with one non-standard IIIF `quality` feature by default: The ability to create a black and white [halftone](https://en.wikipedia.org/wiki/Halftone) derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](config.json.example) and you can invoke it like this:
 
 ```
 http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dither.png
