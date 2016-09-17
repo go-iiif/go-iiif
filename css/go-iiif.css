@@ -2,7 +2,7 @@ body {
     margin:2em;
     font-family: serif;
     font-size: 1.2em;
-    line-height: 1.4em;
+    line-height: 1.45em;
 }
 
 a {
@@ -36,6 +36,6 @@ a {
 
 pre {
     font-size:small !important;
-    line-height: 1.1em !important;
+    line-height: 1.15em !important;
     color: darkslategrey;
 }
