@@ -44,3 +44,8 @@ pre {
     line-height: 1.15em !important;
     color: darkslategrey;
 }
+
+#footer {
+    margin-top:6em;
+    text-align:right;
+}
