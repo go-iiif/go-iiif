@@ -37,47 +37,44 @@ window.addEventListener('load', function(e){
 	
 	map.addLayer(layer);    
 
-	map.on('load', function() {
+	var i = document.getElementById("image");
+	i.onclick = function(){
 		
-		var i = document.getElementById("image");
-		i.onclick = function(){
+		leafletImage(map, function(err, canvas) {
 			
-			leafletImage(map, function(err, canvas) {
+    			if (err){
+    				console.log(err);
+    				alert("Argh! There was a problem capturing your image");
+    				return false;
+    			}
 				
-    				if (err){
-    					console.log(err);
-    					alert("Argh! There was a problem capturing your image");
-    					return false;
-    				}
-				
-				var dt = new Date();
-				var iso = dt.toISOString();
-				var iso = iso.split('T');
-				var ymd = iso[0];
-				ymd = ymd.replace("-", "", "g");
-				
-				var bounds = map.getPixelBounds();
-				var zoom = map.getZoom();
-				
-				var pos = [
-					bounds.min.x,
-					bounds.min.y,
-					bounds.max.x,
-					bounds.max.y,
-					zoom
-				];
-				
-				pos = pos.join("-");
-				
-				var name = id + "-" + ymd + "-" + pos + ".png";
-				
-    				canvas.toBlob(function(blob) {
-    					saveAs(blob, name);
-				});
-				
-    				// window.open(body);
+			var dt = new Date();
+			var iso = dt.toISOString();
+			var iso = iso.split('T');
+			var ymd = iso[0];
+			ymd = ymd.replace("-", "", "g");
+			
+			var bounds = map.getPixelBounds();
+			var zoom = map.getZoom();
+			
+			var pos = [
+				bounds.min.x,
+				bounds.min.y,
+				bounds.max.x,
+				bounds.max.y,
+				zoom
+			];
+			
+			pos = pos.join("-");
+			
+			var name = id + "-" + ymd + "-" + pos + ".png";
+			
+    			canvas.toBlob(function(blob) {
+    				saveAs(blob, name);
 			});
-		};
+			
+    			// window.open(body);
+		});
 		
 	});
 	

@@ -19,12 +19,6 @@ a {
     width:600px !important;
 }
 
-#container-right {
-    float:right;
-    width:100%;
-    border: solid thin;
-}
-
 #map {
     border: solid thin;
     width:600px !important;
@@ -41,7 +35,7 @@ a {
 
 pre {
     font-size:small !important;
-    line-height: 1.15em !important;
+    line-height: 1.2em !important;
     color: darkslategrey;
 }
 
