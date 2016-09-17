@@ -9,6 +9,8 @@ body {
 
 #container-right {
     float:right;
+    width:100%;
+    border: solid thin;
 }
 
 #map {
