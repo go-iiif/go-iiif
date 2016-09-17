@@ -65,6 +65,8 @@ window.addEventListener('load', function(e){
 		});
 	};
 	
-	var info = 'http://' + location.host + '/tiles/' + id + '/info.json';
+	var info = location + '/tiles/' + id + '/info.json';
+	console.log("fetch " + info);
+	
 	map.addLayer(L.tileLayer.iiif(info));    
 });
