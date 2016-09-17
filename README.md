@@ -449,7 +449,7 @@ There are a few caveats about dithering images:
 
 * The first thing to know is that the dithering is a [pure Go implementation](https://github.com/koyachi/go-atkinson) so it's not handled by `lipvips`.
 * The second is that the dithering happens _after_ the `libvips` processing.
-* This is relevant because there are some image format for _output_ that Go does not support natively. For example [webp](https://godoc.org/golang.org/x/image/webp).
+* This is relevant because there are some image formats where Go does not support native encoding. For example [webp](https://godoc.org/golang.org/x/image/webp) (which is weird since it's a Google thing...)
 * It is possible to track all of this stuff in code and juggle output formats and reprocessing (in `libvips`) but that code has not been written yet.
 * So you will need to track the sometimes still-rocky relationship between features and output formats yourself.
 
