@@ -461,7 +461,7 @@ $> ./bin/iiif-tile-seed -config config.json -refresh -scale-factors 8,4,2,1 1845
 [184512_5f7f47e5b3c66207_x.jpg] time to process 340 tiles: 27.537429902s
 ```
 
-Here is the same image but with a [maximum dimension of 2048 pixels](https://images.collection.cooperhewitt.org/184512_b812003c86c3525b_k.jpg):
+So any individual tile is pretty speedy but in the aggregate it starts to add up. I will need to do some continued digging to make sure that the source image isn't being processed unnecessarily for each tile. Here is the same image but with a [maximum dimension of 2048 pixels](https://images.collection.cooperhewitt.org/184512_b812003c86c3525b_k.jpg):
 
 ```
 $> ./bin/iiif-tile-seed -config config.json -refresh -scale-factors 4,2,1 184512_b812003c86c3525b_k.jpg
