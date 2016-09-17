@@ -47,7 +47,12 @@ window.addEventListener('load', function(e){
     				alert("Argh! There was a problem capturing your image");
     				return false;
     			}
-				
+
+			var b = document.getElementById("image");
+			b.setAttribute("disabled", "disabled");
+			
+			b.innerHTML = '<img src="images/party-parrot.gif" />';
+			
 			var dt = new Date();
 			var iso = dt.toISOString();
 			var iso = iso.split('T');
@@ -71,6 +76,10 @@ window.addEventListener('load', function(e){
 			
     			canvas.toBlob(function(blob) {
     				saveAs(blob, name);
+
+				var b = document.getElementById("image");
+				b.removeAttribute("disabled");
+				b.innerText = '📷<';
 			});
 			
     			// window.open(body);
