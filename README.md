@@ -271,7 +271,7 @@ Individual features for a given parameter are disabled by including the paramete
 
 ```
 	"features": {
-		"append": { "format": {
+		"append": { "quality": {
 			"dither": { "syntax": "dither", "required": false, "supported": true, "match": "^dither$" }
 		}}
 	}

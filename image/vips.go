@@ -6,13 +6,15 @@ package image
 import (
 	"errors"
 	_ "fmt"
-	"github.com/thisisaaronland/go-iiif/source"
+	"github.com/koyachi/go-atkinson"
+	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
+	_ "log"
 )
 
 type VIPSImage struct {
 	Image
-	source source.Source
+	source iiifsource.Source
 	id     string
 	bimg   *bimg.Image
 }
@@ -22,7 +24,7 @@ type VIPSDimensions struct {
 	imagesize bimg.ImageSize
 }
 
-func NewVIPSImageFromSource(src source.Source, id string) (*VIPSImage, error) {
+func NewVIPSImageFromSource(src iiifsource.Source, id string) (*VIPSImage, error) {
 
 	body, err := src.Read(id)
 
@@ -41,6 +43,14 @@ func NewVIPSImageFromSource(src source.Source, id string) (*VIPSImage, error) {
 	return &im, nil
 }
 
+func (im *VIPSImage) Read(body []byte) error {
+
+	bimg := bimg.NewImage(body)
+	im.bimg = bimg
+
+	return nil
+}
+
 func (im *VIPSImage) Body() []byte {
 	return im.bimg.Image()
 }
@@ -54,7 +64,7 @@ func (im *VIPSImage) ContentType() string {
 	format := im.Format()
 
 	if format == "jpg" || format == "jpeg" {
-		return "image/jpg"
+		return "image/jpeg"
 	} else if format == "png" {
 		return "image/png"
 	} else if format == "webp" {
@@ -190,6 +200,32 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	if err != nil {
 		return err
 	}
+
+	// none of what follows is part of the IIIF spec
+
+	if t.Quality == "dither" {
+
+		goimg, err := IIIFImageToGolangImage(im)
+
+		if err != nil {
+			return err
+		}
+
+		dithered, err := atkinson.Dither(goimg)
+
+		if err != nil {
+			return err
+		}
+
+		err = GolangImageToIIIFImage(dithered, im)
+
+		if err != nil {
+			return err
+		}
+
+	}
+
+	// END OF none of what follows is part of the IIIF spec
 
 	return nil
 }

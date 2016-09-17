@@ -69,6 +69,8 @@ func main() {
 
 	//
 
+	var image iiifcompliance.ImageCompliance // because we're going to instantiate this twice with two different values
+
 	compliance := level.Compliance()
 	actual := compliance.Spec()
 
@@ -103,7 +105,7 @@ func main() {
 
 	//
 
-	image := spec.Image
+	image = spec.Image
 
 	params = map[string]map[string]iiifcompliance.ComplianceDetails{
 		"region":   image.Region,
