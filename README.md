@@ -477,19 +477,22 @@ $> ./bin/iiif-tile-seed -config config.json -refresh -scale-factors 4,2,1 184512
 [184512_5f7f47e5b3c66207_x.jpg] time to process 336 tiles: 26.925253066s
 ```
 
-For processing large volumes of images the bottlenecks will be:
+For processing large, or large volumes of, images the bottlenecks will be:
 
 * CPU usage crunching pixels
 * Disk I/O writing tiles to disk
 * Running out of inodes
 
-That said on a machine with 8 CPUs and 32GB RAM I was able to run the machine hot with all the CPUs pegged at 100% usage and seed 100, 000 (2048x pixel) images yielding a little over 3 million, or approximately 70GB of, tiles in 24 hours. Some meaningful but not overwhelming amount of time was spent fetching source images across the network. In the end, I ran out of inodes. 
+That said on a machine with 8 CPUs and 32GB RAM I was able to run the machine hot with all the CPUs pegged at 100% usage and seed 100, 000 (2048x pixel) images yielding a little over 3 million, or approximately 70GB of, tiles in 24 hours. Some meaningful but not overwhelming amount of time was spent fetching source images across the network so presumably things would be faster reading from a local filesystem.
 
-The current strategy for seeding tiles may be directly responsible for some of the bottlenecks. Specifically, when processing large volumes of images (defined in a CSV file) the `ifff-tile-seed` will spawn and queue as many concurrent Go routines as there are CPUs. For each of those processes then another (n) CPUs * 2 subprocesses will be spawned to generate tiles. Maybe this is just too image concurrent image processing routines to have? I mean it works but still... Or maybe it's just that every one is waiting for bytes to be written to disk. Or all of the above. I'm not sure yet.
+In the end, I ran out of inodes. 
+
+The current strategy for seeding tiles may also be directly responsible for some of the bottlenecks. Specifically, when processing large volumes of images (defined in a CSV file) the `ifff-tile-seed` will spawn and queue as many concurrent Go routines as there are CPUs. For each of those processes then another (n) CPUs * 2 subprocesses will be spawned to generate tiles. Maybe this is just too image concurrent image processing routines to have? I mean it works but still... Or maybe it's just that every one is waiting for bytes to be written to disk. Or all of the above. I'm not sure yet.
 
 ## Notes
 
-* The `iiif-server` does not [support TLS yet](https://github.com/thisisaaronland/go-iiif/issues/5).
+* The `iiif-server` does [not support TLS](https://github.com/thisisaaronland/go-iiif/issues/5) yet.
+* There is no way to change the default `quality` parameter yet. It is `color`.
 
 ## See also
 
