@@ -188,7 +188,7 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		opts.Type = bimg.PNG
 	} else if fi.Format == "webp" {
 		opts.Type = bimg.WEBP
-	} else if fi.Format == "tiff" {
+	} else if fi.Format == "tif" {
 		opts.Type = bimg.TIFF
 	} else {
 		return errors.New("Unsupported image format")
