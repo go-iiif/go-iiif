@@ -79,7 +79,7 @@ window.addEventListener('load', function(e){
 
 				var b = document.getElementById("image");
 				b.removeAttribute("disabled");
-				b.innerHTML = '📷<';
+				b.innerText = '📷';
 			});
 			
     			// window.open(body);
