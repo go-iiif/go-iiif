@@ -547,7 +547,7 @@ All of the notes so far have assumed that you are using `iiif-tile-seed`. If you
 
 ## Bugs?
 
-[Probably.](https://github.com/thisisaaronland/go-iiif/issues)
+Probably. Please consult [the currently known-known issues](https://github.com/thisisaaronland/go-iiif/issues) and if you don't see what ails you please feel free to add it.
 
 ## See also
 
