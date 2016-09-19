@@ -564,6 +564,7 @@ Probably. Please consult [the currently known-known issues](https://github.com/t
 ### Slippy map stuff
 
 * https://github.com/mejackreed/Leaflet-IIIF
+* https://github.com/mapbox/leaflet-image
 
 ### Other stuff
 
