@@ -43,3 +43,21 @@ pre {
     margin-top:6em;
     text-align:right;
 }
+
+@media (max-width: 400px) {
+
+    #container {
+	width: 100% !important;
+    }
+    
+    #map {
+	width: 100% !important;
+	height: 300px !important;
+    }
+
+    pre {
+	max-width: 300px !important;
+	x-overflow: scroll;
+	white-space:pre-wrap;
+    }
+}
