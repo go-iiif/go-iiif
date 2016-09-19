@@ -64,6 +64,7 @@ $> curl -s http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/info.json | pytho
             ],
             "qualities": [
                 "default",
+		"dither",
                 "color"
             ],
             "supports": [
