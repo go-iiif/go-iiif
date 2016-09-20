@@ -333,13 +333,13 @@ Fetch source images from a locally available filesystem.
 ##### Flickr
 
 ```
-    "images": {
-	"source": { "name": "Flickr" },
-	"cache": { "name": "Memory", "ttl": 60, "limit": 100 }
-    },
-    "flickr": {
-	"apikey": "YOUR-FLICKR-API-KEY"
-    }
+	"images": {
+		"source": { "name": "Flickr" },
+		"cache": { "name": "Memory", "ttl": 60, "limit": 100 }
+	},
+	"flickr": {
+		"apikey": "YOUR-FLICKR-API-KEY"
+	}
 ```
 
 Fetch source images from Flickr. You will need to provide a valid [Flickr API key](https://www.flickr.com/services/api/). A few caveats:
