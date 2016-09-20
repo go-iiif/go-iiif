@@ -23,6 +23,9 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 	} else if cfg.Source.Name == "URI" {
 		cache, err := NewURISource(config)
 		return cache, err
+	} else if cfg.Source.Name == "Flickr" {
+		cache, err := NewFlickrSource(config)
+		return cache, err
 	} else {
 		err := errors.New("Unknown source type")
 		return nil, err
