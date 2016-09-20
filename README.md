@@ -592,6 +592,10 @@ Probably. Please consult [the currently known-known issues](https://github.com/t
 * https://github.com/mejackreed/Leaflet-IIIF
 * https://github.com/mapbox/leaflet-image
 
+### Blog posts
+
+* http://www.aaronland.info/weblog/2016/09/18/marshmallows/#iiif
+
 ### Other stuff
 
 * [Spanking Cat](https://collection.cooperhewitt.org/objects/18382391/)
