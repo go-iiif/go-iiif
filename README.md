@@ -351,6 +351,8 @@ Fetch source images from Flickr. You will need to provide a valid [Flickr API ke
  
 ![](misc/go-iiif-flickr.png)
 
+![](misc/go-iiif-flickr-detail.png)
+
 ##### URI
 
 ```
