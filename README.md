@@ -330,6 +330,25 @@ Where to find source images.
 
 Fetch source images from a locally available filesystem.
 
+##### Flickr
+
+```
+    "images": {
+	"source": { "name": "Flickr" },
+	"cache": { "name": "Memory", "ttl": 60, "limit": 100 }
+    },
+    "flickr": {
+	"apikey": "YOUR-FLICKR-API-KEY"
+    }
+```
+
+Fetch source images from Flickr. You will need to provide a valid [Flickr API key](https://www.flickr.com/services/api/). A few caveats:
+
+* The code assumes the original [Flickr (Auth) API](https://www.flickr.com/services/api/misc.overview.html) and not the newer OAuth-flavoured API.
+* Signed API keys are not supported yet so you're limited to public photos.
+* The code calls the [flickr.photos.getSizes](https://www.flickr.com/services/api/flickr.photos.getSizes.html) API method and looks for the first of the following photo sizes in this order: `Original, Large 2048, Large 1600, Large`. If none are available then an error is triggered.
+* Photo size lookups are not cached yet.
+ 
 ##### URI
 
 ```

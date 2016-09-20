@@ -43,8 +43,8 @@ func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 
 	client := &http.Client{}
 
-	apikey := "fixme"
-	apisecret := "fixme"
+	apikey := config.Flickr.ApiKey
+	apisecret := config.Flickr.ApiSecret
 
 	fs := FlickrSource{
 		apikey:    apikey,
@@ -106,6 +106,7 @@ func (fs *FlickrSource) GetSource(id string) (string, error) {
 	values.Add("nojsoncallback", "1")
 
 	req.URL.RawQuery = values.Encode()
+	log.Println(req.URL.RawQuery)
 
 	rsp, err := fs.client.Do(req)
 

@@ -11,6 +11,7 @@ type Config struct {
         Features    FeaturesConfig    `json:"features"`
 	Images      ImagesConfig      `json:"images"`
 	Derivatives DerivativesConfig `json:"derivatives"`
+	Flickr	    FlickrConfig      `json:"flickr,omitempty"`
 }
 
 type LevelConfig struct {
@@ -50,6 +51,11 @@ type GraphicsConfig struct {
 type SourceConfig struct {
 	Name string `json:"name"`
 	Path string `json:"path,omitempty"`
+}
+
+type FlickrConfig struct {
+     ApiKey	  string `json:"apikey"`
+     ApiSecret	  string `json:"apisecret,omitempty"`
 }
 
 type CacheConfig struct {
