@@ -349,6 +349,8 @@ Fetch source images from Flickr. You will need to provide a valid [Flickr API ke
 * The code calls the [flickr.photos.getSizes](https://www.flickr.com/services/api/flickr.photos.getSizes.html) API method and looks for the first of the following photo sizes in this order: `Original, Large 2048, Large 1600, Large`. If none are available then an error is triggered.
 * Photo size lookups are not cached yet.
  
+Here's an example [with this photo](https://www.flickr.com/photos/straup/4136870023/in/album-72157622883263698/):
+
 ![](misc/go-iiif-flickr.png)
 
 ![](misc/go-iiif-flickr-detail.png)
