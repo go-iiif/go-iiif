@@ -25,6 +25,7 @@ build:	fmt bin
 
 deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/facebookgo/grace/gracehttp"
+	@GOPATH=$(GOPATH) go get -u "github.com/fogleman/primitive"
 	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/context"
 	@GOPATH=$(GOPATH) go get -u "github.com/gorilla/mux"
 	@GOPATH=$(GOPATH) go get -u "github.com/patrickmn/go-cache"

@@ -479,6 +479,31 @@ There are a few caveats about dithering images:
 * It is possible to track all of this stuff in code and juggle output formats and reprocessing (in `libvips`) but that code has not been written yet.
 * So you will need to track the sometimes still-rocky relationship between features and output formats yourself.
 
+### Primitive-ing
+
+![](misc/go-iiif-primitive-circles.png)
+
+Use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives.
+
+If you're reading this it means there are still some important caveats for this feature. First, it's not complete. Second, all the configurable options you might use to create geometric primitives are hard-coded. Third, it's not exactly "fast".
+
+```
+./bin/iiif-server -host 0.0.0.0 -config config.json
+2016/09/21 15:43:08 Serving [::]:8080 with pid 5877
+2016/09/21 15:43:13 starting model at 2016-09-21 15:43:13.626117993 +0000 UTC
+2016/09/21 15:43:13 finished step 1 in 8.229683ms
+2016/09/21 15:43:16 finished step 2 in 3.019413861s
+2016/09/21 15:43:20 finished step 3 in 6.824349271s
+2016/09/21 15:43:27 finished step 4 in 13.470026196s
+…
+2016/09/21 15:45:36 finished step 98 in 2m22.772206637s
+2016/09/21 15:45:37 finished step 99 in 2m23.780712318s
+2016/09/21 15:45:38 finished step 100 in 2m24.626232387s
+2016/09/21 15:45:39 finished model in 2m25.611790848s
+```
+
+But it is pretty darn cool!
+
 ## Example
 
 There is a live demo of the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) slippymap provider used in conjunction with a series of tiles images generated using the `iiif-tile-seed` utility available for viewing over here:
