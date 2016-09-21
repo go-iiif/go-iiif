@@ -504,6 +504,8 @@ If you're reading this it means there are still some important caveats for this 
 
 But it is pretty darn cool!
 
+![](misc/go-iiif-primitive-triangles.png)
+
 ## Example
 
 There is a live demo of the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) slippymap provider used in conjunction with a series of tiles images generated using the `iiif-tile-seed` utility available for viewing over here:
