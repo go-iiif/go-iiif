@@ -66,6 +66,6 @@ window.addEventListener('load', function(e){
     };
     
     var info = 'http://' + location.host + '/' + id + '/info.json';
-    map.addLayer(L.tileLayer.iiif(info));
+    map.addLayer(L.tileLayer.iiif(info, {'quality': 'primitive'}));
     
 });

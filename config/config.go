@@ -12,6 +12,7 @@ type Config struct {
 	Images      ImagesConfig      `json:"images"`
 	Derivatives DerivativesConfig `json:"derivatives"`
 	Flickr	    FlickrConfig      `json:"flickr,omitempty"`
+	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
 }
 
 type LevelConfig struct {
@@ -56,6 +57,10 @@ type SourceConfig struct {
 type FlickrConfig struct {
      ApiKey	  string `json:"apikey"`
      ApiSecret	  string `json:"apisecret,omitempty"`
+}
+
+type PrimitiveConfig struct {
+     MaxIterations	  int `json:"max_iterations"`
 }
 
 type CacheConfig struct {

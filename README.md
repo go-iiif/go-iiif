@@ -483,6 +483,17 @@ There are a few caveats about dithering images:
 
 ![](misc/go-iiif-primitive-circles.png)
 
+```
+	"features": {
+		"append": {
+			"quality": {
+				"primitive": { "syntax": "primitive:mode,iterations,alpha", "required": false, "supported": true, "match": "^primitive\\:[0-5]\\,\\d+\\,\\d+$" }
+			}
+		}
+	},
+	"primitive": { "max_iterations": 100 }
+```
+
 Use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives.
 
 If you're reading this it means there are still some important caveats for this feature. First, it's not complete. Second, all the configurable options you might use to create geometric primitives are hard-coded. Third, it's not exactly "fast".

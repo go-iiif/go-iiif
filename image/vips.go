@@ -6,13 +6,17 @@ package image
 import (
 	"errors"
 	_ "fmt"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
 	_ "log"
+	"strconv"
+	"strings"
 )
 
 type VIPSImage struct {
 	Image
+	config *iiifconfig.Config
 	source iiifsource.Source
 	id     string
 	bimg   *bimg.Image
@@ -23,7 +27,7 @@ type VIPSDimensions struct {
 	imagesize bimg.ImageSize
 }
 
-func NewVIPSImageFromSource(src iiifsource.Source, id string) (*VIPSImage, error) {
+func NewVIPSImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.Source, id string) (*VIPSImage, error) {
 
 	body, err := src.Read(id)
 
@@ -34,6 +38,7 @@ func NewVIPSImageFromSource(src iiifsource.Source, id string) (*VIPSImage, error
 	bimg := bimg.NewImage(body)
 
 	im := VIPSImage{
+		config: config,
 		source: src,
 		id:     id,
 		bimg:   bimg,
@@ -213,12 +218,43 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 			return err
 		}
 
-	} else if t.Quality == "primitive" {
+	} else if strings.HasPrefix(t.Quality, "primitive:") {
+
+		parts := strings.Split(t.Quality, ":")
+		parts = strings.Split(parts[1], ",")
+
+		mode, err := strconv.Atoi(parts[0])
+
+		if err != nil {
+			return err
+		}
+
+		iters, err := strconv.Atoi(parts[1])
+
+		if err != nil {
+			return err
+		}
+
+		max_iters := im.config.Primitive.MaxIterations
+
+		if max_iters > 0 && iters > max_iters {
+			return errors.New("Invalid primitive iterations")
+		}
+
+		alpha, err := strconv.Atoi(parts[2])
+
+		if err != nil {
+			return err
+		}
+
+		if alpha > 255 {
+			return errors.New("Invalid primitive alpha")
+		}
 
 		opts := PrimitiveOptions{
-			Alpha:      128,
-			Mode:       3,
-			Iterations: 40,
+			Alpha:      alpha,
+			Mode:       mode,
+			Iterations: iters,
 			Size:       0,
 		}
 
