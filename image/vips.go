@@ -12,7 +12,7 @@ import (
 	"gopkg.in/h2non/bimg.v1"
 	"image"
 	"image/gif"
-	"log"
+	_ "log"
 	"strconv"
 	"strings"
 )
@@ -279,26 +279,6 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		return err
 	}
 
-	// see notes in NewVIPSImageFromConfigWithSource
-
-	if fi.Format == "gif" {
-
-		goimg, err := IIIFImageToGolangImage(im)
-
-		if err != nil {
-			return err
-		}
-
-		im.isgif = true
-
-		err = GolangImageToIIIFImage(goimg, im)
-
-		if err != nil {
-			return err
-		}
-
-	}
-
 	// None of what follows is part of the IIIF spec so it's not clear
 	// to me yet how to make this in to a sane interface. For the time
 	// being since there is only lipvips we'll just take the opportunity
@@ -310,6 +290,10 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 
 		if err != nil {
 			return err
+		}
+
+		if fi.Format == "gif" {
+			im.isgif = true
 		}
 
 	} else if strings.HasPrefix(t.Quality, "primitive:") {
@@ -345,11 +329,18 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 			return errors.New("Invalid primitive alpha")
 		}
 
+		animated := false
+
+		if fi.Format == "gif" {
+			animated = true
+		}
+
 		opts := PrimitiveOptions{
 			Alpha:      alpha,
 			Mode:       mode,
 			Iterations: iters,
 			Size:       0,
+			Animated:   animated,
 		}
 
 		err = PrimitiveImage(im, opts)
@@ -358,9 +349,32 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 			return err
 		}
 
+		if fi.Format == "gif" {
+			im.isgif = true
+		}
 	}
 
 	// END OF none of what follows is part of the IIIF spec
+
+	// see notes in NewVIPSImageFromConfigWithSource
+
+	if fi.Format == "gif" && !im.isgif {
+
+		goimg, err := IIIFImageToGolangImage(im)
+
+		if err != nil {
+			return err
+		}
+
+		im.isgif = true
+
+		err = GolangImageToIIIFImage(goimg, im)
+
+		if err != nil {
+			return err
+		}
+
+	}
 
 	return nil
 }

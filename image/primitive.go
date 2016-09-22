@@ -20,6 +20,7 @@ type PrimitiveOptions struct {
 	Mode       int
 	Iterations int
 	Size       int
+	Animated   bool
 }
 
 func PrimitiveImage(im Image, opts PrimitiveOptions) error {
@@ -65,7 +66,7 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 	t2 := time.Since(t1)
 	log.Println("finished model in", t2)
 
-	if im.Format() == "gif" {
+	if opts.Animated {
 
 		g := gif.GIF{}
 

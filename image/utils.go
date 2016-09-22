@@ -96,6 +96,12 @@ func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) 
 
 	if content_type == "image/gif" {
 
+		/*
+			opts := gif.Options{
+				NumColors: 256,
+			}
+		*/
+
 		out = new(bytes.Buffer)
 		err = gif.Encode(out, goimg, nil)
 
