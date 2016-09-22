@@ -20,6 +20,7 @@ type VIPSImage struct {
 	source iiifsource.Source
 	id     string
 	bimg   *bimg.Image
+	isgif  bool
 }
 
 type VIPSDimensions struct {
@@ -42,7 +43,22 @@ func NewVIPSImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.
 		source: src,
 		id:     id,
 		bimg:   bimg,
+		isgif:  false,
 	}
+
+	/*
+
+		Hey look - see the 'isgif' flag? We're going to hijack the fact that
+		bimg doesn't handle GIF files and if someone requests them then we
+		will do the conversion after the final call to im.bimg.Process and
+		before we do handle any custom features. We are relying on the fact
+		that both bimg.NewImage and bimg.Image() expect and return raw bytes
+		and we are ignoring whatever bimg thinks in the Format() function.
+		So basically you should not try to any processing in bimg/libvips
+		after the -> GIF transformation. (20160922/thisisaaronland)
+
+		See also: https://github.com/h2non/bimg/issues/41
+	*/
 
 	return &im, nil
 }
@@ -56,10 +72,18 @@ func (im *VIPSImage) Update(body []byte) error {
 }
 
 func (im *VIPSImage) Body() []byte {
+
 	return im.bimg.Image()
 }
 
 func (im *VIPSImage) Format() string {
+
+	// see notes in NewVIPSImageFromConfigWithSource
+
+	if im.isgif {
+		return "gif"
+	}
+
 	return im.bimg.Type()
 }
 
@@ -75,6 +99,8 @@ func (im *VIPSImage) ContentType() string {
 		return "image/webp"
 	} else if format == "tif" || format == "tiff" {
 		return "image/tiff"
+	} else if format == "gif" {
+		return "image/gif"
 	} else {
 		return ""
 	}
@@ -195,6 +221,8 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		opts.Type = bimg.WEBP
 	} else if fi.Format == "tif" {
 		opts.Type = bimg.TIFF
+	} else if fi.Format == "gif" {
+		opts.Type = bimg.MAGICK
 	} else {
 		return errors.New("Unsupported image format")
 	}
@@ -203,6 +231,26 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 
 	if err != nil {
 		return err
+	}
+
+	// see notes in NewVIPSImageFromConfigWithSource
+
+	if fi.Format == "gif" {
+
+		goimg, err := IIIFImageToGolangImage(im)
+
+		if err != nil {
+			return err
+		}
+
+		im.isgif = true
+
+		err = GolangImageToIIIFImage(goimg, im)
+
+		if err != nil {
+			return err
+		}
+
 	}
 
 	// None of what follows is part of the IIIF spec so it's not clear

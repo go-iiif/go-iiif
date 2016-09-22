@@ -1,6 +1,6 @@
 package image
 
-// "primitive": { "syntax": "primitive:mode,iterations", "required": false, "supported": true, "match": "^primitive\:[0-4]\,\d+$" }
+// "primitive": { "syntax": "primitive:mode,iterations,alpha", "required": false, "supported": true, "match": "^primitive\:[0-4]\,\d+,\d+$" }
 // mode: 0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect
 
 import (
