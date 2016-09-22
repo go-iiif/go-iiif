@@ -31,6 +31,14 @@ type VIPSDimensions struct {
 	imagesize bimg.ImageSize
 }
 
+func (d *VIPSDimensions) Height() int {
+	return d.imagesize.Height
+}
+
+func (d *VIPSDimensions) Width() int {
+	return d.imagesize.Width
+}
+
 /*
 
 See notes in NewVIPSImageFromConfigWithSource - basically getting an image's
@@ -78,7 +86,7 @@ func NewVIPSImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.
 		Hey look - see the 'isgif' flag? We're going to hijack the fact that
 		bimg doesn't handle GIF files and if someone requests them then we
 		will do the conversion after the final call to im.bimg.Process and
-		before we do handle any custom features. We are relying on the fact
+		after we do handle any custom features. We are relying on the fact
 		that both bimg.NewImage and bimg.Image() expect and return raw bytes
 		and we are ignoring whatever bimg thinks in the Format() function.
 		So basically you should not try to any processing in bimg/libvips
@@ -140,6 +148,7 @@ func (im *VIPSImage) Identifier() string {
 func (im *VIPSImage) Dimensions() (Dimensions, error) {
 
 	// see notes in NewVIPSImageFromConfigWithSource
+	// ideally this never gets triggered but just in case...
 
 	if im.isgif {
 
@@ -284,6 +293,12 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	// being since there is only lipvips we'll just take the opportunity
 	// to think about it... (20160917/thisisaaronland)
 
+	// Also note the way we are diligently setting in `im.isgif` in each
+	// of the features below. That's because this is a bimg/libvips-ism
+	// and we assume that any of these can encode GIFs because pure-Go and
+	// the rest of the code does need to know about it...
+	// (20160922/thisisaaronland)
+
 	if t.Quality == "dither" {
 
 		err = DitherImage(im)
@@ -377,12 +392,4 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	}
 
 	return nil
-}
-
-func (d *VIPSDimensions) Height() int {
-	return d.imagesize.Height
-}
-
-func (d *VIPSDimensions) Width() int {
-	return d.imagesize.Width
 }
