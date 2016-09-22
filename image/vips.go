@@ -215,14 +215,20 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 
 	} else if t.Quality == "primitive" {
 
-	       err = PrimitiveImage(im)
+		opts := PrimitiveOptions{
+			Alpha:      128,
+			Mode:       3,
+			Iterations: 40,
+			Size:       0,
+		}
+
+		err = PrimitiveImage(im, opts)
 
 		if err != nil {
 			return err
 		}
 
 	}
-
 
 	// END OF none of what follows is part of the IIIF spec
 

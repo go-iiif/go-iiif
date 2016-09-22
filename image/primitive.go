@@ -1,15 +1,24 @@
 package image
 
 import (
-       "github.com/fogleman/primitive/primitive"
-       "log"
-       "math"
-       "time"
+	"github.com/fogleman/primitive/primitive"
+	"log"
+	"math"
+	"time"
 )
 
-func PrimitiveImage(im Image) error {
+// mode: 0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect
 
-        dims, err := im.Dimensions()
+type PrimitiveOptions struct {
+	Alpha      int
+	Mode       int
+	Iterations int
+	Size       int
+}
+
+func PrimitiveImage(im Image, opts PrimitiveOptions) error {
+
+	dims, err := im.Dimensions()
 
 	if err != nil {
 		return err
@@ -21,26 +30,25 @@ func PrimitiveImage(im Image) error {
 		return err
 	}
 
-	// Please make me config variables
+	alpha := opts.Alpha
+	mode := opts.Mode
+	size := opts.Size
 
-	Alpha := 128
-	Mode := 4	// mode: 0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect
-	Number := 100
-
-	h := float64(dims.Height())
-	w := float64(dims.Width())
-	max := math.Max(h, w)
-
-	OutputSize := int(max)
+	if size == 0 {
+		h := float64(dims.Height())
+		w := float64(dims.Width())
+		max := math.Max(h, w)
+		size = int(max)
+	}
 
 	// See this - we're not dealing with animations yet
 
 	t1 := time.Now()
 	log.Println("starting model at", t1)
 
-        model := primitive.NewModel(goimg, Alpha, OutputSize, primitive.Mode(Mode))
+	model := primitive.NewModel(goimg, alpha, size, primitive.Mode(mode))
 
-	for i := 1; i <= Number; i++ {
+	for i := 1; i <= opts.Iterations; i++ {
 
 		tx := time.Since(t1)
 		log.Printf("finished step %d in %v\n", i, tx)
