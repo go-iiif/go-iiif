@@ -4,7 +4,12 @@ package image
 // mode: 0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect
 
 import (
+	"bytes"
 	"github.com/fogleman/primitive/primitive"
+	"image"
+	"image/color/palette"
+	"image/draw"
+	"image/gif"
 	"log"
 	"math"
 	"time"
@@ -60,5 +65,38 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 	t2 := time.Since(t1)
 	log.Println("finished model in", t2)
 
-	return GolangImageToIIIFImage(model.Context.Image(), im)
+	if im.Format() == "gif" {
+
+		g := gif.GIF{}
+
+		frames := model.Frames(0.001)
+
+		delay := 50
+		lastDelay := 250
+
+		for i, src := range frames {
+			dst := image.NewPaletted(src.Bounds(), palette.Plan9)
+			draw.Draw(dst, dst.Rect, src, image.ZP, draw.Src)
+			g.Image = append(g.Image, dst)
+			if i == len(frames)-1 {
+				g.Delay = append(g.Delay, lastDelay)
+			} else {
+				g.Delay = append(g.Delay, delay)
+			}
+		}
+
+		out := new(bytes.Buffer)
+		err := gif.EncodeAll(out, &g)
+
+		if err != nil {
+			return err
+		}
+
+		return im.Update(out.Bytes())
+
+	} else {
+		goimg := model.Context.Image()
+		return GolangImageToIIIFImage(goimg, im)
+	}
+
 }

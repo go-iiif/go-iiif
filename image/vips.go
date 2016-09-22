@@ -4,12 +4,15 @@ package image
 // https://github.com/jcupitt/libvips
 
 import (
+	"bytes"
 	"errors"
-	_ "fmt"
+	"fmt"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
-	_ "log"
+	"image"
+	"image/gif"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -26,6 +29,30 @@ type VIPSImage struct {
 type VIPSDimensions struct {
 	Dimensions
 	imagesize bimg.ImageSize
+}
+
+/*
+
+See notes in NewVIPSImageFromConfigWithSource - basically getting an image's
+dimensions after the we've done the GIF conversion (just see the notes...)
+will make bimg/libvips sad so account for that in Dimensions() and create a
+pure Go implementation of the Dimensions interface (20160922/thisisaaronland)
+
+*/
+
+type GolangImageDimensions struct {
+	Dimensions
+	image image.Image
+}
+
+func (dims *GolangImageDimensions) Width() int {
+	bounds := dims.image.Bounds()
+	return bounds.Max.X
+}
+
+func (dims *GolangImageDimensions) Height() int {
+	bounds := dims.image.Bounds()
+	return bounds.Max.Y
 }
 
 func NewVIPSImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.Source, id string) (*VIPSImage, error) {
@@ -111,6 +138,24 @@ func (im *VIPSImage) Identifier() string {
 }
 
 func (im *VIPSImage) Dimensions() (Dimensions, error) {
+
+	// see notes in NewVIPSImageFromConfigWithSource
+
+	if im.isgif {
+
+		buf := bytes.NewBuffer(im.Body())
+		goimg, err := gif.Decode(buf)
+
+		if err != nil {
+			return nil, err
+		}
+
+		d := GolangImageDimensions{
+			image: goimg,
+		}
+
+		return &d, nil
+	}
 
 	sz, err := im.bimg.Size()
 
@@ -224,7 +269,8 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	} else if fi.Format == "gif" {
 		opts.Type = bimg.MAGICK
 	} else {
-		return errors.New("Unsupported image format")
+		msg := fmt.Sprintf("Unsupported image format '%s'", fi.Format)
+		return errors.New(msg)
 	}
 
 	_, err = im.bimg.Process(opts)
