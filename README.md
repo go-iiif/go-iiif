@@ -494,9 +494,19 @@ There are a few caveats about dithering images:
 	"primitive": { "max_iterations": 100 }
 ```
 
-Use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives.
+Use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives. The syntax for invoking this feature is `primitive:{MODE},{ITERATIONS},{ALPHA}` where:
 
-If you're reading this it means there are still some important caveats for this feature. First, it's not complete. Second, all the configurable options you might use to create geometric primitives are hard-coded. Third, it's not exactly "fast".
+* {MODE} is a number between 0-5
+ * 0: combo
+ * 1: triangle
+ * 2: rectangle
+ * 3: ellipse
+ * 4: circle
+ * 5: rotated rectangle
+* {ITERATIONS} is a number between 1 and infinity (a bad idea) or 1 and the number defined in the `primitive.max_iterations` settings in your config file
+* {ALPHA} is a number between 0-255
+
+Also, it's not exactly "fast".
 
 ```
 ./bin/iiif-server -host 0.0.0.0 -config config.json
