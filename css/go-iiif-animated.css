@@ -1,8 +1,5 @@
 body {
-    margin:2em;
-    font-family: serif;
-    font-size: 1.2em;
-    line-height: 1.45em;
+    margin:.5em;
 }
 
 a {
@@ -16,13 +13,13 @@ a {
 }
 
 #container {
-    width:600px !important;
+    width:100% !important;
 }
 
 #map {
     border: solid thin;
     width:100% !important;
-    height:1024px !important;
+    height:600px !important;
 }
 
 #footer {
@@ -32,18 +29,9 @@ a {
 
 @media (max-width: 400px) {
 
-    #container {
-	width: 100% !important;
-    }
-    
     #map {
 	width: 100% !important;
 	height: 300px !important;
     }
 
-    pre {
-	max-width: 300px !important;
-	x-overflow: scroll;
-	white-space:pre-wrap;
-    }
 }
