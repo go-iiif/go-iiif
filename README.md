@@ -542,8 +542,10 @@ But it is pretty darn cool!
 If you specify a `gif` format parameter then `go-iiif` will return an animated GIF for the requested image consisting of each intermediate stage that the `primitive` library generated the final image. For example:
 
 ```
-http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/full/500,/0/primitive:5,200,255.gif
+http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/full/500,/0/primitive:5,100,255.gif
 ```
+
+Which would produce this:
 
 ![](misc/go-iiif-primitive-animated-rect.gif)
 
