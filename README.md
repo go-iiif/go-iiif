@@ -459,6 +459,8 @@ Because you must define a caching layer this is here to satify the requirements 
 
 ## Non-standard features
 
+`go-iiif` supports the following non-standard IIIF `quality` features: 
+
 ### Dithering
 
 ```
@@ -469,7 +471,7 @@ Because you must define a caching layer this is here to satify the requirements 
 	}
 ```
 
-`go-iiif` comes with one non-standard IIIF `quality` feature by default: The ability to create a black and white [halftone](https://en.wikipedia.org/wiki/Halftone) derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](config.json.example) and you can invoke it like this:
+`dither` will create a black and white [halftone](https://en.wikipedia.org/wiki/Halftone) derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](config.json.example) and you can invoke it like this:
 
 ```
 http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dither.png
@@ -504,7 +506,7 @@ There are a few caveats about dithering images:
 
 _Note the way the `primitive` block is a top-level element in your config file._
 
-Use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives. The syntax for invoking this feature is `primitive:{MODE},{ITERATIONS},{ALPHA}` where:
+`primitive` use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives. The syntax for invoking this feature is `primitive:{MODE},{ITERATIONS},{ALPHA}` where:
 
 * **MODE** is a number between 0-5 representing which of the [primitive shapes](https://github.com/fogleman/primitive#primitives) to use. They are:
  * 0: combo
