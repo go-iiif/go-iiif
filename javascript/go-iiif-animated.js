@@ -8,10 +8,6 @@ window.addEventListener('load', function(e){
 		zoom: 1,
 		minZoom: 1,
 	});
-
-	map.on('load', function(){
-		alert('load');
-	});
 	
 	var info = location + 'tiles/' + id + '/info.json';
 
@@ -21,7 +17,17 @@ window.addEventListener('load', function(e){
 	};
 
 	var layer = L.tileLayer.iiif(info, opts);
-	
+
+	layer.on('loading', function(){
+		var el = document.getElementById("status");
+		el.innerText = "loading tiles";
+	});
+
+	layer.on('load', function(){
+		var el = document.getElementById("status");
+		el.innerText = "";
+	});
+
 	map.addLayer(layer);    
 
 });
