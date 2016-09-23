@@ -1,0 +1,49 @@
+body {
+    margin:2em;
+    font-family: serif;
+    font-size: 1.2em;
+    line-height: 1.45em;
+}
+
+a {
+    font-weight: 700;
+    text-decoration: none;
+    color:  #c54b8c;
+}
+
+.hey-look {
+    color: #f75394;
+}
+
+#container {
+    width:600px !important;
+}
+
+#map {
+    border: solid thin;
+    width:100% !important;
+    height:1024px !important;
+}
+
+#footer {
+    margin-top:6em;
+    text-align:right;
+}
+
+@media (max-width: 400px) {
+
+    #container {
+	width: 100% !important;
+    }
+    
+    #map {
+	width: 100% !important;
+	height: 300px !important;
+    }
+
+    pre {
+	max-width: 300px !important;
+	x-overflow: scroll;
+	white-space:pre-wrap;
+    }
+}
