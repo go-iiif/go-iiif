@@ -153,7 +153,7 @@ Generate (seed) all the tiled derivatives for a source image for use with the [L
 
 ## Config files
 
-There is a [sample config file](config.json.example) included with this repo. The easiest way to understand config files is that they consist of at least five top-level groupings, with nested section-specific details followed by zero or more implementation specific configuration blocks. They are:
+There is a [sample config file](config.json.example) included with this repo. The easiest way to understand config files is that they consist of at least five top-level groupings, with nested section-specific details, followed by zero or more implementation specific configuration blocks. The five core blocks are:
 
 ### level
 
