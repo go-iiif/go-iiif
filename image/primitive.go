@@ -71,8 +71,8 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 
 		frames := model.Frames(0.001)
 
-		delay := 50
-		lastDelay := 250
+		delay := 25
+		lastDelay := delay * 10
 
 		for i, src := range frames {
 
