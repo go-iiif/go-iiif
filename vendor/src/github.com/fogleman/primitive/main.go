@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -16,6 +17,7 @@ import (
 var (
 	Input      string
 	Output     string
+	Background string
 	Number     int
 	Alpha      int
 	InputSize  int
@@ -27,6 +29,7 @@ var (
 func init() {
 	flag.StringVar(&Input, "i", "", "input image path")
 	flag.StringVar(&Output, "o", "", "output image path")
+	flag.StringVar(&Background, "bg", "", "background color (hex)")
 	flag.IntVar(&Number, "n", 0, "number of primitives")
 	flag.IntVar(&Alpha, "a", 128, "alpha value")
 	flag.IntVar(&InputSize, "r", 256, "resize large input images to this size")
@@ -39,6 +42,12 @@ func init() {
 func errorMessage(message string) bool {
 	fmt.Fprintln(os.Stderr, message)
 	return false
+}
+
+func check(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
@@ -74,9 +83,7 @@ func main() {
 	// read input image
 	primitive.Log(1, "reading %s\n", Input)
 	input, err := primitive.LoadImage(Input)
-	if err != nil {
-		panic(err)
-	}
+	check(err)
 
 	// scale down input image if needed
 	size := uint(InputSize)
@@ -86,8 +93,16 @@ func main() {
 	ext := strings.ToLower(filepath.Ext(Output))
 	saveFrames := strings.Contains(Output, "%") && ext != ".gif"
 
+	// determine background color
+	var bg primitive.Color
+	if Background == "" {
+		bg = primitive.MakeColor(primitive.AverageImageColor(input))
+	} else {
+		bg = primitive.MakeHexColor(Background)
+	}
+
 	// run algorithm
-	model := primitive.NewModel(input, Alpha, OutputSize, primitive.Mode(Mode))
+	model := primitive.NewModel(input, bg, Alpha, OutputSize, primitive.Mode(Mode))
 	start := time.Now()
 	for i := 1; i <= Number; i++ {
 		// find optimal shape and add it to the model
@@ -103,13 +118,17 @@ func main() {
 			}
 			primitive.Log(1, "writing %s\n", path)
 			switch ext {
+			default:
+				check(fmt.Errorf("unrecognized file extension: %s", ext))
 			case ".png":
-				primitive.SavePNG(path, model.Context.Image())
+				check(primitive.SavePNG(path, model.Context.Image()))
+			case ".jpg", ".jpeg":
+				check(primitive.SaveJPG(path, model.Context.Image(), 95))
 			case ".svg":
-				primitive.SaveFile(path, model.SVG())
+				check(primitive.SaveFile(path, model.SVG()))
 			case ".gif":
 				frames := model.Frames(0.001)
-				primitive.SaveGIFImageMagick(path, frames, 50, 250)
+				check(primitive.SaveGIFImageMagick(path, frames, 50, 250))
 			}
 		}
 	}

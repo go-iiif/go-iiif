@@ -10,12 +10,14 @@ import (
 )
 
 type TileSeed struct {
-	level  iiiflevel.Level
-	height int
-	width  int
+	level   iiiflevel.Level
+	height  int
+	width   int
+	quality string
+	format  string
 }
 
-func NewTileSeed(level iiiflevel.Level, h int, w int) (*TileSeed, error) {
+func NewTileSeed(level iiiflevel.Level, h int, w int, quality string, format string) (*TileSeed, error) {
 
 	compliance := level.Compliance()
 	_, err := compliance.DefaultQuality()
@@ -25,9 +27,11 @@ func NewTileSeed(level iiiflevel.Level, h int, w int) (*TileSeed, error) {
 	}
 
 	ts := TileSeed{
-		level:  level,
-		height: h,
-		width:  w,
+		level:   level,
+		height:  h,
+		width:   w,
+		quality: quality,
+		format:  format,
 	}
 
 	return &ts, nil
@@ -49,8 +53,14 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 		return nil, errors.New(msg)
 	}
 
-	compliance := ts.level.Compliance()
-	quality, _ := compliance.DefaultQuality()
+	quality := ts.quality
+
+	if quality == "default" {
+		compliance := ts.level.Compliance()
+		quality, _ = compliance.DefaultQuality()
+	}
+
+	format := ts.format
 
 	crops := make([]*iiifimage.Transformation, 0)
 
@@ -137,7 +147,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
 			rotation := "0"
 			quality := quality
-			format := "jpg"
+			format := format
 
 			transformation, err := iiifimage.NewTransformation(ts.level, region, size, rotation, quality, format)
 

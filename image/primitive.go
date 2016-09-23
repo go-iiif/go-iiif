@@ -48,12 +48,11 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 		size = int(max)
 	}
 
-	// See this - we're not dealing with animations yet
-
 	t1 := time.Now()
 	log.Println("starting model at", t1)
 
-	model := primitive.NewModel(goimg, alpha, size, primitive.Mode(mode))
+	bg := primitive.MakeColor(primitive.AverageImageColor(goimg))
+	model := primitive.NewModel(goimg, bg, alpha, size, primitive.Mode(mode))
 
 	for i := 1; i <= opts.Iterations; i++ {
 
@@ -72,13 +71,29 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 
 		frames := model.Frames(0.001)
 
-		delay := 50
-		lastDelay := 250
+		delay := 25
+		lastDelay := delay * 10
 
 		for i, src := range frames {
-			dst := image.NewPaletted(src.Bounds(), palette.Plan9)
-			draw.Draw(dst, dst.Rect, src, image.ZP, draw.Src)
+
+			// the original code in primitive/utils.go
+			// dst := image.NewPaletted(src.Bounds(), palette.Plan9)
+			// draw.Draw(dst, dst.Rect, src, image.ZP, draw.Src)
+
+			// https://groups.google.com/forum/#!topic/golang-nuts/28Kk1FfG5XE
+			// https://github.com/golang/go/blob/master/src/image/gif/writer.go#L358-L366
+
+			opts := gif.Options{
+				NumColors: 256,
+				Drawer:    draw.FloydSteinberg,
+				Quantizer: nil,
+			}
+
+			dst := image.NewPaletted(src.Bounds(), palette.Plan9[:opts.NumColors])
+			opts.Drawer.Draw(dst, dst.Rect, src, image.ZP)
+
 			g.Image = append(g.Image, dst)
+
 			if i == len(frames)-1 {
 				g.Delay = append(g.Delay, lastDelay)
 			} else {

@@ -8,8 +8,10 @@ package vector
 
 import (
 	"image"
+	"image/color"
 	"image/draw"
 	"image/png"
+	"math"
 	"os"
 	"testing"
 
@@ -31,7 +33,7 @@ func encodePNG(dstFilename string, src image.Image) error {
 }
 
 func TestBasicPath(t *testing.T) {
-	want := []byte{
+	mask := []byte{
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 		0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xe3, 0xaa, 0x3e, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -50,27 +52,152 @@ func TestBasicPath(t *testing.T) {
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	}
 
-	z := NewRasterizer(16, 16)
-	z.MoveTo(f32.Vec2{2, 2})
-	z.LineTo(f32.Vec2{8, 2})
-	z.QuadTo(f32.Vec2{14, 2}, f32.Vec2{14, 14})
-	z.CubeTo(f32.Vec2{8, 2}, f32.Vec2{5, 20}, f32.Vec2{2, 8})
-	z.ClosePath()
+	for _, background := range []uint8{0x00, 0x80} {
+		for _, op := range []draw.Op{draw.Over, draw.Src} {
+			z := NewRasterizer(16, 16)
+			z.MoveTo(f32.Vec2{2, 2})
+			z.LineTo(f32.Vec2{8, 2})
+			z.QuadTo(f32.Vec2{14, 2}, f32.Vec2{14, 14})
+			z.CubeTo(f32.Vec2{8, 2}, f32.Vec2{5, 20}, f32.Vec2{2, 8})
+			z.ClosePath()
 
-	dst := image.NewAlpha(z.Bounds())
-	z.DrawOp = draw.Src
-	z.Draw(dst, dst.Bounds(), image.Opaque, image.Point{})
+			dst := image.NewAlpha(z.Bounds())
+			for i := range dst.Pix {
+				dst.Pix[i] = background
+			}
+			z.DrawOp = op
+			z.Draw(dst, dst.Bounds(), image.Opaque, image.Point{})
+			got := dst.Pix
 
-	got := dst.Pix
-	if len(got) != len(want) {
-		t.Fatalf("len(got)=%d and len(want)=%d differ", len(got), len(want))
-	}
-	for i := range got {
-		delta := int(got[i]) - int(want[i])
-		// The +/- 2 allows different implementations to give different
-		// rounding errors.
-		if delta < -2 || +2 < delta {
-			t.Errorf("i=%d: got %#02x, want %#02x", i, got[i], want[i])
+			want := make([]byte, len(mask))
+			if op == draw.Over && background == 0x80 {
+				for i, ma := range mask {
+					want[i] = 0xff - (0xff-ma)/2
+				}
+			} else {
+				copy(want, mask)
+			}
+
+			if len(got) != len(want) {
+				t.Errorf("background=%#02x, op=%v: len(got)=%d and len(want)=%d differ",
+					background, op, len(got), len(want))
+				continue
+			}
+			for i := range got {
+				delta := int(got[i]) - int(want[i])
+				// The +/- 2 allows different implementations to give different
+				// rounding errors.
+				if delta < -2 || +2 < delta {
+					t.Errorf("background=%#02x, op=%v: i=%d: got %#02x, want %#02x",
+						background, op, i, got[i], want[i])
+				}
+			}
 		}
 	}
 }
+
+const (
+	benchmarkGlyphWidth  = 893
+	benchmarkGlyphHeight = 1122
+)
+
+// benchmarkGlyphData is the 'a' glyph from the Roboto Regular font, translated
+// so that its top left corner is (0, 0).
+var benchmarkGlyphData = []struct {
+	// n being 0, 1 or 2 means moveTo, lineTo or quadTo.
+	n uint32
+	p f32.Vec2
+	q f32.Vec2
+}{
+	{0, f32.Vec2{699, 1102}, f32.Vec2{0, 0}},
+	{2, f32.Vec2{683, 1070}, f32.Vec2{673, 988}},
+	{2, f32.Vec2{544, 1122}, f32.Vec2{365, 1122}},
+	{2, f32.Vec2{205, 1122}, f32.Vec2{102.5, 1031.5}},
+	{2, f32.Vec2{0, 941}, f32.Vec2{0, 802}},
+	{2, f32.Vec2{0, 633}, f32.Vec2{128.5, 539.5}},
+	{2, f32.Vec2{257, 446}, f32.Vec2{490, 446}},
+	{1, f32.Vec2{670, 446}, f32.Vec2{0, 0}},
+	{1, f32.Vec2{670, 361}, f32.Vec2{0, 0}},
+	{2, f32.Vec2{670, 264}, f32.Vec2{612, 206.5}},
+	{2, f32.Vec2{554, 149}, f32.Vec2{441, 149}},
+	{2, f32.Vec2{342, 149}, f32.Vec2{275, 199}},
+	{2, f32.Vec2{208, 249}, f32.Vec2{208, 320}},
+	{1, f32.Vec2{22, 320}, f32.Vec2{0, 0}},
+	{2, f32.Vec2{22, 239}, f32.Vec2{79.5, 163.5}},
+	{2, f32.Vec2{137, 88}, f32.Vec2{235.5, 44}},
+	{2, f32.Vec2{334, 0}, f32.Vec2{452, 0}},
+	{2, f32.Vec2{639, 0}, f32.Vec2{745, 93.5}},
+	{2, f32.Vec2{851, 187}, f32.Vec2{855, 351}},
+	{1, f32.Vec2{855, 849}, f32.Vec2{0, 0}},
+	{2, f32.Vec2{855, 998}, f32.Vec2{893, 1086}},
+	{1, f32.Vec2{893, 1102}, f32.Vec2{0, 0}},
+	{1, f32.Vec2{699, 1102}, f32.Vec2{0, 0}},
+	{0, f32.Vec2{392, 961}, f32.Vec2{0, 0}},
+	{2, f32.Vec2{479, 961}, f32.Vec2{557, 916}},
+	{2, f32.Vec2{635, 871}, f32.Vec2{670, 799}},
+	{1, f32.Vec2{670, 577}, f32.Vec2{0, 0}},
+	{1, f32.Vec2{525, 577}, f32.Vec2{0, 0}},
+	{2, f32.Vec2{185, 577}, f32.Vec2{185, 776}},
+	{2, f32.Vec2{185, 863}, f32.Vec2{243, 912}},
+	{2, f32.Vec2{301, 961}, f32.Vec2{392, 961}},
+}
+
+// benchGlyph benchmarks rasterizing a TrueType glyph.
+//
+// Note that, compared to the github.com/google/font-go prototype, the height
+// here is the height of the bounding box, not the pixels per em used to scale
+// a glyph's vectors. A height of 64 corresponds to a ppem greater than 64.
+func benchGlyph(b *testing.B, cm color.Model, height int, op draw.Op) {
+	scale := float32(height) / benchmarkGlyphHeight
+
+	// Clone the benchmarkGlyphData slice and scale its coordinates.
+	data := append(benchmarkGlyphData[:0:0], benchmarkGlyphData...)
+	for i := range data {
+		data[i].p[0] *= scale
+		data[i].p[1] *= scale
+		data[i].q[0] *= scale
+		data[i].q[1] *= scale
+	}
+
+	width := int(math.Ceil(float64(benchmarkGlyphWidth * scale)))
+	z := NewRasterizer(width, height)
+
+	dst, src := draw.Image(nil), image.Image(nil)
+	switch cm {
+	case color.AlphaModel:
+		dst = image.NewAlpha(z.Bounds())
+		src = image.Opaque
+	default:
+		b.Fatal("unsupported color model")
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		z.Reset(width, height)
+		z.DrawOp = op
+		for _, d := range data {
+			switch d.n {
+			case 0:
+				z.MoveTo(d.p)
+			case 1:
+				z.LineTo(d.p)
+			case 2:
+				z.QuadTo(d.p, d.q)
+			}
+		}
+		z.Draw(dst, dst.Bounds(), src, image.Point{})
+	}
+}
+
+func BenchmarkGlyphAlpha16Over(b *testing.B)  { benchGlyph(b, color.AlphaModel, 16, draw.Over) }
+func BenchmarkGlyphAlpha16Src(b *testing.B)   { benchGlyph(b, color.AlphaModel, 16, draw.Src) }
+func BenchmarkGlyphAlpha32Over(b *testing.B)  { benchGlyph(b, color.AlphaModel, 32, draw.Over) }
+func BenchmarkGlyphAlpha32Src(b *testing.B)   { benchGlyph(b, color.AlphaModel, 32, draw.Src) }
+func BenchmarkGlyphAlpha64Over(b *testing.B)  { benchGlyph(b, color.AlphaModel, 64, draw.Over) }
+func BenchmarkGlyphAlpha64Src(b *testing.B)   { benchGlyph(b, color.AlphaModel, 64, draw.Src) }
+func BenchmarkGlyphAlpha128Over(b *testing.B) { benchGlyph(b, color.AlphaModel, 128, draw.Over) }
+func BenchmarkGlyphAlpha128Src(b *testing.B)  { benchGlyph(b, color.AlphaModel, 128, draw.Src) }
+func BenchmarkGlyphAlpha256Over(b *testing.B) { benchGlyph(b, color.AlphaModel, 256, draw.Over) }
+func BenchmarkGlyphAlpha256Src(b *testing.B)  { benchGlyph(b, color.AlphaModel, 256, draw.Src) }
+
+// TODO: color.RGBAModel benchmarks.
