@@ -112,12 +112,23 @@ func main() {
 					log.Fatal(err)
 				}
 
-				src_id, _ := row["src"]
-				dest_id, _ := row["dest"]
+				src_id, ok := row["src"]
+
+				if !ok {
+					log.Println("Unable to determine src", row)
+					continue
+				}
+
+				dest_id, ok := row["dest"]
+
+				if !ok {
+					log.Println("Unable to determine dest", row)
+					continue
+				}
 
 				wg.Add(1)
 
-				go func() {
+				go func(src_id string, dest_id string) {
 
 					<-ch
 
@@ -137,7 +148,7 @@ func main() {
 
 					ch <- true
 
-				}()
+				}(src_id, dest_id)
 			}
 
 			wg.Wait()
@@ -204,6 +215,7 @@ func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iii
 		source, err := iiifsource.NewMemorySource(image.Body())
 
 		if err != nil {
+			log.Println("FFFFUUUU")
 			return count, err
 		}
 
