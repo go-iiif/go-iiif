@@ -5,7 +5,7 @@ package image
 
 import (
 	"errors"
-	_ "fmt"
+	"fmt"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
 	_ "log"
@@ -191,7 +191,8 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	} else if fi.Format == "tif" {
 		opts.Type = bimg.TIFF
 	} else {
-		return errors.New("Unsupported image format")
+		msg := fmt.Sprintf("Unsupported image format '%s'", fi.Format)
+		return errors.New(msg)
 	}
 
 	_, err = im.bimg.Process(opts)
