@@ -66,6 +66,12 @@ window.addEventListener('load', function(e){
     };
     
     var info = 'http://' + location.host + '/' + id + '/info.json';
-    map.addLayer(L.tileLayer.iiif(info, {'quality': 'primitive:1,50,128', 'tileFormat': 'gif'}));
+
+    var opts = {
+	'quality': 'default',		// 'primitive:5,200,255',
+	'tileFormat': 'jpg',		// 'gif'
+    };
+
+    map.addLayer(L.tileLayer.iiif(info, opts));
     
 });
