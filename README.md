@@ -491,8 +491,6 @@ There are a few caveats about dithering images:
 
 ### Primitive-ing
 
-![](misc/go-iiif-primitive-circles.png)
-
 ```
 	"features": {
 		"append": {
@@ -506,7 +504,11 @@ There are a few caveats about dithering images:
 
 _Note the way the `primitive` block is a top-level element in your config file._
 
-`primitive` use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives. The syntax for invoking this feature is `primitive:{MODE},{ITERATIONS},{ALPHA}` where:
+`primitive` use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives. Like this:
+
+![](misc/go-iiif-primitive-circles.png)
+
+The syntax for invoking this feature is `primitive:{MODE},{ITERATIONS},{ALPHA}` where:
 
 * **MODE** is a number between 0-5 representing which of the [primitive shapes](https://github.com/fogleman/primitive#primitives) to use. They are:
  * 0: combo
