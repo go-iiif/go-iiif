@@ -500,19 +500,27 @@ There are a few caveats about dithering images:
 	"primitive": { "max_iterations": 100 }
 ```
 
+_Note the way the `primitive` block is a top-level element in your config file._
+
 Use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives. The syntax for invoking this feature is `primitive:{MODE},{ITERATIONS},{ALPHA}` where:
 
-* `MODE` is a number between 0-5 representing which of the [primitive shapes](https://github.com/fogleman/primitive#primitives) to use. They are:
+* **MODE** is a number between 0-5 representing which of the [primitive shapes](https://github.com/fogleman/primitive#primitives) to use. They are:
  * 0: combo
  * 1: triangle
  * 2: rectangle
  * 3: ellipse
  * 4: circle
  * 5: rotated rectangle
-* `ITERATIONS` is a number between 1 and infinity (a bad idea) or 1 and the number defined in the `primitive.max_iterations` section in your config file
-* `ALPHA` is a number between 0-255
+* **ITERATIONS** is a number between 1 and infinity (a bad idea) or 1 and the number defined in the `primitive.max_iterations` section in your config file
+* **ALPHA** is a number between 0-255
 
-Also, it's not exactly "fast".
+For example:
+
+```
+http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/full/500,/0/primitive:5,200,255.jpg
+```
+
+Be aware that it's not exactly "fast". It's [getting faster](https://github.com/fogleman/primitive/commit/ccd349008eb7c611d690c4dd1fd9bca74b86ceb1) but it still takes a while. Also, _this code_ should probably have a flag to downsize the input image for processing (and then resizing it back up to the requested size) but that doesn't happen yet. Basically you should not enable this feature as a public-facing web service because it will take seconds (not microseconds) to minutes to render a single 256x256 tile. For example:
 
 ```
 ./bin/iiif-server -host 0.0.0.0 -config config.json
@@ -520,11 +528,7 @@ Also, it's not exactly "fast".
 2016/09/21 15:43:13 starting model at 2016-09-21 15:43:13.626117993 +0000 UTC
 2016/09/21 15:43:13 finished step 1 in 8.229683ms
 2016/09/21 15:43:16 finished step 2 in 3.019413861s
-2016/09/21 15:43:20 finished step 3 in 6.824349271s
-2016/09/21 15:43:27 finished step 4 in 13.470026196s
 …
-2016/09/21 15:45:36 finished step 98 in 2m22.772206637s
-2016/09/21 15:45:37 finished step 99 in 2m23.780712318s
 2016/09/21 15:45:38 finished step 100 in 2m24.626232387s
 2016/09/21 15:45:39 finished model in 2m25.611790848s
 ```
@@ -534,6 +538,14 @@ But it is pretty darn cool!
 ![](misc/go-iiif-primitive-triangles.png)
 
 ![](misc/go-iiif-primitive-triangles-detail.png)
+
+If you specify a `gif` format parameter then `go-iiif` will return an animated GIF for the requested image consisting of each intermediate stage that the `primitive` library generated the final image. For example:
+
+```
+http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/full/500,/0/primitive:5,200,255.gif
+```
+
+![](misc/go-iiif-primitive-animated-rect.gif)
 
 ## Example
 
