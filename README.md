@@ -153,7 +153,7 @@ Generate (seed) all the tiled derivatives for a source image for use with the [L
 
 ## Config files
 
-There is a [sample config file](config.json.example) included with this repo. The easiest way to understand config files is that they consist of five top-level groupings, with nested section-specific details. They are:
+There is a [sample config file](config.json.example) included with this repo. The easiest way to understand config files is that they consist of at least five top-level groupings, with nested section-specific details followed by zero or more implementation specific configuration blocks. They are:
 
 ### level
 
@@ -249,6 +249,8 @@ _Careful readers may notice the presence of an undefined (by the IIIF spec) feat
 | **tif** | tif | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
 | **webp** | webp | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
 
+
+_Support for GIF output is not enabled by default because it is not currently supported by `bimg` (the Go library on top of `lipvips`). There is however native support for converting final images to be GIFs but you will need to enable that by hand, below._
 
 #### features.enable
 
@@ -548,6 +550,12 @@ http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/full/500,/0/primitive:5,100,
 Which would produce this:
 
 ![](misc/go-iiif-primitive-animated-rect.gif)
+
+Or this:
+
+https://thisisaaronland.github.io/go-iiif/animated/
+
+_Note: You will need to [manually enable support for GIF images](https://github.com/thisisaaronland/go-iiif/tree/primitive#featuresenable) in your config file._
 
 ## Example
 
