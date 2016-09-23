@@ -9,6 +9,10 @@ window.addEventListener('load', function(e){
 		minZoom: 1,
 	});
 
+	map.on('load', function(){
+		alert('load');
+	});
+	
 	var info = location + 'tiles/' + id + '/info.json';
 
 	var opts = {
