@@ -250,7 +250,7 @@ _Careful readers may notice the presence of an undefined (by the IIIF spec) feat
 | **webp** | webp | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
 
 
-_Support for GIF output is not enabled by default because it is not currently supported by `bimg` (the Go library on top of `lipvips`). There is however native support for converting final images to be GIFs but you will need to enable that by hand, below._
+_Support for GIF output is not enabled by default because it is not currently supported by `bimg` (the Go library on top of `lipvips`). There is however native support for converting final images to be GIFs but you will need to [enable that by hand](https://github.com/thisisaaronland/go-iiif/tree/primitive#featuresenable), below._
 
 #### features.enable
 
