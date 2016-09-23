@@ -9,7 +9,7 @@ window.addEventListener('load', function(e){
 		minZoom: 1,
 	});
 
-	var info = location + 'animated/tiles/' + id + '/info.json';
+	var info = location + 'tiles/' + id + '/info.json';
 
 	var opts = {
 		'quality': 'primitive:5,200,255',
