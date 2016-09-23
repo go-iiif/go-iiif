@@ -25,7 +25,9 @@ func main() {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
-	var mode = flag.String("mode", "-", "...")
+	var quality = flag.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
+	var format = flag.String("format", "jpg", "A valid IIIF format parameter")
+	var mode = flag.String("mode", "-", "Whether to read input as a CSV file or from STDIN which can be represented as \"-\"")
 	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	var endpoint = flag.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
 
@@ -59,7 +61,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	ts, err := iiiftile.NewTileSeed(level, 256, 256)
+	ts, err := iiiftile.NewTileSeed(level, 256, 256, *quality, *format)
 
 	if err != nil {
 		log.Fatal(err)

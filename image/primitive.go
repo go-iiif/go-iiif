@@ -53,7 +53,6 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 	t1 := time.Now()
 	log.Println("starting model at", t1)
 
-
 	bg := primitive.MakeColor(primitive.AverageImageColor(goimg))
 	model := primitive.NewModel(goimg, bg, alpha, size, primitive.Mode(mode))
 
