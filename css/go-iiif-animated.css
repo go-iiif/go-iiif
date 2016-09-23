@@ -22,6 +22,12 @@ a {
     height:600px !important;
 }
 
+#status {
+    text-align: center;
+    font-weight:700;
+    margin-top:1em;
+}
+
 #footer {
     margin-top:6em;
     text-align:right;
