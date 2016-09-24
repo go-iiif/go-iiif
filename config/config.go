@@ -68,6 +68,11 @@ type CacheConfig struct {
 	Path string `json:"path,omitempty"`
 	TTL int `json:"ttl,omitempty"`
 	Limit int `json:"limit,omitempty"`
+	S3    S3Config	      `json:s3,omitempty"`
+}
+
+type S3Config struct {
+     Bucket	  string `json:"bucket"`
 }
 
 func NewConfigFromFile(file string) (*Config, error) {

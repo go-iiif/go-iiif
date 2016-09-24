@@ -20,11 +20,14 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 	if cfg.Source.Name == "Disk" {
 		cache, err := NewDiskSource(config)
 		return cache, err
-	} else if cfg.Source.Name == "URI" {
-		cache, err := NewURISource(config)
-		return cache, err
 	} else if cfg.Source.Name == "Flickr" {
 		cache, err := NewFlickrSource(config)
+		return cache, err
+	} else if cfg.Source.Name == "S3" {
+		cache, err := NewS3Source(config)
+		return cache, err
+	} else if cfg.Source.Name == "URI" {
+		cache, err := NewURISource(config)
 		return cache, err
 	} else {
 		err := errors.New("Unknown source type")

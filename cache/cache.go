@@ -30,6 +30,9 @@ func NewCacheFromConfig(cfg iiifconfig.CacheConfig) (Cache, error) {
 	} else if cfg.Name == "Memory" {
 		cache, err := NewMemoryCache(cfg)
 		return cache, err
+	} else if cfg.Name == "S3" {
+		cache, err := NewS3Cache(cfg)
+		return cache, err
 	} else {
 		cache, err := NewNullCache(cfg)
 		return cache, err
