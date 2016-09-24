@@ -3,6 +3,7 @@ package source
 import (
 	iiifaws "github.com/thisisaaronland/go-iiif/aws"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	_ "log"
 )
 
 type S3Source struct {

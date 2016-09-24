@@ -363,6 +363,20 @@ Here's an example [with this photo](https://www.flickr.com/photos/straup/4136870
 
 ![](misc/go-iiif-flickr-detail.png)
 
+##### S3
+
+```
+	"images": {
+		"source": { "name": "S3", "path": "your.S3.bucket", "region": "us-east-1" }
+	}
+```
+
+Fetch source images from Amazon's S3 service. S3 caches have three addition properties:
+
+* **region** 
+* **credentials**
+* **prefix**
+
 ##### URI
 
 ```
@@ -461,9 +475,15 @@ Because you must define a caching layer this is here to satify the requirements 
 
 ```
 	"derivatives": {
-		"cache": { "name": "S3", "path": "your.S3.bucket" }
+		"cache": { "name": "S3", "path": "your.S3.bucket", "region": "us-east-1" }
 	}
 ```
+
+Cache images using Amazon's S3 service. S3 caches have three addition properties:
+
+* **region** 
+* **credentials**
+* **prefix**
 
 ## Non-standard features
 
