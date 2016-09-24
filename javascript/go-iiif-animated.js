@@ -14,9 +14,8 @@ window.addEventListener('load', function(e){
 		temp = queries[i].split('=');
 		params[temp[0]] = temp[1];
 	}   
-	
-	console.log(location.hash);
-	console.log(location.search);	
+
+	var mode = 5;
 	
 	if (params['mode'] == 'triangles'){
 		mode = 1;
@@ -25,8 +24,6 @@ window.addEventListener('load', function(e){
 	if (params['mode'] == 'circles'){
 		mode = 4;
 	}
-
-	console.log(mode);
 	
 	var id = '184512_5f7f47e5b3c66207_x.jpg';
 	
@@ -45,6 +42,7 @@ window.addEventListener('load', function(e){
 		'tileFormat': 'gif',
 	};
 
+	console.log(info);
 	console.log(opts);
 	
 	var layer = L.tileLayer.iiif(info, opts);
