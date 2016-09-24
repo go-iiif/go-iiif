@@ -6,7 +6,7 @@ import (
 )
 
 type S3Cache struct {
-	S3 *iiifaws.S3Thing
+	S3 *iiifaws.S3Connection
 }
 
 func NewS3Cache(cfg iiifconfig.CacheConfig) (*S3Cache, error) {
@@ -36,7 +36,7 @@ func NewS3Cache(cfg iiifconfig.CacheConfig) (*S3Cache, error) {
 		Credentials: creds,
 	}
 
-	s3, err := iiifaws.NewS3Thing(s3cfg)
+	s3, err := iiifaws.NewS3Connection(s3cfg)
 
 	if err != nil {
 		return nil, err

@@ -6,7 +6,7 @@ import (
 )
 
 type S3Source struct {
-	S3 *iiifaws.S3Thing
+	S3 *iiifaws.S3Connection
 }
 
 func NewS3Source(cfg *iiifconfig.Config) (*S3Source, error) {
@@ -38,7 +38,7 @@ func NewS3Source(cfg *iiifconfig.Config) (*S3Source, error) {
 		Credentials: creds,
 	}
 
-	s3, err := iiifaws.NewS3Thing(s3cfg)
+	s3, err := iiifaws.NewS3Connection(s3cfg)
 
 	if err != nil {
 		return nil, err
