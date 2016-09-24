@@ -2,16 +2,27 @@ window.addEventListener('load', function(e){
 
 	var qs = window.location.search;
 	qs = qs.substring(1);
-		
-	var mode = 5;
 
-	console.log(location.hash);
+	var qs = window.location.search;
+	qs = qs.substring(1);
 	
-	if (location.hash == '#triangles'){
+	var params = {};
+	var queries = qs.split("&amp;");
+	var count = queries.length;
+	
+	for ( var i = 0; i < count; i++ ) {
+		temp = queries[i].split('=');
+		params[temp[0]] = temp[1];
+	}   
+	
+	console.log(location.hash);
+	console.log(location.search);	
+	
+	if (params['mode'] == 'triangles'){
 		mode = 1;
 	}
 
-	if (location.hash == '#circles'){
+	if (params['mode'] == 'circles'){
 		mode = 4;
 	}
 
@@ -25,8 +36,9 @@ window.addEventListener('load', function(e){
 		zoom: 1,
 		minZoom: 1,
 	});
-	
-	var info = location + 'tiles/' + id + '/info.json';
+
+	var root = location.href.replace(location.search, '');
+	var info = root + 'tiles/' + id + '/info.json';
 
 	var opts = {
 		'quality': 'primitive:' + mode + ',200,255',
