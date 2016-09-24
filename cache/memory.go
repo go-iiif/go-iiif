@@ -61,6 +61,13 @@ func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 	return &mc, nil
 }
 
+func (mc *MemoryCache) Exists(key string) bool {
+
+	_, ok := mc.provider.Get(key)
+
+	return ok
+}
+
 func (mc *MemoryCache) Get(key string) ([]byte, error) {
 
 	data, ok := mc.provider.Get(key)

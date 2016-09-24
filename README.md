@@ -457,6 +457,14 @@ Cache images in memory. Memory caches have two addition properties:
 
 Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
 
+##### S3
+
+```
+	"derivatives": {
+		"cache": { "name": "S3", "path": "your.S3.bucket" }
+	}
+```
+
 ## Non-standard features
 
 `go-iiif` supports the following non-standard IIIF `quality` features: 

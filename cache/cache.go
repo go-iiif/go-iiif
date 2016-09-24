@@ -5,6 +5,7 @@ import (
 )
 
 type Cache interface {
+	Exists(string) bool
 	Get(string) ([]byte, error)
 	Set(string, []byte) error
 	Unset(string) error

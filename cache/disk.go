@@ -30,6 +30,19 @@ func NewDiskCache(cfg config.CacheConfig) (*DiskCache, error) {
 	return &c, nil
 }
 
+func (c *DiskCache) Exists(rel_path string) bool {
+
+	abs_path := path.Join(c.root, rel_path)
+
+	_, err := os.Stat(abs_path)
+
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return true
+}
+
 func (c *DiskCache) Get(rel_path string) ([]byte, error) {
 
 	abs_path := path.Join(c.root, rel_path)

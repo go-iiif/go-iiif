@@ -16,6 +16,10 @@ func NewNullCache(cfg config.CacheConfig) (*NullCache, error) {
 	return &c, nil
 }
 
+func (c *NullCache) Exists(rel_path string) bool {
+	return false
+}
+
 func (c *NullCache) Get(rel_path string) ([]byte, error) {
 
 	err := errors.New("null cache is null")
