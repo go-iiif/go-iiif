@@ -52,6 +52,9 @@ type GraphicsConfig struct {
 type SourceConfig struct {
 	Name string `json:"name"`
 	Path string `json:"path,omitempty"`
+	Prefix string `json:"prefix,omitempty"`
+	Region string `json:"region,omitempty"`
+	Credentials string `json:"credentials,omitempty"`
 }
 
 type FlickrConfig struct {
@@ -68,11 +71,9 @@ type CacheConfig struct {
 	Path string `json:"path,omitempty"`
 	TTL int `json:"ttl,omitempty"`
 	Limit int `json:"limit,omitempty"`
-	S3    S3Config	      `json:s3,omitempty"`
-}
-
-type S3Config struct {
-     Bucket	  string `json:"bucket"`
+	Prefix string `json:"prefix,omitempty"`
+	Region string `json:"region,omitempty"`
+	Credentials string `json:"credentials,omitempty"`
 }
 
 func NewConfigFromFile(file string) (*Config, error) {

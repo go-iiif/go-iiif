@@ -1,35 +1,51 @@
 package source
 
 import (
-	"bytes"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/s3"
+	iiifaws "github.com/thisisaaronland/go-iiif/aws"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 )
 
 type S3Source struct {
-	service *s3.S3
-	bucket  string
+	S3 *iiifaws.S3Thing
 }
 
 func NewS3Source(cfg *iiifconfig.Config) (*S3Source, error) {
 
-	// grab stuff from cache/s3.go (20160923/thisisaaronland)
+	src := cfg.Images.Source
 
-	session, err := session.NewSession()
+	bucket := src.Path
+	prefix := ""
+
+	region := "us-east-1"
+	creds := "default"
+
+	if src.Prefix == "" {
+		prefix = src.Prefix
+	}
+
+	if src.Region == "" {
+		region = src.Region
+	}
+
+	if src.Credentials == "" {
+		creds = src.Credentials
+	}
+
+	s3cfg := iiifaws.S3Config{
+		Bucket:      bucket,
+		Prefix:      prefix,
+		Region:      region,
+		Credentials: creds,
+	}
+
+	s3, err := iiifaws.NewS3Thing(s3cfg)
 
 	if err != nil {
 		return nil, err
 	}
 
-	service := s3.New(session)
-
-	bucket := "fixme"
-
 	c := S3Source{
-		service: service,
-		bucket:  bucket,
+		S3: s3,
 	}
 
 	return &c, nil
@@ -37,19 +53,5 @@ func NewS3Source(cfg *iiifconfig.Config) (*S3Source, error) {
 
 func (c *S3Source) Read(id string) ([]byte, error) {
 
-	params := &s3.GetObjectInput{
-		Bucket: aws.String(c.bucket),
-		Key:    aws.String(id),
-	}
-
-	rsp, err := c.service.GetObject(params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	buf := new(bytes.Buffer)
-	buf.ReadFrom(rsp.Body)
-
-	return buf.Bytes(), nil
+	return c.S3.Get(id)
 }

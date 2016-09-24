@@ -8,6 +8,7 @@ self:   prep rmdeps
 	if test -d src/github.com/thisisaaronland/go-iiif; then rm -rf src/github.com/thisisaaronland/go-iiif; fi
 	mkdir -p src/github.com/thisisaaronland/go-iiif
 	cp iiif.go src/github.com/thisisaaronland/go-iiif/
+	cp -r aws src/github.com/thisisaaronland/go-iiif/
 	cp -r cache src/github.com/thisisaaronland/go-iiif/
 	cp -r compliance src/github.com/thisisaaronland/go-iiif/
 	cp -r config src/github.com/thisisaaronland/go-iiif/
