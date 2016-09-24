@@ -5,6 +5,8 @@ window.addEventListener('load', function(e){
 		
 	var mode = 5;
 
+	console.log(location.hash);
+	
 	if (location.hash == '#triangles'){
 		mode = 1;
 	}
