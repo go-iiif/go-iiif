@@ -563,7 +563,11 @@ Which would produce this:
 
 ![](misc/go-iiif-primitive-animated-rect.gif)
 
-Here is an example where each of the tiles in an slippy image are animated GIFs: https://thisisaaronland.github.io/go-iiif/animated/
+Here are examples where each of the tiles in an slippy image are animated GIFs:
+
+* https://thisisaaronland.github.io/go-iiif/animated/
+* https://thisisaaronland.github.io/go-iiif/animated/?mode=circles
+* https://thisisaaronland.github.io/go-iiif/animated/?mode=triangles
 
 _Note: You will need to [manually enable support for GIF images](https://github.com/thisisaaronland/go-iiif/tree/primitive#featuresenable) in your config file for animated GIFs to work._
 
