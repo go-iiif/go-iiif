@@ -1,5 +1,27 @@
 window.addEventListener('load', function(e){
 
+	var qs = window.location.search;
+	qs = qs.substring(1);
+	
+	var params = {};
+	var queries = qs.split("&amp;");
+	var count = queries.length;
+	
+	for ( var i = 0; i < count; i++ ) {
+		temp = queries[i].split('=');
+		params[temp[0]] = temp[1];
+	}   
+	
+	var mode = 5;
+
+	if (params['mode'] == 'triangles'){
+		mode = 1;
+	}
+
+	if (params['mode'] == 'circles'){
+		mode = 4;
+	}
+	
 	var id = '184512_5f7f47e5b3c66207_x.jpg';
 	
 	var map = L.map('map', {
@@ -12,7 +34,7 @@ window.addEventListener('load', function(e){
 	var info = location + 'tiles/' + id + '/info.json';
 
 	var opts = {
-		'quality': 'primitive:5,200,255',
+		'quality': 'primitive:' + mode + ',200,255',
 		'tileFormat': 'gif',
 	};
 
