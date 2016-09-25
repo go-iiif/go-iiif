@@ -1,15 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
-	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
-	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	iiiftile "github.com/thisisaaronland/go-iiif/tile"
 	csv "github.com/whosonfirst/go-whosonfirst-csv"
 	"io"
@@ -43,25 +37,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	level, err := iiiflevel.NewLevelFromConfig(config, *endpoint)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	ts, err := iiiftile.NewTileSeed(level, 256, 256, *quality, *format)
+	ts, err := iiiftile.NewTileSeed(config, 256, 256, *endpoint, *quality, *format)
 
 	if err != nil {
 		log.Fatal(err)
@@ -136,7 +112,7 @@ func main() {
 
 					t1 := time.Now()
 
-					count, err := SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+					count, err := ts.SeedTiles(src_id, dest_id, scales, *refresh)
 
 					t2 := time.Since(t1)
 
@@ -173,7 +149,7 @@ func main() {
 
 			t1 := time.Now()
 
-			count, err := SeedTiles(ts, src_id, dest_id, config, images_cache, derivatives_cache, scales, *endpoint, *refresh)
+			count, err := ts.SeedTiles(src_id, dest_id, scales, *refresh)
 
 			t2 := time.Since(t1)
 
@@ -184,113 +160,4 @@ func main() {
 			log.Printf("[%s] time to process %d tiles: %v\n", id, count, t2)
 		}
 	}
-}
-
-/*
-
-See this - the function signature is complete madness. We'll figure it out...
-(20160913/thisisaaronland)
-
-*/
-
-func SeedTiles(ts *iiiftile.TileSeed, src_id string, dest_id string, config *iiifconfig.Config, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache, scales []int, endpoint string, refresh bool) (int, error) {
-
-	count := 0
-
-	image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, src_id)
-
-	if err != nil {
-		return count, err
-	}
-
-	for _, scale := range scales {
-
-		crops, err := ts.TileSizes(image, scale)
-
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		source, err := iiifsource.NewMemorySource(image.Body())
-
-		if err != nil {
-			log.Println("FFFFUUUU")
-			return count, err
-		}
-
-		procs := runtime.NumCPU() * 2
-
-		ch := make(chan bool, procs)
-
-		for i := 0; i < procs; i++ {
-			ch <- true
-		}
-
-		wg := new(sync.WaitGroup)
-
-		for _, transformation := range crops {
-
-			wg.Add(1)
-
-			go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
-
-				<-ch
-
-				defer func() {
-					wg.Done()
-					ch <- true
-				}()
-
-				uri, _ := tr.ToURI(dest_id)
-
-				if !refresh {
-
-					_, err := derivatives_cache.Get(uri)
-
-					if err == nil {
-						return
-					}
-				}
-
-				tmp, _ := iiifimage.NewImageFromConfigWithSource(config, source, im.Identifier())
-
-				err = tmp.Transform(tr)
-
-				if err == nil {
-					derivatives_cache.Set(uri, tmp.Body())
-				}
-
-			}(image, transformation, wg)
-		}
-
-		wg.Wait()
-
-		// something something something using the channel above to increment count...
-
-		count += len(crops)
-	}
-
-	level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
-
-	if err != nil {
-		return count, err
-	}
-
-	profile, err := iiifprofile.NewProfile(endpoint, image, level)
-
-	if err != nil {
-		return count, err
-	}
-
-	body, err := json.Marshal(profile)
-
-	if err != nil {
-		return count, err
-	}
-
-	uri := fmt.Sprintf("%s/info.json", dest_id)
-	derivatives_cache.Set(uri, body)
-
-	return count, nil
 }

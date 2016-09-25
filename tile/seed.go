@@ -1,40 +1,176 @@
 package tile
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	iiifcache "github.com/thisisaaronland/go-iiif/cache"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	_ "log"
+	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
+	iiifsource "github.com/thisisaaronland/go-iiif/source"
+	"log"
 	"math"
+	"runtime"
+	"sync"
 )
 
 type TileSeed struct {
-	level   iiiflevel.Level
-	height  int
-	width   int
-	quality string
-	format  string
+	config            *iiifconfig.Config
+	level             iiiflevel.Level
+	images_cache      iiifcache.Cache
+	derivatives_cache iiifcache.Cache
+	endpoint          string
+	Height            int
+	Width             int
+	Quality           string
+	Format            string
 }
 
-func NewTileSeed(level iiiflevel.Level, h int, w int, quality string, format string) (*TileSeed, error) {
+func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
+
+	level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	compliance := level.Compliance()
-	_, err := compliance.DefaultQuality()
+	_, err = compliance.DefaultQuality()
 
 	if err != nil {
 		return nil, err
 	}
 
 	ts := TileSeed{
-		level:   level,
-		height:  h,
-		width:   w,
-		quality: quality,
-		format:  format,
+		config:            config,
+		level:             level,
+		images_cache:      images_cache,
+		derivatives_cache: derivatives_cache,
+		endpoint:          endpoint,
+		Height:            h,
+		Width:             w,
+		Quality:           quality,
+		Format:            format,
 	}
 
 	return &ts, nil
+}
+
+func (ts *TileSeed) SeedTiles(src_id string, dest_id string, scales []int, refresh bool) (int, error) {
+
+	count := 0
+
+	image, err := iiifimage.NewImageFromConfigWithCache(ts.config, ts.images_cache, src_id)
+
+	if err != nil {
+		return count, err
+	}
+
+	for _, scale := range scales {
+
+		crops, err := ts.TileSizes(image, scale)
+
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		source, err := iiifsource.NewMemorySource(image.Body())
+
+		if err != nil {
+			return count, err
+		}
+
+		procs := runtime.NumCPU() * 2 // move me in to the constructor...
+
+		ch := make(chan bool, procs)
+
+		for i := 0; i < procs; i++ {
+			ch <- true
+		}
+
+		wg := new(sync.WaitGroup)
+
+		for _, transformation := range crops {
+
+			wg.Add(1)
+
+			go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
+
+				<-ch
+
+				defer func() {
+					wg.Done()
+					ch <- true
+				}()
+
+				uri, _ := tr.ToURI(dest_id)
+
+				if !refresh {
+
+					_, err := ts.derivatives_cache.Get(uri)
+
+					if err == nil {
+						return
+					}
+				}
+
+				tmp, _ := iiifimage.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
+
+				err = tmp.Transform(tr)
+
+				if err == nil {
+					ts.derivatives_cache.Set(uri, tmp.Body())
+				}
+
+			}(image, transformation, wg)
+		}
+
+		wg.Wait()
+
+		// something something something using the channel above to increment count...
+
+		count += len(crops)
+	}
+
+	level, err := iiiflevel.NewLevelFromConfig(ts.config, ts.endpoint)
+
+	if err != nil {
+		return count, err
+	}
+
+	// FIX ME https://github.com/thisisaaronland/go-iiif/issues/25
+
+	profile, err := iiifprofile.NewProfile(ts.endpoint, image, level)
+
+	if err != nil {
+		return count, err
+	}
+
+	body, err := json.Marshal(profile)
+
+	if err != nil {
+		return count, err
+	}
+
+	uri := fmt.Sprintf("%s/info.json", dest_id)
+	ts.derivatives_cache.Set(uri, body)
+
+	return count, nil
 }
 
 func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transformation, error) {
@@ -48,29 +184,29 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	w := dims.Width()
 	h := dims.Height()
 
-	if sf*ts.width >= w && sf*ts.height >= h {
-		msg := fmt.Sprintf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.width, sf*ts.height)
+	if sf*ts.Width >= w && sf*ts.Height >= h {
+		msg := fmt.Sprintf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.Width, sf*ts.Height)
 		return nil, errors.New(msg)
 	}
 
-	quality := ts.quality
+	quality := ts.Quality
 
 	if quality == "default" {
 		compliance := ts.level.Compliance()
 		quality, _ = compliance.DefaultQuality()
 	}
 
-	format := ts.format
+	format := ts.Format
 
 	crops := make([]*iiifimage.Transformation, 0)
 
 	// what follows was copied from
 	// https://github.com/cmoa/iiif_s3/blob/master/lib/iiif_s3/builder.rb#L165-L199
 
-	ty := int(math.Ceil(float64(h) / float64(ts.height*sf)))
-	tx := int(math.Ceil(float64(w) / float64(ts.width*sf)))
+	ty := int(math.Ceil(float64(h) / float64(ts.Height*sf)))
+	tx := int(math.Ceil(float64(w) / float64(ts.Width*sf)))
 
-	// fmt.Printf("%d / %d * %d\n", w, ts.width, sf)
+	// fmt.Printf("%d / %d * %d\n", w, ts.Width, sf)
 	// fmt.Printf("tx %d ty %d\n", tx, ty)
 
 	for ypos := 0; ypos < ty; ypos++ {
@@ -88,19 +224,19 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			foo["scale_factor"] = sf
 			foo["xpos"] = xpos
 			foo["ypos"] = ypos
-			foo["x"] = xpos * ts.width * sf
-			foo["y"] = ypos * ts.height * sf
-			foo["width"] = ts.width * sf
-			foo["height"] = ts.height * sf
-			foo["xsize"] = ts.width
-			foo["ysize"] = ts.height
+			foo["x"] = xpos * ts.Width * sf
+			foo["y"] = ypos * ts.Height * sf
+			foo["width"] = ts.Width * sf
+			foo["height"] = ts.Height * sf
+			foo["xsize"] = ts.Width
+			foo["ysize"] = ts.Height
 
-			if (foo["x"] + ts.width) > w {
+			if (foo["x"] + ts.Width) > w {
 				foo["width"] = w - foo["x"]
 				foo["xsize"] = int(math.Ceil(float64(foo["width"]) / float64(sf)))
 			}
 
-			if (foo["y"] + ts.height) > h {
+			if (foo["y"] + ts.Height) > h {
 
 				foo["height"] = h - foo["y"]
 				foo["ysize"] = int(math.Ceil(float64(foo["height"]) / float64(sf)))
@@ -119,7 +255,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			_w := foo["width"]
 			_h := foo["height"]
 
-			_s := ts.width
+			_s := ts.Width
 
 			if _x+_w > w {
 				_w = w - _x
@@ -131,7 +267,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 			// this bit is cribbed from leaflet-iiif.js
 
-			base := float64(ts.width * sf)
+			base := float64(ts.Width * sf)
 
 			minx := float64(xpos) * base
 			maxx := math.Min(minx+base, float64(w))
