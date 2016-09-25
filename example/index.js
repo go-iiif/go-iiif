@@ -72,13 +72,6 @@ window.addEventListener('load', function(e){
 	'tileFormat': 'jpg',
     };
 
-    /*
-    var opts = {
-	'quality': 'primitive:1,200,255',
-	'tileFormat': 'gif'
-    };
-    */
-
     map.addLayer(L.tileLayer.iiif(info, opts));
     
 });
