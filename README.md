@@ -367,15 +367,17 @@ Here's an example [with this photo](https://www.flickr.com/photos/straup/4136870
 
 ```
 	"images": {
-		"source": { "name": "S3", "path": "your.S3.bucket", "region": "us-east-1" }
+		"source": { "name": "S3", "path": "your.S3.bucket", "region": "us-east-1", "credentials": "default" }
 	}
 ```
 
-Fetch source images from Amazon's S3 service. S3 caches have three addition properties:
+Fetch source images from Amazon's S3 service. S3 caches assume that that the `path` key is the name of the S3 bucket you are reading from. S3 caches have three addition properties:
 
-* **region** 
-* **credentials**
-* **prefix**
+* **prefix** is an optional path to a sub-path inside of your S3 bucket where images are stored.
+* **region** is the name of the AWS region where your S3 bucket lives. Sorry [this is an AWS-ism](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html_
+* **credentials** is the name of the profile you wish to use assuming you have a [credential files](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html) for your AWS credentials. `go-iiif` assumes that you have defined your AWS credentials either as environment variables (in which case this property doesn't matter) or a credentials file. It is not possible to define your AWS credentials as properties in your `go-iiif` config file.
+
+_Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times._
 
 ##### URI
 
@@ -479,11 +481,13 @@ Because you must define a caching layer this is here to satify the requirements 
 	}
 ```
 
-Cache images using Amazon's S3 service. S3 caches have three addition properties:
+Cache images using Amazon's S3 service. S3 caches assume that that the `path` key is the name of the S3 bucket you are reading from. S3 caches have three addition properties:
 
-* **region** 
-* **credentials**
-* **prefix**
+* **prefix** is an optional path to a sub-path inside of your S3 bucket where images are stored.
+* **region** is the name of the AWS region where your S3 bucket lives. Sorry [this is an AWS-ism](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html_
+* **credentials** is the name of the profile you wish to use assuming you have a [credential files](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html) for your AWS credentials. `go-iiif` assumes that you have defined your AWS credentials either as environment variables (in which case this property doesn't matter) or a credentials file. It is not possible to define your AWS credentials as properties in your `go-iiif` config file.
+
+_Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times._
 
 ## Non-standard features
 

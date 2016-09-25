@@ -15,22 +15,9 @@ func NewS3Source(cfg *iiifconfig.Config) (*S3Source, error) {
 	src := cfg.Images.Source
 
 	bucket := src.Path
-	prefix := ""
-
-	region := "us-east-1"
-	creds := "default"
-
-	if src.Prefix == "" {
-		prefix = src.Prefix
-	}
-
-	if src.Region == "" {
-		region = src.Region
-	}
-
-	if src.Credentials == "" {
-		creds = src.Credentials
-	}
+	prefix := src.Prefix
+	region := src.Region
+	creds := src.Credentials
 
 	s3cfg := iiifaws.S3Config{
 		Bucket:      bucket,

@@ -12,22 +12,9 @@ type S3Cache struct {
 func NewS3Cache(cfg iiifconfig.CacheConfig) (*S3Cache, error) {
 
 	bucket := cfg.Path
-	prefix := ""
-
-	region := "us-east-1"
-	creds := "default"
-
-	if cfg.Prefix == "" {
-		prefix = cfg.Prefix
-	}
-
-	if cfg.Region == "" {
-		region = cfg.Region
-	}
-
-	if cfg.Credentials == "" {
-		creds = cfg.Credentials
-	}
+	prefix := cfg.Prefix
+	region := cfg.Region
+	creds := cfg.Credentials
 
 	s3cfg := iiifaws.S3Config{
 		Bucket:      bucket,
