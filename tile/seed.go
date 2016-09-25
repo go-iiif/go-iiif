@@ -13,6 +13,7 @@ import (
 	"log"
 	"math"
 	"runtime"
+	"strings"
 	"sync"
 )
 
@@ -21,7 +22,7 @@ type TileSeed struct {
 	level             iiiflevel.Level
 	images_cache      iiifcache.Cache
 	derivatives_cache iiifcache.Cache
-	endpoint          string
+	Endpoint          string
 	Height            int
 	Width             int
 	Quality           string
@@ -60,7 +61,7 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 		level:             level,
 		images_cache:      images_cache,
 		derivatives_cache: derivatives_cache,
-		endpoint:          endpoint,
+		Endpoint:          endpoint,
 		Height:            h,
 		Width:             w,
 		Quality:           quality,
@@ -147,15 +148,26 @@ func (ts *TileSeed) SeedTiles(src_id string, dest_id string, scales []int, refre
 		count += len(crops)
 	}
 
-	level, err := iiiflevel.NewLevelFromConfig(ts.config, ts.endpoint)
+	level, err := iiiflevel.NewLevelFromConfig(ts.config, ts.Endpoint)
 
 	if err != nil {
 		return count, err
 	}
 
-	// FIX ME https://github.com/thisisaaronland/go-iiif/issues/25
+	endpoint := ts.Endpoint
 
-	profile, err := iiifprofile.NewProfile(ts.endpoint, image, level)
+	if src_id != dest_id {
+
+		// because this: https://github.com/thisisaaronland/go-iiif/issues/25
+
+		id := image.Identifier()
+		id = strings.Replace(dest_id, id, "", 1)
+		id = strings.TrimRight(id, "/")
+
+		endpoint = ts.Endpoint + "/" + id
+	}
+
+	profile, err := iiifprofile.NewProfile(endpoint, image, level)
 
 	if err != nil {
 		return count, err
