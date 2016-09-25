@@ -68,14 +68,16 @@ window.addEventListener('load', function(e){
     var info = 'http://' + location.host + '/' + id + '/info.json';
 
     var opts = {
-	'quality': 'default',		// 'primitive:5,200,255',
-	'tileFormat': 'jpg',		// 'gif'
+	'quality': 'default',
+	'tileFormat': 'jpg',
     };
 
+    /*
     var opts = {
 	'quality': 'primitive:1,200,255',
 	'tileFormat': 'gif'
     };
+    */
 
     map.addLayer(L.tileLayer.iiif(info, opts));
     
