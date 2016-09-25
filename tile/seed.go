@@ -154,11 +154,30 @@ func (ts *TileSeed) SeedTiles(src_id string, dest_id string, scales []int, refre
 		return count, err
 	}
 
+	// because this: https://github.com/thisisaaronland/go-iiif/issues/25
+
 	endpoint := ts.Endpoint
 
 	if src_id != dest_id {
 
-		// because this: https://github.com/thisisaaronland/go-iiif/issues/25
+		// also this which needs to be implemented (and probably put somewhere other than this package):
+		// https://github.com/thisisaaronland/go-iiif/issues/27
+
+		// 191733_5755a1309e4d66a7_k.jpg,191733_5755a1309e4d66a7
+		// means
+		// store '191733_5755a1309e4d66a7_k.jpg' as 'CACHEROOT/191733_5755a1309e4d66a7'
+
+		// 191733_5755a1309e4d66a7_k.jpg,191/733/191733_5755a1309e4d66a7_k.jpg
+		// means
+		// store '191733_5755a1309e4d66a7_k.jpg' as 'CACHEROOT/191/733/191733_5755a1309e4d66a7_k.jpg'
+
+		// 191733_5755a1309e4d66a7_k.jpg,191/733/191733_5755a1309e4d66a7
+		// means
+		// store '191733_5755a1309e4d66a7_k.jpg' as 'CACHEROOT/191/733/191733_5755a1309e4d66a7'
+
+		// the relevant part being that if basename(DEST_ID) != src_id then we need to signal
+		// to iiifimage.Image that its Identifier() method needs to return basename(DEST_ID)
+		// (20160925/thisisaaronland)
 
 		id := image.Identifier()
 		id = strings.Replace(dest_id, id, "", 1)
