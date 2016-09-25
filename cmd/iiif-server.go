@@ -395,6 +395,8 @@ func main() {
 
 	router := mux.NewRouter()
 
+	// https://github.com/thisisaaronland/go-iiif/issues/4
+
 	router.HandleFunc("/{identifier}/info.json", InfoHandler)
 	router.HandleFunc("/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", ImageHandler)
 
