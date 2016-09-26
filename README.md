@@ -130,7 +130,7 @@ _Note: This endpoint is only available from the machine the server is running on
 ### iiif-tile-seed
 
 ```
-$> ./bin/iiif-tile-seed -options /path/to/source/image.jpg
+$> ./bin/iiif-tile-seed -options ID1 ID2 ID3...
 
 Usage of ./bin/iiif-tile-seed:
   -config string
@@ -149,7 +149,22 @@ Usage of ./bin/iiif-tile-seed:
     		 A comma-separated list of scale factors to seed tiles with (default "4")
 ```
 
-Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF]() plugin.
+Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) plugin.
+
+WORDS about identifiers:
+
+```
+191733_5755a1309e4d66a7_k.jpg,191/733/191733_5755a1309e4d66a7
+```
+
+```
+$> ./bin/iiif-tile-seed -options -mode csv CSVFILE
+```
+
+```
+source_id,dest_id
+191733_5755a1309e4d66a7_k.jpg,191733_5755a1309e4d66a7
+```
 
 ## Config files
 
