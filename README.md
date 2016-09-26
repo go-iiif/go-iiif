@@ -44,6 +44,15 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 
 #### Endpoints
 
+Although the identifier parameter (`{ID}`) in the examples below suggests that is is only string characters up to and until a `/` character, it can in fact contain multiple `/` separated strings. For example, either of these two URLs is valid
+
+```
+http://localhost:8082/191733_5755a1309e4d66a7_k.jpg/info.json
+http://localhost:8082/191/733/191733_5755a1309e4d66a7/info.json
+```
+
+Where the identified will be interpreted as `191733_5755a1309e4d66a7_k.jpg` and `191/733/191733_5755a1309e4d66a7` respectively. Identifiers containing one or more `../` strings will be made to feel bad about themselves.
+
 ##### GET /{ID}/info.json
 
 ```
