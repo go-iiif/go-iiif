@@ -19,11 +19,12 @@ import (
 
 type VIPSImage struct {
 	Image
-	config *iiifconfig.Config
-	source iiifsource.Source
-	id     string
-	bimg   *bimg.Image
-	isgif  bool
+	config    *iiifconfig.Config
+	source    iiifsource.Source
+	source_id string
+	id        string
+	bimg      *bimg.Image
+	isgif     bool
 }
 
 type VIPSDimensions struct {
@@ -74,11 +75,12 @@ func NewVIPSImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.
 	bimg := bimg.NewImage(body)
 
 	im := VIPSImage{
-		config: config,
-		source: src,
-		id:     id,
-		bimg:   bimg,
-		isgif:  false,
+		config:    config,
+		source:    src,
+		source_id: id,
+		id:        id,
+		bimg:      bimg,
+		isgif:     false,
 	}
 
 	/*
@@ -143,6 +145,11 @@ func (im *VIPSImage) ContentType() string {
 
 func (im *VIPSImage) Identifier() string {
 	return im.id
+}
+
+func (im *VIPSImage) Rename(id string) error {
+	im.id = id
+	return nil
 }
 
 func (im *VIPSImage) Dimensions() (Dimensions, error) {
