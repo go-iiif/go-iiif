@@ -88,23 +88,23 @@ func main() {
 					log.Fatal(err)
 				}
 
-				src_id, ok := row["src"]
+				src_id, ok := row["source_id"]
 
 				if !ok {
-					log.Println("Unable to determine src", row)
+					log.Println("Unable to determine source ID", row)
 					continue
 				}
 
-				dest_id, ok := row["dest"]
+				alt_id, ok := row["alternate_id"]
 
 				if !ok {
-					log.Println("Unable to determine dest", row)
+					log.Println("Unable to determine alternate ID", row)
 					continue
 				}
 
 				wg.Add(1)
 
-				go func(src_id string, dest_id string) {
+				go func(src_id string, alt_id string) {
 
 					<-ch
 
@@ -112,7 +112,7 @@ func main() {
 
 					t1 := time.Now()
 
-					count, err := ts.SeedTiles(src_id, dest_id, scales, *refresh)
+					count, err := ts.SeedTiles(src_id, alt_id, scales, *refresh)
 
 					t2 := time.Since(t1)
 
@@ -124,7 +124,7 @@ func main() {
 
 					ch <- true
 
-				}(src_id, dest_id)
+				}(src_id, alt_id)
 			}
 
 			wg.Wait()
@@ -135,21 +135,21 @@ func main() {
 		for _, id := range flag.Args() {
 
 			var src_id string
-			var dest_id string
+			var alt_id string
 
 			pointers := strings.Split(id, ",")
 
 			if len(pointers) == 2 {
 				src_id = pointers[0]
-				dest_id = pointers[1]
+				alt_id = pointers[1]
 			} else {
 				src_id = pointers[0]
-				dest_id = pointers[0]
+				alt_id = pointers[0]
 			}
 
 			t1 := time.Now()
 
-			count, err := ts.SeedTiles(src_id, dest_id, scales, *refresh)
+			count, err := ts.SeedTiles(src_id, alt_id, scales, *refresh)
 
 			t2 := time.Since(t1)
 

@@ -151,20 +151,41 @@ Usage of ./bin/iiif-tile-seed:
 
 Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) plugin.
 
-WORDS about identifiers:
+Identifiers for source images can be passed to `iiif-tiles-seed` in of two way:
+
+1. A space-separated list of identifiers
+2. A space-separated list of _comma-separated_ identifiers indicating the identifier for the source image followed by the identifier for the newly generated tiles
+
+For example:
 
 ```
-191733_5755a1309e4d66a7_k.jpg,191/733/191733_5755a1309e4d66a7
+$> ./bin/iiif-tile-seed -options 191733_5755a1309e4d66a7_k.jpg
 ```
+
+Or:
+
+```
+$> ./bin/iiif-tile-seed -options 191733_5755a1309e4d66a7_k.jpg,191/733/191733_5755a1309e4d66a7
+```
+
+In many cases the first option will suffice but sometimes you might need to create new identifiers or structure existing identifiers according to their output, for example avoiding the need to store lots of file in a single directory. It's up to you.
+
+You can also run `iiif-tile-seed` pass a list of identifiers as a CSV file. To do so include the `-mode csv` argument, like this:
 
 ```
 $> ./bin/iiif-tile-seed -options -mode csv CSVFILE
 ```
 
+Your CSV file must contain a header specifying a `source_id` and `alternate_id` column, like this:
+
 ```
-source_id,dest_id
+source_id,alternate_id
 191733_5755a1309e4d66a7_k.jpg,191733_5755a1309e4d66a7
 ```
+
+While all columns are required if `alternate_id` is empty the code will simply default to using `source_id` for all operations.
+
+_Important: The use of alternate IDs is not yet supported by `iiif-server`. Which is to say to the logic for how to convert a source identifier to an alternate identifier is entirely outside the scope of `go-iiif` so it is best used for occasions when you want to render static image tiles that will be hosted by a plain-vanilla file server._
 
 ## Config files
 

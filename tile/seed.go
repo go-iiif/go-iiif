@@ -72,7 +72,7 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 	return &ts, nil
 }
 
-func (ts *TileSeed) SeedTiles(src_id string, dest_id string, scales []int, refresh bool) (int, error) {
+func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refresh bool) (int, error) {
 
 	count := 0
 
@@ -97,13 +97,13 @@ func (ts *TileSeed) SeedTiles(src_id string, dest_id string, scales []int, refre
 	// means
 	// store '191733_5755a1309e4d66a7_k.jpg' as 'CACHEROOT/191/733/191733_5755a1309e4d66a7'
 
-	// the relevant part being that if basename(DEST_ID) != src_id then we need to signal
-	// to iiifimage.Image that its Identifier() method needs to return basename(DEST_ID)
+	// the relevant part being that if basename(ALT_ID) != src_id then we need to signal
+	// to iiifimage.Image that its Identifier() method needs to return basename(ALT_ID)
 	// (20160925/thisisaaronland)
 
-	if src_id != dest_id {
+	if src_id != alt_id {
 
-		err = image.Rename(dest_id)
+		err = image.Rename(alt_id)
 
 		if err != nil {
 			return count, err
@@ -148,7 +148,7 @@ func (ts *TileSeed) SeedTiles(src_id string, dest_id string, scales []int, refre
 					ch <- true
 				}()
 
-				uri, _ := tr.ToURI(dest_id)
+				uri, _ := tr.ToURI(alt_id)
 
 				if !refresh {
 
@@ -195,7 +195,7 @@ func (ts *TileSeed) SeedTiles(src_id string, dest_id string, scales []int, refre
 		return count, err
 	}
 
-	uri := fmt.Sprintf("%s/info.json", dest_id)
+	uri := fmt.Sprintf("%s/info.json", alt_id)
 	ts.derivatives_cache.Set(uri, body)
 
 	return count, nil
