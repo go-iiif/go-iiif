@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"expvar"
 	"flag"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 	"github.com/whosonfirst/go-sanitize"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,6 +37,15 @@ var transforms_counter int64
 var transforms_timer int64
 
 var timers_mu *sync.Mutex
+
+type IIIFParameters struct {
+	Identifier string
+	Region     string
+	Size       string
+	Rotation   string
+	Quality    string
+	Format     string
+}
 
 func init() {
 
@@ -174,26 +185,12 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 
 		*/
 
-		opts := sanitize.DefaultOptions()
-		vars := mux.Vars(r)
+		params, err := GetIIIFParameters(r)
 
-		id := vars["identifier"]
-		id, _ = sanitize.SanitizeString(id, opts)
-
-		region := vars["region"]
-		region, _ = sanitize.SanitizeString(region, opts)
-
-		size := vars["size"]
-		size, _ = sanitize.SanitizeString(size, opts)
-
-		rotation := vars["rotation"]
-		rotation, _ = sanitize.SanitizeString(rotation, opts)
-
-		quality := vars["quality"]
-		quality, _ = sanitize.SanitizeString(quality, opts)
-
-		format := vars["format"]
-		format, _ = sanitize.SanitizeString(format, opts)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
 		endpoint := EndpointFromRequest(r)
 		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
@@ -203,39 +200,20 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 			return
 		}
 
-		transformation, err := iiifimage.NewTransformation(level, region, size, rotation, quality, format)
+		transformation, err := iiifimage.NewTransformation(level, params.Region, params.Size, params.Rotation, params.Quality, params.Format)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		id, err = iiifimage.ScrubIdentifier(id)
+		uri, err := transformation.ToURI(params.Identifier)
+		log.Println("ID 3", uri)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-
-		uri, err := transformation.ToURI(id)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		/*
-			rel_path := r.URL.Path
-			fmt.Println("PATH", rel_path)
-			fmt.Println("URI", uri)
-		*/
-
-		/*
-
-			for example:
-			./bin/iiif-tile-seed -config config.json -scale-factors 1,2,4,8 -refresh 184512_5f7f47e5b3c66207_x.jpg
-
-		*/
 
 		body, err := derivatives_cache.Get(uri)
 
@@ -251,7 +229,7 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 			return
 		}
 
-		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, id)
+		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, params.Identifier)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -308,6 +286,112 @@ func ImageHandlerFunc(config *iiifconfig.Config, images_cache iiifcache.Cache, d
 	}
 
 	return http.HandlerFunc(f), nil
+}
+
+func GetIIIFParameters(r *http.Request) (*IIIFParameters, error) {
+
+	opts := sanitize.DefaultOptions()
+	vars := mux.Vars(r)
+
+	id := vars["identifier"]
+	region := vars["region"]
+	size := vars["size"]
+	rotation := vars["rotation"]
+	quality := vars["quality"]
+	format := vars["format"]
+
+	var err error
+
+	id, err = sanitize.SanitizeString(id, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	region, err = sanitize.SanitizeString(region, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	size, err = sanitize.SanitizeString(size, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	rotation, err = sanitize.SanitizeString(rotation, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	quality, err = sanitize.SanitizeString(quality, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	format, err = sanitize.SanitizeString(format, opts)
+
+	if err != nil {
+		return nil, err
+	}
+
+	id, err = url.QueryUnescape(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	region, err = url.QueryUnescape(region)
+
+	if err != nil {
+		return nil, err
+	}
+
+	size, err = url.QueryUnescape(size)
+
+	if err != nil {
+		return nil, err
+	}
+
+	rotation, err = url.QueryUnescape(rotation)
+
+	if err != nil {
+		return nil, err
+	}
+
+	quality, err = url.QueryUnescape(quality)
+
+	if err != nil {
+		return nil, err
+	}
+
+	format, err = url.QueryUnescape(format)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// This should be already be stripped out by the time we get here but just
+	// in case... (20160926/thisisaaronland)
+
+	if strings.Contains(id, "../") {
+		err := errors.New("Invalid identifier")
+		return nil, err
+	}
+
+	params := IIIFParameters{
+		Identifier: id,
+		Region:     region,
+		Size:       size,
+		Rotation:   rotation,
+		Quality:    quality,
+		Format:     format,
+	}
+
+	return &params, nil
 }
 
 func EndpointFromRequest(r *http.Request) string {
@@ -397,8 +481,8 @@ func main() {
 
 	// https://github.com/thisisaaronland/go-iiif/issues/4
 
-	router.HandleFunc("/{identifier}/info.json", InfoHandler)
-	router.HandleFunc("/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", ImageHandler)
+	router.HandleFunc("/{identifier:.*}/info.json", InfoHandler)
+	router.HandleFunc("/{identifier:.*}/{region}/{size}/{rotation}/{quality}.{format}", ImageHandler)
 
 	expvarHandler, _ := ExpvarHandlerFunc(*host)
 	router.HandleFunc("/debug/vars", expvarHandler)
