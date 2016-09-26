@@ -3,6 +3,7 @@ package source
 import (
 	"encoding/json"
 	"errors"
+	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	"io/ioutil"
 	"log"
@@ -14,6 +15,7 @@ type FlickrSource struct {
 	apikey    string
 	apisecret string
 	client    *http.Client
+	cache     iiifcache.Cache
 }
 
 type PhotoRsp struct {
@@ -41,6 +43,17 @@ type PhotoSize struct {
 
 func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 
+	cache_config := iiifconfig.CacheConfig{
+		TTL:   3600,
+		Limit: 1,
+	}
+
+	cache, err := iiifcache.NewMemoryCache(cache_config)
+
+	if err != nil {
+		return nil, err
+	}
+
 	client := &http.Client{}
 
 	apikey := config.Flickr.ApiKey
@@ -50,6 +63,7 @@ func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 		apikey:    apikey,
 		apisecret: apisecret,
 		client:    client,
+		cache:     cache,
 	}
 
 	return &fs, nil
@@ -88,7 +102,11 @@ func (fs *FlickrSource) Read(id string) ([]byte, error) {
 
 func (fs *FlickrSource) GetSource(id string) (string, error) {
 
-	// please cache me (20160920/thisisaaronland)
+	cached, err := fs.cache.Get(id)
+
+	if err == nil {
+		return string(cached), nil
+	}
 
 	url := "https://api.flickr.com/services/rest/"
 
@@ -153,6 +171,10 @@ func (fs *FlickrSource) GetSource(id string) (string, error) {
 	if source == "" {
 		return source, errors.New("Unable to determine photo source")
 	}
+
+	go func() {
+		fs.cache.Set(id, []byte(source))
+	}()
 
 	return source, nil
 }
