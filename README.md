@@ -134,19 +134,19 @@ $> ./bin/iiif-tile-seed -options ID1 ID2 ID3...
 
 Usage of ./bin/iiif-tile-seed:
   -config string
-    	  Path to a valid go-iiif config file
+	Path to a valid go-iiif config file
   -endpoint string
-    	    The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
+	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
   -format string
-    	  A valid IIIF format parameter (default "jpg")
+	A valid IIIF format parameter (default "jpg")
   -mode string
-    	Whether to read input as a CSV file or from STDIN which can be represented as "-" (default "-")
+	Whether to read input as a CSV file or from STDIN which can be represented as "-" (default "-")
   -quality string
-    	   A valid IIIF quality parameter - if "default" then the code will try to determine which format you've set as the default (default "default")
+	A valid IIIF quality parameter - if "default" then the code will try to determine which format you've set as the default (default "default")
   -refresh
 	Refresh a tile even if already exists (default false)
   -scale-factors string
-    		 A comma-separated list of scale factors to seed tiles with (default "4")
+	A comma-separated list of scale factors to seed tiles with (default "4")
 ```
 
 Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) plugin.
