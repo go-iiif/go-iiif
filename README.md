@@ -185,7 +185,7 @@ source_id,alternate_id
 
 While all columns are required if `alternate_id` is empty the code will simply default to using `source_id` for all operations.
 
-_Important: The use of alternate IDs is not yet supported by `iiif-server`. Which is to say to the logic for how to convert a source identifier to an alternate identifier is entirely outside the scope of `go-iiif` so it is best used for occasions when you want to render static image tiles that will be hosted by a plain-vanilla file server._
+_Important: The use of alternate IDs is not fully supported by `iiif-server` yet. Which is to say to the logic for how to convert a source identifier to an alternate identifier is still outside the scope of `go-iiif` so unless you have pre-rendered all of your tiles or other derivatives (in which case the check for cached derivatives at the top of the imgae handler will be triggered) then the server won't know where to write new alternate files._
 
 ## Config files
 
