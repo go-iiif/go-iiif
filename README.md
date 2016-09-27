@@ -24,7 +24,7 @@ $> make bin
 
 ## Usage
 
-`go-iiif` was designed to expose all of its functionality outside of the included tools although that hasn't been documented yet. The [source code for the iiif-tile-seed tool](cmd/iiif-tile-seed.go) is a good place to start poking around if you're curious.
+`go-iiif` was designed to expose all of its functionality outside of the included tools although that hasn't been documented yet. The source code the [iiif-tile-seed](cmd/iiif-tile-seed.go) or the [iiif-transform](cmd/iiif-transform.go) tools is a good place to start poking around if you're curious.
 
 ## Tools
 
