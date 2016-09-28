@@ -4,12 +4,14 @@ package image
 // https://github.com/jcupitt/libvips
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"gopkg.in/h2non/bimg.v1"
 	"image"
+	"image/gif"
 	_ "log"
 	"strconv"
 	"strings"
@@ -22,6 +24,7 @@ type VIPSImage struct {
 	source_id string
 	id        string
 	bimg      *bimg.Image
+	isgif     bool
 }
 
 type VIPSDimensions struct {
@@ -36,6 +39,15 @@ func (d *VIPSDimensions) Height() int {
 func (d *VIPSDimensions) Width() int {
 	return d.imagesize.Width
 }
+
+/*
+
+See notes in NewVIPSImageFromConfigWithSource - basically getting an image's
+dimensions after the we've done the GIF conversion (just see the notes...)
+will make bimg/libvips sad so account for that in Dimensions() and create a
+pure Go implementation of the Dimensions interface (20160922/thisisaaronland)
+
+*/
 
 type GolangImageDimensions struct {
 	Dimensions
@@ -68,7 +80,22 @@ func NewVIPSImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.
 		source_id: id,
 		id:        id,
 		bimg:      bimg,
+		isgif:     false,
 	}
+
+	/*
+
+		Hey look - see the 'isgif' flag? We're going to hijack the fact that
+		bimg doesn't handle GIF files and if someone requests them then we
+		will do the conversion after the final call to im.bimg.Process and
+		after we do handle any custom features. We are relying on the fact
+		that both bimg.NewImage and bimg.Image() expect and return raw bytes
+		and we are ignoring whatever bimg thinks in the Format() function.
+		So basically you should not try to any processing in bimg/libvips
+		after the -> GIF transformation. (20160922/thisisaaronland)
+
+		See also: https://github.com/h2non/bimg/issues/41
+	*/
 
 	return &im, nil
 }
@@ -87,6 +114,12 @@ func (im *VIPSImage) Body() []byte {
 }
 
 func (im *VIPSImage) Format() string {
+
+	// see notes in NewVIPSImageFromConfigWithSource
+
+	if im.isgif {
+		return "gif"
+	}
 
 	return im.bimg.Type()
 }
@@ -120,6 +153,25 @@ func (im *VIPSImage) Rename(id string) error {
 }
 
 func (im *VIPSImage) Dimensions() (Dimensions, error) {
+
+	// see notes in NewVIPSImageFromConfigWithSource
+	// ideally this never gets triggered but just in case...
+
+	if im.isgif {
+
+		buf := bytes.NewBuffer(im.Body())
+		goimg, err := gif.Decode(buf)
+
+		if err != nil {
+			return nil, err
+		}
+
+		d := GolangImageDimensions{
+			image: goimg,
+		}
+
+		return &d, nil
+	}
 
 	sz, err := im.bimg.Size()
 
@@ -231,7 +283,7 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	} else if fi.Format == "tif" {
 		opts.Type = bimg.TIFF
 	} else if fi.Format == "gif" {
-		opts.Type = bimg.GIF
+		opts.Type = bimg.PNG // see this - we're just going to trick libvips until the very last minute...
 	} else {
 		msg := fmt.Sprintf("Unsupported image format '%s'", fi.Format)
 		return errors.New(msg)
@@ -248,12 +300,22 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	// being since there is only lipvips we'll just take the opportunity
 	// to think about it... (20160917/thisisaaronland)
 
+	// Also note the way we are diligently setting in `im.isgif` in each
+	// of the features below. That's because this is a bimg/libvips-ism
+	// and we assume that any of these can encode GIFs because pure-Go and
+	// the rest of the code does need to know about it...
+	// (20160922/thisisaaronland)
+
 	if t.Quality == "dither" {
 
 		err = DitherImage(im)
 
 		if err != nil {
 			return err
+		}
+
+		if fi.Format == "gif" {
+			im.isgif = true
 		}
 
 	} else if strings.HasPrefix(t.Quality, "primitive:") {
@@ -308,9 +370,33 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		if err != nil {
 			return err
 		}
+
+		if fi.Format == "gif" {
+			im.isgif = true
+		}
 	}
 
 	// END OF none of what follows is part of the IIIF spec
+
+	// see notes in NewVIPSImageFromConfigWithSource
+
+	if fi.Format == "gif" && !im.isgif {
+
+		goimg, err := IIIFImageToGolangImage(im)
+
+		if err != nil {
+			return err
+		}
+
+		im.isgif = true
+
+		err = GolangImageToIIIFImage(goimg, im)
+
+		if err != nil {
+			return err
+		}
+
+	}
 
 	return nil
 }
