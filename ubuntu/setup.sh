@@ -8,24 +8,24 @@ dpkg-reconfigure -f noninteractive --priority=low unattended-upgrades
 # YMMV - adjust to taste...
 apt-get install -y emacs24-nox 
 
-apt-get install -y build-essential pkg-config glib2.0-dev libxml2-dev libjpeg-dev libpng-dev libgif-dev libwebp-dev libtiff-dev libmagick-dev
+apt-get install -y build-essential pkg-config glib2.0-dev libxml2-dev libjpeg-dev libpng-dev libgif-dev libwebp-dev libtiff-dev libmagick-dev librsvg2-dev
 
 VERSION=`cat /etc/os-release | grep VERSION_ID | awk -F '=' '{ print $2 }'`
 
 if [ "${VERSION}" = "\"14.04\"" ]
 then
 
-    wget http://www.vips.ecs.soton.ac.uk/supported/current/vips-8.3.3.tar.gz
-    tar -xvzf vips-8.3.3.tar.gz
-    cd vips-8.3.3/
+    wget http://www.vips.ecs.soton.ac.uk/supported/current/vips-8.4.1.tar.gz
+    tar -xvzf vips-8.4.1.tar.gz
+    cd vips-8.4.1/
     ./configure
     make
     make install
     ldconfig
     cd -
-    rm -rf vips-8.3.3
+    rm -rf vips-8.4.1
 else
-    apt-get install -y libvips-dev
+    apt-get install -y libjpeg-dev libpng-dev libgif-dev libwebp-dev libtiff-dev libmagick-dev librsvg2-dev libvips-dev
 fi
 
 # install go
