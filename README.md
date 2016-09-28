@@ -160,6 +160,8 @@ Usage of ./bin/iiif-tile-seed:
 
 Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) plugin.
 
+#### iiif-tile-seed and identifiers
+
 Identifiers for source images can be passed to `iiif-tiles-seed` in of two way:
 
 1. A space-separated list of identifiers
