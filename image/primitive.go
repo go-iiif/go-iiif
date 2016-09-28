@@ -52,14 +52,16 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 	log.Println("starting model at", t1)
 
 	bg := primitive.MakeColor(primitive.AverageImageColor(goimg))
-	model := primitive.NewModel(goimg, bg, alpha, size, primitive.Mode(mode))
+	model := primitive.NewModel(goimg, bg, size)
+
+	workers := 0
 
 	for i := 1; i <= opts.Iterations; i++ {
 
 		tx := time.Since(t1)
 		log.Printf("finished step %d in %v\n", i, tx)
 
-		model.Step()
+		model.Step(primitive.ShapeType(mode), alpha, workers)
 	}
 
 	t2 := time.Since(t1)
