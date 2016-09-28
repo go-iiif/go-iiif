@@ -16,25 +16,38 @@ import (
 
 var (
 	Input      string
-	Output     string
+	Outputs    flagArray
 	Background string
 	Number     int
 	Alpha      int
 	InputSize  int
 	OutputSize int
 	Mode       int
+	Workers    int
 	V, VV      bool
 )
 
+type flagArray []string
+
+func (i *flagArray) String() string {
+	return strings.Join(*i, ", ")
+}
+
+func (i *flagArray) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
+
 func init() {
 	flag.StringVar(&Input, "i", "", "input image path")
-	flag.StringVar(&Output, "o", "", "output image path")
+	flag.Var(&Outputs, "o", "output image path")
 	flag.StringVar(&Background, "bg", "", "background color (hex)")
 	flag.IntVar(&Number, "n", 0, "number of primitives")
 	flag.IntVar(&Alpha, "a", 128, "alpha value")
 	flag.IntVar(&InputSize, "r", 256, "resize large input images to this size")
 	flag.IntVar(&OutputSize, "s", 1024, "output image size")
 	flag.IntVar(&Mode, "m", 1, "0=combo 1=triangle 2=rect 3=ellipse 4=circle 5=rotatedrect")
+	flag.IntVar(&Workers, "j", 0, "number of parallel workers (default uses all cores)")
 	flag.BoolVar(&V, "v", false, "verbose")
 	flag.BoolVar(&VV, "vv", false, "very verbose")
 }
@@ -57,7 +70,7 @@ func main() {
 	if Input == "" {
 		ok = errorMessage("ERROR: input argument required")
 	}
-	if Output == "" {
+	if len(Outputs) == 0 {
 		ok = errorMessage("ERROR: output argument required")
 	}
 	if Number == 0 {
@@ -89,10 +102,6 @@ func main() {
 	size := uint(InputSize)
 	input = resize.Thumbnail(size, size, input, resize.Bilinear)
 
-	// determine output options
-	ext := strings.ToLower(filepath.Ext(Output))
-	saveFrames := strings.Contains(Output, "%") && ext != ".gif"
-
 	// determine background color
 	var bg primitive.Color
 	if Background == "" {
@@ -102,33 +111,38 @@ func main() {
 	}
 
 	// run algorithm
-	model := primitive.NewModel(input, bg, Alpha, OutputSize, primitive.Mode(Mode))
+	model := primitive.NewModel(input, bg, OutputSize)
+	primitive.Log(1, "iteration %d, time %.3f, score %.6f\n", 0, 0.0, model.Score)
 	start := time.Now()
 	for i := 1; i <= Number; i++ {
 		// find optimal shape and add it to the model
-		model.Step()
+		model.Step(primitive.ShapeType(Mode), Alpha, Workers)
 		elapsed := time.Since(start).Seconds()
 		primitive.Log(1, "iteration %d, time %.3f, score %.6f\n", i, elapsed, model.Score)
 
 		// write output image(s)
-		if saveFrames || i == Number {
-			path := Output
-			if saveFrames {
-				path = fmt.Sprintf(Output, i)
-			}
-			primitive.Log(1, "writing %s\n", path)
-			switch ext {
-			default:
-				check(fmt.Errorf("unrecognized file extension: %s", ext))
-			case ".png":
-				check(primitive.SavePNG(path, model.Context.Image()))
-			case ".jpg", ".jpeg":
-				check(primitive.SaveJPG(path, model.Context.Image(), 95))
-			case ".svg":
-				check(primitive.SaveFile(path, model.SVG()))
-			case ".gif":
-				frames := model.Frames(0.001)
-				check(primitive.SaveGIFImageMagick(path, frames, 50, 250))
+		for _, output := range Outputs {
+			ext := strings.ToLower(filepath.Ext(output))
+			saveFrames := strings.Contains(output, "%") && ext != ".gif"
+			if saveFrames || i == Number {
+				path := output
+				if saveFrames {
+					path = fmt.Sprintf(output, i)
+				}
+				primitive.Log(1, "writing %s\n", path)
+				switch ext {
+				default:
+					check(fmt.Errorf("unrecognized file extension: %s", ext))
+				case ".png":
+					check(primitive.SavePNG(path, model.Context.Image()))
+				case ".jpg", ".jpeg":
+					check(primitive.SaveJPG(path, model.Context.Image(), 95))
+				case ".svg":
+					check(primitive.SaveFile(path, model.SVG()))
+				case ".gif":
+					frames := model.Frames(0.001)
+					check(primitive.SaveGIFImageMagick(path, frames, 50, 250))
+				}
 			}
 		}
 	}
