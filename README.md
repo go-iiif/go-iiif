@@ -226,7 +226,7 @@ Details about how images should be processed. Because only [libvips](https://git
 It can read JPEG, PNG, WEBP natively, and optionally TIFF, PDF, GIF and SVG formats if libvips@8.3+ is compiled with proper library bindings.
 ```
 
-If you've installed `libvips` using [the handy setup script](ubuntu/setup.sh) then all the formats listed above, save PDF, should be supported.
+If you've installed `libvips` using [the handy setup script](ubuntu/setup.sh) then all the formats listed above, save PDF, [should be supported](https://github.com/jcupitt/libvips#optional-dependencies).
 
 ### features
 
