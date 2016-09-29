@@ -222,11 +222,13 @@ Indicates which level of IIIF Image API compliance the server (or associated too
 
 Details about how images should be processed. Because only [libvips](https://github.com/jcupitt/libvips) is supported for image processing right now there is no reason to change this.
 
-From the [bimg docs]():
+From the [bimg docs](https://github.com/h2non/bimg/) (which is the Go library wrapping `libvips`) the following formats can be read:
 
 ```
 It can read JPEG, PNG, WEBP natively, and optionally TIFF, PDF, GIF and SVG formats if libvips@8.3+ is compiled with proper library bindings.
 ```
+
+If you've installed `libvips` using [the handy setup script](ubuntu/setup.sh) then all the formats listed above, save PDF, should be supported.
 
 ### features
 

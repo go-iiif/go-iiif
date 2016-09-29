@@ -24,6 +24,7 @@ then
     ldconfig
     cd -
     rm -rf vips-8.4.1
+    rm -rf vips-8.4.1.tar.gz
 else
     apt-get install -y libjpeg-dev libpng-dev libgif-dev libwebp-dev libtiff-dev libmagick-dev librsvg2-dev libvips-dev
 fi

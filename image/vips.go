@@ -115,12 +115,6 @@ func (im *VIPSImage) Body() []byte {
 
 func (im *VIPSImage) Format() string {
 
-	// see notes in NewVIPSImageFromConfigWithSource
-
-	if im.isgif {
-		return "gif"
-	}
-
 	return im.bimg.Type()
 }
 
@@ -134,6 +128,8 @@ func (im *VIPSImage) ContentType() string {
 		return "image/png"
 	} else if format == "webp" {
 		return "image/webp"
+	} else if format == "svg" {
+		return "image/svg+xml"
 	} else if format == "tif" || format == "tiff" {
 		return "image/tiff"
 	} else if format == "gif" {
@@ -205,6 +201,18 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 			AreaHeight: rgi.Height,
 			Left:       rgi.X,
 			Top:        rgi.Y,
+		}
+
+		/*
+
+				We need to do this or libvips will freak out and think it's trying to save
+		   		an SVG file which it can't do (20160929/thisisaaronland)
+
+		*/
+
+		if im.ContentType() == "image/svg+xml" {
+			opts.Type = bimg.PNG
+
 		}
 
 		/*
