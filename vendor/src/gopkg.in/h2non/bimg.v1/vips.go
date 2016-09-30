@@ -24,11 +24,9 @@ var debug = d.Debug("bimg")
 // VipsVersion exposes the current libvips semantic version
 const VipsVersion = string(C.VIPS_VERSION)
 
-// VipsMajorVersion exposes the current libvips major version number
-const VipsMajorVersion = int(C.VIPS_MAJOR_VERSION)
-
-// VipsMinorVersion exposes the current libvips minor version number
-const VipsMinorVersion = int(C.VIPS_MINOR_VERSION)
+// HasMagickSupport exposes if the current libvips compilation
+// supports libmagick bindings.
+const HasMagickSupport = int(C.VIPS_MAGICK_SUPPORT) == 1
 
 const (
 	maxCacheMem  = 100 * 1024 * 1024
@@ -135,36 +133,6 @@ func VipsMemory() VipsMemoryInfo {
 		MemoryHighwater: int64(C.vips_tracked_get_mem_highwater()),
 		Allocations:     int64(C.vips_tracked_get_allocs()),
 	}
-}
-
-// VipsIsTypeSupported returns true if the given image type
-// is supported by the current libvips compilation.
-func VipsIsTypeSupported(t ImageType) bool {
-	if t == JPEG {
-		return int(C.vips_type_find_bridge(C.JPEG)) != 0
-	}
-	if t == WEBP {
-		return int(C.vips_type_find_bridge(C.WEBP)) != 0
-	}
-	if t == PNG {
-		return int(C.vips_type_find_bridge(C.PNG)) != 0
-	}
-	if t == GIF {
-		return int(C.vips_type_find_bridge(C.GIF)) != 0
-	}
-	if t == PDF {
-		return int(C.vips_type_find_bridge(C.PDF)) != 0
-	}
-	if t == SVG {
-		return int(C.vips_type_find_bridge(C.SVG)) != 0
-	}
-	if t == TIFF {
-		return int(C.vips_type_find_bridge(C.TIFF)) != 0
-	}
-	if t == MAGICK {
-		return int(C.vips_type_find_bridge(C.MAGICK)) != 0
-	}
-	return false
 }
 
 func vipsExifOrientation(image *C.VipsImage) int {
@@ -307,8 +275,7 @@ func vipsFlattenBackground(image *C.VipsImage, background Color) (*C.VipsImage, 
 	}
 
 	if vipsHasAlpha(image) {
-		err := C.vips_flatten_background_brigde(image, &outImage,
-			backgroundC[0], backgroundC[1], backgroundC[2])
+		err := C.vips_flatten_background_brigde(image, &outImage, (*C.double)(&backgroundC[0]))
 		if int(err) != 0 {
 			return nil, catchVipsError()
 		}
@@ -374,12 +341,6 @@ func vipsSave(image *C.VipsImage, o vipsSaveOptions) ([]byte, error) {
 	case PNG:
 		saveErr = C.vips_pngsave_bridge(tmpImage, &ptr, &length, 1, C.int(o.Compression), quality, interlace)
 		break
-	case GIF:
-		return nil, errors.New("VIPS cannot save to GIF")
-	case PDF:
-		return nil, errors.New("VIPS cannot save to PDF")
-	case SVG:
-		return nil, errors.New("VIPS cannot save to SVG")
 	default:
 		saveErr = C.vips_jpegsave_bridge(tmpImage, &ptr, &length, 1, quality, interlace)
 		break
@@ -488,36 +449,28 @@ func vipsAffine(input *C.VipsImage, residualx, residualy float64, i Interpolator
 	return image, nil
 }
 
-func vipsImageType(buf []byte) ImageType {
-	if len(buf) == 0 {
+func vipsImageType(bytes []byte) ImageType {
+	if len(bytes) == 0 {
 		return UNKNOWN
 	}
-	if buf[0] == 0x89 && buf[1] == 0x50 && buf[2] == 0x4E && buf[3] == 0x47 {
+
+	if bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 {
 		return PNG
 	}
-	if buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF {
+	if bytes[0] == 0xFF && bytes[1] == 0xD8 && bytes[2] == 0xFF {
 		return JPEG
 	}
-	if IsImageTypeSupportedByVips(WEBP) && buf[8] == 0x57 && buf[9] == 0x45 && buf[10] == 0x42 && buf[11] == 0x50 {
+	if bytes[8] == 0x57 && bytes[9] == 0x45 && bytes[10] == 0x42 && bytes[11] == 0x50 {
 		return WEBP
 	}
-	if IsImageTypeSupportedByVips(TIFF) &&
-		((buf[0] == 0x49 && buf[1] == 0x49 && buf[2] == 0x2A && buf[3] == 0x0) ||
-			(buf[0] == 0x4D && buf[1] == 0x4D && buf[2] == 0x0 && buf[3] == 0x2A)) {
+	if (bytes[0] == 0x49 && bytes[1] == 0x49 && bytes[2] == 0x2A && bytes[3] == 0x0) ||
+		(bytes[0] == 0x4D && bytes[1] == 0x4D && bytes[2] == 0x0 && bytes[3] == 0x2A) {
 		return TIFF
 	}
-	if IsImageTypeSupportedByVips(GIF) && buf[0] == 0x47 && buf[1] == 0x49 && buf[2] == 0x46 {
-		return GIF
-	}
-	if IsImageTypeSupportedByVips(PDF) && buf[0] == 0x25 && buf[1] == 0x50 && buf[2] == 0x44 && buf[3] == 0x46 {
-		return PDF
-	}
-	if IsImageTypeSupportedByVips(SVG) && IsSVGImage(buf) {
-		return SVG
-	}
-	if IsImageTypeSupportedByVips(MAGICK) && strings.HasSuffix(readImageType(buf), "MagickBuffer") {
+	if HasMagickSupport && strings.HasSuffix(readImageType(bytes), "MagickBuffer") {
 		return MAGICK
 	}
+
 	return UNKNOWN
 }
 

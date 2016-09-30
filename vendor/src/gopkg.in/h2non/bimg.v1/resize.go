@@ -28,7 +28,7 @@ func Resize(buf []byte, o Options) ([]byte, error) {
 	// Clone and define default options
 	o = applyDefaults(o, imageType)
 
-	if !IsTypeSupported(o.Type) {
+	if IsTypeSupported(o.Type) == false {
 		return nil, errors.New("Unsupported image output type")
 	}
 
@@ -330,6 +330,7 @@ func imageFlatten(image *C.VipsImage, imageType ImageType, o Options) (*C.VipsIm
 	if imageType != PNG || o.Background == ColorBlack {
 		return image, nil
 	}
+
 	return vipsFlattenBackground(image, o.Background)
 }
 
@@ -402,11 +403,11 @@ func imageCalculations(o *Options, inWidth, inHeight int) float64 {
 	// Fixed width, auto height
 	case o.Width > 0:
 		factor = xfactor
-		o.Height = roundFloat(float64(inHeight) / factor)
+		o.Height = int(math.Floor(float64(inHeight) / factor))
 	// Fixed height, auto width
 	case o.Height > 0:
 		factor = yfactor
-		o.Width = roundFloat(float64(inWidth) / factor)
+		o.Width = int(math.Floor(float64(inWidth) / factor))
 	// Identity transform
 	default:
 		o.Width = inWidth
@@ -415,13 +416,6 @@ func imageCalculations(o *Options, inWidth, inHeight int) float64 {
 	}
 
 	return factor
-}
-
-func roundFloat(f float64) int {
-	if f < 0 {
-		return int(math.Ceil(f - 0.5))
-	}
-	return int(math.Floor(f + 0.5))
 }
 
 func calculateCrop(inWidth, inHeight, outWidth, outHeight int, gravity Gravity) (int, int) {
