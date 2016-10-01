@@ -205,8 +205,8 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 
 		/*
 
-				We need to do this or libvips will freak out and think it's trying to save
-		   		an SVG file which it can't do (20160929/thisisaaronland)
+					We need to do this or libvips will freak out and think it's trying to save
+			   		an SVG file which it can't do (20160929/thisisaaronland)
 
 		*/
 

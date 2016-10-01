@@ -110,6 +110,12 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		}
 	}
 
+	source, err := iiifsource.NewMemorySource(image.Body())
+
+	if err != nil {
+		return count, err
+	}
+
 	for _, scale := range scales {
 
 		crops, err := ts.TileSizes(image, scale)
@@ -117,12 +123,6 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		if err != nil {
 			log.Println(err)
 			continue
-		}
-
-		source, err := iiifsource.NewMemorySource(image.Body())
-
-		if err != nil {
-			return count, err
 		}
 
 		procs := runtime.NumCPU() * 2 // move me in to the constructor...
