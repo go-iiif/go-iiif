@@ -106,6 +106,15 @@ func main() {
 
 				go func(src_id string, alt_id string) {
 
+					/*
+
+						we need to add some other counter/flag/throttle here to account for
+						E_EXCESSIVE_TILES being created which manifests itself too many files
+						being written to disk and everything being pegged on I/O waits
+						(20161107/thisisaaronland)
+
+					*/
+
 					<-ch
 
 					defer wg.Done()
