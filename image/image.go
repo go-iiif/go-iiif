@@ -5,6 +5,7 @@ import (
 	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
+	"log"
 	"os"
 )
 
@@ -80,9 +81,9 @@ func NewImageFromConfigWithSource(config *iiifconfig.Config, source iiifsource.S
 			http://www.vips.ecs.soton.ac.uk/supported/7.42/doc/html/libvips/VipsImage.html#vips-image-new-temp-file
 		*/
 
-		if config.Graphics.Tmpdir != "" {
+		if config.Graphics.Source.Tmpdir != "" {
 
-			tmpdir := config.Graphics.Tmpdir
+			tmpdir := config.Graphics.Source.Tmpdir
 
 			_, err := os.Stat(tmpdir)
 
@@ -90,6 +91,7 @@ func NewImageFromConfigWithSource(config *iiifconfig.Config, source iiifsource.S
 				return nil, err
 			}
 
+			log.Println("set TMPDIR", tmpdir)
 			os.Setenv("TMPDIR", tmpdir)
 		}
 

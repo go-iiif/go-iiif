@@ -47,7 +47,6 @@ type DerivativesConfig struct {
 
 type GraphicsConfig struct {
 	Source SourceConfig `json:"source"`
-	Tmpdir string `json:"tmpdir,omitempty"`
 }
 
 type SourceConfig struct {
@@ -56,6 +55,7 @@ type SourceConfig struct {
 	Prefix string `json:"prefix,omitempty"`
 	Region string `json:"region,omitempty"`
 	Credentials string `json:"credentials,omitempty"`
+	Tmpdir string `json:"tmpdir,omitempty"`	
 }
 
 type FlickrConfig struct {
