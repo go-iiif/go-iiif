@@ -47,6 +47,7 @@ type DerivativesConfig struct {
 
 type GraphicsConfig struct {
 	Source SourceConfig `json:"source"`
+	Tmpdir string `json:"tmpdir,omitempty"`
 }
 
 type SourceConfig struct {
