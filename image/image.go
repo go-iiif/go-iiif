@@ -5,7 +5,7 @@ import (
 	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
-	"log"
+	_ "log"
 	"os"
 )
 
@@ -91,7 +91,6 @@ func NewImageFromConfigWithSource(config *iiifconfig.Config, source iiifsource.S
 				return nil, err
 			}
 
-			log.Println("set TMPDIR", tmpdir)
 			os.Setenv("TMPDIR", tmpdir)
 		}
 

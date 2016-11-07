@@ -13,7 +13,6 @@ import (
 	"image"
 	"image/gif"
 	_ "log"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -74,8 +73,6 @@ func NewVIPSImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.
 	}
 
 	bimg := bimg.NewImage(body)
-
-	fmt.Println("TMPDIR IS", os.Getenv("TMPDIR"))
 
 	im := VIPSImage{
 		config:    config,
