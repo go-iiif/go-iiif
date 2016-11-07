@@ -15,8 +15,8 @@ VERSION=`cat /etc/os-release | grep VERSION_ID | awk -F '=' '{ print $2 }'`
 # libvips 8.4 has been released and bimg has been updated to use it but there
 # appear to still be memory/pointer release errors (20161001/thisisaaronland)
 
-VIPS_MAJOR='8.3'
-VIPS_VERSION='8.3.3'
+VIPS_MAJOR='8.4'
+VIPS_VERSION='8.4.2'
 
 # See this: At the moment it seems easier and more reliable to install from
 # source. One day it will all install from apt... (20160930/thisisaaronland)
@@ -41,11 +41,11 @@ VIPS_VERSION='8.3.3'
 
 # install go
 
-VERSION="1.7"
+VERSION="1.7.3"
 DIST="go${VERSION}.linux-amd64.tar.gz"
 SOURCE="https://storage.googleapis.com/golang/${DIST}"
 
-HASH="702ad90f705365227e902b42d91dd1a40e48ca7f67a2f4b2fd052aaa4295cd95"
+HASH="508028aac0654e993564b6e2014bf2d4a9751e3b286661b0b0040046cf18028e"
 
 if [ ! -d /usr/local/go${VERSION} ]
 then
