@@ -59,6 +59,13 @@ func main() {
 
 	if *mode == "csv" {
 
+		x := 200
+		throttle := make(chan bool, x)
+
+		for i := 0; i < x; i++ {
+			throttle <- true
+		}
+
 		procs := runtime.NumCPU()
 
 		ch := make(chan bool, procs)
@@ -78,6 +85,14 @@ func main() {
 			wg := new(sync.WaitGroup)
 
 			for {
+
+				t1 := time.Now()
+
+				<-throttle
+
+				t2 := time.Since(t1)
+				log.Println("time spent waiting to parse row", t2)
+
 				row, err := reader.Read()
 
 				if err == io.EOF {
@@ -104,7 +119,7 @@ func main() {
 
 				wg.Add(1)
 
-				go func(src_id string, alt_id string) {
+				go func(throttle chan bool, src_id string, alt_id string) {
 
 					/*
 
@@ -115,7 +130,13 @@ func main() {
 
 					*/
 
+					ta := time.Now()
+					// log.Println("waiting", src_id, ta)
+
 					<-ch
+
+					tb := time.Since(ta)
+					log.Printf("waited to process %s, %v\n", src_id, tb)
 
 					defer wg.Done()
 
@@ -131,9 +152,11 @@ func main() {
 						fmt.Println("OKAY", src_id, count, t2)
 					}
 
+					throttle <- true
 					ch <- true
 
-				}(src_id, alt_id)
+				}(throttle, src_id, alt_id)
+
 			}
 
 			wg.Wait()
