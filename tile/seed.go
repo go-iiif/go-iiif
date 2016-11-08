@@ -116,6 +116,15 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, err
 	}
 
+	procs := runtime.NumCPU() * 2 // move me in to the constructor...
+	procs = 2                     // dunno - trying to track down the bottleneck (20161108/thisisaaronland)
+
+	ch := make(chan bool, procs)
+
+	for i := 0; i < procs; i++ {
+		ch <- true
+	}
+
 	for _, scale := range scales {
 
 		crops, err := ts.TileSizes(image, scale)
@@ -125,13 +134,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 			continue
 		}
 
-		procs := runtime.NumCPU() * 2 // move me in to the constructor...
-
-		ch := make(chan bool, procs)
-
-		for i := 0; i < procs; i++ {
-			ch <- true
-		}
+		<-ch
 
 		wg := new(sync.WaitGroup)
 
@@ -139,9 +142,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 			wg.Add(1)
 
-			go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
-
-				<-ch
+			go func(ch chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
 
 				defer func() {
 					wg.Done()
@@ -167,7 +168,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					ts.derivatives_cache.Set(uri, tmp.Body())
 				}
 
-			}(image, transformation, wg)
+			}(ch, image, transformation, wg)
 		}
 
 		wg.Wait()
