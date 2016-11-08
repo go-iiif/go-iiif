@@ -134,12 +134,12 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 			continue
 		}
 
-		<-ch
-
 		wg := new(sync.WaitGroup)
 
 		for _, transformation := range crops {
 
+			<-ch
+			
 			wg.Add(1)
 
 			go func(ch chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
