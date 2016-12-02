@@ -17,10 +17,10 @@ type S3Connection struct {
 }
 
 type S3Config struct {
-     Bucket string
-     Prefix string
-     Region string
-     Credentials string
+	Bucket      string
+	Prefix      string
+	Region      string
+	Credentials string	// see notes below
 }
 
 func NewS3Connection(s3cfg S3Config) (*S3Connection, error) {
@@ -28,15 +28,29 @@ func NewS3Connection(s3cfg S3Config) (*S3Connection, error) {
 	// https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html
 	// https://docs.aws.amazon.com/sdk-for-go/api/service/s3/
 
-	sess := session.New(&aws.Config{
-		Region:      aws.String(s3cfg.Region),
-		Credentials: credentials.NewSharedCredentials("", s3cfg.Credentials),
-	})
+	cfg := aws.NewConfig()
+	cfg.WithRegion(s3cfg.Region)
 
-	_, err := sess.Config.Credentials.Get()
+	if s3cfg.Credentials != "" {
 
-	if err != nil {
-		return nil, err
+		// to do: update this to allow a profile
+		// to do: update this to allow other aws-sdk credential types
+		// https://docs.aws.amazon.com/sdk-for-go/api/aws/credentials/
+		// (20161202/thisisaaronland)
+		
+		creds := credentials.NewSharedCredentials(s3cfg.Credentials, "")
+		cfg.WithCredentials(creds)
+	}
+
+	sess := session.New(cfg)
+
+	if s3cfg.Credentials != "" {
+
+		_, err := sess.Config.Credentials.Get()
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	service := s3.New(sess)
@@ -50,7 +64,7 @@ func NewS3Connection(s3cfg S3Config) (*S3Connection, error) {
 	return &c, nil
 }
 
-func (conn *S3Connection) Head(key string) (*s3.HeadObjectOutput, error){
+func (conn *S3Connection) Head(key string) (*s3.HeadObjectOutput, error) {
 
 	key = conn.prepareKey(key)
 
