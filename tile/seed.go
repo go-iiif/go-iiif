@@ -16,6 +16,7 @@ import (
 	"runtime"
 	_ "strings"
 	"sync"
+	"time"
 )
 
 type TileSeed struct {
@@ -28,6 +29,7 @@ type TileSeed struct {
 	Width             int
 	Quality           string
 	Format            string
+	procs             int
 }
 
 func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
@@ -57,6 +59,8 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 		return nil, err
 	}
 
+	procs := runtime.NumCPU()
+
 	ts := TileSeed{
 		config:            config,
 		level:             level,
@@ -67,6 +71,7 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 		Width:             w,
 		Quality:           quality,
 		Format:            format,
+		procs:             procs,
 	}
 
 	return &ts, nil
@@ -116,6 +121,12 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, err
 	}
 
+	ch := make(chan bool, ts.procs)
+
+	for i := 0; i < ts.procs; i++ {
+		ch <- true
+	}
+
 	for _, scale := range scales {
 
 		crops, err := ts.TileSizes(image, scale)
@@ -125,23 +136,22 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 			continue
 		}
 
-		procs := runtime.NumCPU() * 2 // move me in to the constructor...
-
-		ch := make(chan bool, procs)
-
-		for i := 0; i < procs; i++ {
-			ch <- true
-		}
-
 		wg := new(sync.WaitGroup)
 
 		for _, transformation := range crops {
 
+			t1 := time.Now()
+
+			<-ch
+
+			t2 := time.Since(t1)
+
+			u, _ := transformation.ToURI(alt_id)
+			log.Printf("time waiting to process transformation for %s, %v\n", u, t2)
+
 			wg.Add(1)
 
-			go func(im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
-
-				<-ch
+			go func(ch chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
 
 				defer func() {
 					wg.Done()
@@ -167,7 +177,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					ts.derivatives_cache.Set(uri, tmp.Body())
 				}
 
-			}(image, transformation, wg)
+			}(ch, image, transformation, wg)
 		}
 
 		wg.Wait()

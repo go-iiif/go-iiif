@@ -21,6 +21,7 @@ func main() {
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	var quality = flag.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
 	var format = flag.String("format", "jpg", "A valid IIIF format parameter")
+	var processes = flag.Int("processes", runtime.NumCPU(), "...")
 	var mode = flag.String("mode", "-", "Whether to read input as a CSV file or from STDIN which can be represented as \"-\"")
 	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	var endpoint = flag.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
@@ -59,12 +60,10 @@ func main() {
 
 	if *mode == "csv" {
 
-		procs := runtime.NumCPU()
+		throttle := make(chan bool, *processes)
 
-		ch := make(chan bool, procs)
-
-		for i := 0; i < procs; i++ {
-			ch <- true
+		for i := 0; i < *processes; i++ {
+			throttle <- true
 		}
 
 		for _, path := range flag.Args() {
@@ -77,8 +76,12 @@ func main() {
 
 			wg := new(sync.WaitGroup)
 
+			counter := 0
+
 			for {
+
 				row, err := reader.Read()
+				counter += 1
 
 				if err == io.EOF {
 					break
@@ -102,11 +105,16 @@ func main() {
 					continue
 				}
 
+				t1 := time.Now()
+
+				<-throttle
+
+				t2 := time.Since(t1)
+				log.Printf("[%d] time spent waiting to parse %s, %v\n", counter, src_id, t2)
+
 				wg.Add(1)
 
-				go func(src_id string, alt_id string) {
-
-					<-ch
+				go func(throttle chan bool, src_id string, alt_id string) {
 
 					defer wg.Done()
 
@@ -116,15 +124,18 @@ func main() {
 
 					t2 := time.Since(t1)
 
+					log.Printf("[%d] time to process %s (%d tiles), %v\n", counter, src_id, count, t2)
+
 					if err != nil {
 						fmt.Println("ERROR", src_id, t2, err)
 					} else {
 						fmt.Println("OKAY", src_id, count, t2)
 					}
 
-					ch <- true
+					throttle <- true
 
-				}(src_id, alt_id)
+				}(throttle, src_id, alt_id)
+
 			}
 
 			wg.Wait()
