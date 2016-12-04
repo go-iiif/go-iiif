@@ -22,13 +22,13 @@ func main() {
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	var quality = flag.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
 	var format = flag.String("format", "jpg", "A valid IIIF format parameter")
-	var logfile = flag.String("logfile", "", "")
-	var loglevel = flag.String("loglevel", "info", "...")
-	var processes = flag.Int("processes", runtime.NumCPU(), "...")
+	var logfile = flag.String("logfile", "", "Write logging information to this file")
+	var loglevel = flag.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
+	var processes = flag.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
 	var mode = flag.String("mode", "-", "Whether to read input as a CSV file or from STDIN which can be represented as \"-\"")
 	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	var endpoint = flag.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
-	var verbose = flag.Bool("verbose", false, "...")
+	var verbose = flag.Bool("verbose", false, "Write logging to STDOUT in addition to any other log targets that may have been defined")
 
 	flag.Parse()
 
