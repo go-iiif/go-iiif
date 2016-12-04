@@ -82,10 +82,10 @@ then
     do
 	
 	if [ -L /usr/local/bin/${BIN} ]
-	        then
-	            rm /usr/local/bin/${BIN}
-		    fi
-
+	then
+	    rm /usr/local/bin/${BIN}
+	fi
+	
 	ln -s /usr/local/go/bin/${BIN} /usr/local/bin/${BIN}
     done
 
