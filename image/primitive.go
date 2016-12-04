@@ -12,6 +12,7 @@ import (
 	"image/gif"
 	_ "log"
 	"math"
+	"runtime"
 	_ "time"
 )
 
@@ -51,10 +52,10 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 	// t1 := time.Now()
 	// log.Println("starting model at", t1)
 
-	bg := primitive.MakeColor(primitive.AverageImageColor(goimg))
-	model := primitive.NewModel(goimg, bg, size)
+	workers := runtime.NumCPU()
 
-	workers := 0
+	bg := primitive.MakeColor(primitive.AverageImageColor(goimg))
+	model := primitive.NewModel(goimg, bg, size, workers)
 
 	for i := 1; i <= opts.Iterations; i++ {
 

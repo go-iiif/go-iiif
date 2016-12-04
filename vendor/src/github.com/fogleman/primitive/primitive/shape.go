@@ -1,16 +1,12 @@
 package primitive
 
-import (
-	"math/rand"
-
-	"github.com/fogleman/gg"
-)
+import "github.com/fogleman/gg"
 
 type Shape interface {
 	Rasterize() []Scanline
 	Copy() Shape
-	Mutate(rnd *rand.Rand)
-	Draw(dc *gg.Context)
+	Mutate()
+	Draw(dc *gg.Context, scale float64)
 	SVG(attrs string) string
 }
 
@@ -23,4 +19,7 @@ const (
 	ShapeTypeEllipse
 	ShapeTypeCircle
 	ShapeTypeRotatedRectangle
+	ShapeTypeQuadratic
+	ShapeTypeRotatedEllipse
+	ShapeTypePolygon
 )

@@ -8,6 +8,12 @@ Reproducing images with geometric primitives.
 
 A target image is provided as input. The algorithm tries to find the single most optimal shape that can be drawn to minimize the error between the target image and the drawn image. It repeats this process, adding *one shape at a time*. Around 50 to 200 shapes are needed to reach a result that is recognizable yet artistic and abstract.
 
+### Primitive for macOS
+
+Now available as a native Mac application!
+
+https://primitive.lol/
+
 ### Twitter
 
 Follow [@PrimitivePic](https://twitter.com/PrimitivePic) on Twitter to see a new primitive picture every 30 minutes!
@@ -28,16 +34,19 @@ Small input images should be used (like 256x256px). You don't need the detail an
 
 | Flag | Default | Description |
 | --- | --- | --- |
-| `-i` | n/a | input file |
-| `-o` | n/a | output file |
-| `-n` | n/a | number of shapes |
-| `-m` | 1 | mode: 0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect |
-| `-r` | 256 | resize large input images to this size before processing |
-| `-s` | 1024 | output image size |
-| `-a` | 128 | color alpha |
-| `-bg` | avg | starting background color (hex) |
-| `-j` | 0 | number of parallel workers (default uses all cores) |
-| `-v` | off | verbose output |
+| `i` | n/a | input file |
+| `o` | n/a | output file |
+| `n` | n/a | number of shapes |
+| `m` | 1 | mode: 0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect, 6=beziers, 7=rotatedellipse, 8=polygon |
+| `rep` | 0 | add N extra shapes each iteration with reduced search (mostly good for beziers) |
+| `nth` | 1 | save every Nth frame (only when `%d` is in output path) |
+| `r` | 256 | resize large input images to this size before processing |
+| `s` | 1024 | output image size |
+| `a` | 128 | color alpha (use `0` to let the algorithm choose alpha for each shape) |
+| `bg` | avg | starting background color (hex) |
+| `j` | 0 | number of parallel workers (default uses all cores) |
+| `v` | off | verbose output |
+| `vv` | off | very verbose output |
 
 ### Output Formats
 

@@ -13,11 +13,10 @@ import (
 	"image/draw"
 	"image/png"
 	"math"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"testing"
-
-	"golang.org/x/image/math/f32"
 )
 
 // encodePNG is useful for manually debugging the tests.
@@ -34,15 +33,13 @@ func encodePNG(dstFilename string, src image.Image) error {
 	return closeErr
 }
 
-func pointOnCircle(center, radius, index, number int) f32.Vec2 {
+func pointOnCircle(center, radius, index, number int) (x, y float32) {
 	c := float64(center)
 	r := float64(radius)
 	i := float64(index)
 	n := float64(number)
-	return f32.Vec2{
-		float32(c + r*(math.Cos(2*math.Pi*i/n))),
-		float32(c + r*(math.Sin(2*math.Pi*i/n))),
-	}
+	return float32(c + r*(math.Cos(2*math.Pi*i/n))),
+		float32(c + r*(math.Sin(2*math.Pi*i/n)))
 }
 
 func TestRasterizeOutOfBounds(t *testing.T) {
@@ -58,15 +55,15 @@ func TestRasterizeOutOfBounds(t *testing.T) {
 	for i := 0; i < n; i++ {
 		for j := 1; j < n/2; j++ {
 			z.Reset(2*center, 2*center)
-			z.MoveTo(f32.Vec2{1 * center, 1 * center})
+			z.MoveTo(1*center, 1*center)
 			z.LineTo(pointOnCircle(center, radius, i+0, n))
 			z.LineTo(pointOnCircle(center, radius, i+j, n))
 			z.ClosePath()
 
-			z.MoveTo(f32.Vec2{0 * center, 0 * center})
-			z.LineTo(f32.Vec2{0 * center, 2 * center})
-			z.LineTo(f32.Vec2{2 * center, 2 * center})
-			z.LineTo(f32.Vec2{2 * center, 0 * center})
+			z.MoveTo(0*center, 0*center)
+			z.LineTo(0*center, 2*center)
+			z.LineTo(2*center, 2*center)
+			z.LineTo(2*center, 0*center)
 			z.ClosePath()
 
 			dst := image.NewAlpha(z.Bounds())
@@ -87,13 +84,10 @@ func TestRasterizeOutOfBounds(t *testing.T) {
 
 func TestRasterizePolygon(t *testing.T) {
 	var z Rasterizer
-	for radius := 4; radius <= 1024; radius *= 2 {
+	for radius := 4; radius <= 256; radius *= 2 {
 		for n := 3; n <= 19; n += 4 {
 			z.Reset(2*radius, 2*radius)
-			z.MoveTo(f32.Vec2{
-				float32(2 * radius),
-				float32(1 * radius),
-			})
+			z.MoveTo(float32(2*radius), float32(1*radius))
 			for i := 1; i < n; i++ {
 				z.LineTo(pointOnCircle(radius, radius, i, n))
 			}
@@ -111,10 +105,10 @@ func TestRasterizePolygon(t *testing.T) {
 
 func TestRasterizeAlmostAxisAligned(t *testing.T) {
 	z := NewRasterizer(8, 8)
-	z.MoveTo(f32.Vec2{2, 2})
-	z.LineTo(f32.Vec2{6, math.Nextafter32(2, 0)})
-	z.LineTo(f32.Vec2{6, 6})
-	z.LineTo(f32.Vec2{math.Nextafter32(2, 0), 6})
+	z.MoveTo(2, 2)
+	z.LineTo(6, math.Nextafter32(2, 0))
+	z.LineTo(6, 6)
+	z.LineTo(math.Nextafter32(2, 0), 6)
 	z.ClosePath()
 
 	dst := image.NewAlpha(z.Bounds())
@@ -125,9 +119,81 @@ func TestRasterizeAlmostAxisAligned(t *testing.T) {
 	}
 }
 
+func TestRasterizeWideAlmostHorizontalLines(t *testing.T) {
+	var z Rasterizer
+	for i := uint(3); i < 16; i++ {
+		x := float32(int(1 << i))
+
+		z.Reset(8, 8)
+		z.MoveTo(-x, 3)
+		z.LineTo(+x, 4)
+		z.LineTo(+x, 6)
+		z.LineTo(-x, 6)
+		z.ClosePath()
+
+		dst := image.NewAlpha(z.Bounds())
+		z.Draw(dst, dst.Bounds(), image.Opaque, image.Point{})
+
+		if err := checkCornersCenter(dst); err != nil {
+			t.Errorf("i=%d: %v", i, err)
+		}
+	}
+}
+
+func TestRasterize30Degrees(t *testing.T) {
+	z := NewRasterizer(8, 8)
+	z.MoveTo(4, 4)
+	z.LineTo(8, 4)
+	z.LineTo(4, 6)
+	z.ClosePath()
+
+	dst := image.NewAlpha(z.Bounds())
+	z.Draw(dst, dst.Bounds(), image.Opaque, image.Point{})
+
+	if err := checkCornersCenter(dst); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestRasterizeRandomLineTos(t *testing.T) {
+	var z Rasterizer
+	for i := 5; i < 50; i++ {
+		n, rng := 0, rand.New(rand.NewSource(int64(i)))
+
+		z.Reset(i+2, i+2)
+		z.MoveTo(float32(i/2), float32(i/2))
+		for ; rng.Intn(16) != 0; n++ {
+			x := 1 + rng.Intn(i)
+			y := 1 + rng.Intn(i)
+			z.LineTo(float32(x), float32(y))
+		}
+		z.ClosePath()
+
+		dst := image.NewAlpha(z.Bounds())
+		z.Draw(dst, dst.Bounds(), image.Opaque, image.Point{})
+
+		if err := checkCorners(dst); err != nil {
+			t.Errorf("i=%d (%d nodes): %v", i, n, err)
+		}
+	}
+}
+
 // checkCornersCenter checks that the corners of the image are all 0x00 and the
 // center is 0xff.
 func checkCornersCenter(m *image.Alpha) error {
+	if err := checkCorners(m); err != nil {
+		return err
+	}
+	size := m.Bounds().Size()
+	center := m.Pix[(size.Y/2)*m.Stride+(size.X/2)]
+	if center != 0xff {
+		return fmt.Errorf("center: got %#02x, want 0xff", center)
+	}
+	return nil
+}
+
+// checkCorners checks that the corners of the image are all 0x00.
+func checkCorners(m *image.Alpha) error {
 	size := m.Bounds().Size()
 	corners := [4]uint8{
 		m.Pix[(0*size.Y+0)*m.Stride+(0*size.X+0)],
@@ -137,10 +203,6 @@ func checkCornersCenter(m *image.Alpha) error {
 	}
 	if corners != [4]uint8{} {
 		return fmt.Errorf("corners were not all zero: %v", corners)
-	}
-	center := m.Pix[(size.Y/2)*m.Stride+(size.X/2)]
-	if center != 0xff {
-		return fmt.Errorf("center: got %#02x, want 0xff", center)
 	}
 	return nil
 }
@@ -166,10 +228,10 @@ var basicMask = []byte{
 
 func testBasicPath(t *testing.T, prefix string, dst draw.Image, src image.Image, op draw.Op, want []byte) {
 	z := NewRasterizer(16, 16)
-	z.MoveTo(f32.Vec2{2, 2})
-	z.LineTo(f32.Vec2{8, 2})
-	z.QuadTo(f32.Vec2{14, 2}, f32.Vec2{14, 14})
-	z.CubeTo(f32.Vec2{8, 2}, f32.Vec2{5, 20}, f32.Vec2{2, 8})
+	z.MoveTo(2, 2)
+	z.LineTo(8, 2)
+	z.QuadTo(14, 2, 14, 14)
+	z.CubeTo(8, 2, 5, 20, 2, 8)
 	z.ClosePath()
 
 	z.DrawOp = op
@@ -294,45 +356,64 @@ const (
 	benchmarkGlyphHeight = 1122
 )
 
+type benchmarkGlyphDatum struct {
+	// n being 0, 1 or 2 means moveTo, lineTo or quadTo.
+	n  uint32
+	px float32
+	py float32
+	qx float32
+	qy float32
+}
+
 // benchmarkGlyphData is the 'a' glyph from the Roboto Regular font, translated
 // so that its top left corner is (0, 0).
-var benchmarkGlyphData = []struct {
-	// n being 0, 1 or 2 means moveTo, lineTo or quadTo.
-	n uint32
-	p f32.Vec2
-	q f32.Vec2
-}{
-	{0, f32.Vec2{699, 1102}, f32.Vec2{0, 0}},
-	{2, f32.Vec2{683, 1070}, f32.Vec2{673, 988}},
-	{2, f32.Vec2{544, 1122}, f32.Vec2{365, 1122}},
-	{2, f32.Vec2{205, 1122}, f32.Vec2{102.5, 1031.5}},
-	{2, f32.Vec2{0, 941}, f32.Vec2{0, 802}},
-	{2, f32.Vec2{0, 633}, f32.Vec2{128.5, 539.5}},
-	{2, f32.Vec2{257, 446}, f32.Vec2{490, 446}},
-	{1, f32.Vec2{670, 446}, f32.Vec2{0, 0}},
-	{1, f32.Vec2{670, 361}, f32.Vec2{0, 0}},
-	{2, f32.Vec2{670, 264}, f32.Vec2{612, 206.5}},
-	{2, f32.Vec2{554, 149}, f32.Vec2{441, 149}},
-	{2, f32.Vec2{342, 149}, f32.Vec2{275, 199}},
-	{2, f32.Vec2{208, 249}, f32.Vec2{208, 320}},
-	{1, f32.Vec2{22, 320}, f32.Vec2{0, 0}},
-	{2, f32.Vec2{22, 239}, f32.Vec2{79.5, 163.5}},
-	{2, f32.Vec2{137, 88}, f32.Vec2{235.5, 44}},
-	{2, f32.Vec2{334, 0}, f32.Vec2{452, 0}},
-	{2, f32.Vec2{639, 0}, f32.Vec2{745, 93.5}},
-	{2, f32.Vec2{851, 187}, f32.Vec2{855, 351}},
-	{1, f32.Vec2{855, 849}, f32.Vec2{0, 0}},
-	{2, f32.Vec2{855, 998}, f32.Vec2{893, 1086}},
-	{1, f32.Vec2{893, 1102}, f32.Vec2{0, 0}},
-	{1, f32.Vec2{699, 1102}, f32.Vec2{0, 0}},
-	{0, f32.Vec2{392, 961}, f32.Vec2{0, 0}},
-	{2, f32.Vec2{479, 961}, f32.Vec2{557, 916}},
-	{2, f32.Vec2{635, 871}, f32.Vec2{670, 799}},
-	{1, f32.Vec2{670, 577}, f32.Vec2{0, 0}},
-	{1, f32.Vec2{525, 577}, f32.Vec2{0, 0}},
-	{2, f32.Vec2{185, 577}, f32.Vec2{185, 776}},
-	{2, f32.Vec2{185, 863}, f32.Vec2{243, 912}},
-	{2, f32.Vec2{301, 961}, f32.Vec2{392, 961}},
+var benchmarkGlyphData = []benchmarkGlyphDatum{
+	{0, 699, 1102, 0, 0},
+	{2, 683, 1070, 673, 988},
+	{2, 544, 1122, 365, 1122},
+	{2, 205, 1122, 102.5, 1031.5},
+	{2, 0, 941, 0, 802},
+	{2, 0, 633, 128.5, 539.5},
+	{2, 257, 446, 490, 446},
+	{1, 670, 446, 0, 0},
+	{1, 670, 361, 0, 0},
+	{2, 670, 264, 612, 206.5},
+	{2, 554, 149, 441, 149},
+	{2, 342, 149, 275, 199},
+	{2, 208, 249, 208, 320},
+	{1, 22, 320, 0, 0},
+	{2, 22, 239, 79.5, 163.5},
+	{2, 137, 88, 235.5, 44},
+	{2, 334, 0, 452, 0},
+	{2, 639, 0, 745, 93.5},
+	{2, 851, 187, 855, 351},
+	{1, 855, 849, 0, 0},
+	{2, 855, 998, 893, 1086},
+	{1, 893, 1102, 0, 0},
+	{1, 699, 1102, 0, 0},
+	{0, 392, 961, 0, 0},
+	{2, 479, 961, 557, 916},
+	{2, 635, 871, 670, 799},
+	{1, 670, 577, 0, 0},
+	{1, 525, 577, 0, 0},
+	{2, 185, 577, 185, 776},
+	{2, 185, 863, 243, 912},
+	{2, 301, 961, 392, 961},
+}
+
+func scaledBenchmarkGlyphData(height int) (width int, data []benchmarkGlyphDatum) {
+	scale := float32(height) / benchmarkGlyphHeight
+
+	// Clone the benchmarkGlyphData slice and scale its coordinates.
+	data = append(data, benchmarkGlyphData...)
+	for i := range data {
+		data[i].px *= scale
+		data[i].py *= scale
+		data[i].qx *= scale
+		data[i].qy *= scale
+	}
+
+	return int(math.Ceil(float64(benchmarkGlyphWidth * scale))), data
 }
 
 // benchGlyph benchmarks rasterizing a TrueType glyph.
@@ -341,18 +422,7 @@ var benchmarkGlyphData = []struct {
 // here is the height of the bounding box, not the pixels per em used to scale
 // a glyph's vectors. A height of 64 corresponds to a ppem greater than 64.
 func benchGlyph(b *testing.B, colorModel byte, loose bool, height int, op draw.Op) {
-	scale := float32(height) / benchmarkGlyphHeight
-
-	// Clone the benchmarkGlyphData slice and scale its coordinates.
-	data := append(benchmarkGlyphData[:0:0], benchmarkGlyphData...)
-	for i := range data {
-		data[i].p[0] *= scale
-		data[i].p[1] *= scale
-		data[i].q[0] *= scale
-		data[i].q[1] *= scale
-	}
-
-	width := int(math.Ceil(float64(benchmarkGlyphWidth * scale)))
+	width, data := scaledBenchmarkGlyphData(height)
 	z := NewRasterizer(width, height)
 
 	bounds := z.Bounds()
@@ -382,11 +452,11 @@ func benchGlyph(b *testing.B, colorModel byte, loose bool, height int, op draw.O
 		for _, d := range data {
 			switch d.n {
 			case 0:
-				z.MoveTo(d.p)
+				z.MoveTo(d.px, d.py)
 			case 1:
-				z.LineTo(d.p)
+				z.LineTo(d.px, d.py)
 			case 2:
-				z.QuadTo(d.p, d.q)
+				z.QuadTo(d.px, d.py, d.qx, d.qy)
 			}
 		}
 		z.Draw(dst, bounds, src, image.Point{})
@@ -415,17 +485,6 @@ func BenchmarkGlyphAlphaLoose128Src(b *testing.B)  { benchGlyph(b, 'A', true, 12
 func BenchmarkGlyphAlphaLoose256Over(b *testing.B) { benchGlyph(b, 'A', true, 256, draw.Over) }
 func BenchmarkGlyphAlphaLoose256Src(b *testing.B)  { benchGlyph(b, 'A', true, 256, draw.Src) }
 
-func BenchmarkGlyphNRGBA16Over(b *testing.B)  { benchGlyph(b, 'N', false, 16, draw.Over) }
-func BenchmarkGlyphNRGBA16Src(b *testing.B)   { benchGlyph(b, 'N', false, 16, draw.Src) }
-func BenchmarkGlyphNRGBA32Over(b *testing.B)  { benchGlyph(b, 'N', false, 32, draw.Over) }
-func BenchmarkGlyphNRGBA32Src(b *testing.B)   { benchGlyph(b, 'N', false, 32, draw.Src) }
-func BenchmarkGlyphNRGBA64Over(b *testing.B)  { benchGlyph(b, 'N', false, 64, draw.Over) }
-func BenchmarkGlyphNRGBA64Src(b *testing.B)   { benchGlyph(b, 'N', false, 64, draw.Src) }
-func BenchmarkGlyphNRGBA128Over(b *testing.B) { benchGlyph(b, 'N', false, 128, draw.Over) }
-func BenchmarkGlyphNRGBA128Src(b *testing.B)  { benchGlyph(b, 'N', false, 128, draw.Src) }
-func BenchmarkGlyphNRGBA256Over(b *testing.B) { benchGlyph(b, 'N', false, 256, draw.Over) }
-func BenchmarkGlyphNRGBA256Src(b *testing.B)  { benchGlyph(b, 'N', false, 256, draw.Src) }
-
 func BenchmarkGlyphRGBA16Over(b *testing.B)  { benchGlyph(b, 'R', false, 16, draw.Over) }
 func BenchmarkGlyphRGBA16Src(b *testing.B)   { benchGlyph(b, 'R', false, 16, draw.Src) }
 func BenchmarkGlyphRGBA32Over(b *testing.B)  { benchGlyph(b, 'R', false, 32, draw.Over) }
@@ -436,3 +495,14 @@ func BenchmarkGlyphRGBA128Over(b *testing.B) { benchGlyph(b, 'R', false, 128, dr
 func BenchmarkGlyphRGBA128Src(b *testing.B)  { benchGlyph(b, 'R', false, 128, draw.Src) }
 func BenchmarkGlyphRGBA256Over(b *testing.B) { benchGlyph(b, 'R', false, 256, draw.Over) }
 func BenchmarkGlyphRGBA256Src(b *testing.B)  { benchGlyph(b, 'R', false, 256, draw.Src) }
+
+func BenchmarkGlyphNRGBA16Over(b *testing.B)  { benchGlyph(b, 'N', false, 16, draw.Over) }
+func BenchmarkGlyphNRGBA16Src(b *testing.B)   { benchGlyph(b, 'N', false, 16, draw.Src) }
+func BenchmarkGlyphNRGBA32Over(b *testing.B)  { benchGlyph(b, 'N', false, 32, draw.Over) }
+func BenchmarkGlyphNRGBA32Src(b *testing.B)   { benchGlyph(b, 'N', false, 32, draw.Src) }
+func BenchmarkGlyphNRGBA64Over(b *testing.B)  { benchGlyph(b, 'N', false, 64, draw.Over) }
+func BenchmarkGlyphNRGBA64Src(b *testing.B)   { benchGlyph(b, 'N', false, 64, draw.Src) }
+func BenchmarkGlyphNRGBA128Over(b *testing.B) { benchGlyph(b, 'N', false, 128, draw.Over) }
+func BenchmarkGlyphNRGBA128Src(b *testing.B)  { benchGlyph(b, 'N', false, 128, draw.Src) }
+func BenchmarkGlyphNRGBA256Over(b *testing.B) { benchGlyph(b, 'N', false, 256, draw.Over) }
+func BenchmarkGlyphNRGBA256Src(b *testing.B)  { benchGlyph(b, 'N', false, 256, draw.Src) }

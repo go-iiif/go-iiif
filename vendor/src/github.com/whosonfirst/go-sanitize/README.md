@@ -2,10 +2,6 @@
 
 A Go port of the Flamework lib_sanitize library.
 
-## Important
-
-YOU SHOULD NOT TRY TO USE THIS YET. IT HAS NOT BEEN FINISHED BEING TESTED YET. IT IS NOT SAFE. WELL IT _MIGHT_ BE SAFE BUT IT WOULD PROBABLY BE SAFER TO ASSUME IT ISN'T.
-
 ## Example
 
 ```

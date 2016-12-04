@@ -2,12 +2,13 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiiftile "github.com/thisisaaronland/go-iiif/tile"
-	csv "github.com/whosonfirst/go-whosonfirst-csv"
+	"github.com/whosonfirst/go-whosonfirst-csv"
+	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
-	"log"
+	golog "log"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
@@ -21,28 +22,53 @@ func main() {
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	var quality = flag.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
 	var format = flag.String("format", "jpg", "A valid IIIF format parameter")
+	var logfile = flag.String("logfile", "", "")
+	var loglevel = flag.String("loglevel", "info", "...")
 	var processes = flag.Int("processes", runtime.NumCPU(), "...")
 	var mode = flag.String("mode", "-", "Whether to read input as a CSV file or from STDIN which can be represented as \"-\"")
 	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	var endpoint = flag.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
+	var verbose = flag.Bool("verbose", false, "...")
 
 	flag.Parse()
 
 	if *cfg == "" {
-		log.Fatal("Missing config file")
+		golog.Fatal("Missing config file")
 	}
 
 	config, err := iiifconfig.NewConfigFromFile(*cfg)
 
 	if err != nil {
-		log.Fatal(err)
+		golog.Fatal(err)
 	}
 
 	ts, err := iiiftile.NewTileSeed(config, 256, 256, *endpoint, *quality, *format)
 
 	if err != nil {
-		log.Fatal(err)
+		golog.Fatal(err)
 	}
+
+	writers := make([]io.Writer, 0)
+
+	if *verbose {
+		writers = append(writers, os.Stdout)
+	}
+
+	if *logfile != "" {
+
+		fh, err := os.OpenFile(*logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
+
+		if err != nil {
+			golog.Fatal(err)
+		}
+
+		writers = append(writers, fh)
+	}
+
+	writer := io.MultiWriter(writers...)
+
+	logger := log.NewWOFLogger("")
+	logger.AddLogger(writer, *loglevel)
 
 	scales := make([]int, 0)
 
@@ -52,7 +78,7 @@ func main() {
 		scale, err := strconv.Atoi(s)
 
 		if err != nil {
-			log.Fatal(err)
+			logger.Fatal(err.Error())
 		}
 
 		scales = append(scales, scale)
@@ -71,7 +97,7 @@ func main() {
 			reader, err := csv.NewDictReaderFromPath(path)
 
 			if err != nil {
-				log.Fatal(err)
+				logger.Fatal(err.Error())
 			}
 
 			wg := new(sync.WaitGroup)
@@ -88,20 +114,20 @@ func main() {
 				}
 
 				if err != nil {
-					log.Fatal(err)
+					logger.Fatal(err.Error())
 				}
 
 				src_id, ok := row["source_id"]
 
 				if !ok {
-					log.Println("Unable to determine source ID", row)
+					logger.Warning("Unable to determine source ID", row)
 					continue
 				}
 
 				alt_id, ok := row["alternate_id"]
 
 				if !ok {
-					log.Println("Unable to determine alternate ID", row)
+					logger.Warning("Unable to determine alternate ID", row)
 					continue
 				}
 
@@ -110,7 +136,7 @@ func main() {
 				<-throttle
 
 				t2 := time.Since(t1)
-				log.Printf("[%d] time spent waiting to parse %s, %v\n", counter, src_id, t2)
+				logger.Debug("%d time spent waiting to parse %s, %v", counter, src_id, t2)
 
 				wg.Add(1)
 
@@ -124,12 +150,12 @@ func main() {
 
 					t2 := time.Since(t1)
 
-					log.Printf("[%d] time to process %s (%d tiles), %v\n", counter, src_id, count, t2)
+					logger.Debug("%d time to process %s (%d tiles), %v", counter, src_id, count, t2)
 
 					if err != nil {
-						fmt.Println("ERROR", src_id, t2, err)
+						logger.Error("FAILED to tile %s (%d) because %s, in %v", src_id, counter, err, t2)
 					} else {
-						fmt.Println("OKAY", src_id, count, t2)
+						logger.Status("SUCCESS tiling %s (%d) %d tiles in %v", src_id, counter, count, t2)
 					}
 
 					throttle <- true
@@ -165,10 +191,10 @@ func main() {
 			t2 := time.Since(t1)
 
 			if err != nil {
-				log.Fatal(err)
+				logger.Fatal(err.Error())
 			}
 
-			log.Printf("[%s] time to process %d tiles: %v\n", id, count, t2)
+			logger.Debug("%s time to process %d tiles: %v", id, count, t2)
 		}
 	}
 }

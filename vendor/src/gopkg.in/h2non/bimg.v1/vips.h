@@ -1,12 +1,7 @@
 #include <stdlib.h>
 #include <vips/vips.h>
+#include <vips/foreign.h>
 #include <vips/vips7compat.h>
-
-#ifdef  VIPS_MAGICK_H
-#define VIPS_MAGICK_SUPPORT 1
-#else
-#define VIPS_MAGICK_SUPPORT 0
-#endif
 
 /**
  * Starting libvips 7.41, VIPS_ANGLE_x has been renamed to VIPS_ANGLE_Dx
@@ -30,6 +25,9 @@ enum types {
 	WEBP,
 	PNG,
 	TIFF,
+	GIF,
+	PDF,
+	SVG,
 	MAGICK
 };
 
@@ -47,7 +45,7 @@ typedef struct {
 	double Background[3];
 } WatermarkOptions;
 
-static int
+static unsigned long
 has_profile_embed(VipsImage *image) {
 	return vips_image_get_typeof(image, VIPS_META_ICC_NAME);
 }
@@ -118,18 +116,63 @@ vips_shrink_bridge(VipsImage *in, VipsImage **out, double xshrink, double yshrin
 }
 
 int
+vips_type_find_bridge(int t) {
+	if (t == GIF) {
+		return vips_type_find("VipsOperation", "gifload");
+	}
+	if (t == PDF) {
+		return vips_type_find("VipsOperation", "pdfload");
+	}
+	if (t == TIFF) {
+		return vips_type_find("VipsOperation", "tiffload");
+	}
+	if (t == SVG) {
+		return vips_type_find("VipsOperation", "svgload");
+	}
+	if (t == WEBP) {
+		return vips_type_find("VipsOperation", "webpload");
+	}
+	if (t == PNG) {
+		return vips_type_find("VipsOperation", "pngload");
+	}
+	if (t == JPEG) {
+		return vips_type_find("VipsOperation", "jpegload");
+	}
+	if (t == MAGICK) {
+		return vips_type_find("VipsOperation", "magickload");
+	}
+	return 0;
+}
+
+int
 vips_rotate(VipsImage *in, VipsImage **out, int angle) {
 	int rotate = VIPS_ANGLE_D0;
 
-	if (angle == 90) {
+	angle %= 360;
+
+	if (angle == 45) {
+		rotate = VIPS_ANGLE45_D45;
+	} else if (angle == 90) {
 		rotate = VIPS_ANGLE_D90;
+	} else if (angle == 135) {
+		rotate = VIPS_ANGLE45_D135;
 	} else if (angle == 180) {
 		rotate = VIPS_ANGLE_D180;
+	} else if (angle == 225) {
+		rotate = VIPS_ANGLE45_D225;
 	} else if (angle == 270) {
 		rotate = VIPS_ANGLE_D270;
+	} else if (angle == 315) {
+		rotate = VIPS_ANGLE45_D315;
+	} else {
+		angle = 0;
 	}
 
-	return vips_rot(in, out, rotate, NULL);
+	if (angle > 0 && angle % 90 != 0) {
+		return vips_rot45(in, out, "angle", rotate, NULL);
+	} else {
+		return vips_rot(in, out, rotate, NULL);
+	}
 }
 
 int
@@ -164,7 +207,12 @@ vips_zoom_bridge(VipsImage *in, VipsImage **out, int xfac, int yfac) {
 }
 
 int
-vips_embed_bridge(VipsImage *in, VipsImage **out, int left, int top, int width, int height, int extend) {
+vips_embed_bridge(VipsImage *in, VipsImage **out, int left, int top, int width, int height, int extend, double r, double g, double b) {
+	if (extend == VIPS_EXTEND_BACKGROUND) {
+		double background[3] = {r, g, b};
+		VipsArrayDouble *vipsBackground = vips_array_double_new(background, 3);
+		return vips_embed(in, out, left, top, width, height, "extend", extend, "background", vipsBackground, NULL);
+	}
 	return vips_embed(in, out, left, top, width, height, "extend", extend, NULL);
 }
 
@@ -229,10 +277,24 @@ vips_webpsave_bridge(VipsImage *in, void **buf, size_t *len, int strip, int qual
 }
 
 int
-vips_flatten_background_brigde(VipsImage *in, VipsImage **out, double background[3]) {
+vips_is_16bit (VipsInterpretation interpretation) {
+	return interpretation == VIPS_INTERPRETATION_RGB16 || interpretation == VIPS_INTERPRETATION_GREY16;
+}
+
+int
+vips_flatten_background_brigde(VipsImage *in, VipsImage **out, double r, double g, double b) {
+	if (vips_is_16bit(in->Type)) {
+		r = 65535 * r / 255;
+		g = 65535 * g / 255;
+		b = 65535 * b / 255;
+	}
+
+	double background[3] = {r, g, b};
 	VipsArrayDouble *vipsBackground = vips_array_double_new(background, 3);
+
 	return vips_flatten(in, out,
 		"background", vipsBackground,
+		"max_alpha", vips_is_16bit(in->Type) ? 65535.0 : 255.0,
 		NULL
 	);
 }
@@ -250,6 +312,14 @@ vips_init_image (void *buf, size_t len, int imageType, VipsImage **out) {
 	} else if (imageType == TIFF) {
 		code = vips_tiffload_buffer(buf, len, out, "access", VIPS_ACCESS_RANDOM, NULL);
 #if (VIPS_MAJOR_VERSION >= 8)
+#if (VIPS_MINOR_VERSION >= 3)
+	} else if (imageType == GIF) {
+		code = vips_gifload_buffer(buf, len, out, "access", VIPS_ACCESS_RANDOM, NULL);
+	} else if (imageType == PDF) {
+		code = vips_pdfload_buffer(buf, len, out, "access", VIPS_ACCESS_RANDOM, NULL);
+	} else if (imageType == SVG) {
+		code = vips_svgload_buffer(buf, len, out, "access", VIPS_ACCESS_RANDOM, NULL);
+#endif
 	} else if (imageType == MAGICK) {
 		code = vips_magickload_buffer(buf, len, out, "access", VIPS_ACCESS_RANDOM, NULL);
 #endif

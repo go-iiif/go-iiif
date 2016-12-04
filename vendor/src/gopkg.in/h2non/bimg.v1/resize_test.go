@@ -1,6 +1,9 @@
 package bimg
 
 import (
+	"bytes"
+	"image"
+	"image/jpeg"
 	"io/ioutil"
 	"os"
 	"path"
@@ -58,7 +61,7 @@ func TestResizeVerticalImage(t *testing.T) {
 		}
 
 		if DetermineImageType(image) != test.format {
-			t.Fatal("Image format is invalid. Expected: %s", test.format)
+			t.Fatalf("Image format is invalid. Expected: %#v", test.format)
 		}
 
 		size, _ := Size(image)
@@ -99,7 +102,7 @@ func TestResizeCustomSizes(t *testing.T) {
 		}
 
 		if DetermineImageType(image) != test.format {
-			t.Fatal("Image format is invalid. Expected: %s", test.format)
+			t.Fatalf("Image format is invalid. Expected: %#v", test.format)
 		}
 
 		size, _ := Size(image)
@@ -109,6 +112,24 @@ func TestResizeCustomSizes(t *testing.T) {
 		if test.options.Width > 0 && size.Width != test.options.Width {
 			t.Fatalf("Invalid width: %d", size.Width)
 		}
+	}
+}
+
+func TestResizePrecision(t *testing.T) {
+	// see https://github.com/h2non/bimg/issues/99
+	img := image.NewGray16(image.Rect(0, 0, 1920, 1080))
+	input := &bytes.Buffer{}
+	jpeg.Encode(input, img, nil)
+
+	opts := Options{Width: 300}
+	newImg, err := Resize(input.Bytes(), opts)
+	if err != nil {
+		t.Fatalf("Resize(imgData, %#v) error: %#v", opts, err)
+	}
+
+	size, _ := Size(newImg)
+	if size.Width != opts.Width {
+		t.Fatalf("Invalid width: %d", size.Width)
 	}
 }
 
@@ -195,6 +216,40 @@ func TestNoColorProfile(t *testing.T) {
 	}
 }
 
+func TestEmbedExtendColor(t *testing.T) {
+	options := Options{Width: 400, Height: 600, Crop: false, Embed: true, Extend: ExtendWhite, Background: Color{255, 20, 10}}
+	buf, _ := Read("fixtures/test_issue.jpg")
+
+	newImg, err := Resize(buf, options)
+	if err != nil {
+		t.Errorf("Resize(imgData, %#v) error: %#v", options, err)
+	}
+
+	size, _ := Size(newImg)
+	if size.Height != options.Height || size.Width != options.Width {
+		t.Fatalf("Invalid image size: %dx%d", size.Width, size.Height)
+	}
+
+	Write("fixtures/test_extend_white_out.jpg", newImg)
+}
+
+func TestEmbedExtendWithCustomColor(t *testing.T) {
+	options := Options{Width: 400, Height: 600, Crop: false, Embed: true, Extend: 5, Background: Color{255, 20, 10}}
+	buf, _ := Read("fixtures/test_issue.jpg")
+
+	newImg, err := Resize(buf, options)
+	if err != nil {
+		t.Errorf("Resize(imgData, %#v) error: %#v", options, err)
+	}
+
+	size, _ := Size(newImg)
+	if size.Height != options.Height || size.Width != options.Width {
+		t.Fatalf("Invalid image size: %dx%d", size.Width, size.Height)
+	}
+
+	Write("fixtures/test_extend_background_out.jpg", newImg)
+}
+
 func TestGaussianBlur(t *testing.T) {
 	options := Options{Width: 800, Height: 600, GaussianBlur: GaussianBlur{Sigma: 5}}
 	buf, _ := Read("fixtures/test.jpg")
@@ -227,6 +282,40 @@ func TestSharpen(t *testing.T) {
 	}
 
 	Write("fixtures/test_sharpen.jpg", newImg)
+}
+
+func TestExtractWithDefaultAxis(t *testing.T) {
+	options := Options{AreaWidth: 200, AreaHeight: 200}
+	buf, _ := Read("fixtures/test.jpg")
+
+	newImg, err := Resize(buf, options)
+	if err != nil {
+		t.Errorf("Resize(imgData, %#v) error: %#v", options, err)
+	}
+
+	size, _ := Size(newImg)
+	if size.Height != options.AreaHeight || size.Width != options.AreaWidth {
+		t.Fatalf("Invalid image size: %dx%d", size.Width, size.Height)
+	}
+
+	Write("fixtures/test_extract_defaults.jpg", newImg)
+}
+
+func TestExtractCustomAxis(t *testing.T) {
+	options := Options{Top: 100, Left: 100, AreaWidth: 200, AreaHeight: 200}
+	buf, _ := Read("fixtures/test.jpg")
+
+	newImg, err := Resize(buf, options)
+	if err != nil {
+		t.Errorf("Resize(imgData, %#v) error: %#v", options, err)
+	}
+
+	size, _ := Size(newImg)
+	if size.Height != options.AreaHeight || size.Width != options.AreaWidth {
+		t.Fatalf("Invalid image size: %dx%d", size.Width, size.Height)
+	}
+
+	Write("fixtures/test_extract_custom_axis.jpg", newImg)
 }
 
 func TestConvert(t *testing.T) {

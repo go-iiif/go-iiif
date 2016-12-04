@@ -1,53 +1,48 @@
 package primitive
 
-import (
-	"image"
-	"math/rand"
-)
-
 type State struct {
-	Model       *Model
-	Buffer      *image.RGBA
-	Alpha       int
+	Worker      *Worker
 	Shape       Shape
+	Alpha       int
 	MutateAlpha bool
-	score       float64
-	rnd         *rand.Rand
+	Score       float64
 }
 
-func NewState(model *Model, buffer *image.RGBA, alpha int, shape Shape, rnd *rand.Rand) *State {
+func NewState(worker *Worker, shape Shape, alpha int) *State {
 	var mutateAlpha bool
 	if alpha == 0 {
 		alpha = 128
 		mutateAlpha = true
 	}
-	return &State{model, buffer, alpha, shape, mutateAlpha, -1, rnd}
+	return &State{worker, shape, alpha, mutateAlpha, -1}
 }
 
 func (state *State) Energy() float64 {
-	if state.score < 0 {
-		state.score = state.Model.Energy(state.Alpha, state.Shape, state.Buffer)
+	if state.Score < 0 {
+		state.Score = state.Worker.Energy(state.Shape, state.Alpha)
 	}
-	return state.score
+	return state.Score
 }
 
 func (state *State) DoMove() interface{} {
+	rnd := state.Worker.Rnd
 	oldState := state.Copy()
-	state.Shape.Mutate(state.rnd)
+	state.Shape.Mutate()
 	if state.MutateAlpha {
-		state.Alpha = clampInt(state.Alpha+state.rnd.Intn(21)-10, 1, 255)
+		state.Alpha = clampInt(state.Alpha+rnd.Intn(21)-10, 1, 255)
 	}
-	state.score = -1
+	state.Score = -1
 	return oldState
 }
 
 func (state *State) UndoMove(undo interface{}) {
 	oldState := undo.(*State)
 	state.Shape = oldState.Shape
-	state.score = oldState.score
+	state.Alpha = oldState.Alpha
+	state.Score = oldState.Score
 }
 
 func (state *State) Copy() Annealable {
 	return &State{
-		state.Model, state.Buffer, state.Alpha, state.Shape.Copy(), state.MutateAlpha, state.score, state.rnd}
+		state.Worker, state.Shape.Copy(), state.Alpha, state.MutateAlpha, state.Score}
 }

@@ -9,8 +9,6 @@ package vector
 
 import (
 	"math"
-
-	"golang.org/x/image/math/f32"
 )
 
 func floatingMax(x, y float32) float32 {
@@ -30,32 +28,32 @@ func floatingMin(x, y float32) float32 {
 func floatingFloor(x float32) int32 { return int32(math.Floor(float64(x))) }
 func floatingCeil(x float32) int32  { return int32(math.Ceil(float64(x))) }
 
-func (z *Rasterizer) floatingLineTo(b f32.Vec2) {
-	a := z.pen
-	z.pen = b
+func (z *Rasterizer) floatingLineTo(bx, by float32) {
+	ax, ay := z.penX, z.penY
+	z.penX, z.penY = bx, by
 	dir := float32(1)
-	if a[1] > b[1] {
-		dir, a, b = -1, b, a
+	if ay > by {
+		dir, ax, ay, bx, by = -1, bx, by, ax, ay
 	}
 	// Horizontal line segments yield no change in coverage. Almost horizontal
 	// segments would yield some change, in ideal math, but the computation
-	// further below, involving 1 / (b[1] - a[1]), is unstable in floating
-	// point math, so we treat the segment as if it was perfectly horizontal.
-	if b[1]-a[1] <= 0.000001 {
+	// further below, involving 1 / (by - ay), is unstable in floating point
+	// math, so we treat the segment as if it was perfectly horizontal.
+	if by-ay <= 0.000001 {
 		return
 	}
-	dxdy := (b[0] - a[0]) / (b[1] - a[1])
+	dxdy := (bx - ax) / (by - ay)
 
-	x := a[0]
-	y := floatingFloor(a[1])
-	yMax := floatingCeil(b[1])
+	x := ax
+	y := floatingFloor(ay)
+	yMax := floatingCeil(by)
 	if yMax > int32(z.size.Y) {
 		yMax = int32(z.size.Y)
 	}
 	width := int32(z.size.X)
 
 	for ; y < yMax; y++ {
-		dy := floatingMin(float32(y+1), b[1]) - floatingMax(float32(y), a[1])
+		dy := floatingMin(float32(y+1), by) - floatingMax(float32(y), ay)
 		xNext := x + dy*dxdy
 		if y < 0 {
 			x = xNext
@@ -145,22 +143,12 @@ const (
 	almost65536 = almost256 * 256
 )
 
-func floatingAccumulateOpSrc(dst []uint8, src []float32) {
-	acc := float32(0)
-	for i, v := range src {
-		acc += v
-		a := acc
-		if a < 0 {
-			a = -a
-		}
-		if a > 1 {
-			a = 1
-		}
-		dst[i] = uint8(almost256 * a)
-	}
-}
-
 func floatingAccumulateOpOver(dst []uint8, src []float32) {
+	// Sanity check that len(dst) >= len(src).
+	if len(dst) < len(src) {
+		return
+	}
+
 	acc := float32(0)
 	for i, v := range src {
 		acc += v
@@ -179,7 +167,32 @@ func floatingAccumulateOpOver(dst []uint8, src []float32) {
 	}
 }
 
+func floatingAccumulateOpSrc(dst []uint8, src []float32) {
+	// Sanity check that len(dst) >= len(src).
+	if len(dst) < len(src) {
+		return
+	}
+
+	acc := float32(0)
+	for i, v := range src {
+		acc += v
+		a := acc
+		if a < 0 {
+			a = -a
+		}
+		if a > 1 {
+			a = 1
+		}
+		dst[i] = uint8(almost256 * a)
+	}
+}
+
 func floatingAccumulateMask(dst []uint32, src []float32) {
+	// Sanity check that len(dst) >= len(src).
+	if len(dst) < len(src) {
+		return
+	}
+
 	acc := float32(0)
 	for i, v := range src {
 		acc += v

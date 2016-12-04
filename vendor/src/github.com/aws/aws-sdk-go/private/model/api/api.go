@@ -1,10 +1,15 @@
+// +build codegen
+
 // Package api represents API abstractions for rendering service generated files.
 package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"path"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
@@ -37,6 +42,9 @@ type API struct {
 	// Set to true to not generate validation shapes
 	NoValidataShapeMethods bool
 
+	// Set to true to not generate struct field accessors
+	NoGenStructFieldAccessors bool
+
 	SvcClientImportPath string
 
 	initialized bool
@@ -56,6 +64,17 @@ type Metadata struct {
 	JSONVersion         string
 	TargetPrefix        string
 	Protocol            string
+}
+
+var serviceAliases map[string]string
+
+func Bootstrap() error {
+	b, err := ioutil.ReadFile(filepath.Join("..", "models", "customizations", "service-aliases.json"))
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(b, &serviceAliases)
 }
 
 // PackageName name of the API package
@@ -79,14 +98,9 @@ func (a *API) StructName() string {
 		}
 
 		name = nameRegex.ReplaceAllString(name, "")
-		switch strings.ToLower(name) {
-		case "elasticloadbalancing":
-			a.name = "ELB"
-		case "elasticloadbalancingv2":
-			a.name = "ELBV2"
-		case "config":
-			a.name = "ConfigService"
-		default:
+
+		a.name = name
+		if name, ok := serviceAliases[strings.ToLower(name)]; ok {
 			a.name = name
 		}
 	}
@@ -161,10 +175,16 @@ func (a *API) ShapeNames() []string {
 }
 
 // ShapeList returns a slice of shape pointers used by the API.
+//
+// Will exclude error shapes from the list of shapes returned.
 func (a *API) ShapeList() []*Shape {
-	list := make([]*Shape, len(a.Shapes))
-	for i, n := range a.ShapeNames() {
-		list[i] = a.Shapes[n]
+	list := make([]*Shape, 0, len(a.Shapes))
+	for _, n := range a.ShapeNames() {
+		// Ignore error shapes in list
+		if a.Shapes[n].IsError {
+			continue
+		}
+		list = append(list, a.Shapes[n])
 	}
 	return list
 }

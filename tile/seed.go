@@ -10,13 +10,13 @@ import (
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
-	"log"
+	_ "log"
 	"math"
 	_ "path/filepath"
 	"runtime"
 	_ "strings"
 	"sync"
-	"time"
+	_ "time"
 )
 
 type TileSeed struct {
@@ -37,19 +37,19 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 	level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	compliance := level.Compliance()
@@ -132,7 +132,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		crops, err := ts.TileSizes(image, scale)
 
 		if err != nil {
-			log.Println(err)
+			// log.Println(err)
 			continue
 		}
 
@@ -140,14 +140,13 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 		for _, transformation := range crops {
 
-			t1 := time.Now()
+			// t1 := time.Now()
 
 			<-ch
 
-			t2 := time.Since(t1)
-
-			u, _ := transformation.ToURI(alt_id)
-			log.Printf("time waiting to process transformation for %s, %v\n", u, t2)
+			// t2 := time.Since(t1)
+			// u, _ := transformation.ToURI(alt_id)
+			// log.Printf("time waiting to process transformation for %s, %v\n", u, t2)
 
 			wg.Add(1)
 

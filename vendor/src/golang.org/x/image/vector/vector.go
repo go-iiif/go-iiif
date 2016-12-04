@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:generate go run gen.go
+//go:generate asmfmt -w acc_amd64.s
+
+// asmfmt is https://github.com/klauspost/asmfmt
+
 // Package vector provides a rasterizer for 2-D vector graphics.
 package vector // import "golang.org/x/image/vector"
 
@@ -21,22 +26,30 @@ import (
 	"image/color"
 	"image/draw"
 	"math"
-
-	"golang.org/x/image/math/f32"
 )
 
-func midPoint(p, q f32.Vec2) f32.Vec2 {
-	return f32.Vec2{
-		(p[0] + q[0]) * 0.5,
-		(p[1] + q[1]) * 0.5,
-	}
-}
+// floatingPointMathThreshold is the width or height above which the rasterizer
+// chooses to used floating point math instead of fixed point math.
+//
+// Both implementations of line segmentation rasterization (see raster_fixed.go
+// and raster_floating.go) implement the same algorithm (in ideal, infinite
+// precision math) but they perform differently in practice. The fixed point
+// math version is roughtly 1.25x faster (on GOARCH=amd64) on the benchmarks,
+// but at sufficiently large scales, the computations will overflow and hence
+// show rendering artifacts. The floating point math version has more
+// consistent quality over larger scales, but it is significantly slower.
+//
+// This constant determines when to use the faster implementation and when to
+// use the better quality implementation.
+//
+// The rationale for this particular value is that TestRasterizePolygon in
+// vector_test.go checks the rendering quality of polygon edges at various
+// angles, inscribed in a circle of diameter 512. It may be that a higher value
+// would still produce acceptable quality, but 512 seems to work.
+const floatingPointMathThreshold = 512
 
-func lerp(t float32, p, q f32.Vec2) f32.Vec2 {
-	return f32.Vec2{
-		p[0] + t*(q[0]-p[0]),
-		p[1] + t*(q[1]-p[1]),
-	}
+func lerp(t, px, py, qx, qy float32) (x, y float32) {
+	return px + t*(qx-px), py + t*(qy-py)
 }
 
 func clamp(i, width int32) uint {
@@ -52,10 +65,9 @@ func clamp(i, width int32) uint {
 // NewRasterizer returns a new Rasterizer whose rendered mask image is bounded
 // by the given width and height.
 func NewRasterizer(w, h int) *Rasterizer {
-	return &Rasterizer{
-		bufF32: make([]float32, w*h),
-		size:   image.Point{w, h},
-	}
+	z := &Rasterizer{}
+	z.Reset(w, h)
+	return z
 }
 
 // Raster is a 2-D vector graphics rasterizer.
@@ -77,14 +89,16 @@ type Rasterizer struct {
 	//	bufU32[i] = math.Float32bits(x + math.Float32frombits(bufU32[i]))
 	//
 	// See golang.org/issue/17220 for some discussion.
-	//
-	// TODO: use bufU32 in the fixed point math implementation.
 	bufF32 []float32
 	bufU32 []uint32
 
-	size  image.Point
-	first f32.Vec2
-	pen   f32.Vec2
+	useFloatingPointMath bool
+
+	size   image.Point
+	firstX float32
+	firstY float32
+	penX   float32
+	penY   float32
 
 	// DrawOp is the operator used for the Draw method.
 	//
@@ -99,18 +113,39 @@ type Rasterizer struct {
 //
 // This includes setting z.DrawOp to draw.Over.
 func (z *Rasterizer) Reset(w, h int) {
-	if n := w * h; n > cap(z.bufF32) {
-		z.bufF32 = make([]float32, n)
+	z.size = image.Point{w, h}
+	z.firstX = 0
+	z.firstY = 0
+	z.penX = 0
+	z.penY = 0
+	z.DrawOp = draw.Over
+
+	z.setUseFloatingPointMath(w > floatingPointMathThreshold || h > floatingPointMathThreshold)
+}
+
+func (z *Rasterizer) setUseFloatingPointMath(b bool) {
+	z.useFloatingPointMath = b
+
+	// Make z.bufF32 or z.bufU32 large enough to hold width * height samples.
+	if z.useFloatingPointMath {
+		if n := z.size.X * z.size.Y; n > cap(z.bufF32) {
+			z.bufF32 = make([]float32, n)
+		} else {
+			z.bufF32 = z.bufF32[:n]
+			for i := range z.bufF32 {
+				z.bufF32[i] = 0
+			}
+		}
 	} else {
-		z.bufF32 = z.bufF32[:n]
-		for i := range z.bufF32 {
-			z.bufF32[i] = 0
+		if n := z.size.X * z.size.Y; n > cap(z.bufU32) {
+			z.bufU32 = make([]uint32, n)
+		} else {
+			z.bufU32 = z.bufU32[:n]
+			for i := range z.bufU32 {
+				z.bufU32[i] = 0
+			}
 		}
 	}
-	z.size = image.Point{w, h}
-	z.first = f32.Vec2{}
-	z.pen = f32.Vec2{}
-	z.DrawOp = draw.Over
 }
 
 // Size returns the width and height passed to NewRasterizer or Reset.
@@ -126,60 +161,66 @@ func (z *Rasterizer) Bounds() image.Rectangle {
 
 // Pen returns the location of the path-drawing pen: the last argument to the
 // most recent XxxTo call.
-func (z *Rasterizer) Pen() f32.Vec2 {
-	return z.pen
+func (z *Rasterizer) Pen() (x, y float32) {
+	return z.penX, z.penY
 }
 
 // ClosePath closes the current path.
 func (z *Rasterizer) ClosePath() {
-	z.LineTo(z.first)
+	z.LineTo(z.firstX, z.firstY)
 }
 
-// MoveTo starts a new path and moves the pen to a.
+// MoveTo starts a new path and moves the pen to (ax, ay).
 //
 // The coordinates are allowed to be out of the Rasterizer's bounds.
-func (z *Rasterizer) MoveTo(a f32.Vec2) {
-	z.first = a
-	z.pen = a
+func (z *Rasterizer) MoveTo(ax, ay float32) {
+	z.firstX = ax
+	z.firstY = ay
+	z.penX = ax
+	z.penY = ay
 }
 
-// LineTo adds a line segment, from the pen to b, and moves the pen to b.
+// LineTo adds a line segment, from the pen to (bx, by), and moves the pen to
+// (bx, by).
 //
 // The coordinates are allowed to be out of the Rasterizer's bounds.
-func (z *Rasterizer) LineTo(b f32.Vec2) {
-	// TODO: add a fixed point math implementation.
-	z.floatingLineTo(b)
+func (z *Rasterizer) LineTo(bx, by float32) {
+	if z.useFloatingPointMath {
+		z.floatingLineTo(bx, by)
+	} else {
+		z.fixedLineTo(bx, by)
+	}
 }
 
-// QuadTo adds a quadratic Bézier segment, from the pen via b to c, and moves
-// the pen to c.
+// QuadTo adds a quadratic Bézier segment, from the pen via (bx, by) to (cx,
+// cy), and moves the pen to (cx, cy).
 //
 // The coordinates are allowed to be out of the Rasterizer's bounds.
-func (z *Rasterizer) QuadTo(b, c f32.Vec2) {
-	a := z.pen
-	devsq := devSquared(a, b, c)
+func (z *Rasterizer) QuadTo(bx, by, cx, cy float32) {
+	ax, ay := z.penX, z.penY
+	devsq := devSquared(ax, ay, bx, by, cx, cy)
 	if devsq >= 0.333 {
 		const tol = 3
 		n := 1 + int(math.Sqrt(math.Sqrt(tol*float64(devsq))))
 		t, nInv := float32(0), 1/float32(n)
 		for i := 0; i < n-1; i++ {
 			t += nInv
-			ab := lerp(t, a, b)
-			bc := lerp(t, b, c)
-			z.LineTo(lerp(t, ab, bc))
+			abx, aby := lerp(t, ax, ay, bx, by)
+			bcx, bcy := lerp(t, bx, by, cx, cy)
+			z.LineTo(lerp(t, abx, aby, bcx, bcy))
 		}
 	}
-	z.LineTo(c)
+	z.LineTo(cx, cy)
 }
 
-// CubeTo adds a cubic Bézier segment, from the pen via b and c to d, and moves
-// the pen to d.
+// CubeTo adds a cubic Bézier segment, from the pen via (bx, by) and (cx, cy)
+// to (dx, dy), and moves the pen to (dx, dy).
 //
 // The coordinates are allowed to be out of the Rasterizer's bounds.
-func (z *Rasterizer) CubeTo(b, c, d f32.Vec2) {
-	a := z.pen
-	devsq := devSquared(a, b, d)
-	if devsqAlt := devSquared(a, c, d); devsq < devsqAlt {
+func (z *Rasterizer) CubeTo(bx, by, cx, cy, dx, dy float32) {
+	ax, ay := z.penX, z.penY
+	devsq := devSquared(ax, ay, bx, by, dx, dy)
+	if devsqAlt := devSquared(ax, ay, cx, cy, dx, dy); devsq < devsqAlt {
 		devsq = devsqAlt
 	}
 	if devsq >= 0.333 {
@@ -188,19 +229,20 @@ func (z *Rasterizer) CubeTo(b, c, d f32.Vec2) {
 		t, nInv := float32(0), 1/float32(n)
 		for i := 0; i < n-1; i++ {
 			t += nInv
-			ab := lerp(t, a, b)
-			bc := lerp(t, b, c)
-			cd := lerp(t, c, d)
-			abc := lerp(t, ab, bc)
-			bcd := lerp(t, bc, cd)
-			z.LineTo(lerp(t, abc, bcd))
+			abx, aby := lerp(t, ax, ay, bx, by)
+			bcx, bcy := lerp(t, bx, by, cx, cy)
+			cdx, cdy := lerp(t, cx, cy, dx, dy)
+			abcx, abcy := lerp(t, abx, aby, bcx, bcy)
+			bcdx, bcdy := lerp(t, bcx, bcy, cdx, cdy)
+			z.LineTo(lerp(t, abcx, abcy, bcdx, bcdy))
 		}
 	}
-	z.LineTo(d)
+	z.LineTo(dx, dy)
 }
 
-// devSquared returns a measure of how curvy the sequnce a to b to c is. It
-// determines how many line segments will approximate a Bézier curve segment.
+// devSquared returns a measure of how curvy the sequence (ax, ay) to (bx, by)
+// to (cx, cy) is. It determines how many line segments will approximate a
+// Bézier curve segment.
 //
 // http://lists.nongnu.org/archive/html/freetype-devel/2016-08/msg00080.html
 // gives the rationale for this evenly spaced heuristic instead of a recursive
@@ -212,9 +254,9 @@ func (z *Rasterizer) CubeTo(b, c, d f32.Vec2) {
 // Taking a circular arc as a simplifying assumption (ie a spherical cow),
 // where I get n, a recursive approach would get 2^⌈lg n⌉, which, if I haven't
 // made any horrible mistakes, is expected to be 33% more in the limit.
-func devSquared(a, b, c f32.Vec2) float32 {
-	devx := a[0] - 2*b[0] + c[0]
-	devy := a[1] - 2*b[1] + c[1]
+func devSquared(ax, ay, bx, by, cx, cy float32) float32 {
+	devx := ax - 2*bx + cx
+	devy := ay - 2*by + cy
 	return devx*devx + devy*devy
 }
 
@@ -258,22 +300,44 @@ func (z *Rasterizer) Draw(dst draw.Image, r image.Rectangle, src image.Image, sp
 }
 
 func (z *Rasterizer) accumulateMask() {
-	if n := z.size.X * z.size.Y; n > cap(z.bufU32) {
-		z.bufU32 = make([]uint32, n)
+	if z.useFloatingPointMath {
+		if n := z.size.X * z.size.Y; n > cap(z.bufU32) {
+			z.bufU32 = make([]uint32, n)
+		} else {
+			z.bufU32 = z.bufU32[:n]
+		}
+		if haveFloatingAccumulateSIMD {
+			floatingAccumulateMaskSIMD(z.bufU32, z.bufF32)
+		} else {
+			floatingAccumulateMask(z.bufU32, z.bufF32)
+		}
 	} else {
-		z.bufU32 = z.bufU32[:n]
+		if haveFixedAccumulateSIMD {
+			fixedAccumulateMaskSIMD(z.bufU32)
+		} else {
+			fixedAccumulateMask(z.bufU32)
+		}
 	}
-	floatingAccumulateMask(z.bufU32, z.bufF32)
 }
 
 func (z *Rasterizer) rasterizeDstAlphaSrcOpaqueOpOver(dst *image.Alpha, r image.Rectangle) {
-	// TODO: add SIMD implementations.
-	// TODO: add a fixed point math implementation.
 	// TODO: non-zero vs even-odd winding?
 	if r == dst.Bounds() && r == z.Bounds() {
 		// We bypass the z.accumulateMask step and convert straight from
-		// z.bufF32 to dst.Pix.
-		floatingAccumulateOpOver(dst.Pix, z.bufF32)
+		// z.bufF32 or z.bufU32 to dst.Pix.
+		if z.useFloatingPointMath {
+			if haveFloatingAccumulateSIMD {
+				floatingAccumulateOpOverSIMD(dst.Pix, z.bufF32)
+			} else {
+				floatingAccumulateOpOver(dst.Pix, z.bufF32)
+			}
+		} else {
+			if haveFixedAccumulateSIMD {
+				fixedAccumulateOpOverSIMD(dst.Pix, z.bufU32)
+			} else {
+				fixedAccumulateOpOver(dst.Pix, z.bufU32)
+			}
+		}
 		return
 	}
 
@@ -293,13 +357,23 @@ func (z *Rasterizer) rasterizeDstAlphaSrcOpaqueOpOver(dst *image.Alpha, r image.
 }
 
 func (z *Rasterizer) rasterizeDstAlphaSrcOpaqueOpSrc(dst *image.Alpha, r image.Rectangle) {
-	// TODO: add SIMD implementations.
-	// TODO: add a fixed point math implementation.
 	// TODO: non-zero vs even-odd winding?
 	if r == dst.Bounds() && r == z.Bounds() {
 		// We bypass the z.accumulateMask step and convert straight from
-		// z.bufF32 to dst.Pix.
-		floatingAccumulateOpSrc(dst.Pix, z.bufF32)
+		// z.bufF32 or z.bufU32 to dst.Pix.
+		if z.useFloatingPointMath {
+			if haveFloatingAccumulateSIMD {
+				floatingAccumulateOpSrcSIMD(dst.Pix, z.bufF32)
+			} else {
+				floatingAccumulateOpSrc(dst.Pix, z.bufF32)
+			}
+		} else {
+			if haveFixedAccumulateSIMD {
+				fixedAccumulateOpSrcSIMD(dst.Pix, z.bufU32)
+			} else {
+				fixedAccumulateOpSrc(dst.Pix, z.bufU32)
+			}
+		}
 		return
 	}
 
