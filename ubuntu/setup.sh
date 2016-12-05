@@ -41,11 +41,11 @@ VIPS_VERSION='8.4.2'
 
 # install go
 
-VERSION="1.7.3"
+VERSION="1.7.4"
 DIST="go${VERSION}.linux-amd64.tar.gz"
 SOURCE="https://storage.googleapis.com/golang/${DIST}"
 
-HASH="508028aac0654e993564b6e2014bf2d4a9751e3b286661b0b0040046cf18028e"
+HASH="47fda42e46b4c3ec93fa5d4d4cc6a748aa3f9411a2a2b7e08e3a6d80d753ec8b"
 
 if [ ! -d /usr/local/go${VERSION} ]
 then
@@ -82,10 +82,10 @@ then
     do
 	
 	if [ -L /usr/local/bin/${BIN} ]
-	        then
-	            rm /usr/local/bin/${BIN}
-		    fi
-
+	then
+	    rm /usr/local/bin/${BIN}
+	fi
+	
 	ln -s /usr/local/go/bin/${BIN} /usr/local/bin/${BIN}
     done
 
