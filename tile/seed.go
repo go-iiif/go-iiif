@@ -121,10 +121,10 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, err
 	}
 
-	ch := make(chan bool, ts.procs)
+	throttle := make(chan bool, ts.procs)
 
 	for i := 0; i < ts.procs; i++ {
-		ch <- true
+		throttle <- true
 	}
 
 	for _, scale := range scales {
@@ -140,21 +140,15 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 		for _, transformation := range crops {
 
-			// t1 := time.Now()
-
-			<-ch
-
-			// t2 := time.Since(t1)
-			// u, _ := transformation.ToURI(alt_id)
-			// log.Printf("time waiting to process transformation for %s, %v\n", u, t2)
+			<- throttle
 
 			wg.Add(1)
 
-			go func(ch chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
+			go func(throttle chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
 
 				defer func() {
 					wg.Done()
-					ch <- true
+					throttle <- true
 				}()
 
 				uri, _ := tr.ToURI(alt_id)
@@ -176,7 +170,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					ts.derivatives_cache.Set(uri, tmp.Body())
 				}
 
-			}(ch, image, transformation, wg)
+			}(throttle, image, transformation, wg)
 		}
 
 		wg.Wait()
@@ -243,40 +237,26 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	ty := int(math.Ceil(float64(h) / float64(ts.Height*sf)))
 	tx := int(math.Ceil(float64(w) / float64(ts.Width*sf)))
 
-	// fmt.Printf("%d / %d * %d\n", w, ts.Width, sf)
-	// fmt.Printf("tx %d ty %d\n", tx, ty)
-
 	for ypos := 0; ypos < ty; ypos++ {
 
 		for xpos := 0; xpos < tx; xpos++ {
 
-			/*
-				this is the data structure used by iiif_s3 and it's not
-				clear how much of it is actually necessary here
-				(20160911/thisisaaronland)
-			*/
+			crop := make(map[string]int)
 
-			foo := make(map[string]int)
+			crop["x"] = xpos * ts.Width * sf
+			crop["y"] = ypos * ts.Height * sf
+			crop["width"] = ts.Width * sf
+			crop["height"] = ts.Height * sf
 
-			foo["scale_factor"] = sf
-			foo["xpos"] = xpos
-			foo["ypos"] = ypos
-			foo["x"] = xpos * ts.Width * sf
-			foo["y"] = ypos * ts.Height * sf
-			foo["width"] = ts.Width * sf
-			foo["height"] = ts.Height * sf
-			foo["xsize"] = ts.Width
-			foo["ysize"] = ts.Height
-
-			if (foo["x"] + ts.Width) > w {
-				foo["width"] = w - foo["x"]
-				foo["xsize"] = int(math.Ceil(float64(foo["width"]) / float64(sf)))
+			if (crop["x"] + ts.Width) > w {
+				crop["width"] = w - crop["x"]
+				crop["xsize"] = int(math.Ceil(float64(crop["width"]) / float64(sf)))
 			}
 
-			if (foo["y"] + ts.Height) > h {
+			if (crop["y"] + ts.Height) > h {
 
-				foo["height"] = h - foo["y"]
-				foo["ysize"] = int(math.Ceil(float64(foo["height"]) / float64(sf)))
+				crop["height"] = h - crop["y"]
+				crop["ysize"] = int(math.Ceil(float64(crop["height"]) / float64(sf)))
 			}
 
 			/*
@@ -287,10 +267,10 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 			*/
 
-			_x := foo["x"]
-			_y := foo["y"]
-			_w := foo["width"]
-			_h := foo["height"]
+			_x := crop["x"]
+			_y := crop["y"]
+			_w := crop["width"]
+			_h := crop["height"]
 
 			_s := ts.Width
 
@@ -313,8 +293,6 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			sz := math.Ceil(diff / float64(sf))
 
 			_s = int(sz)
-
-			// fmt.Printf("GO %d,%d,%d,%d\tsize:%d @ %d\n", _x, _y, _w, _h, _s, sf)
 
 			region := fmt.Sprintf("%d,%d,%d,%d", _x, _y, _w, _h)
 			size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
