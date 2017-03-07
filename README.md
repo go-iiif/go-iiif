@@ -788,6 +788,7 @@ Probably. Please consult [the currently known-known issues](https://github.com/t
 ### Blog posts
 
 * http://www.aaronland.info/weblog/2016/09/18/marshmallows/#iiif
+* http://www.aaronland.info/weblog/2017/03/05/record/#numbers
 
 ### Other stuff
 
