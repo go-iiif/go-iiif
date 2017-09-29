@@ -143,19 +143,27 @@ $> ./bin/iiif-tile-seed -options ID1 ID2 ID3...
 
 Usage of ./bin/iiif-tile-seed:
   -config string
-	Path to a valid go-iiif config file
+    	Path to a valid go-iiif config file
   -endpoint string
-	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
+    	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
   -format string
-	A valid IIIF format parameter (default "jpg")
+    	A valid IIIF format parameter (default "jpg")
+  -logfile string
+    	Write logging information to this file
+  -loglevel string
+    	The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal (default "info")
   -mode string
-	Whether to read input as a CSV file or from STDIN which can be represented as "-" (default "-")
+    	Whether to read input as a CSV file or from STDIN which can be represented as "-" (default "-")
+  -processes int
+    	The number of concurrent processes to use when tiling images (default 2)
   -quality string
-	A valid IIIF quality parameter - if "default" then the code will try to determine which format you've set as the default (default "default")
+    	A valid IIIF quality parameter - if "default" then the code will try to determine which format you've set as the default (default "default")
   -refresh
-	Refresh a tile even if already exists (default false)
+    	Refresh a tile even if already exists (default false)
   -scale-factors string
-	A comma-separated list of scale factors to seed tiles with (default "4")
+    	A comma-separated list of scale factors to seed tiles with (default "4")
+  -verbose
+    	Write logging to STDOUT in addition to any other log targets that may have been defined
 ```
 
 Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) plugin.
@@ -252,7 +260,7 @@ Likewise you may need to disable a feature that is supported by not required or 
 
 Finally, maybe you've got an IIIF implementation that [knows how to do things not defined in the spec](https://github.com/thisisaaronland/go-iiif/issues/1). This is also where you would add them.
 
-#### compliance 
+#### compliance
 
 Here's how that dynamic plays out in reality. The table below lists all the IIIF parameters and their associate features. Each feature lists its syntax and whether or not it is required and supported [according to the official spec](compliance/level2.go) but then also according to the [example `go-iiif` config file](config.json.example), included with this repo.
 
@@ -415,7 +423,7 @@ Fetch source images from Flickr. You will need to provide a valid [Flickr API ke
 * Signed API keys are not supported yet so you're limited to public photos.
 * The code calls the [flickr.photos.getSizes](https://www.flickr.com/services/api/flickr.photos.getSizes.html) API method and looks for the first of the following photo sizes in this order: `Original, Large 2048, Large 1600, Large`. If none are available then an error is triggered.
 * Photo size lookups are not cached yet.
- 
+
 Here's an example [with this photo](https://www.flickr.com/photos/straup/4136870023/in/album-72157622883263698/):
 
 ![](misc/go-iiif-flickr.png)
@@ -568,7 +576,7 @@ _Important: If you are both reading source files and writing cached derivatives 
 
 ## Non-standard features
 
-`go-iiif` supports the following non-standard IIIF `quality` features: 
+`go-iiif` supports the following non-standard IIIF `quality` features:
 
 ### Dithering
 
@@ -708,7 +716,7 @@ Assuming you've pre-seed your tiles if you open up the network console in your b
 
 ![spanking cat](misc/go-iiif-example-cached.png)
 
-### Generating static images 
+### Generating static images
 
 ![spanking cat](misc/go-iiif-example-screenshot.png)
 
@@ -751,7 +759,7 @@ For processing large, or large volumes of, images the bottlenecks will be:
 
 That said on a machine with 8 CPUs and 32GB RAM I was able to run the machine hot with all the CPUs pegged at 100% usage and seed 100, 000 (2048x pixel) images yielding a little over 3 million, or approximately 70GB of, tiles in 24 hours. Some meaningful but not overwhelming amount of time was spent fetching source images across the network so presumably things would be faster reading from a local filesystem.
 
-Memory usage across all the `iiif-tile-seed` processes never went above 5GB and, in the end, I ran out of inodes. 
+Memory usage across all the `iiif-tile-seed` processes never went above 5GB and, in the end, I ran out of inodes.
 
 The current strategy for seeding tiles may also be directly responsible for some of the bottlenecks. Specifically, when processing large volumes of images (defined in a CSV file) the `ifff-tile-seed` will spawn and queue as many concurrent Go routines as there are CPUs. For each of those processes then another (n) CPUs * 2 subprocesses will be spawned to generate tiles. Maybe this is just too image concurrent image processing routines to have? I mean it works but still... Or maybe it's just that every one is waiting for bytes to be written to disk. Or all of the above. I'm not sure yet.
 
