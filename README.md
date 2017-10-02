@@ -154,6 +154,8 @@ Usage of ./bin/iiif-tile-seed:
     	The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal (default "info")
   -mode string
     	Whether to read input as a CSV file or from STDIN which can be represented as "-" (default "-")
+-noextension
+        Remove any extension from destination folder name.
   -processes int
     	The number of concurrent processes to use when tiling images (default 2)
   -quality string
