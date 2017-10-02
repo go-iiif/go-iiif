@@ -12,6 +12,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"path/filepath"
 	"sync"
 	"time"
 )
@@ -26,6 +27,7 @@ func main() {
 	var loglevel = flag.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
 	var processes = flag.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
 	var mode = flag.String("mode", "-", "Whether to read input as a CSV file or from STDIN which can be represented as \"-\"")
+	var noextension = flag.Bool("noextension", false, "Remove any extension from destination folder name.")
 	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	var endpoint = flag.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
 	var verbose = flag.Bool("verbose", false, "Write logging to STDOUT in addition to any other log targets that may have been defined")
@@ -182,6 +184,10 @@ func main() {
 			} else {
 				src_id = pointers[0]
 				alt_id = pointers[0]
+			}
+
+			if *noextension {
+				alt_id = strings.TrimSuffix(alt_id, filepath.Ext(alt_id))
 			}
 
 			t1 := time.Now()
