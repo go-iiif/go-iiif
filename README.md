@@ -14,7 +14,7 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Setup
 
-Currently all the image processing is handled by the [bimg](https://github.com/h2non/bimg/) Go package which requires the [libvips](http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS) C library be installed. There is a detailed [setup script](ubuntu/setup.sh) available for Ubuntu. Eventually there will be pure-Go alternatives for wrangling images. Otherwise all other depedencies are included with this repository in the [vendor](vendor) directory.
+Currently all the image processing is handled by the [bimg](https://github.com/h2non/bimg/) Go package which requires the [libvips](https://github.com/jcupitt/libvips) C library be installed. There is a detailed [setup script](ubuntu/setup.sh) available for Ubuntu. Eventually there will be pure-Go alternatives for wrangling images. Otherwise all other depedencies are included with this repository in the [vendor](vendor) directory.
 
 Once you have things like`Go` and `libvips` installed just type:
 
@@ -233,7 +233,7 @@ Indicates which level of IIIF Image API compliance the server (or associated too
 Details about how images should be processed. Because only [libvips](https://github.com/jcupitt/libvips) is supported for image processing right now there is no reason to change this. According to the [bimg docs](https://github.com/h2non/bimg/) (which is the Go library wrapping `libvips`) the following formats can be read:
 
 ```
-It can read JPEG, PNG, WEBP natively, and optionally TIFF, PDF, GIF and SVG formats if libvips@8.3+ is compiled with proper library bindings.
+It can read JPEG, PNG, WEBP natively, and optionally TIFF, PDF, GIF and SVG formats if libvips@8.6+ is compiled with proper library bindings.
 ```
 
 If you've installed `libvips` using [the handy setup script](ubuntu/setup.sh) then all the formats listed above, save PDF, [should be supported](https://github.com/jcupitt/libvips#optional-dependencies).
@@ -788,7 +788,7 @@ Probably. Please consult [the currently known-known issues](https://github.com/t
 
 * https://github.com/greut/iiif/
 * https://github.com/h2non/bimg/
-* http://www.vips.ecs.soton.ac.uk/index.php?title=VIPS
+* https://github.com/jcupitt/libvips
 
 ### Slippy map stuff
 
