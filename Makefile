@@ -5,7 +5,7 @@ prep:
 	if test -d pkg; then rm -rf pkg; fi
 
 self:   prep rmdeps
-	if test -d src/github.com/thisisaaronland/go-iiif; then rm -rf src/github.com/thisisaaronland/go-iiif; fi
+	if test -d src; then rm -rf src; fi
 	mkdir -p src/github.com/thisisaaronland/go-iiif
 	cp iiif.go src/github.com/thisisaaronland/go-iiif/
 	cp -r aws src/github.com/thisisaaronland/go-iiif/
@@ -17,7 +17,7 @@ self:   prep rmdeps
 	cp -r profile src/github.com/thisisaaronland/go-iiif/
 	cp -r source src/github.com/thisisaaronland/go-iiif/
 	cp -r tile src/github.com/thisisaaronland/go-iiif/
-	cp -r vendor/src/* src/
+	cp -r vendor/* src/
 
 rmdeps:
 	if test -d src; then rm -rf src; fi 
@@ -40,10 +40,10 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
 	@GOPATH=$(GOPATH) go get -u "github.com/aws/aws-sdk-go"
 
-vendor-deps: deps
+vendor-deps: rmdeps deps
 	if test ! -d vendor; then mkdir vendor; fi
-	if test -d vendor/src; then rm -rf vendor/src; fi
-	cp -r src vendor/src
+	if test -d vendor; then rm -rf vendor; fi
+	cp -r src vendor
 	find vendor -name '.git' -print -type d -exec rm -rf {} +
 	rm -rf src
 
