@@ -9,21 +9,6 @@ import (
 	"path/filepath"
 )
 
-// Load takes a set of files for each filetype and returns an API pointer.
-// The API will be initialized once all files have been loaded and parsed.
-//
-// Will panic if any failure opening the definition JSON files, or there
-// are unrecognized exported names.
-func Load(api, docs, paginators, waiters string) *API {
-	a := API{}
-	a.Attach(api)
-	a.Attach(docs)
-	a.Attach(paginators)
-	a.Attach(waiters)
-	a.Setup()
-	return &a
-}
-
 // Attach opens a file by name, and unmarshal its JSON data.
 // Will proceed to setup the API if not already done so.
 func (a *API) Attach(filename string) {
@@ -50,6 +35,7 @@ func (a *API) AttachString(str string) {
 
 // Setup initializes the API.
 func (a *API) Setup() {
+	a.setMetadataEndpointsKey()
 	a.writeShapeNames()
 	a.resolveReferences()
 	a.fixStutterNames()
@@ -57,8 +43,11 @@ func (a *API) Setup() {
 	if !a.NoRenameToplevelShapes {
 		a.renameToplevelShapes()
 	}
+
+	a.renameCollidingFields()
 	a.updateTopLevelShapeReferences()
 	a.createInputOutputShapes()
+	a.suppressEventStreams()
 	a.customizationPasses()
 
 	if !a.NoRemoveUnusedShapes {

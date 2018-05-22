@@ -70,6 +70,14 @@ type referenceResolver struct {
 	visited map[*ShapeRef]bool
 }
 
+var jsonvalueShape = &Shape{
+	ShapeName: "JSONValue",
+	Type:      "jsonvalue",
+	ValueRef: ShapeRef{
+		JSONValue: true,
+	},
+}
+
 // resolveReference updates a shape reference to reference the API and
 // its shape definition. All other nested references are also resolved.
 func (r *referenceResolver) resolveReference(ref *ShapeRef) {
@@ -77,20 +85,29 @@ func (r *referenceResolver) resolveReference(ref *ShapeRef) {
 		return
 	}
 
-	if shape, ok := r.API.Shapes[ref.ShapeName]; ok {
-		ref.API = r.API   // resolve reference back to API
-		ref.Shape = shape // resolve shape reference
-
-		if r.visited[ref] {
-			return
-		}
-		r.visited[ref] = true
-
-		shape.refs = append(shape.refs, ref) // register the ref
-
-		// resolve shape's references, if it has any
-		r.resolveShape(shape)
+	shape, ok := r.API.Shapes[ref.ShapeName]
+	if !ok {
+		panic(fmt.Sprintf("unable resolve reference, %s", ref.ShapeName))
+		return
 	}
+
+	if ref.JSONValue {
+		ref.ShapeName = "JSONValue"
+		r.API.Shapes[ref.ShapeName] = jsonvalueShape
+	}
+
+	ref.API = r.API   // resolve reference back to API
+	ref.Shape = shape // resolve shape reference
+
+	if r.visited[ref] {
+		return
+	}
+	r.visited[ref] = true
+
+	shape.refs = append(shape.refs, ref) // register the ref
+
+	// resolve shape's references, if it has any
+	r.resolveShape(shape)
 }
 
 // resolveShape resolves a shape's Member Key Value, and nested member
@@ -108,18 +125,28 @@ func (r *referenceResolver) resolveShape(shape *Shape) {
 // exportable variant. The shapes are also updated to include notations
 // if they are Input or Outputs.
 func (a *API) renameToplevelShapes() {
-	for _, v := range a.Operations {
+	for _, v := range a.OperationList() {
 		if v.HasInput() {
 			name := v.ExportedName + "Input"
-			switch n := len(v.InputRef.Shape.refs); {
-			case n == 1 && a.Shapes[name] == nil:
+			switch {
+			case a.Shapes[name] == nil:
+				if service, ok := shamelist[a.name]; ok {
+					if check, ok := service[v.Name]; ok && check.input {
+						break
+					}
+				}
 				v.InputRef.Shape.Rename(name)
 			}
 		}
 		if v.HasOutput() {
 			name := v.ExportedName + "Output"
-			switch n := len(v.OutputRef.Shape.refs); {
-			case n == 1 && a.Shapes[name] == nil:
+			switch {
+			case a.Shapes[name] == nil:
+				if service, ok := shamelist[a.name]; ok {
+					if check, ok := service[v.Name]; ok && check.output {
+						break
+					}
+				}
 				v.OutputRef.Shape.Rename(name)
 			}
 		}
@@ -141,7 +168,7 @@ func (a *API) fixStutterNames() {
 
 	for name, op := range a.Operations {
 		newName := re.ReplaceAllString(name, "")
-		if newName != name {
+		if newName != name && len(newName) > 0 {
 			delete(a.Operations, name)
 			a.Operations[newName] = op
 		}
@@ -150,7 +177,7 @@ func (a *API) fixStutterNames() {
 
 	for k, s := range a.Shapes {
 		newName := re.ReplaceAllString(k, "")
-		if newName != s.ShapeName {
+		if newName != s.ShapeName && len(newName) > 0 {
 			s.Rename(newName)
 		}
 	}
@@ -221,6 +248,50 @@ func (a *API) renameExportable() {
 	}
 }
 
+// renameCollidingFields will rename any fields that uses an SDK or Golang
+// specific name.
+func (a *API) renameCollidingFields() {
+	for _, v := range a.Shapes {
+		namesWithSet := map[string]struct{}{}
+		for k, field := range v.MemberRefs {
+			if strings.HasPrefix(k, "Set") {
+				namesWithSet[k] = struct{}{}
+			}
+
+			if collides(k) {
+				renameCollidingField(k, v, field)
+			}
+		}
+
+		// checks if any field names collide with setters.
+		for name := range namesWithSet {
+			if field, ok := v.MemberRefs["Set"+name]; ok {
+				renameCollidingField(name, v, field)
+			}
+		}
+	}
+
+}
+
+func renameCollidingField(name string, v *Shape, field *ShapeRef) {
+	newName := name + "_"
+	fmt.Printf("Shape %s's field %q renamed to %q\n", v.ShapeName, name, newName)
+	delete(v.MemberRefs, name)
+	v.MemberRefs[newName] = field
+}
+
+// collides will return true if it is a name used by the SDK or Golang.
+func collides(name string) bool {
+	switch name {
+	case "String",
+		"GoString",
+		"Validate":
+		return true
+	default:
+		return false
+	}
+}
+
 // createInputOutputShapes creates toplevel input/output shapes if they
 // have not been defined in the API. This normalizes all APIs to always
 // have an input and output structure in the signature.
@@ -255,9 +326,29 @@ func (a *API) makeIOShape(name string) *Shape {
 // removeUnusedShapes removes shapes from the API which are not referenced by any
 // other shape in the API.
 func (a *API) removeUnusedShapes() {
-	for n, s := range a.Shapes {
+	for _, s := range a.Shapes {
 		if len(s.refs) == 0 {
-			delete(a.Shapes, n)
+			a.removeShape(s)
 		}
+	}
+}
+
+// Represents the service package name to EndpointsID mapping
+var custEndpointsKey = map[string]string{
+	"applicationautoscaling": "application-autoscaling",
+}
+
+// Sents the EndpointsID field of Metadata  with the value of the
+// EndpointPrefix if EndpointsID is not set. Also adds
+// customizations for services if EndpointPrefix is not a valid key.
+func (a *API) setMetadataEndpointsKey() {
+	if len(a.Metadata.EndpointsID) != 0 {
+		return
+	}
+
+	if v, ok := custEndpointsKey[a.PackageName()]; ok {
+		a.Metadata.EndpointsID = v
+	} else {
+		a.Metadata.EndpointsID = a.Metadata.EndpointPrefix
 	}
 }

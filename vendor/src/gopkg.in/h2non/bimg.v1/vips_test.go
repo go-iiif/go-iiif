@@ -29,15 +29,32 @@ func TestVipsRead(t *testing.T) {
 }
 
 func TestVipsSave(t *testing.T) {
-	image, _, _ := vipsRead(readImage("test.jpg"))
-	options := vipsSaveOptions{Quality: 95, Type: JPEG, Interlace: true}
+	types := [...]ImageType{JPEG, PNG, WEBP}
 
-	buf, err := vipsSave(image, options)
-	if err != nil {
-		t.Fatal("Cannot save the image")
+	for _, typ := range types {
+		image, _, _ := vipsRead(readImage("test.jpg"))
+		options := vipsSaveOptions{Quality: 95, Type: typ, StripMetadata: true}
+
+		buf, err := vipsSave(image, options)
+		if err != nil {
+			t.Fatalf("Cannot save the image as '%v'", ImageTypes[typ])
+		}
+		if len(buf) == 0 {
+			t.Fatalf("Empty saved '%v' image", ImageTypes[typ])
+		}
 	}
+}
+
+func TestVipsSaveTiff(t *testing.T) {
+	if !IsTypeSupportedSave(TIFF) {
+		t.Skipf("Format %#v is not supported", ImageTypes[TIFF])
+	}
+	image, _, _ := vipsRead(readImage("test.jpg"))
+	options := vipsSaveOptions{Quality: 95, Type: TIFF}
+	buf, _ := vipsSave(image, options)
+
 	if len(buf) == 0 {
-		t.Fatal("Empty image")
+		t.Fatalf("Empty saved '%v' image", ImageTypes[TIFF])
 	}
 }
 
@@ -103,9 +120,33 @@ func TestVipsWatermark(t *testing.T) {
 	}
 }
 
+func TestVipsWatermarkWithImage(t *testing.T) {
+	image, _, _ := vipsRead(readImage("test.jpg"))
+
+	watermark := readImage("transparent.png")
+
+	options := WatermarkImage{Left: 100, Top: 100, Opacity: 1.0, Buf: watermark}
+	newImg, err := vipsDrawWatermark(image, options)
+	if err != nil {
+		t.Errorf("Cannot add watermark: %s", err)
+	}
+
+	buf, _ := vipsSave(newImg, vipsSaveOptions{Quality: 95})
+	if len(buf) == 0 {
+		t.Fatal("Empty image")
+	}
+}
+
 func TestVipsImageType(t *testing.T) {
 	imgType := vipsImageType(readImage("test.jpg"))
 	if imgType != JPEG {
+		t.Fatal("Invalid image type")
+	}
+}
+
+func TestVipsImageTypeInvalid(t *testing.T) {
+	imgType := vipsImageType([]byte("vip"))
+	if imgType != UNKNOWN {
 		t.Fatal("Invalid image type")
 	}
 }
@@ -122,7 +163,7 @@ func TestVipsMemory(t *testing.T) {
 }
 
 func readImage(file string) []byte {
-	img, _ := os.Open(path.Join("fixtures", file))
+	img, _ := os.Open(path.Join("testdata", file))
 	buf, _ := ioutil.ReadAll(img)
 	defer img.Close()
 	return buf

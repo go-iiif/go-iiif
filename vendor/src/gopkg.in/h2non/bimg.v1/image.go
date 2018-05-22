@@ -41,6 +41,17 @@ func (i *Image) ResizeAndCrop(width, height int) ([]byte, error) {
 	return i.Process(options)
 }
 
+// SmartCrop produces a thumbnail aiming at focus on the interesting part.
+func (i *Image) SmartCrop(width, height int) ([]byte, error) {
+	options := Options{
+		Width:   width,
+		Height:  height,
+		Crop:    true,
+		Gravity: GravitySmart,
+	}
+	return i.Process(options)
+}
+
 // Extract area from the by X/Y axis in the current image.
 func (i *Image) Extract(top, left, width, height int) ([]byte, error) {
 	options := Options{
@@ -124,6 +135,12 @@ func (i *Image) Watermark(w Watermark) ([]byte, error) {
 	return i.Process(options)
 }
 
+// WatermarkImage adds image as watermark on the given image.
+func (i *Image) WatermarkImage(w WatermarkImage) ([]byte, error) {
+	options := Options{WatermarkImage: w}
+	return i.Process(options)
+}
+
 // Zoom zooms the image by the given factor.
 // You should probably call Extract() before.
 func (i *Image) Zoom(factor int) ([]byte, error) {
@@ -158,6 +175,13 @@ func (i *Image) Convert(t ImageType) ([]byte, error) {
 // Colourspace performs a color space conversion bsaed on the given interpretation.
 func (i *Image) Colourspace(c Interpretation) ([]byte, error) {
 	options := Options{Interpretation: c}
+	return i.Process(options)
+}
+
+// Trim removes the background from the picture. It can result in a 0x0 output
+// if the image is all background.
+func (i *Image) Trim() ([]byte, error) {
+	options := Options{Trim: true}
 	return i.Process(options)
 }
 
@@ -200,7 +224,12 @@ func (i *Image) Size() (ImageSize, error) {
 	return Size(i.buffer)
 }
 
-// Image returns the current resultant image image buffer.
+// Image returns the current resultant image buffer.
 func (i *Image) Image() []byte {
 	return i.buffer
+}
+
+// Length returns the size in bytes of the image buffer.
+func (i *Image) Length() int {
+	return len(i.buffer)
 }

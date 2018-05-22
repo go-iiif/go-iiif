@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"image"
 	"image/draw"
+	_ "image/jpeg"
 	"image/png"
 	"io/ioutil"
 	"math"
@@ -53,8 +54,9 @@ func SavePNG(path string, im image.Image) error {
 }
 
 func imageToRGBA(src image.Image) *image.RGBA {
-	dst := image.NewRGBA(src.Bounds())
-	draw.Draw(dst, dst.Rect, src, image.ZP, draw.Src)
+	bounds := src.Bounds()
+	dst := image.NewRGBA(bounds)
+	draw.Draw(dst, bounds, src, bounds.Min, draw.Src)
 	return dst
 }
 
@@ -99,7 +101,7 @@ func unfix(x fixed.Int26_6) float64 {
 	return 0
 }
 
-func loadFontFace(path string, points float64) (font.Face, error) {
+func LoadFontFace(path string, points float64) (font.Face, error) {
 	fontBytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err

@@ -17,18 +17,14 @@ func main() {
 
 	writer := io.MultiWriter(os.Stdout)
 
-	logger := log.NewWOFLogger("[your-app] ")
+	logger := log.NewWOFLogger()
 	logger.AddLogger(writer, "debug")
-
-	/*
 
 	_, err := logger.AddLogger(writer, "debug")
 
 	if err != nil {
 	   panic(err)
 	}
-
-	*/
 
 	logger.Info("Writing all your logs to %s", "wub wub wub")
 	logger.Debug("Hello world")

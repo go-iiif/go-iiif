@@ -8,18 +8,14 @@ import "C"
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
 	"unsafe"
-
-	d "github.com/tj/go-debug"
 )
-
-// debug is internally used to
-var debug = d.Debug("bimg")
 
 // VipsVersion exposes the current libvips semantic version
 const VipsVersion = string(C.VIPS_VERSION)
@@ -54,6 +50,9 @@ type vipsSaveOptions struct {
 	Type           ImageType
 	Interlace      bool
 	NoProfile      bool
+	StripMetadata  bool
+	Lossless       bool
+	OutputICC      string // Absolute path to the output ICC profile
 	Interpretation Interpretation
 }
 
@@ -64,6 +63,12 @@ type vipsWatermarkOptions struct {
 	NoReplicate C.int
 	Opacity     C.float
 	Background  [3]C.double
+}
+
+type vipsWatermarkImageOptions struct {
+	Left    C.int
+	Top     C.int
+	Opacity C.float
 }
 
 type vipsWatermarkTextOptions struct {
@@ -123,6 +128,22 @@ func Shutdown() {
 	}
 }
 
+// VipsCacheSetMaxMem Sets the maximum amount of tracked memory allowed before the vips operation cache
+// begins to drop entries.
+func VipsCacheSetMaxMem(maxCacheMem int) {
+	C.vips_cache_set_max_mem(C.size_t(maxCacheMem))
+}
+
+// VipsCacheSetMax sets the maximum number of operations to keep in the vips operation cache.
+func VipsCacheSetMax(maxCacheSize int) {
+	C.vips_cache_set_max(C.int(maxCacheSize))
+}
+
+// VipsCacheDropAll drops the vips operation cache, freeing the allocated memory.
+func VipsCacheDropAll() {
+	C.vips_cache_drop_all()
+}
+
 // VipsDebugInfo outputs to stdout libvips collected data. Useful for debugging.
 func VipsDebugInfo() {
 	C.im__print_all()
@@ -163,6 +184,25 @@ func VipsIsTypeSupported(t ImageType) bool {
 	}
 	if t == MAGICK {
 		return int(C.vips_type_find_bridge(C.MAGICK)) != 0
+	}
+	return false
+}
+
+// VipsIsTypeSupportedSave returns true if the given image type
+// is supported by the current libvips compilation for the
+// save operation.
+func VipsIsTypeSupportedSave(t ImageType) bool {
+	if t == JPEG {
+		return int(C.vips_type_find_save_bridge(C.JPEG)) != 0
+	}
+	if t == WEBP {
+		return int(C.vips_type_find_save_bridge(C.WEBP)) != 0
+	}
+	if t == PNG {
+		return int(C.vips_type_find_save_bridge(C.PNG)) != 0
+	}
+	if t == TIFF {
+		return int(C.vips_type_find_save_bridge(C.TIFF)) != 0
 	}
 	return false
 }
@@ -320,6 +360,7 @@ func vipsFlattenBackground(image *C.VipsImage, background Color) (*C.VipsImage, 
 }
 
 func vipsPreSave(image *C.VipsImage, o *vipsSaveOptions) (*C.VipsImage, error) {
+	var outImage *C.VipsImage
 	// Remove ICC profile metadata
 	if o.NoProfile {
 		C.remove_profile(image)
@@ -332,12 +373,23 @@ func vipsPreSave(image *C.VipsImage, o *vipsSaveOptions) (*C.VipsImage, error) {
 	interpretation := C.VipsInterpretation(o.Interpretation)
 
 	// Apply the proper colour space
-	var outImage *C.VipsImage
 	if vipsColourspaceIsSupported(image) {
 		err := C.vips_colourspace_bridge(image, &outImage, interpretation)
 		if int(err) != 0 {
 			return nil, catchVipsError()
 		}
+		image = outImage
+	}
+
+	if o.OutputICC != "" && vipsHasProfile(image) {
+		outputIccPath := C.CString(o.OutputICC)
+		defer C.free(unsafe.Pointer(outputIccPath))
+
+		err := C.vips_icc_transform_bridge(image, &outImage, outputIccPath)
+		if int(err) != 0 {
+			return nil, catchVipsError()
+		}
+		C.g_object_unref(C.gpointer(image))
 		image = outImage
 	}
 
@@ -365,24 +417,22 @@ func vipsSave(image *C.VipsImage, o vipsSaveOptions) ([]byte, error) {
 	saveErr := C.int(0)
 	interlace := C.int(boolToInt(o.Interlace))
 	quality := C.int(o.Quality)
+	strip := C.int(boolToInt(o.StripMetadata))
+	lossless := C.int(boolToInt(o.Lossless))
 
+	if o.Type != 0 && !IsTypeSupportedSave(o.Type) {
+		return nil, fmt.Errorf("VIPS cannot save to %#v", ImageTypes[o.Type])
+	}
 	var ptr unsafe.Pointer
 	switch o.Type {
 	case WEBP:
-		saveErr = C.vips_webpsave_bridge(tmpImage, &ptr, &length, 1, quality)
-		break
+		saveErr = C.vips_webpsave_bridge(tmpImage, &ptr, &length, strip, quality, lossless)
 	case PNG:
-		saveErr = C.vips_pngsave_bridge(tmpImage, &ptr, &length, 1, C.int(o.Compression), quality, interlace)
-		break
-	case GIF:
-		return nil, errors.New("VIPS cannot save to GIF")
-	case PDF:
-		return nil, errors.New("VIPS cannot save to PDF")
-	case SVG:
-		return nil, errors.New("VIPS cannot save to SVG")
+		saveErr = C.vips_pngsave_bridge(tmpImage, &ptr, &length, strip, C.int(o.Compression), quality, interlace)
+	case TIFF:
+		saveErr = C.vips_tiffsave_bridge(tmpImage, &ptr, &length)
 	default:
-		saveErr = C.vips_jpegsave_bridge(tmpImage, &ptr, &length, 1, quality, interlace)
-		break
+		saveErr = C.vips_jpegsave_bridge(tmpImage, &ptr, &length, strip, quality, interlace)
 	}
 
 	if int(saveErr) != 0 {
@@ -434,6 +484,41 @@ func vipsExtract(image *C.VipsImage, left, top, width, height int) (*C.VipsImage
 	return buf, nil
 }
 
+func vipsSmartCrop(image *C.VipsImage, width, height int) (*C.VipsImage, error) {
+	var buf *C.VipsImage
+	defer C.g_object_unref(C.gpointer(image))
+
+	if width > MaxSize || height > MaxSize {
+		return nil, errors.New("Maximum image size exceeded")
+	}
+
+	err := C.vips_smartcrop_bridge(image, &buf, C.int(width), C.int(height))
+	if err != 0 {
+		return nil, catchVipsError()
+	}
+
+	return buf, nil
+}
+
+func vipsTrim(image *C.VipsImage, background Color, threshold float64) (int, int, int, int, error) {
+	defer C.g_object_unref(C.gpointer(image))
+
+	top := C.int(0)
+	left := C.int(0)
+	width := C.int(0)
+	height := C.int(0)
+
+	err := C.vips_find_trim_bridge(image,
+		&top, &left, &width, &height,
+		C.double(background.R), C.double(background.G), C.double(background.B),
+		C.double(threshold))
+	if err != 0 {
+		return 0, 0, 0, 0, catchVipsError()
+	}
+
+	return int(top), int(left), int(width), int(height), nil
+}
+
 func vipsShrinkJpeg(buf []byte, input *C.VipsImage, shrink int) (*C.VipsImage, error) {
 	var image *C.VipsImage
 	var ptr = unsafe.Pointer(&buf[0])
@@ -447,11 +532,36 @@ func vipsShrinkJpeg(buf []byte, input *C.VipsImage, shrink int) (*C.VipsImage, e
 	return image, nil
 }
 
+func vipsShrinkWebp(buf []byte, input *C.VipsImage, shrink int) (*C.VipsImage, error) {
+	var image *C.VipsImage
+	var ptr = unsafe.Pointer(&buf[0])
+	defer C.g_object_unref(C.gpointer(input))
+
+	err := C.vips_webpload_buffer_shrink(ptr, C.size_t(len(buf)), &image, C.int(shrink))
+	if err != 0 {
+		return nil, catchVipsError()
+	}
+
+	return image, nil
+}
+
 func vipsShrink(input *C.VipsImage, shrink int) (*C.VipsImage, error) {
 	var image *C.VipsImage
 	defer C.g_object_unref(C.gpointer(input))
 
 	err := C.vips_shrink_bridge(input, &image, C.double(float64(shrink)), C.double(float64(shrink)))
+	if err != 0 {
+		return nil, catchVipsError()
+	}
+
+	return image, nil
+}
+
+func vipsReduce(input *C.VipsImage, xshrink float64, yshrink float64) (*C.VipsImage, error) {
+	var image *C.VipsImage
+	defer C.g_object_unref(C.gpointer(input))
+
+	err := C.vips_reduce_bridge(input, &image, C.double(xshrink), C.double(yshrink))
 	if err != 0 {
 		return nil, catchVipsError()
 	}
@@ -495,35 +605,36 @@ func vipsAffine(input *C.VipsImage, residualx, residualy float64, i Interpolator
 }
 
 func vipsImageType(buf []byte) ImageType {
-	if len(buf) == 0 {
+	if len(buf) < 12 {
 		return UNKNOWN
-	}
-	if buf[0] == 0x89 && buf[1] == 0x50 && buf[2] == 0x4E && buf[3] == 0x47 {
-		return PNG
 	}
 	if buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF {
 		return JPEG
 	}
-	if IsImageTypeSupportedByVips(WEBP) && buf[8] == 0x57 && buf[9] == 0x45 && buf[10] == 0x42 && buf[11] == 0x50 {
-		return WEBP
+	if IsTypeSupported(GIF) && buf[0] == 0x47 && buf[1] == 0x49 && buf[2] == 0x46 {
+		return GIF
 	}
-	if IsImageTypeSupportedByVips(TIFF) &&
+	if buf[0] == 0x89 && buf[1] == 0x50 && buf[2] == 0x4E && buf[3] == 0x47 {
+		return PNG
+	}
+	if IsTypeSupported(TIFF) &&
 		((buf[0] == 0x49 && buf[1] == 0x49 && buf[2] == 0x2A && buf[3] == 0x0) ||
 			(buf[0] == 0x4D && buf[1] == 0x4D && buf[2] == 0x0 && buf[3] == 0x2A)) {
 		return TIFF
 	}
-	if IsImageTypeSupportedByVips(GIF) && buf[0] == 0x47 && buf[1] == 0x49 && buf[2] == 0x46 {
-		return GIF
-	}
-	if IsImageTypeSupportedByVips(PDF) && buf[0] == 0x25 && buf[1] == 0x50 && buf[2] == 0x44 && buf[3] == 0x46 {
+	if IsTypeSupported(PDF) && buf[0] == 0x25 && buf[1] == 0x50 && buf[2] == 0x44 && buf[3] == 0x46 {
 		return PDF
 	}
-	if IsImageTypeSupportedByVips(SVG) && IsSVGImage(buf) {
+	if IsTypeSupported(WEBP) && buf[8] == 0x57 && buf[9] == 0x45 && buf[10] == 0x42 && buf[11] == 0x50 {
+		return WEBP
+	}
+	if IsTypeSupported(SVG) && IsSVGImage(buf) {
 		return SVG
 	}
-	if IsImageTypeSupportedByVips(MAGICK) && strings.HasSuffix(readImageType(buf), "MagickBuffer") {
+	if IsTypeSupported(MAGICK) && strings.HasSuffix(readImageType(buf), "MagickBuffer") {
 		return MAGICK
 	}
+
 	return UNKNOWN
 }
 
@@ -572,4 +683,23 @@ func vipsSharpen(image *C.VipsImage, o Sharpen) (*C.VipsImage, error) {
 
 func max(x int) int {
 	return int(math.Max(float64(x), 0))
+}
+
+func vipsDrawWatermark(image *C.VipsImage, o WatermarkImage) (*C.VipsImage, error) {
+	var out *C.VipsImage
+
+	watermark, _, e := vipsRead(o.Buf)
+	if e != nil {
+		return nil, e
+	}
+
+	opts := vipsWatermarkImageOptions{C.int(o.Left), C.int(o.Top), C.float(o.Opacity)}
+
+	err := C.vips_watermark_image(image, watermark, &out, (*C.WatermarkImageOptions)(unsafe.Pointer(&opts)))
+
+	if err != 0 {
+		return nil, catchVipsError()
+	}
+
+	return out, nil
 }

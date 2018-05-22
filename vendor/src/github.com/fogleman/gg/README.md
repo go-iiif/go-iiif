@@ -6,9 +6,13 @@
 
 ## Installation
 
-    go get github.com/fogleman/gg
+    go get -u github.com/fogleman/gg
 
-## GoDoc
+Alternatively, you may use gopkg.in to grab a specific major-version:
+
+    go get -u gopkg.in/fogleman/gg.v1
+
+## Documentation
 
 https://godoc.org/github.com/fogleman/gg
 
@@ -52,6 +56,7 @@ Ever used a graphics library that didn't have functions for drawing rectangles
 or circles? What a pain!
 
 ```go
+DrawPoint(x, y, r float64)
 DrawLine(x1, y1, x2, y2 float64)
 DrawRectangle(x, y, w, h float64)
 DrawRoundedRectangle(x, y, w, h, r float64)
@@ -62,6 +67,7 @@ DrawEllipticalArc(x, y, rx, ry, angle1, angle2 float64)
 DrawRegularPolygon(n int, x, y, r, rotation float64)
 DrawImage(im image.Image, x, y int)
 DrawImageAnchored(im image.Image, x, y int, ax, ay float64)
+SetPixel(x, y int)
 
 MoveTo(x, y float64)
 LineTo(x, y float64)
@@ -117,6 +123,19 @@ SetDash(dashes ...float64)
 SetFillRule(fillRule FillRule)
 ```
 
+## Gradients & Patterns
+
+`gg` supports linear and radial gradients and surface patterns. You can also implement your own patterns.
+
+```go
+SetFillStyle(pattern Pattern)
+SetStrokeStyle(pattern Pattern)
+NewSolidPattern(color color.Color)
+NewLinearGradient(x0, y0, x1, y1 float64)
+NewRadialGradient(x0, y0, r0, x1, y1, r1 float64)
+NewSurfacePattern(im image.Image, op RepeatOp)
+```
+
 ## Transformation Functions
 
 ```go
@@ -135,8 +154,6 @@ InvertY()
 It is often desired to rotate or scale about a point that is not the origin. The functions `RotateAbout`, `ScaleAbout`, `ShearAbout` are provided as a convenience.
 
 `InvertY` is provided in case Y should increase from bottom to top vs. the default top to bottom.
-
-Note: transforms do not currently affect `DrawImage` or `DrawString`.
 
 ## Stack Functions
 
@@ -158,8 +175,6 @@ ClipPreserve()
 ResetClip()
 ```
 
-Note: As currently implemented, clipping isn't very fast, but it works.
-
 ## Helper Functions
 
 Sometimes you just don't want to write these yourself.
@@ -173,19 +188,6 @@ SavePNG(path string, im image.Image) error
 ```
 
 ![Separator](http://i.imgur.com/fsUvnPB.png)
-
-## What's Missing?
-
-If you need any of the features below, I recommend using `cairo` instead. Or
-even better, implement it and submit a pull request!
-
-- Gradients / Patterns
-
-## How Do it Do?
-
-`gg` is mostly a wrapper around `github.com/golang/freetype/raster`. The goal
-is to provide some more functionality and a nicer API that will suffice for
-most use cases.
 
 ## Another Example
 

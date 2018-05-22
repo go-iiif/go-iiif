@@ -1,11 +1,11 @@
 package log
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	golog "log"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -30,23 +30,42 @@ func (m *MockLogger) Debug(format string, v ...interface{})   {}
 type WOFLogger struct {
 	Loggers map[string]*golog.Logger
 	levels  map[string]int
+	writers map[string][]io.Writer
 	Prefix  string
 }
 
-func SimpleWOFLogger(prefix string) *WOFLogger {
+func Prefix(args ...string) string {
 
-	logger := NewWOFLogger(prefix)
+	whoami := os.Args[0]
+	whoami = filepath.Base(whoami)
 
-	stdout := io.Writer(os.Stdout)
+	prefix := fmt.Sprintf("[%s]", whoami)
+
+	for _, s := range args {
+		prefix = fmt.Sprintf("%s[%s]", prefix, s)
+	}
+
+	return prefix
+}
+
+func SimpleWOFLogger(args ...string) *WOFLogger {
+
+	logger := NewWOFLogger(args...)
+
 	stderr := io.Writer(os.Stderr)
-
-	logger.AddLogger(stdout, "status")
 	logger.AddLogger(stderr, "error")
+
+	// stdout := io.Writer(os.Stdout)
+	// logger.AddLogger(stdout, "status")
 
 	return logger
 }
 
-func NewWOFLogger(prefix string) *WOFLogger {
+func NewWOFLogger(args ...string) *WOFLogger {
+
+	prefix := Prefix(args...)
+
+	writers := make(map[string][]io.Writer)
 
 	loggers := make(map[string]*golog.Logger)
 	levels := make(map[string]int)
@@ -58,25 +77,32 @@ func NewWOFLogger(prefix string) *WOFLogger {
 	levels["info"] = 30
 	levels["debug"] = 40
 
-	l := WOFLogger{Loggers: loggers, Prefix: prefix, levels: levels}
+	l := WOFLogger{
+		Loggers: loggers,
+		Prefix:  prefix,
+		levels:  levels,
+		writers: writers,
+	}
+
 	return &l
 }
 
 func (l WOFLogger) AddLogger(out io.Writer, minlevel string) (bool, error) {
 
-	_, ok := l.Loggers[minlevel]
+	_, ok := l.writers[minlevel]
 
-	if ok {
-		return false, errors.New("log level already defined")
+	if !ok {
+		wr := make([]io.Writer, 0)
+		l.writers[minlevel] = wr
 	}
 
-	prefix := l.Prefix
+	// check to see whether we already have this logger?
 
-	if !strings.HasSuffix(prefix, " ") {
-		prefix += " "
-	}
+	l.writers[minlevel] = append(l.writers[minlevel], out)
 
-	logger := golog.New(out, prefix, golog.Lmicroseconds)
+	m := io.MultiWriter(l.writers[minlevel]...)
+
+	logger := golog.New(m, "", golog.Lmicroseconds)
 	l.Loggers[minlevel] = logger
 
 	return true, nil
@@ -114,7 +140,8 @@ func (l WOFLogger) dispatch(level string, format string, v ...interface{}) {
 		if l.emit(level, minlevel) {
 
 			msg := fmt.Sprintf(format, v...)
-			out := fmt.Sprintf("[%s] %s", level, msg)
+
+			out := fmt.Sprintf("%s %s %s", l.Prefix, strings.ToUpper(level), msg)
 			logger.Println(out)
 		}
 	}

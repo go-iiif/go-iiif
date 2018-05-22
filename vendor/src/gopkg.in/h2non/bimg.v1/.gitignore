@@ -4,4 +4,6 @@ bin
 /*.jpg
 /*.png
 /*.webp
-/fixtures/*_out.*
+/testdata/*_out.*
+/.idea/
+testdata/test_vertical_*.jpg
