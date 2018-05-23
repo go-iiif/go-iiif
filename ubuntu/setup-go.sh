@@ -2,11 +2,11 @@
 
 # install go
 
-VERSION="1.8"
+VERSION="1.10.2"
 DIST="go${VERSION}.linux-amd64.tar.gz"
 SOURCE="https://storage.googleapis.com/golang/${DIST}"
 
-HASH="53ab94104ee3923e228a2cb2116e5e462ad3ebaeea06ff04463479d7f12d27ca"
+HASH="4b677d698c65370afa33757b6954ade60347aaca310ea92a63ed717d7cb0c2ff"
 
 if [ ! -d /usr/local/go${VERSION} ]
 then
