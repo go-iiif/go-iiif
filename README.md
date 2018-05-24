@@ -260,7 +260,7 @@ For example the level 2 spec does not say GIF outputs is required so the level 2
 
 Likewise you may need to disable a feature that is supported by not required or features that are required but can't be used for one reason or another. For example `libvips` does not allow support for the following features: `sizeByDistortedWh (size), rotationArbitrary (rotation), bitonal (quality)`.
 
-Finally, maybe you've got an IIIF implementation that [knows how to do things not defined in the spec](https://github.com/thisisaaronland/go-iiif/issues/1). This is also where you would add them.
+Finally, maybe you've got an IIIF implementation that [knows how to do things not defined in the spec](https://github.com/aaronland/go-iiif/issues/1). This is also where you would add them.
 
 #### compliance
 
@@ -319,7 +319,7 @@ _Careful readers may notice the presence of an undefined (by the IIIF spec) feat
 | **webp** | webp | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:green;">**true**</span> |
 
 
-_Support for GIF output is not enabled by default because it is not currently supported by `bimg` (the Go library on top of `lipvips`). There is however native support for converting final images to be GIFs but you will need to [enable that by hand](https://github.com/thisisaaronland/go-iiif/tree/primitive#featuresenable), below._
+_Support for GIF output is not enabled by default because it is not currently supported by `bimg` (the Go library on top of `lipvips`). There is however native support for converting final images to be GIFs but you will need to [enable that by hand](https://github.com/aaronland/go-iiif/tree/primitive#featuresenable), below._
 
 #### features.enable
 
@@ -676,17 +676,17 @@ Which would produce this:
 
 Here are examples where each of the tiles in an slippy image are animated GIFs:
 
-* https://thisisaaronland.github.io/go-iiif/animated/
-* https://thisisaaronland.github.io/go-iiif/animated/?mode=circles
-* https://thisisaaronland.github.io/go-iiif/animated/?mode=triangles
+* https://aaronland.github.io/go-iiif/animated/
+* https://aaronland.github.io/go-iiif/animated/?mode=circles
+* https://aaronland.github.io/go-iiif/animated/?mode=triangles
 
-_Note: You will need to [manually enable support for GIF images](https://github.com/thisisaaronland/go-iiif/tree/primitive#featuresenable) in your config file for animated GIFs to work._
+_Note: You will need to [manually enable support for GIF images](https://github.com/aaronland/go-iiif/tree/primitive#featuresenable) in your config file for animated GIFs to work._
 
 ## Example
 
 There is a live demo of the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) slippymap provider used in conjunction with a series of tiles images generated using the `iiif-tile-seed` utility available for viewing over here:
 
-https://thisisaaronland.github.io/go-iiif/
+https://aaronland.github.io/go-iiif/
 
 The `iiif-server` tool also comes with a canned example (consisting of exactly one image) so you can see things in the context of a slippy map. Here's what you need to do to get it set up:
 
@@ -767,16 +767,16 @@ The current strategy for seeding tiles may also be directly responsible for some
 
 ### iiif-server
 
-All of the notes so far have assumed that you are using `iiif-tile-seed`. If you are running `iiif-server` the principle concern will be getting overwhelmed by too many requests for too many different images, especially if they are large, and running out of memory. That is why you can define an [in-memory cache](https://github.com/thisisaaronland/go-iiif/blob/master/README.md#memory) for source images but that will only be of limited use if your problem is handling concurrent requests. It is probably worth adding checks and throttles around current memory usage to the various handlers...
+All of the notes so far have assumed that you are using `iiif-tile-seed`. If you are running `iiif-server` the principle concern will be getting overwhelmed by too many requests for too many different images, especially if they are large, and running out of memory. That is why you can define an [in-memory cache](https://github.com/aaronland/go-iiif/blob/master/README.md#memory) for source images but that will only be of limited use if your problem is handling concurrent requests. It is probably worth adding checks and throttles around current memory usage to the various handlers...
 
 ## Notes
 
-* The `iiif-server` does [not support TLS](https://github.com/thisisaaronland/go-iiif/issues/5) yet.
+* The `iiif-server` does [not support TLS](https://github.com/aaronland/go-iiif/issues/5) yet.
 * There is no way to change the default `quality` parameter yet. It is `color`.
 
 ## Bugs?
 
-Probably. Please consult [the currently known-known issues](https://github.com/thisisaaronland/go-iiif/issues) and if you don't see what ails you please feel free to add it.
+Probably. Please consult [the currently known-known issues](https://github.com/aaronland/go-iiif/issues) and if you don't see what ails you please feel free to add it.
 
 ## See also
 
