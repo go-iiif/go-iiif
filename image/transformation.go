@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
+	_ "log"
 	"math"
 	"net/url"
 	"regexp"
@@ -228,6 +229,10 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 			Y:      int(y),
 		}
 
+		if x == -1 || y == -1 {
+			instruction.SmartCrop = true
+		}
+
 		/*
 
 			Because otherwise you end up with stuff like this:
@@ -303,6 +308,7 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 		return &instruction, nil
 
 	} else {
+
 	}
 
 	message := fmt.Sprintf("Unrecognized region")

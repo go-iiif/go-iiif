@@ -16,7 +16,7 @@ var level2_spec = `{
     "image": {
     	     "region": {
 	     	       "full":         { "syntax": "full",        "required": true, "supported": true, "match": "^full$" },
-		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^\\d+\\,\\d+\\,\\d+\\,\\d+$" },
+		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^-?\\d+\\,-?\\d+\\,\\d+\\,\\d+$" },
 		       "regionByPct":  { "syntax": "pct:x,y,w,h", "required": true, "supported": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
 		       "regionSquare": { "syntax": "square",      "required": false, "supported": true, "match": "^square$" }
 	     },

@@ -186,7 +186,10 @@ func (im *VIPSImage) Dimensions() (Dimensions, error) {
 
 func (im *VIPSImage) Transform(t *Transformation) error {
 
-	var opts bimg.Options
+	// var opts bimg.Options
+
+	opts := bimg.Options{}
+	opts.Quality = 100
 
 	if t.Region != "full" {
 
@@ -196,22 +199,30 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 			return err
 		}
 
-		opts = bimg.Options{
-			AreaWidth:  rgi.Width,
-			AreaHeight: rgi.Height,
-		}
-
 		if rgi.SmartCrop {
+
 			opts.Gravity = bimg.GravitySmart
+			opts.Crop = true
+			opts.Width = rgi.Width
+			opts.Height = rgi.Height
+
 		} else {
+
+			opts.AreaWidth = rgi.Width
+			opts.AreaHeight = rgi.Height
 			opts.Left = rgi.X
 			opts.Top = rgi.Y
+
+			if opts.Top == 0 && opts.Left == 0 {
+				opts.Top = -1
+			}
+
 		}
 
 		/*
 
-					We need to do this or libvips will freak out and think it's trying to save
-			   		an SVG file which it can't do (20160929/thisisaaronland)
+			We need to do this or libvips will freak out and think it's trying to save
+			an SVG file which it can't do (20160929/thisisaaronland)
 
 		*/
 
@@ -225,28 +236,22 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		   (20160910/thisisaaronland)
 		*/
 
-		if opts.Top == 0 && opts.Left == 0 {
-			opts.Top = -1
-		}
-
 		_, err = im.bimg.Process(opts)
 
 		if err != nil {
 			return err
 		}
 
-	}
+	} else {
 
-	dims, err := im.Dimensions()
+		dims, err := im.Dimensions()
 
-	if err != nil {
-		return err
-	}
+		if err != nil {
+			return err
+		}
 
-	opts = bimg.Options{
-		Width:   dims.Width(),  // opts.AreaWidth,
-		Height:  dims.Height(), // opts.AreaHeight,
-		Quality: 100,
+		opts.Width = dims.Width()   // opts.AreaWidth,
+		opts.Height = dims.Height() // opts.AreaHeight,
 	}
 
 	if t.Size != "max" && t.Size != "full" {
