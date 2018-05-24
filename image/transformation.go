@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
+	"log"
 	"math"
 	"net/url"
 	"regexp"
@@ -19,10 +20,9 @@ type RegionInstruction struct {
 }
 
 type SizeInstruction struct {
-	Height  int
-	Width   int
-	Force   bool
-	Enlarge bool
+	Height int
+	Width  int
+	Force  bool
 }
 
 type RotationInstruction struct {
@@ -315,8 +315,8 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 
 	w := 0
 	h := 0
+
 	force := false
-	enlarge := false
 
 	arr := strings.Split(t.Size, ":")
 
@@ -343,7 +343,27 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 			h = int(hi)
 
 			if best {
-				enlarge = true
+
+				// we used to use the vip/bimg "enlarge" command here but
+				// that did not work as expected (20180524/thisisaaronland)
+
+				dims, err := im.Dimensions()
+
+				if err != nil {
+					return nil, err
+				}
+
+				width := dims.Width()
+				height := dims.Height()
+
+				ratio_w := float64(w) / float64(width)
+				ratio_h := float64(h) / float64(width)
+
+				ratio := math.Min(ratio_w, ratio_h)
+
+				w = int(float64(width) * ratio)
+				h = int(float64(height) * ratio)
+
 			} else {
 				force = true
 			}
@@ -357,10 +377,9 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 		}
 
 		instruction := SizeInstruction{
-			Height:  h,
-			Width:   w,
-			Enlarge: enlarge,
-			Force:   force,
+			Height: h,
+			Width:  w,
+			Force:  force,
 		}
 
 		return &instruction, nil
@@ -393,10 +412,9 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 	}
 
 	instruction := SizeInstruction{
-		Height:  h,
-		Width:   w,
-		Enlarge: enlarge,
-		Force:   force,
+		Height: h,
+		Width:  w,
+		Force:  force,
 	}
 
 	return &instruction, nil

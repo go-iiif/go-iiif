@@ -239,8 +239,9 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	}
 
 	opts = bimg.Options{
-		Width:  dims.Width(),  // opts.AreaWidth,
-		Height: dims.Height(), // opts.AreaHeight,
+		Width:   dims.Width(),  // opts.AreaWidth,
+		Height:  dims.Height(), // opts.AreaHeight,
+		Quality: 100,
 	}
 
 	if t.Size != "max" && t.Size != "full" {

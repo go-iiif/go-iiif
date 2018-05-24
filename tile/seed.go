@@ -140,7 +140,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 		for _, transformation := range crops {
 
-			<- throttle
+			<-throttle
 
 			wg.Add(1)
 
