@@ -254,7 +254,6 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 
 		opts.Height = si.Height
 		opts.Width = si.Width
-		opts.Enlarge = si.Enlarge
 		opts.Force = si.Force
 	}
 

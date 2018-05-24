@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	"log"
 	"math"
 	"net/url"
 	"regexp"
