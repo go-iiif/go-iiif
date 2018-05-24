@@ -199,8 +199,13 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		opts = bimg.Options{
 			AreaWidth:  rgi.Width,
 			AreaHeight: rgi.Height,
-			Left:       rgi.X,
-			Top:        rgi.Y,
+		}
+
+		if rgi.SmartCrop {
+			opts.Gravity = bimg.GravitySmart
+		} else {
+			opts.Left = rgi.X
+			opts.Top = rgi.Y
 		}
 
 		/*

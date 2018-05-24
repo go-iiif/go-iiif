@@ -12,10 +12,11 @@ import (
 )
 
 type RegionInstruction struct {
-	X      int
-	Y      int
-	Height int
-	Width  int
+	X         int
+	Y         int
+	Height    int
+	Width     int
+	SmartCrop bool
 }
 
 type SizeInstruction struct {
@@ -175,10 +176,11 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 		y = x
 
 		instruction := RegionInstruction{
-			X:      x,
-			Y:      y,
-			Width:  width,
-			Height: height,
+			X:         x,
+			Y:         y,
+			Width:     width,
+			Height:    height,
+			SmartCrop: true,
 		}
 
 		return &instruction, nil
