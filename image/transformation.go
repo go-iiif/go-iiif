@@ -356,7 +356,7 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 				height := dims.Height()
 
 				ratio_w := float64(w) / float64(width)
-				ratio_h := float64(h) / float64(width)
+				ratio_h := float64(h) / float64(height)
 
 				ratio := math.Min(ratio_w, ratio_h)
 
