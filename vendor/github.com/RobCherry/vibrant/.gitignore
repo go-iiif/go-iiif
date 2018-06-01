@@ -1,0 +1,9 @@
+# IDE files...
+.idea
+*.iml
+
+# Local files...
+cli/cli
+coverage.out
+output.jpg
+output.png

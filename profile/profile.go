@@ -41,7 +41,12 @@ func NewProfile(endpoint string, image iiifimage.Image, level iiiflevel.Level) (
 		},
 		//Sizes: []ProfileSize{},
 		//Tiles: []ProfileTile{},
+		Services: []iiifservice.Service{},
 	}
 
 	return &p, nil
+}
+
+func (p *Profile) AddService(s iiifservice.Service) {
+     p.Services = append(p.Services, s)
 }

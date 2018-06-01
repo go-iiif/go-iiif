@@ -1,5 +1,10 @@
 package service
 
+import (
+	iiifpalette "github.com/thisisaaronland/go-iiif/palette"
+)
+
+
 /*
 
   http://palette.davidnewbury.com/
@@ -50,5 +55,18 @@ type PaletteService struct {
 	Profile string       `json:"profile"`
 	Label   string       `json:"label"`
 	Average PaletteColor `json:"average,omitempty"`
-	Palette []PaletteColor
+	Palette []iiifpalette.Color `json:"palette,omitempty"`
+	Reference string     `json:"reference-closest,omitempty"`
 }
+
+func NewPaletteService(endpoint string, palette []iiifpalette.Color) (Service, error){
+
+     s := PaletteService {
+	Context: "x-urn:service:palette",
+	Profile: "x-urn:service:palette",
+	Label: "x-urn:service:palette",
+	Palette: palette,
+}
+
+	return &s, nil
+} 

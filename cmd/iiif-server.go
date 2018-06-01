@@ -12,7 +12,9 @@ import (
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
+	iiifpalette "github.com/thisisaaronland/go-iiif/palette"
 	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
+	iiifservice "github.com/thisisaaronland/go-iiif/service"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"github.com/whosonfirst/go-sanitize"
 	"log"
@@ -252,6 +254,32 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 			return
 		}
 
+		// start of colour palette stuff
+
+		p, _ := iiifpalette.NewVibrantPalette()
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		im, err := iiifimage.IIIFImageToGolangImage(image)
+
+		c, err := p.Extract(im)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		log.Println("COLOURS", c)
+
+		s, _ := iiifservice.NewPaletteService(endpoint, c)
+
+		profile.AddService(s)
+
+		// end of colour palette stuff
+		
 		b, err := json.Marshal(profile)
 
 		if err != nil {
