@@ -2,7 +2,8 @@
 Description=Run the go-iiif iiif-server daemon 
 
 [Service]
-Type=forking
+Type=simple
+User=
 ExecStart=/usr/bin/iiif-server -config ${config}
 
 [Install]
