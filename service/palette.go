@@ -1,48 +1,11 @@
 package service
 
+// https://groups.google.com/forum/#!topic/iiif-discuss/sPU5BvSWEOo
+// http://palette.davidnewbury.com/
+
 import (
 	iiifpalette "github.com/thisisaaronland/go-iiif/palette"
 )
-
-
-/*
-
-  http://palette.davidnewbury.com/
-
-  "service": {
-    "@context": "http://palette.davidnewbury.com/vocab/context.json",
-    "profile": "http://palette.davidnewbury.com/vocab/iiifpal",
-    "label": "Palette automatically generated with a IIIF Palette Server",
-    "average": {
-      "closest": "#696969",
-      "color": "#726e51"
-    },
-    "palette": [
-      {
-        "closest": "#6b8e23",
-        "color": "#887d35"
-      },
-      {
-        "closest": "#2f4f4f",
-        "color": "#332a17"
-      },
-      {
-        "closest": "#808080",
-        "color": "#968b68"
-      },
-      {
-        "closest": "#a9a9a9",
-        "color": "#a6a694"
-      },
-      {
-        "closest": "#556b2f",
-        "color": "#544d18"
-      }
-    ],
-    "reference-closest": "css3"
-  }
-
-*/
 
 type PaletteColor struct {
 	Color   string `json:"colour"`
@@ -50,23 +13,25 @@ type PaletteColor struct {
 }
 
 type PaletteService struct {
-	Service `json:",omitempty"`
-	Context string       `json:"@context"`
-	Profile string       `json:"profile"`
-	Label   string       `json:"label"`
-	Average PaletteColor `json:"average,omitempty"`
-	Palette []iiifpalette.Color `json:"palette,omitempty"`
-	Reference string     `json:"reference-closest,omitempty"`
+	Service   `json:",omitempty"`
+	Context   string              `json:"@context"`
+	Profile   string              `json:"profile"`
+	Label     string              `json:"label"`
+	Average   PaletteColor        `json:"average,omitempty"`
+	Palette   []iiifpalette.Color `json:"palette,omitempty"`
+	Reference string              `json:"reference-closest,omitempty"`
 }
 
-func NewPaletteService(endpoint string, palette []iiifpalette.Color) (Service, error){
+// THIS SIGNATURE WILL ALMOST CERTAINLY CHANGE (20180601/thisisaaronland)
 
-     s := PaletteService {
-	Context: "x-urn:service:palette",
-	Profile: "x-urn:service:palette",
-	Label: "x-urn:service:palette",
-	Palette: palette,
-}
+func NewPaletteService(endpoint string, palette []iiifpalette.Color) (Service, error) {
+
+	s := PaletteService{
+		Context: "x-urn:service:palette",
+		Profile: "x-urn:service:palette",
+		Label:   "x-urn:service:palette",
+		Palette: palette,
+	}
 
 	return &s, nil
-} 
+}

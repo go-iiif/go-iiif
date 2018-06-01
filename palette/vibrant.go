@@ -1,7 +1,9 @@
 package palette
 
+// SEE NOTES IN palette.go (20180601/thisisaaronland)
+
 import (
-        "fmt"
+	"fmt"
 	"github.com/RobCherry/vibrant"
 	"github.com/pwaller/go-hexcolor"
 	"golang.org/x/image/draw"
@@ -23,10 +25,10 @@ func NewVibrantPalette() (Palette, error) {
 	return &v, nil
 }
 
-func (v *VibrantPalette) Extract(im image.Image) ([]Color, error) {
+func (v *VibrantPalette) Extract(im image.Image, limit int) ([]Color, error) {
 
 	pb := vibrant.NewPaletteBuilder(im)
-	pb = pb.MaximumColorCount(v.max_colors)
+	// pb = pb.MaximumColorCount(v.max_colors)
 	pb = pb.Scaler(draw.ApproxBiLinear)
 
 	palette := pb.Generate()
@@ -34,7 +36,7 @@ func (v *VibrantPalette) Extract(im image.Image) ([]Color, error) {
 	swatches := palette.Swatches()
 	sort.Sort(populationSwatchSorter(swatches))
 
-	colours := make([]Color, len(swatches))
+	colours := make([]Color, 0)
 
 	for _, sw := range swatches {
 
@@ -48,6 +50,10 @@ func (v *VibrantPalette) Extract(im image.Image) ([]Color, error) {
 		}
 
 		colours = append(colours, c)
+
+		if limit > 0 && len(colours) == limit {
+			break
+		}
 	}
 
 	return colours, nil

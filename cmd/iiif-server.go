@@ -256,30 +256,38 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 		// start of colour palette stuff
 
-		p, _ := iiifpalette.NewVibrantPalette()
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
 		im, err := iiifimage.IIIFImageToGolangImage(image)
 
-		c, err := p.Extract(im)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		p, err := iiifpalette.NewVibrantPalette()
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		log.Println("COLOURS", c)
+		c, err := p.Extract(im, 5)
 
-		s, _ := iiifservice.NewPaletteService(endpoint, c)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		s, err := iiifservice.NewPaletteService(endpoint, c)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 
 		profile.AddService(s)
 
 		// end of colour palette stuff
-		
+
 		b, err := json.Marshal(profile)
 
 		if err != nil {
