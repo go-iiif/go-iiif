@@ -4,6 +4,7 @@ import (
 	"fmt"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
+	iiifservice "github.com/thisisaaronland/go-iiif/service"
 )
 
 type Profile struct {
@@ -16,6 +17,7 @@ type Profile struct {
 	Profile  []interface{} `json:"profile"`
 	//	Sizes    []string `json:"sizes"` // Optional, existing/supported sizes.
 	//	Tiles    []string `json:"tiles"` // Optional
+	Services []iiifservice.Service `json:"service,omitempty"`
 }
 
 func NewProfile(endpoint string, image iiifimage.Image, level iiiflevel.Level) (*Profile, error) {
