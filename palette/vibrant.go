@@ -4,6 +4,7 @@ package palette
 
 import (
 	"fmt"
+	"github.com/aaronland/go-swatchbook"
 	"github.com/RobCherry/vibrant"
 	"github.com/pwaller/go-hexcolor"
 	"golang.org/x/image/draw"
@@ -14,12 +15,26 @@ import (
 type VibrantPalette struct {
 	Palette
 	max_colors uint32
+	swatchbook *swatchbook.Swatchbook
 }
 
 func NewVibrantPalette() (Palette, error) {
 
+     	p, err := swatchbook.NewNamedPalette("css4")
+
+	if err != nil {
+		return nil, err
+	}
+
+	sb, err := swatchbook.NewSwatchbookFromPalette(p)
+
+	if err != nil {
+		return nil, err
+	}
+
 	v := VibrantPalette{
 		max_colors: 24,
+		swatchbook: sb,
 	}
 
 	return &v, nil
@@ -57,9 +72,18 @@ func (v *VibrantPalette) Extract(im image.Image, limit int) ([]Color, error) {
 		r, g, b, a := rgba.RGBA()
 
 		hex := hexcolor.RGBAToHex(uint8(r>>8), uint8(g>>8), uint8(b>>8), uint8(a>>8))
+		str_hex := fmt.Sprintf("%s", hex)
+
+		target := &swatchbook.Color{
+			Name: str_hex,
+			Hex: str_hex,
+		}
+
+		match := v.swatchbook.Closest(target)
 
 		c := Color{
-			Color: fmt.Sprintf("%s", hex),
+			Color: str_hex,
+			Closest: match.Hex,
 		}
 
 		colours = append(colours, c)

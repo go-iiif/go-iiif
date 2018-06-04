@@ -44,6 +44,7 @@ deps:	rmdeps
 
 	@GOPATH=$(GOPATH) go get -u "github.com/RobCherry/vibrant"
 	@GOPATH=$(GOPATH) go get -u "github.com/pwaller/go-hexcolor"
+	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-swatchbook"
 
 vendor-deps: rmdeps deps
 	if test ! -d vendor; then mkdir vendor; fi
