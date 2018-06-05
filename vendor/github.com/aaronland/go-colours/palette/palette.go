@@ -14,6 +14,10 @@ func NewNamedPalette(name string, args ...interface{}) (colours.Palette, error) 
 	var err error
 
 	switch strings.ToUpper(name) {
+	case "CRAYOLA":
+		p, err = NewCommonPalette(Crayola, args)
+	case "CSS3":
+		p, err = NewCommonPalette(CSS3, args)
 	case "CSS4":
 		p, err = NewCommonPalette(CSS4, args)
 	default:

@@ -257,14 +257,7 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 		// if config.Profile && config.Profile.Services && config.Profile.Services.Enabled contains "colours"
 
-		im, err := iiifimage.IIIFImageToGolangImage(image)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		s, err := iiifservice.NewPaletteService(im)
+		s, err := iiifservice.NewPaletteService(image)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -532,6 +525,8 @@ func main() {
 	}
 
 	endpoint := fmt.Sprintf("%s:%d", *host, *port)
+
+	log.Printf("Listening for requests at %s\n", endpoint)
 
 	err = gracehttp.Serve(&http.Server{Addr: endpoint, Handler: router})
 

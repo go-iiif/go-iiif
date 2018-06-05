@@ -18,7 +18,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	p, err := palette.NewNamedPalette("css4")
+	p, err := palette.NewNamedPalette("css3")
 
 	if err != nil {
 		log.Fatal(err)
