@@ -14,7 +14,6 @@ self:   prep rmdeps
 	cp -r config src/github.com/thisisaaronland/go-iiif/
 	cp -r image src/github.com/thisisaaronland/go-iiif/
 	cp -r level src/github.com/thisisaaronland/go-iiif/
-	cp -r palette src/github.com/thisisaaronland/go-iiif/
 	cp -r profile src/github.com/thisisaaronland/go-iiif/
 	cp -r service src/github.com/thisisaaronland/go-iiif/
 	cp -r source src/github.com/thisisaaronland/go-iiif/
@@ -41,10 +40,7 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-log"
 	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
 	@GOPATH=$(GOPATH) go get -u "github.com/aws/aws-sdk-go"
-
-	@GOPATH=$(GOPATH) go get -u "github.com/RobCherry/vibrant"
-	@GOPATH=$(GOPATH) go get -u "github.com/pwaller/go-hexcolor"
-	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-swatchbook"
+	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-colours"
 
 vendor-deps: rmdeps deps
 	if test ! -d vendor; then mkdir vendor; fi
@@ -61,7 +57,6 @@ fmt:
 	go fmt compliance/*.go
 	go fmt image/*.go
 	go fmt level/*.go
-	go fmt palette/*.go
 	go fmt profile/*.go
 	go fmt service/*.go
 	go fmt source/*.go

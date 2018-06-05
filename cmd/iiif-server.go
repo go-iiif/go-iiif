@@ -12,7 +12,6 @@ import (
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifpalette "github.com/thisisaaronland/go-iiif/palette"
 	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
 	iiifservice "github.com/thisisaaronland/go-iiif/service"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
@@ -265,21 +264,7 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 			return
 		}
 
-		p, err := iiifpalette.NewVibrantPalette()
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		c, err := p.Extract(im, 5)
-
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		s, err := iiifservice.NewPaletteService(endpoint, c)
+		s, err := iiifservice.NewPaletteService(im)
 
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
