@@ -4,8 +4,8 @@ package palette
 
 import (
 	"fmt"
-	"github.com/aaronland/go-swatchbook"
 	"github.com/RobCherry/vibrant"
+	"github.com/aaronland/go-swatchbook"
 	"github.com/pwaller/go-hexcolor"
 	"golang.org/x/image/draw"
 	"image"
@@ -20,7 +20,7 @@ type VibrantPalette struct {
 
 func NewVibrantPalette() (Palette, error) {
 
-     	p, err := swatchbook.NewNamedPalette("css4")
+	p, err := swatchbook.NewNamedPalette("css4")
 
 	if err != nil {
 		return nil, err
@@ -52,12 +52,12 @@ func (v *VibrantPalette) Extract(im image.Image, limit int) ([]Color, error) {
 	// sort.Sort(populationSwatchSorter(swatches))
 
 	swatches := []*vibrant.Swatch{
-		 palette.VibrantSwatch(),
-		 palette.LightVibrantSwatch(),
-		 palette.DarkVibrantSwatch(),
-		 palette.MutedSwatch(),
-		 palette.LightMutedSwatch(),
-		 palette.DarkMutedSwatch(),
+		palette.VibrantSwatch(),
+		palette.LightVibrantSwatch(),
+		palette.DarkVibrantSwatch(),
+		palette.MutedSwatch(),
+		palette.LightMutedSwatch(),
+		palette.DarkMutedSwatch(),
 	}
 
 	colours := make([]Color, 0)
@@ -76,13 +76,13 @@ func (v *VibrantPalette) Extract(im image.Image, limit int) ([]Color, error) {
 
 		target := &swatchbook.Color{
 			Name: str_hex,
-			Hex: str_hex,
+			Hex:  str_hex,
 		}
 
 		match := v.swatchbook.Closest(target)
 
 		c := Color{
-			Color: str_hex,
+			Color:   str_hex,
 			Closest: match.Hex,
 		}
 

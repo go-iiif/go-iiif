@@ -2,6 +2,17 @@
     "level": {
     	"compliance": "2"
     },
+    "profile": {
+    	"services": {
+		    "enable": [ "colours" ]
+	},    	       
+    },
+    "colours": {
+    	"source": { "name": "vibrant" },
+	"palettes": [
+		    { "name": "css4" }
+        ]
+    },
     "graphics": {
 	"source": { "name": "VIPS" }
     },

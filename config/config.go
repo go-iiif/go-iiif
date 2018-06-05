@@ -7,12 +7,26 @@ import (
 
 type Config struct {
         Level	    LevelConfig	      `json:"level"`
+	Profile	    ProfileConfig     `json:"profile"`
         Graphics    GraphicsConfig    `json:"graphics"`
         Features    FeaturesConfig    `json:"features"`
 	Images      ImagesConfig      `json:"images"`
 	Derivatives DerivativesConfig `json:"derivatives"`
 	Flickr	    FlickrConfig      `json:"flickr,omitempty"`
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
+}
+
+type ProfileConfig struct {
+     Services ServicesConfig	`json:"services"`
+}
+
+type ServicesConfig struct {
+     Enable FeaturesToggle `json:"enable"`     
+}
+
+type ColoursConfig struct {
+     Source SourceConfig  `json:"source"`
+     Palettes []SourceConfig `json:"palettes"`
 }
 
 type LevelConfig struct {

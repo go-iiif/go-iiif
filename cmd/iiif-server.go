@@ -256,6 +256,8 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 
 		// start of colour palette stuff
 
+		// if config.Profile && config.Profile.Services && config.Profile.Services.Enabled contains "colours"
+
 		im, err := iiifimage.IIIFImageToGolangImage(image)
 
 		if err != nil {
