@@ -186,7 +186,7 @@ func (im *VIPSImage) Dimensions() (Dimensions, error) {
 
 func (im *VIPSImage) Transform(t *Transformation) error {
 
-	// var opts bimg.Options
+	// https://godoc.org/github.com/h2non/bimg#Options
 
 	opts := bimg.Options{}
 	opts.Quality = 100
@@ -244,14 +244,22 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 
 	} else {
 
-		dims, err := im.Dimensions()
+		// so we used to do this but a) it doesn't appear to be
+		// necessary and b) it has the side-effect of borking
+		// image with EXIF orientation flags and especially images
+		// which appear to have incorrect orientation flags
+		// because computers, amirite... (20180606/thisisaaronland)
 
-		if err != nil {
-			return err
-		}
+		/*
+			dims, err := im.Dimensions()
 
-		opts.Width = dims.Width()   // opts.AreaWidth,
-		opts.Height = dims.Height() // opts.AreaHeight,
+			if err != nil {
+				return err
+			}
+
+			opts.Width = dims.Width()   // opts.AreaWidth,
+			opts.Height = dims.Height() // opts.AreaHeight,
+		*/
 	}
 
 	if t.Size != "max" && t.Size != "full" {
@@ -266,6 +274,11 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		opts.Width = si.Width
 		opts.Force = si.Force
 	}
+
+	// this is just here for debugging - as a rule it's best to let
+	// bimg/libvips handle this (20180606/thisisaaronland)
+
+	// opts.NoAutoRotate = true
 
 	ri, err := t.RotationInstructions(im)
 
