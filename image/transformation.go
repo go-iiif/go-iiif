@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	"log"
+	_ "log"
 	"math"
 	"net/url"
 	"regexp"
@@ -327,14 +327,10 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 
 	arr := strings.Split(t.Size, ":")
 
-	log.Println("SIZE", t.Size, len(arr))
-
 	if len(arr) == 1 {
 
 		best := strings.HasPrefix(t.Size, "!")
 		sizes := strings.Split(strings.Trim(arr[0], "!"), ",")
-
-		log.Println("SIZES", sizes, best)
 
 		if len(sizes) != 2 {
 			message := fmt.Sprintf(sizeError, t.Size)
@@ -353,8 +349,6 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 			w = int(wi)
 			h = int(hi)
 
-			log.Println("SIZES", w, h)
-
 			if best {
 
 				// we used to use the vip/bimg "enlarge" command here but
@@ -369,19 +363,13 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 				width := dims.Width()
 				height := dims.Height()
 
-				log.Println("DIMS", width, height)
-
 				ratio_w := float64(w) / float64(width)
 				ratio_h := float64(h) / float64(height)
 
 				ratio := math.Min(ratio_w, ratio_h)
 
-				log.Println("RATIO", ratio_w, ratio_h, ratio)
-
 				w = int(float64(width) * ratio)
 				h = int(float64(height) * ratio)
-
-				log.Println("SCALE", w, h)
 
 			} else {
 				force = true

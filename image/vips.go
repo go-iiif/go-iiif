@@ -12,7 +12,7 @@ import (
 	"gopkg.in/h2non/bimg.v1"
 	"image"
 	"image/gif"
-	"log"
+	_ "log"
 	"strconv"
 	"strings"
 )
@@ -250,16 +250,14 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		// which appear to have incorrect orientation flags
 		// because computers, amirite... (20180606/thisisaaronland)
 
-		/*
-			dims, err := im.Dimensions()
+		dims, err := im.Dimensions()
 
-			if err != nil {
-				return err
-			}
+		if err != nil {
+			return err
+		}
 
-			opts.Width = dims.Width()   // opts.AreaWidth,
-			opts.Height = dims.Height() // opts.AreaHeight,
-		*/
+		opts.Width = dims.Width()   // opts.AreaWidth,
+		opts.Height = dims.Height() // opts.AreaHeight,
 	}
 
 	if t.Size != "max" && t.Size != "full" {
@@ -272,32 +270,43 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 
 		opts.Width = si.Width
 		opts.Height = si.Height
-
-		// So apparently this is a thing we need to do when we're auto-rotating
-		// images (based on EXIF orientation) ... which I guess makes but is kind
-		// of annoying ... like a lot of things in life (20180606/thisisaaronland)
-
-		m, e := im.bimg.Metadata()
-
-		if e == nil {
-
-			// things that are on their side
-			// https://magnushoff.com/jpeg-orientation.html
-
-			if m.Orientation >= 5 && m.Orientation <= 8 {
-
-				opts.Width = si.Height
-				opts.Height = si.Width
-			}
-		}
-
 		opts.Force = si.Force
+	}
+
+	// So apparently this is a thing we need to do when we're auto-rotating
+	// images (based on EXIF orientation) ... which I guess makes but is kind
+	// of annoying ... like a lot of things in life (20180606/thisisaaronland)
+
+	m, e := im.bimg.Metadata()
+
+	if e == nil {
+
+		// things that are on their side
+		// https://magnushoff.com/jpeg-orientation.html
+
+		if m.Orientation >= 5 && m.Orientation <= 8 {
+
+			w := opts.Width
+			h := opts.Height
+
+			opts.Width = h
+			opts.Height = w
+		}
 	}
 
 	// this is just here for debugging - as a rule it's best to let
 	// bimg/libvips handle this (20180606/thisisaaronland)
-
 	// opts.NoAutoRotate = true
+
+	// but it gets better... if you don't resize the image then all the metadata
+	// gets preserved including the orientation flags which no longer make any
+	// sense we've applied automagic orientation rotation hoohah so every application
+	// that looks at the output (including this tool) will just keep rotating the
+	// image by n-degrees every time ... I have not decided what to do about this
+	// yet ... maybe the expectation in IIIF-land is that you're supposed to read
+	// the EXIF data and translate orientation in to a rotate command before the IIIF
+	// server handles the image? (20180606/thisisaaronland)
+
 	// opts.StripMetadata = true
 
 	ri, err := t.RotationInstructions(im)
