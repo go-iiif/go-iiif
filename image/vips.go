@@ -12,7 +12,7 @@ import (
 	"gopkg.in/h2non/bimg.v1"
 	"image"
 	"image/gif"
-	_ "log"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -270,8 +270,27 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 			return err
 		}
 
-		opts.Height = si.Height
 		opts.Width = si.Width
+		opts.Height = si.Height
+
+		// So apparently this is a thing we need to do when we're auto-rotating
+		// images (based on EXIF orientation) ... which I guess makes but is kind
+		// of annoying ... like a lot of things in life (20180606/thisisaaronland)
+
+		m, e := im.bimg.Metadata()
+
+		if e == nil {
+
+			// things that are on their side
+			// https://magnushoff.com/jpeg-orientation.html
+
+			if m.Orientation >= 5 && m.Orientation <= 8 {
+
+				opts.Width = si.Height
+				opts.Height = si.Width
+			}
+		}
+
 		opts.Force = si.Force
 	}
 
@@ -279,6 +298,7 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 	// bimg/libvips handle this (20180606/thisisaaronland)
 
 	// opts.NoAutoRotate = true
+	// opts.StripMetadata = true
 
 	ri, err := t.RotationInstructions(im)
 
