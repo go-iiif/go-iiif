@@ -20,6 +20,7 @@ func NewEuclidianGrid(args ...interface{}) (colours.Grid, error) {
 
 func (eu *EuclidianGrid) Closest(target colours.Colour, palette colours.Palette) (colours.Colour, error) {
 
+	// http://stackoverflow.com/questions/9694165/convert-rgb-color-to-english-color-name-like-green
 	// https://github.com/ubernostrum/webcolors/blob/master/webcolors.py#L473-L485
 
 	cl, err := colorful.Hex(target.Hex())
