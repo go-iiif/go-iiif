@@ -267,6 +267,8 @@ A palette service has the following properties:
 * **grid** is a simple dictionary with a `name` property. Since there is currently only one grid (defined by `go-colours`) there is no need to change this.
 * **palettes**  is a list of simple dictionaries, each of which has a `name` property. Valid names are: crayola, css3 or css4.
 
+_Sample out for the `palette` service is included [below](#palette-1)_
+
 ### graphics
 
 ```
@@ -340,7 +342,7 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **none** | 0 | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 | **rotationArbitrary** |  | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
 | **rotationBy90s** | 90,180,270 | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
-| **noAutoRotate** | -1 | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">**false**</span> | <span style="color:green;">**true**</span> |
+| **noAutoRotate** | -1 | <span style="color:red;">false</span> | <span style="color:red;">false</span> | <span style="color:red;">**false**</span> | <span style="color:green;">**true**</span> |
 
 ##### [quality](http://iiif.io/api/image/2.1/index.html#quality)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
@@ -761,7 +763,7 @@ _Note: You will need to [manually enable support for GIF images](https://github.
 `go-iiif` supports using the [go-colours](https://github.com/aaronland/go-colours) package to extract colours as an additional service for profiles. Details for configuring the `palette` service are discussed [#services](above) but here is the output for a service with the default settings:
 
 ```
-curl -s localhost:8282/example.jpg/info.json | jq '.service'
+curl -s localhost:8080/example.jpg/info.json | jq '.service'
 [
   {
     "@context": "x-urn:service:go-iiif#palette",
