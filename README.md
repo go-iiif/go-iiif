@@ -760,7 +760,7 @@ _Note: You will need to [manually enable support for GIF images](https://github.
 
 ### palette
 
-`go-iiif` supports using the [go-colours](https://github.com/aaronland/go-colours) package to extract colours as an additional service for profiles. Details for configuring the `palette` service are discussed [#services](above) but here is the output for a service with the default settings:
+`go-iiif` supports using the [go-colours](https://github.com/aaronland/go-colours) package to extract colours as an additional service for profiles. Details for configuring the `palette` service are discussed [above](#services) but here is the output for a service with the default settings:
 
 ```
 curl -s localhost:8080/example.jpg/info.json | jq '.service'
