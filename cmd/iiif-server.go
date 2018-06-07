@@ -258,9 +258,7 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 			switch service_name {
 			case "palette":
 
-				palette_config := config.Palette
-
-				service, err := iiifservice.NewPaletteService(palette_config, image)
+				service, err := iiifservice.NewPaletteService(config.Palette, image)
 
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
