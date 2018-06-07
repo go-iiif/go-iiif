@@ -224,15 +224,42 @@ Indicates which level of IIIF Image API compliance the server (or associated too
 
 ### profile
 
-_PLEASE WRITE ME_
+```
+    "profile": {
+    	"services": {
+		    ...
+	} 
+    }
+```	
+
+Additional configurations for a IIIF profile (aka `info.json`). Currently this is limited to defining one or more addtional `services` to append to a profile.
 
 #### services
 
-_PLEASE WRITE ME_
+```
+    "profile": {
+    	"services": {
+		    "enable": [ "palette" ]
+	} 
+    }
+```
+
+Services configurations are currently limited to enabling a fixed set of named services, where that fixed set numbers exactly one: `palette` for extracting a colour palette for an image (as defined by the `palette` configuration below).
 
 ##### palette
 
-_PLEASE WRITE ME_
+```
+    "palette": {
+    	"extruder": { "name": "vibrant", "count": 5 },
+    	"grid": { "name": "euclidian" },
+	"palettes": [
+		    { "name": "crayola" },
+		    { "name": "css4" }
+        ]
+    }
+```
+
+`go-iiif` uses the [go-colours](https://github.com/aaronland/go-colours) package to extract colours. `go-colours` itself is a work in progress so you should approach colours extraction as a service accordingly.
 
 ### graphics
 
