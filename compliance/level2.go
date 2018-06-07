@@ -34,7 +34,8 @@ var level2_spec = `{
 	     		"none":              { "syntax": "0",          "required": true, "supported": true, "match": "^0$" },
 	     		"rotationBy90s":     { "syntax": "90,180,270", "required": true, "supported": true, "match": "^(?:90|180|270)$" },
 	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "^\\d+\\.\\d+$" },			
-	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" }
+	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" },
+	     		"noAutoRotate":      { "syntax": "-1",         "required": false, "supported": true, "match": "^\\-1$" }
 	     },
 	     "quality": {
 	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": false },

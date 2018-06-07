@@ -13,6 +13,7 @@ import (
 	"fmt"
 	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	_ "log"
 )
 
 type Level interface {

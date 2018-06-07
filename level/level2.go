@@ -4,7 +4,7 @@ import (
 	_ "fmt"
 	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	"log"
+	_ "log"
 )
 
 type Level2 struct {
@@ -20,7 +20,7 @@ func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
 	compliance, err := iiifcompliance.NewLevel2Compliance(config)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	l := Level2{

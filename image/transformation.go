@@ -27,8 +27,9 @@ type SizeInstruction struct {
 }
 
 type RotationInstruction struct {
-	Flip  bool
-	Angle int64
+	Flip         bool
+	Angle        int64
+	NoAutoRotate bool		// see notes in image/vips.go for why we need to do this (20180607/thisisaaronland)
 }
 
 type FormatInstruction struct {
@@ -441,9 +442,17 @@ func (t *Transformation) RotationInstructions(im Image) (*RotationInstruction, e
 
 	}
 
+	no_autorotate := false
+
+	if angle == -1 {
+		no_autorotate = true
+		angle = 0
+	}
+
 	instruction := RotationInstruction{
-		Flip:  flip,
-		Angle: angle,
+		Flip:         flip,
+		Angle:        angle,
+		NoAutoRotate: no_autorotate,
 	}
 
 	return &instruction, nil

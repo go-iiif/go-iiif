@@ -273,50 +273,58 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		opts.Force = si.Force
 	}
 
-	// So apparently this is a thing we need to do when we're auto-rotating
-	// images (based on EXIF orientation) ... which I guess makes but is kind
-	// of annoying ... like a lot of things in life (20180606/thisisaaronland)
-
-	m, e := im.bimg.Metadata()
-
-	if e == nil {
-
-		// things that are on their side
-		// https://magnushoff.com/jpeg-orientation.html
-
-		if m.Orientation >= 5 && m.Orientation <= 8 {
-
-			w := opts.Width
-			h := opts.Height
-
-			opts.Width = h
-			opts.Height = w
-		}
-	}
-
-	// this is just here for debugging - as a rule it's best to let
-	// bimg/libvips handle this (20180606/thisisaaronland)
-	// opts.NoAutoRotate = true
-
-	// but it gets better... if you don't resize the image then all the metadata
-	// gets preserved including the orientation flags which no longer make any
-	// sense we've applied automagic orientation rotation hoohah so every application
-	// that looks at the output (including this tool) will just keep rotating the
-	// image by n-degrees every time ... I have not decided what to do about this
-	// yet ... maybe the expectation in IIIF-land is that you're supposed to read
-	// the EXIF data and translate orientation in to a rotate command before the IIIF
-	// server handles the image? (20180606/thisisaaronland)
-
-	// opts.StripMetadata = true
-
 	ri, err := t.RotationInstructions(im)
 
 	if err != nil {
 		return nil
 	}
 
-	opts.Flip = ri.Flip
-	opts.Rotate = bimg.Angle(ri.Angle % 360)
+	// Okay, so there are a few things are happening here:
+
+	// So apparently we need to explicitly swap height and width when we're auto-rotating
+	// images based on EXIF orientation... which I guess makes but is kind of annoying but
+	// so are a lot of things in life...
+
+	// But it gets better... if you don't resize the image then all the metadata
+	// gets preserved including the orientation flags which no longer make any
+	// sense we've applied automagic orientation rotation hoohah so every application
+	// that looks at the output (including this tool) will just keep rotating the
+	// image by n-degrees every time. We could opts.StripMetaData all the images but that
+	// seems a bit extreme and there is currently no way in bimg, libvips, some other pure-Go
+	// package to strip or reset the Orientation EXIF tag. Instead we are hijacking the
+	// IIIF spec to add make "-1" a valid rotation (see compliance/level2.go) which means
+	// "do not autorotate based on EXIF orientation". As of this writing it does not work
+	// in combination with other rotation commands (something like "-1,180" or "#180") but
+	// it probably should... (20180607/thisisaaronland)
+
+	// See also: https://github.com/h2non/bimg/issues/179
+
+	if ri.NoAutoRotate {
+		opts.NoAutoRotate = true
+	} else {
+		opts.Flip = ri.Flip
+		opts.Rotate = bimg.Angle(ri.Angle % 360)
+	}
+
+	if !opts.NoAutoRotate {
+
+		m, e := im.bimg.Metadata()
+
+		if e == nil {
+
+			// things that are on their side
+			// https://magnushoff.com/jpeg-orientation.html
+
+			if m.Orientation >= 5 && m.Orientation <= 8 {
+
+				w := opts.Width
+				h := opts.Height
+
+				opts.Width = h
+				opts.Height = w
+			}
+		}
+	}
 
 	if t.Quality == "color" || t.Quality == "default" {
 		// do nothing.
