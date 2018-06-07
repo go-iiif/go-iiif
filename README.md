@@ -222,6 +222,18 @@ There is a [sample config file](config.json.example) included with this repo. Th
 
 Indicates which level of IIIF Image API compliance the server (or associated tools) should support. Basically, there is no reason to ever change this right now.
 
+### profile
+
+_PLEASE WRITE ME_
+
+#### services
+
+_PLEASE WRITE ME_
+
+##### palette
+
+_PLEASE WRITE ME_
+
 ### graphics
 
 ```
