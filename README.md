@@ -261,6 +261,12 @@ Services configurations are currently limited to enabling a fixed set of named s
 
 `go-iiif` uses the [go-colours](https://github.com/aaronland/go-colours) package to extract colours. `go-colours` itself is a work in progress so you should approach colours extraction as a service accordingly.
 
+A palette service has the following properties:
+
+* **extruder** is a simple dictionary with a `name` and a `count` property. Since there is currently only one extruder (defined by `go-colours`) there is no need to change this.
+* **grid** is a simple dictionary with a `name` property. Since there is currently only one grid (defined by `go-colours`) there is no need to change this.
+* **palettes**  is a list of simple dictionaries, each of which has a `name` property. Valid names are: crayola, css3 or css4.
+
 ### graphics
 
 ```
@@ -334,6 +340,7 @@ _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) 
 | **none** | 0 | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
 | **rotationArbitrary** |  | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">false</span> | <span style="color:red;">false</span> |
 | **rotationBy90s** | 90,180,270 | <span style="color:green;">true</span> | <span style="color:green;">true</span> | <span style="color:green;">**true**</span> | <span style="color:green;">**true**</span> |
+| **noAutoRotate** | -1 | <span style="color:red;">false</span> | <span style="color:green;">true</span> | <span style="color:red;">**false**</span> | <span style="color:green;">**true**</span> |
 
 ##### [quality](http://iiif.io/api/image/2.1/index.html#quality)
 | feature | syntax | required (spec) | supported (spec) | required (config) | supported (config) |
@@ -617,9 +624,35 @@ _Important: If you are both reading source files and writing cached derivatives 
 
 ## Non-standard features
 
+### Non-standard rotation features
+
+`go-iiif` supports the following non-standard IIIF `rotation` features:
+
+#### noAutoRotate
+
+```
+	"enable": {
+	    "size": [ "max" ],
+	    "format": [ "jpg", "png", "tif", "gif" ],
+	    "rotation": [ "noAutoRotate" ]
+	}
+```
+
+If the `noAutoRotate` feature is enabled this will act as a signal to the underlying image processing library to _not_ auto-rotate images according to the EXIF `Orientation` property (assuming it is present).
+
+This feature exists because both the `libvips` library and the `bimg` wrapper code enable auto-rotation by default but neither updates the EXIF `Orientation` property to reflect the change so every time the newly created image is read by a piece of software that supports auto-rotation (including this one) that image will be doubly-rotated (and then triply-rotated and so on...) If the `noAutoRotate` feature is enabled is can be triggered by setting the rotation element of your request URI to be `-1`, for example:
+
+```
+https://example.com/example.jpg/{REGION}/{SIZE}/-1/{QUALITY}.{FORMAT}
+```
+
+As of this writing the `noAutoRotate` feature does not work in combination with other rotation commands (for example `-1,180` or equivalent, meaning "do not auto-rotate but please still rotate 180 degrees") but it probably should.
+
+### Non-standard quality features
+
 `go-iiif` supports the following non-standard IIIF `quality` features:
 
-### Dithering
+#### Dithering
 
 ```
 	"append": {
@@ -647,7 +680,7 @@ There are a few caveats about dithering images:
 * It is possible to track all of this stuff in code and juggle output formats and reprocessing (in `libvips`) but that code has not been written yet.
 * So you will need to track the sometimes still-rocky relationship between features and output formats yourself.
 
-### Primitive-ing
+#### Primitive-ing
 
 ```
 	"features": {
@@ -720,6 +753,9 @@ Here are examples where each of the tiles in an slippy image are animated GIFs:
 * https://aaronland.github.io/go-iiif/animated/?mode=triangles
 
 _Note: You will need to [manually enable support for GIF images](https://github.com/aaronland/go-iiif/tree/primitive#featuresenable) in your config file for animated GIFs to work._
+
+## Non-standard services
+
 
 ## Example
 
