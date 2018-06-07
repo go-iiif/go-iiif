@@ -632,21 +632,21 @@ _Important: If you are both reading source files and writing cached derivatives 
 
 ```
 	"enable": {
-	    "size": [ "max" ],
-	    "format": [ "jpg", "png", "tif", "gif" ],
 	    "rotation": [ "noAutoRotate" ]
 	}
 ```
 
 If the `noAutoRotate` feature is enabled this will act as a signal to the underlying image processing library to _not_ auto-rotate images according to the EXIF `Orientation` property (assuming it is present).
 
-This feature exists because both the `libvips` library and the `bimg` wrapper code enable auto-rotation by default but neither updates the EXIF `Orientation` property to reflect the change so every time the newly created image is read by a piece of software that supports auto-rotation (including this one) that image will be doubly-rotated (and then triply-rotated and so on...) If the `noAutoRotate` feature is enabled is can be triggered by setting the rotation element of your request URI to be `-1`, for example:
+This feature exists because both the `libvips` library and the `bimg` wrapper code enable auto-rotation by default but neither updates the EXIF `Orientation` property to reflect the change so every time the newly created image is read by a piece of software that supports auto-rotation (including this one) that image will be doubly-rotated (and then triply-rotated and so on...)
+
+If the `noAutoRotate` feature is enabled is can be triggered by setting the rotation element of your request URI to be `-1`, for example:
 
 ```
 https://example.com/example.jpg/{REGION}/{SIZE}/-1/{QUALITY}.{FORMAT}
 ```
 
-As of this writing the `noAutoRotate` feature does not work in combination with other rotation commands (for example `-1,180` or equivalent, meaning "do not auto-rotate but please still rotate 180 degrees") but it probably should.
+_As of this writing the `noAutoRotate` feature does not work in combination with other rotation commands (for example `-1,180` or equivalent, meaning "do not auto-rotate but please still rotate 180 degrees") but it probably should._
 
 ### Non-standard quality features
 
@@ -756,6 +756,109 @@ _Note: You will need to [manually enable support for GIF images](https://github.
 
 ## Non-standard services
 
+### palette
+
+`go-iiif` supports using the [go-colours](https://github.com/aaronland/go-colours) package to extract colours as an additional service for profiles. Details for configuring the `palette` service are discussed [#services](above) but here is the output for a service with the default settings:
+
+```
+curl -s localhost:8282/example.jpg/info.json | jq '.service'
+[
+  {
+    "@context": "x-urn:service:go-iiif#palette",
+    "profile": "x-urn:service:go-iiif#palette",
+    "label": "x-urn:service:go-iiif#palette",
+    "palette": [
+      {
+        "name": "#6098c6",
+        "hex": "#6098c6",
+        "reference": "vibrant",
+        "closest": [
+          {
+            "name": "Blue Gray",
+            "hex": "#6699cc",
+            "reference": "crayola"
+          },
+          {
+            "name": "cadetblue",
+            "hex": "#5f9ea0",
+            "reference": "css4"
+          }
+        ]
+      },
+      {
+        "name": "#84bad9",
+        "hex": "#84bad9",
+        "reference": "vibrant",
+        "closest": [
+          {
+            "name": "Wild Blue Yonder",
+            "hex": "#a2add0",
+            "reference": "crayola"
+          },
+          {
+            "name": "skyblue",
+            "hex": "#87ceeb",
+            "reference": "css4"
+          }
+        ]
+      },
+      {
+        "name": "#2c4061",
+        "hex": "#2c4061",
+        "reference": "vibrant",
+        "closest": [
+          {
+            "name": "Midnight Blue",
+            "hex": "#1a4876",
+            "reference": "crayola"
+          },
+          {
+            "name": "darkslategrey",
+            "hex": "#2f4f4f",
+            "reference": "css4"
+          }
+        ]
+      },
+      {
+        "name": "#808275",
+        "hex": "#808275",
+        "reference": "vibrant",
+        "closest": [
+          {
+            "name": "Sonic Silver",
+            "hex": "#757575",
+            "reference": "crayola"
+          },
+          {
+            "name": "grey",
+            "hex": "#808080",
+            "reference": "css4"
+          }
+        ]
+      },
+      {
+        "name": "#b1bebc",
+        "hex": "#b1bebc",
+        "reference": "vibrant",
+        "closest": [
+          {
+            "name": "Cadet Blue",
+            "hex": "#b0b7c6",
+            "reference": "crayola"
+          },
+          {
+            "name": "silver",
+            "hex": "#c0c0c0",
+            "reference": "css4"
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+
+_Please remember that `go-colours` itself is a work in progress so you should approach the `palette` service accordingly._
 
 ## Example
 
