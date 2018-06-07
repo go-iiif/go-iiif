@@ -253,20 +253,26 @@ func InfoHandlerFunc(config *iiifconfig.Config) (http.HandlerFunc, error) {
 			return
 		}
 
-		// start of colour palette stuff
+		for _, service_name := range config.Profile.Services.Enable {
 
-		// if config.Profile && config.Profile.Services && config.Profile.Services.Enabled contains "colours"
+			switch service_name {
+			case "palette":
 
-		s, err := iiifservice.NewPaletteService(image)
+				palette_config := config.Palette
 
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+				service, err := iiifservice.NewPaletteService(palette_config, image)
+
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
+				profile.AddService(service)
+			default:
+				http.Error(w, "Unsupported service", http.StatusInternalServerError)
+				return
+			}
 		}
-
-		profile.AddService(s)
-
-		// end of colour palette stuff
 
 		b, err := json.Marshal(profile)
 

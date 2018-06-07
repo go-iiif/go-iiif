@@ -1,8 +1,5 @@
 package service
 
-// MMMMMMMMMAYBE MOVE THIS IN TO go-colours/iiif... MMMMAYBE?
-// (20180605/thisisaaronland)
-
 // https://groups.google.com/forum/#!topic/iiif-discuss/sPU5BvSWEOo
 // http://palette.davidnewbury.com/
 
@@ -11,6 +8,7 @@ import (
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
 	"github.com/aaronland/go-colours/palette"
+	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	_ "log"
 )
@@ -23,17 +21,20 @@ type PaletteService struct {
 	Palette []colours.Colour `json:"palette,omitempty"`
 }
 
-// THIS SIGNATURE WILL ALMOST CERTAINLY CHANGE (20180601/thisisaaronland)
+func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
 
-func NewPaletteService(image iiifimage.Image) (Service, error) {
+	// b, _ := json.Marshal(cfg)
+	// log.Println(string(b))
 
-	// please read me from the config...
-	// (20180605/thisisaaronland)
+	use_extruder := cfg.Extruder.Name
+	count_colours := cfg.Extruder.Count
 
-	use_extruder := "vibrant"
-	use_grid := "euclidian"
-	use_palette := []string{"crayola", "css4"}
-	count_colours := 5
+	use_grid := cfg.Grid.Name
+	use_palette := make([]string, 0)
+
+	for _, p := range cfg.Palettes {
+		use_palette = append(use_palette, p.Name)
+	}
 
 	im, err := iiifimage.IIIFImageToGolangImage(image)
 
@@ -91,9 +92,9 @@ func NewPaletteService(image iiifimage.Image) (Service, error) {
 	}
 
 	s := PaletteService{
-		Context: "x-urn:service:palette",
-		Profile: "x-urn:service:palette",
-		Label:   "x-urn:service:palette",
+		Context: "x-urn:service:go-iiif#palette",
+		Profile: "x-urn:service:go-iiif#palette",
+		Label:   "x-urn:service:go-iiif#palette",
 		Palette: has_colours,
 	}
 

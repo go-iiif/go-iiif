@@ -14,6 +14,7 @@ type Config struct {
 	Derivatives DerivativesConfig `json:"derivatives"`
 	Flickr	    FlickrConfig      `json:"flickr,omitempty"`
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
+	Palette	    PaletteConfig     `json:"palette,omitempty"`
 }
 
 type ProfileConfig struct {
@@ -21,11 +22,14 @@ type ProfileConfig struct {
 }
 
 type ServicesConfig struct {
-     Enable FeaturesToggle `json:"enable"`     
+     Enable ServicesToggle `json:"enable"`     
 }
 
-type ColoursConfig struct {
-     Source SourceConfig  `json:"source"`
+type ServicesToggle []string
+
+type PaletteConfig struct {
+     Extruder SourceConfig  `json:"extruder"`
+     Grid SourceConfig `json:"grid"`
      Palettes []SourceConfig `json:"palettes"`
 }
 
@@ -70,6 +74,7 @@ type SourceConfig struct {
 	Region string `json:"region,omitempty"`
 	Credentials string `json:"credentials,omitempty"`
 	Tmpdir string `json:"tmpdir,omitempty"`	
+	Count int `json:"count,omitempty"`			// used by PaletteConfig.Extruder
 }
 
 type FlickrConfig struct {

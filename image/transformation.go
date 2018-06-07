@@ -29,7 +29,7 @@ type SizeInstruction struct {
 type RotationInstruction struct {
 	Flip         bool
 	Angle        int64
-	NoAutoRotate bool		// see notes in image/vips.go for why we need to do this (20180607/thisisaaronland)
+	NoAutoRotate bool // see notes in image/vips.go for why we need to do this (20180607/thisisaaronland)
 }
 
 type FormatInstruction struct {

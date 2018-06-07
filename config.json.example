@@ -4,12 +4,14 @@
     },
     "profile": {
     	"services": {
-		    "enable": [ "colours" ]
+		    "enable": [ "palette" ]
 	},    	       
     },
-    "colours": {
-    	"source": { "name": "vibrant" },
-	"palettes": [
+    "palette": {
+    	"extruder": { "name": "vibrant", "count": 5 },
+    	"grid": { "name": "euclidian" },
+	"palette": [
+		    { "name": "crayola" },
 		    { "name": "css4" }
         ]
     },
@@ -19,7 +21,8 @@
     "features": {
 	"enable": {
 	    "size": [ "max" ],
-	    "format": [ "webp", "tif", "gif" ]
+	    "format": [ "webp", "tif", "gif" ],
+	    "rotation": [ "noAutoRotate" ]
 	},
 	"disable": {
 	    "rotation": [ "rotationArbitrary" ],
