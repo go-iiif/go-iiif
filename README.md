@@ -265,9 +265,9 @@ A palette service has the following properties:
 
 * **extruder** is a simple dictionary with a `name` and a `count` property. Since there is currently only one extruder (defined by `go-colours`) there is no need to change this.
 * **grid** is a simple dictionary with a `name` property. Since there is currently only one grid (defined by `go-colours`) there is no need to change this.
-* **palettes**  is a list of simple dictionaries, each of which has a `name` property. Valid names are: crayola, css3 or css4.
+* **palettes**  is a list of simple dictionaries, each of which has a `name` property. Valid names are: `crayola`, `css3` or `css4`.
 
-_Sample out for the `palette` service is included [below](#palette-1)_
+Sample out for the `palette` service is included [below](#palette-1).
 
 ### graphics
 
