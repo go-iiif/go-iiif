@@ -71,7 +71,7 @@ then
     echo "${SERVICE} already exists, so leaving it in place"
 else
     cp ${SYSTEMD}/iiif-server.service.example ${SERVICE}
-    sudo chmod 755 ${SERVICE}
+    sudo chmod 644 ${SERVICE}
 fi
 
 echo ""
