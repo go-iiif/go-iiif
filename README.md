@@ -626,6 +626,14 @@ _Important: If you are both reading source files and writing cached derivatives 
 
 ## Non-standard features
 
+### Non-standard region features
+
+#### regionByPx (and "smart" cropping)
+
+If you are using `VIPS` as a [graphics engine](#graphics) and pass a `regionByPx` instruction whose X and Y values are `-1` then the code will ask libvips to crop the image (to the dimensions defined in the W and H values) centered on whatever libvips thinks it the most interesting or relevant part of the image.
+
+See also: https://github.com/jcupitt/libvips/issues/317
+
 ### Non-standard rotation features
 
 `go-iiif` supports the following non-standard IIIF `rotation` features:
