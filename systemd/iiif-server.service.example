@@ -16,14 +16,19 @@ startLimitIntervalSec=60
 WorkingDirectory=/usr/local/bin
 ExecStart=/usr/local/bin/iiif-server -config /etc/iiif-server/config.json
 
+# These are (appear to be?) specific to Ubuntu and don't work, for
+# example, on CentOS - I'm not sure entirely convinced that's true
+# but I also haven't had time to really figure out what's going on
+# (20180611/thisisaaronland)
+#
 # make sure log directory exists and owned by syslog
-PermissionsStartOnly=true
-ExecStartPre=/bin/mkdir -p /var/log/iiif-server
-ExecStartPre=/bin/chown syslog:adm /var/log/iiif-server
-ExecStartPre=/bin/chmod 755 /var/log/iiif-server
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=iiif-server
+# PermissionsStartOnly=true
+# ExecStartPre=/bin/mkdir -p /var/log/iiif-server
+# ExecStartPre=/bin/chown syslog:adm /var/log/iiif-server
+# ExecStartPre=/bin/chmod 755 /var/log/iiif-server
+# StandardOutput=syslog
+# StandardError=syslog
+# SyslogIdentifier=iiif-server
  
 [Install]
 WantedBy=multi-user.target

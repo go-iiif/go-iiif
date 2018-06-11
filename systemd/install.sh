@@ -70,8 +70,14 @@ if [ -f ${SERVICE} ]
 then
     echo "${SERVICE} already exists, so leaving it in place"
 else
-    cp ${SYSTEMD}/iiif-server.service.example /lib/systemd/system/iiif-server.service
-    sudo chmod 755 /lib/systemd/system/iiif-server.service
+    cp ${SYSTEMD}/iiif-server.service.example ${SERVICE}
+    sudo chmod 755 ${SERVICE}
 fi
+
+echo ""
+echo "system stuff installed - you will still need to run the following, manually:"
+echo "	systemctl enable iiif-server.service"
+echo "	systemctl start iiif-server.service"
+echo "also remember that any path-based sources defined in your config (images.source, derivatives.cache, etc.) will need to be writable by the ${USER} user"
 
 exit 0
