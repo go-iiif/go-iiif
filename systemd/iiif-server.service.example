@@ -5,8 +5,8 @@ After=network.target
  
 [Service]
 Type=simple
-User=www-data
-Group=www-data
+User=iiif-server
+Group=iiif-server
 LimitNOFILE=1024
 
 Restart=on-failure
