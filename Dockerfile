@@ -59,4 +59,4 @@ EXPOSE 8080
 
 # RUN ME...
 
-ENTRYPOINT [ "/bin/iiif-server", "-config",  "/etc/iiif-server/config.json" ]
+ENTRYPOINT [ "/bin/iiif-server", "-config",  "/etc/iiif-server/config.json", "-host", "0.0.0.0" ]
