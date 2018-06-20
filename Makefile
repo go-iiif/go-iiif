@@ -67,3 +67,6 @@ bin: 	self
 	@GOPATH=$(GOPATH) go build -o bin/iiif-tile-seed cmd/iiif-tile-seed.go
 	@GOPATH=$(GOPATH) go build -o bin/iiif-transform cmd/iiif-transform.go
 	@GOPATH=$(GOPATH) go build -o bin/iiif-dump-config cmd/iiif-dump-config.go
+
+docker-build:
+	docker build -t go-iiif .
