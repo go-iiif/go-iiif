@@ -10,13 +10,10 @@ import (
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
 	iiifsource "github.com/thisisaaronland/go-iiif/source"
-	_ "log"
+	"log"
 	"math"
-	_ "path/filepath"
 	"runtime"
-	_ "strings"
 	"sync"
-	_ "time"
 )
 
 type TileSeed struct {
@@ -166,9 +163,19 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 				err = tmp.Transform(tr)
 
-				if err == nil {
-					ts.derivatives_cache.Set(uri, tmp.Body())
+				if err != nil {
+					log.Printf("[%s] transform failed: %s\n", im.Identifier(), err)
+					return
 				}
+
+				err = ts.derivatives_cache.Set(uri, tmp.Body())
+
+				if err != nil {
+					log.Printf("[%s] cache set (%s) failed: %s\n", im.Identifier(), uri, err)
+					return 
+				}
+
+				return
 
 			}(throttle, image, transformation, wg)
 		}
