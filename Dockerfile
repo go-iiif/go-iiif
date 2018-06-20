@@ -42,6 +42,21 @@ FROM alpine
 COPY --from=builder /vips/lib/ /usr/local/lib
 COPY --from=builder /go-iiif/bin/iiif-server /bin/iiif-server
 
+RUN apk update \
+    && apk upgrade \
+    && apk add \
+    zlib libxml2 glib gobject-introspection \
+    libjpeg-turbo libexif lcms2 fftw giflib libpng \
+    libwebp orc tiff poppler-glib librsvg libgsf openexr
+
+RUN mkdir /etc/iiif-server
+COPY config.json /etc/iiif-server/config.json
+
+RUN mkdir /usr/local/iiif-server
+COPY example/images/184512_5f7f47e5b3c66207_x.jpg /usr/local/iiif-server/184512_5f7f47e5b3c66207_x.jpg
+
 EXPOSE 8080
 
 # RUN ME...
+
+ENTRYPOINT [ "/bin/iiif-server", "-config",  "/etc/iiif-server/config.json" ]

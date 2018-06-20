@@ -70,3 +70,6 @@ bin: 	self
 
 docker-build:
 	docker build -t go-iiif .
+
+docker-run:
+	docker run -it -p 6161:8080 go-iiif

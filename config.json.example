@@ -5,7 +5,7 @@
     "profile": {
     	"services": {
 		    "enable": [ "palette" ]
-	},    	       
+	}
     },
     "palette": {
     	"extruder": { "name": "vibrant", "count": 5 },
