@@ -237,18 +237,19 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		*/
 
 		_, err = im.bimg.Process(opts)
-
+		
 		if err != nil {
 			return err
 		}
 
-	} else {
+		// This is important and without it tiling gets completely
+		// fubar-ed (20180620/thisisaaronland)
+		// https://github.com/aaronland/go-iiif/issues/46
 
-		// so we used to do this but a) it doesn't appear to be
-		// necessary and b) it has the side-effect of borking
-		// image with EXIF orientation flags and especially images
-		// which appear to have incorrect orientation flags
-		// because computers, amirite... (20180606/thisisaaronland)
+		opts = bimg.Options{}
+		opts.Quality = 100
+
+	} else {
 
 		dims, err := im.Dimensions()
 
@@ -267,6 +268,7 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		if err != nil {
 			return err
 		}
+
 
 		opts.Width = si.Width
 		opts.Height = si.Height
