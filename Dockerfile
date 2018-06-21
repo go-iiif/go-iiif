@@ -43,7 +43,8 @@ RUN apk update \
     && apk add \
     zlib libxml2 glib gobject-introspection \
     libjpeg-turbo libexif lcms2 fftw giflib libpng \
-    libwebp orc tiff poppler-glib librsvg libgsf openexr
+    libwebp orc tiff poppler-glib librsvg libgsf openexr \
+    ca-certificates
 
 RUN mkdir /etc/iiif-server
 RUN mkdir /usr/local/iiif-server
