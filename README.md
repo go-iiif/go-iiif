@@ -957,6 +957,62 @@ The current strategy for seeding tiles may also be directly responsible for some
 
 All of the notes so far have assumed that you are using `iiif-tile-seed`. If you are running `iiif-server` the principle concern will be getting overwhelmed by too many requests for too many different images, especially if they are large, and running out of memory. That is why you can define an [in-memory cache](https://github.com/aaronland/go-iiif/blob/master/README.md#memory) for source images but that will only be of limited use if your problem is handling concurrent requests. It is probably worth adding checks and throttles around current memory usage to the various handlers...
 
+## Docker
+
+[Yes](Dockerfile)
+
+### Building 
+
+```
+docker build -t iiif-server .
+```
+
+### Running 
+
+This is just here as a "for example" and because I can never remember the syntax for this stuff - it
+assumes that you've created the /usr/local/go-iiif/docker/... directories (for mounting with the volumes
+above) locally and copied in the relevant config file and images; adjust to taste 
+
+```
+$> docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/iiif-server/config.json -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server iiif-server
+2018/06/20 23:03:10 Listening for requests at 0.0.0.0:8080
+
+$> curl localhost:6161/test.jpg/info.json
+{"@context":"http://iiif.io/api/image/2/context.json","@id":"http://localhost:6161/test.jpg","@type":"iiif:Image","protocol":"http://iiif.io/api/image","width":3897,"height":4096,"profile":["http://iiif.io/api/image/2/level2.json",{"formats":["gif","webp","jpg","png","tif"],"qualities":["default","color","dither"],"supports":["full","regionByPx","regionByPct","regionSquare","sizeByDistortedWh","sizeByWh","full","max","sizeByW","sizeByH","sizeByPct","sizeByConfinedWh","none","rotationBy90s","mirroring","noAutoRotate","baseUriRedirect","cors","jsonldMediaType"]}],"service":[{"@context":"x-urn:service:go-iiif#palette","profile":"x-urn:service:go-iiif#palette","label":"x-urn:service:go-iiif#palette","palette":[{"name":"#2f2013","hex":"#2f2013","reference":"vibrant"},{"name":"#9e8e65","hex":"#9e8e65","reference":"vibrant"},{"name":"#c6bca6","hex":"#c6bca6","reference":"vibrant"},{"name":"#5f4d32","hex":"#5f4d32","reference":"vibrant"}]}]}
+```
+
+Let's say you're using S3 as an image source and reading (S3) credentials from environment variables (something like `{"source": { "name": "S3", "path": "{BUCKET}", "region": "us-east-1", "credentials": "env:" }`) then you would start up `iiif-server` like this:
+
+```
+$> docker run -it -p 6161:8080 \
+       -e IIIF_SERVER_CONFIG=/etc/iiif-server/config-s3.json \
+       -e AWS_ACCESS_KEY_ID={AWS_KEY} -e AWS_SECRET_ACCESS_KEY={AWS_SECRET} \
+       -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
+       iiif-server
+```
+
+It is also possible to tell `iiif-server` to read its config data from an
+environment variable which can be useful in a Docker scenario. Rather than
+specifying the path to a file in the `-e IIIF_SERVER_CONFIG=` environment
+variable you would pass a string whose syntax is:
+
+```
+env:{NAME_OF_ANOTHER_CONFIG_VARIABLE_TO_READ}
+```
+
+It's a little convoluted but it does work. For example:
+
+```
+$> setenv IIIF_CONFIG_JSON `cat /etc/iiif-server/config-s3.json`
+
+$> docker run -it -p 6161:8080 \
+       -e IIIF_SERVER_CONFIG=env:IIIF_CONFIG_JSON -e IIIF_CONFIG_JSON="${IIIF_CONFIG_JSON}" \
+       -e AWS_ACCESS_KEY_ID={AWS_KEY} -e AWS_SECRET_ACCESS_KEY={AWS_SECRET} \       
+       -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
+       iiif-server
+
+```
+
 ## Notes
 
 * The `iiif-server` does [not support TLS](https://github.com/aaronland/go-iiif/issues/5) yet.
