@@ -55,6 +55,7 @@ fmt:
 	go fmt cache/*.go
 	go fmt cmd/*.go
 	go fmt compliance/*.go
+	go fmt config/*.go
 	go fmt image/*.go
 	go fmt level/*.go
 	go fmt profile/*.go

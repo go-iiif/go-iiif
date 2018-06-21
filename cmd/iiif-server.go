@@ -438,7 +438,7 @@ func main() {
 		log.Fatal("Missing config file")
 	}
 
-	config, err := iiifconfig.NewConfigFromFile(*cfg)
+	config, err := iiifconfig.NewConfigFromFlag(*cfg)
 
 	if err != nil {
 		log.Fatal(err)

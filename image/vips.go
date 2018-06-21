@@ -237,7 +237,7 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		*/
 
 		_, err = im.bimg.Process(opts)
-		
+
 		if err != nil {
 			return err
 		}
@@ -268,7 +268,6 @@ func (im *VIPSImage) Transform(t *Transformation) error {
 		if err != nil {
 			return err
 		}
-
 
 		opts.Width = si.Width
 		opts.Height = si.Height

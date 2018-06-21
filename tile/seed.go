@@ -172,7 +172,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 				if err != nil {
 					log.Printf("[%s] cache set (%s) failed: %s\n", im.Identifier(), uri, err)
-					return 
+					return
 				}
 
 				return

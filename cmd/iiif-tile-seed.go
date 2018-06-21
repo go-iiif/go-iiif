@@ -38,7 +38,7 @@ func main() {
 		golog.Fatal("Missing config file")
 	}
 
-	config, err := iiifconfig.NewConfigFromFile(*cfg)
+	config, err := iiifconfig.NewConfigFromFlag(*cfg)
 
 	if err != nil {
 		golog.Fatal(err)
