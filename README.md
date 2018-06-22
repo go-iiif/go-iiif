@@ -959,7 +959,9 @@ All of the notes so far have assumed that you are using `iiif-tile-seed`. If you
 
 ## Docker
 
-[Yes](Dockerfile)
+[Yes](Dockerfile), or more specifically yes there is a Dockerfile for running a
+copy of `iiif-server`. It would probably be useful to have a Dockerfile for
+tiling a folder ("volume") full of images but that hasn't happened yet.
 
 ### Building 
 
@@ -1019,15 +1021,46 @@ entirely for ECS) it works but... it's weird.
 
 ### Amazon ECS
 
-#### Entrypoint
+I still find ECS to be a world of [poorly-to-weirdly documented](https://aws.amazon.com/getting-started/tutorials/deploy-docker-containers/) strangeness. Remy Dewolf's
+[AWS Fargate: First hands-on experience and
+review](https://medium.com/@remy.dewolf/aws-fargate-first-hands-on-experience-and-review-1b52fca2148e)
+is a pretty good introduction.
+
+What follows are non-comprehensive notes for getting `iiif-server` to work under
+ECS. The bad news is that it's fiddly (and weird, did I mention that?) The good
+news is that I _did_ get it to work.
+
+These are not detailed instructions for setting up `iiif-server` in ECS from
+scratch. You should consult the [Amazon Elastic Container Service Documentation](https://aws.amazon.com/documentation/ecs/)
+for that.
+
+What follows assumes that you're using an S3 "source" for source images and
+derivatives. I have not tried any of this with [EBS volumes mounted as Docker
+volumes](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_data_volumes.html)
+so if you have I'd love to hear about it.
+
+#### Services
+
+You will need to ensure that the service has `Auto-assign public IP(s)`
+enabled. Without it all your instances will fail with [mysterious `...ECS
+"CannotPullContainerError"`
+errors](https://github.com/aws/amazon-ecs-agent/issues/1128).
+
+The corollary to that is that unless you are _wanting_ to expose your instances
+of `iiif-server` to the public internet you will need to add a security group
+(to your ECS service) with suitable restrictions.
+
+#### Containers
+
+##### Entrypoint
 
 `/bin/entrypoint.sh`
 
-#### Port mappings
+##### Port mappings
 
 `8080`
 
-#### Environment variables
+##### Environment variables
 
 | Variable | Value |
 | --- | --- |
