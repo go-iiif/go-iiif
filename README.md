@@ -1013,6 +1013,34 @@ $> docker run -it -p 6161:8080 \
 
 ```
 
+Which is a good a segue in to talking about Amazon's Elastic Container Service
+as any. Like the config-as-environment-variable stuff (which pretty much exists
+entirely for ECS) it works but... it's weird.
+
+### Amazon ECS
+
+#### Entrypoint
+
+`/bin/entrypoint.sh`
+
+#### Port mappings
+
+`8080`
+
+#### Environment variables
+
+| Variable | Value |
+| --- | --- |
+| `IIIF_CONFIG_JSON` | _Your IIIF config file encoded as a string_ |
+| `IIIF_SERVER_CONFIG` | `env:IIIF_CONFIG_JSON` | 
+| `AWS_ACCESS_KEY_ID` | _A valid AWS access key ID for talking to the S3 bucket defined in your config file_ | 
+| `AWS_SECRET_ACCESS_KEY` | _A valid AWS access secret for talking to the S3 bucket defined in your config file_ |
+
+As of this writing the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` variables
+are necessary because if you specify `credential="iam:"` for an S3 source (in
+your IIIF config file) the server fails to start up with a weird error I've
+never seen before. Computers...
+
 ## Notes
 
 * The `iiif-server` does [not support TLS](https://github.com/aaronland/go-iiif/issues/5) yet.
