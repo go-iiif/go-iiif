@@ -1104,6 +1104,8 @@ Probably. Please consult [the currently known-known issues](https://github.com/a
 
 * http://www.aaronland.info/weblog/2016/09/18/marshmallows/#iiif
 * http://www.aaronland.info/weblog/2017/03/05/record/#numbers
+* https://labs.cooperhewitt.org/2017/parting-gifts/
+* https://millsfield.sfomuseum.org/blog/2018/07/18/iiif/
 
 ### Other stuff
 
