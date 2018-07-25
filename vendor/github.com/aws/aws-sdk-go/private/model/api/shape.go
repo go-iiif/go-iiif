@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+
+	"github.com/aws/aws-sdk-go/private/protocol"
 )
 
 // ErrorInfo represents the error block of a shape's structure
@@ -41,9 +43,10 @@ type ShapeRef struct {
 	Ignore           bool
 	XMLNamespace     XMLInfo
 	Payload          string
-	IdempotencyToken bool `json:"idempotencyToken"`
-	JSONValue        bool `json:"jsonvalue"`
-	Deprecated       bool `json:"deprecated"`
+	IdempotencyToken bool   `json:"idempotencyToken"`
+	TimestampFormat  string `json:"timestampFormat"`
+	JSONValue        bool   `json:"jsonvalue"`
+	Deprecated       bool   `json:"deprecated"`
 
 	OrigShapeName string `json:"-"`
 
@@ -72,7 +75,8 @@ type Shape struct {
 	Streaming        bool
 	Location         string
 	LocationName     string
-	IdempotencyToken bool `json:"idempotencyToken"`
+	IdempotencyToken bool   `json:"idempotencyToken"`
+	TimestampFormat  string `json:"timestampFormat"`
 	XMLNamespace     XMLInfo
 	Min              float64 // optional Minimum length (string, list) or value (number)
 	Max              float64 // optional Maximum length (string, list) or value (number)
@@ -203,6 +207,32 @@ func (s *ShapeRef) UseIndirection() bool {
 	return true
 }
 
+func (s Shape) GetTimestampFormat() string {
+	format := s.TimestampFormat
+
+	if len(format) > 0 && !protocol.IsKnownTimestampFormat(format) {
+		panic(fmt.Sprintf("Unknown timestampFormat %s, for %s",
+			format, s.ShapeName))
+	}
+
+	return format
+}
+
+func (ref ShapeRef) GetTimestampFormat() string {
+	format := ref.TimestampFormat
+
+	if len(format) == 0 {
+		format = ref.Shape.TimestampFormat
+	}
+
+	if len(format) > 0 && !protocol.IsKnownTimestampFormat(format) {
+		panic(fmt.Sprintf("Unknown timestampFormat %s, for %s",
+			format, ref.ShapeName))
+	}
+
+	return format
+}
+
 // GoStructValueType returns the Shape's Go type value instead of a pointer
 // for the type.
 func (s *Shape) GoStructValueType(name string, ref *ShapeRef) string {
@@ -295,7 +325,7 @@ func goType(s *Shape, withPkgName bool) string {
 		return "*string"
 	case "blob":
 		return "[]byte"
-	case "integer", "long":
+	case "byte", "short", "integer", "long":
 		return "*int64"
 	case "float", "double":
 		return "*float64"
@@ -368,12 +398,17 @@ func (ref *ShapeRef) GoTags(toplevel bool, isRequired bool) string {
 		tags = append(tags, ShapeTag{"location", ref.Location})
 	} else if ref.Shape.Location != "" {
 		tags = append(tags, ShapeTag{"location", ref.Shape.Location})
+	} else if ref.IsEventHeader {
+		tags = append(tags, ShapeTag{"location", "header"})
 	}
 
 	if ref.LocationName != "" {
 		tags = append(tags, ShapeTag{"locationName", ref.LocationName})
 	} else if ref.Shape.LocationName != "" {
 		tags = append(tags, ShapeTag{"locationName", ref.Shape.LocationName})
+	} else if len(ref.Shape.EventFor) != 0 && ref.API.Metadata.Protocol == "rest-xml" {
+		// RPC JSON events need to have location name modeled for round trip testing.
+		tags = append(tags, ShapeTag{"locationName", ref.Shape.ShapeName})
 	}
 
 	if ref.QueryName != "" {
@@ -401,18 +436,12 @@ func (ref *ShapeRef) GoTags(toplevel bool, isRequired bool) string {
 
 	// embed the timestamp type for easier lookups
 	if ref.Shape.Type == "timestamp" {
-		t := ShapeTag{Key: "timestampFormat"}
-		if ref.Location == "header" {
-			t.Val = "rfc822"
-		} else {
-			switch ref.API.Metadata.Protocol {
-			case "json", "rest-json":
-				t.Val = "unix"
-			case "rest-xml", "ec2", "query":
-				t.Val = "iso8601"
-			}
+		if format := ref.GetTimestampFormat(); len(format) > 0 {
+			tags = append(tags, ShapeTag{
+				Key: "timestampFormat",
+				Val: format,
+			})
 		}
-		tags = append(tags, t)
 	}
 
 	if ref.Shape.Flattened || ref.Flattened {
@@ -560,6 +589,12 @@ var structShapeTmpl = func() *template.Template {
 		shapeTmpl.AddParseTree(
 			"eventStreamEventShapeTmpl", eventStreamEventShapeTmpl.Tree),
 	)
+	template.Must(
+		shapeTmpl.AddParseTree(
+			"eventStreamExceptionEventShapeTmpl",
+			eventStreamExceptionEventShapeTmpl.Tree),
+	)
+	shapeTmpl.Funcs(eventStreamEventShapeTmplFuncs)
 
 	return shapeTmpl
 }()
@@ -598,13 +633,13 @@ type {{ .ShapeName }} struct {
 {{ if not .API.NoStringerMethods }}
 	{{ .GoCodeStringers }}
 {{ end }}
-{{ if not .API.NoValidataShapeMethods }}
+{{ if not (or .API.NoValidataShapeMethods .Exception) }}
 	{{ if .Validations -}}
 		{{ .Validations.GoCode . }}
 	{{ end }}
 {{ end }}
 
-{{ if not .API.NoGenStructFieldAccessors }}
+{{ if not (or .API.NoGenStructFieldAccessors .Exception) }}
 	{{ $builderShapeName := print .ShapeName -}}
 	{{ range $_, $name := $context.MemberNames -}}
 		{{ $elem := index $context.MemberRefs $name -}}
@@ -638,8 +673,12 @@ type {{ .ShapeName }} struct {
 	{{ template "eventStreamAPILoopMethodTmpl" $ }}
 {{ end }}
 
-{{ if $.IsEvent }}
+{{ if $.EventFor }}
 	{{ template "eventStreamEventShapeTmpl" $ }}
+
+	{{- if $.Exception }}
+		{{ template "eventStreamExceptionEventShapeTmpl" $ }}
+	{{ end -}}
 {{ end }}
 `
 

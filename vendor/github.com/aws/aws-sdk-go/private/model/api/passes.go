@@ -255,28 +255,28 @@ func (a *API) renameCollidingFields() {
 	for _, v := range a.Shapes {
 		namesWithSet := map[string]struct{}{}
 		for k, field := range v.MemberRefs {
-			if strings.HasPrefix(k, "Set") {
-				namesWithSet[k] = struct{}{}
+			if _, ok := v.MemberRefs["Set"+k]; ok {
+				namesWithSet["Set"+k] = struct{}{}
 			}
 
-			if collides(k) {
+			if collides(k) || (v.Exception && exceptionCollides(k)) {
 				renameCollidingField(k, v, field)
 			}
 		}
 
 		// checks if any field names collide with setters.
 		for name := range namesWithSet {
-			if field, ok := v.MemberRefs["Set"+name]; ok {
-				renameCollidingField(name, v, field)
-			}
+			field := v.MemberRefs[name]
+			renameCollidingField(name, v, field)
 		}
 	}
-
 }
 
 func renameCollidingField(name string, v *Shape, field *ShapeRef) {
 	newName := name + "_"
-	fmt.Printf("Shape %s's field %q renamed to %q\n", v.ShapeName, name, newName)
+	if !(v.Exception && (name == "Code" || name == "Message")) {
+		fmt.Printf("Shape %s's field %q renamed to %q\n", v.ShapeName, name, newName)
+	}
 	delete(v.MemberRefs, name)
 	v.MemberRefs[newName] = field
 }
@@ -288,9 +288,18 @@ func collides(name string) bool {
 		"GoString",
 		"Validate":
 		return true
-	default:
-		return false
 	}
+	return false
+}
+
+func exceptionCollides(name string) bool {
+	switch name {
+	case "Code",
+		"Message",
+		"OrigErr":
+		return true
+	}
+	return false
 }
 
 // createInputOutputShapes creates toplevel input/output shapes if they
@@ -351,5 +360,23 @@ func (a *API) setMetadataEndpointsKey() {
 		a.Metadata.EndpointsID = v
 	} else {
 		a.Metadata.EndpointsID = a.Metadata.EndpointPrefix
+	}
+}
+
+// Suppress event stream must be run before setup event stream
+func (a *API) suppressHTTP2EventStreams() {
+	if a.Metadata.ProtocolSettings.HTTP2 != "eventstream" {
+		return
+	}
+
+	for name, op := range a.Operations {
+		outbound := hasEventStream(op.InputRef.Shape)
+		inbound := hasEventStream(op.OutputRef.Shape)
+
+		if !(outbound || inbound) {
+			continue
+		}
+
+		a.removeOperation(name)
 	}
 }
