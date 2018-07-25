@@ -4,7 +4,7 @@
 
 FROM golang:alpine as builder
 
-ARG VIPS_VERSION=8.6.4
+ARG VIPS_VERSION=8.6.5
 
 ENV VIPS_DIR=/vips
 ENV PKG_CONFIG_PATH=${VIPS_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
