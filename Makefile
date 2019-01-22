@@ -75,4 +75,4 @@ docker-build:
 	docker build -t go-iiif .
 
 docker-run:
-	docker run -it -p 6161:8080 go-iiif
+	docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/iiif-server/config.json -v $(CWD)/docker/etc:/etc/iiif-server -v $(CWD)/docker/images:/usr/local/iiif-server go-iiif
