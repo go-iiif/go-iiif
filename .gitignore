@@ -10,4 +10,3 @@ bin/
 *.json
 .gitmodules
 vips-*
-docker

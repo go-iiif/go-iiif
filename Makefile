@@ -71,8 +71,11 @@ bin: 	self
 	@GOPATH=$(GOPATH) go build -o bin/iiif-transform cmd/iiif-transform.go
 	@GOPATH=$(GOPATH) go build -o bin/iiif-dump-config cmd/iiif-dump-config.go
 
-docker-build:
-	docker build -t go-iiif .
+docker-cli-build:
+	docker build -f docker/cli/Dockerfile -t go-iiif-cli .
 
-docker-run:
-	docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/iiif-server/config.json -v $(CWD)/docker/etc:/etc/iiif-server -v $(CWD)/docker/images:/usr/local/iiif-server go-iiif
+docker-server-build:
+	docker build -f docker/server/Dockerfile -t go-iiif-server .
+
+docker-server-run:
+	docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/iiif-server/config.json -v $(CWD)/docker/etc:/etc/iiif-server -v $(CWD)/docker/images:/usr/local/iiif-server go-iiif-cli
