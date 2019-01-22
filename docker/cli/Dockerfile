@@ -51,5 +51,5 @@ RUN mkdir /usr/local/go-iiif
 VOLUME /etc/go-iiif
 VOLUME /usr/local/go-iiif
 
-COPY docker/cli/entrypoint.sh /bin/entrypoint.sh
+COPY entrypoint.sh /bin/entrypoint.sh
 ENTRYPOINT "/bin/entrypoint.sh"

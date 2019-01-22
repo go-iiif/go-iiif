@@ -69,13 +69,17 @@ bin: 	self
 	@GOPATH=$(GOPATH) go build -o bin/iiif-server cmd/iiif-server.go
 	@GOPATH=$(GOPATH) go build -o bin/iiif-tile-seed cmd/iiif-tile-seed.go
 	@GOPATH=$(GOPATH) go build -o bin/iiif-transform cmd/iiif-transform.go
+	@GOPATH=$(GOPATH) go build -o bin/iiif-process cmd/iiif-process.go
 	@GOPATH=$(GOPATH) go build -o bin/iiif-dump-config cmd/iiif-dump-config.go
 
 docker-cli-build:
-	docker build -f docker/cli/Dockerfile -t go-iiif-cli .
+	docker build -t go-iiif-cli docker/cli
+
+docker-cli-run:
+	docker run -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif -e IIIF_SERVER_CONFIG=/etc/go-iiif/config.json -e IIIF_FORMAT=$(FORMAT) -e IIIF_QUALITY=$(QUALITY) -e IIIF_REGION=$(REGION) -e IIIF_ROTATION=$(ROTATION) -e IIIF_SIZE=$(SIZE) -e URI=$(URI) go-iiif-cli
 
 docker-server-build:
-	docker build -f docker/server/Dockerfile -t go-iiif-server .
+	docker build -f docker/server/Dockerfile -t go-iiif-server 
 
 docker-server-run:
-	docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/iiif-server/config.json -v $(CWD)/docker/etc:/etc/iiif-server -v $(CWD)/docker/images:/usr/local/iiif-server go-iiif-cli
+	docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/go-iiif/config.json -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif go-iiif-server
