@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
        "fmt"
        "io"
        "os"
@@ -45,4 +46,6 @@ func main() {
 	l := log.SimpleWOFLogger("foo")
 	l.Status("FOO")
 	l.Info("Info")
+
+	l.Fatal(errors.New("THE END"))
 }

@@ -1,5 +1,8 @@
 package log
 
+// Please make this implement the rest of log.Logger
+// https://golang.org/pkg/log/
+
 import (
 	"fmt"
 	"io"
@@ -10,22 +13,22 @@ import (
 )
 
 type WOFLog interface {
-	Fatal(format string, v ...interface{})
-	Error(format string, v ...interface{})
-	Warning(format string, v ...interface{})
-	Status(format string, v ...interface{})
-	Info(format string, v ...interface{})
-	Debug(format string, v ...interface{})
+	Fatal(...interface{})
+	Error(...interface{})
+	Warning(...interface{})
+	Status(...interface{})
+	Info(...interface{})
+	Debug(...interface{})
 }
 
 type MockLogger struct{}
 
-func (m *MockLogger) Fatal(format string, v ...interface{})   {}
-func (m *MockLogger) Error(format string, v ...interface{})   {}
-func (m *MockLogger) Warning(format string, v ...interface{}) {}
-func (m *MockLogger) Status(format string, v ...interface{})  {}
-func (m *MockLogger) Info(format string, v ...interface{})    {}
-func (m *MockLogger) Debug(format string, v ...interface{})   {}
+func (m *MockLogger) Fatal(...interface{})   {}
+func (m *MockLogger) Error(...interface{})   {}
+func (m *MockLogger) Warning(...interface{}) {}
+func (m *MockLogger) Status(...interface{})  {}
+func (m *MockLogger) Info(...interface{})    {}
+func (m *MockLogger) Debug(...interface{})   {}
 
 type WOFLogger struct {
 	Loggers map[string]*golog.Logger
@@ -108,38 +111,45 @@ func (l WOFLogger) AddLogger(out io.Writer, minlevel string) (bool, error) {
 	return true, nil
 }
 
-func (l WOFLogger) Debug(format string, v ...interface{}) {
-	l.dispatch("debug", format, v...)
+func (l WOFLogger) Debug(v ...interface{}) {
+	l.dispatch("debug", v...)
 }
 
-func (l WOFLogger) Info(format string, v ...interface{}) {
-	l.dispatch("info", format, v...)
+func (l WOFLogger) Info(v ...interface{}) {
+	l.dispatch("info", v...)
 }
 
-func (l WOFLogger) Status(format string, v ...interface{}) {
-	l.dispatch("status", format, v...)
+func (l WOFLogger) Status(v ...interface{}) {
+	l.dispatch("status", v...)
 }
 
-func (l WOFLogger) Warning(format string, v ...interface{}) {
-	l.dispatch("warning", format, v...)
+func (l WOFLogger) Warning(v ...interface{}) {
+	l.dispatch("warning", v...)
 }
 
-func (l WOFLogger) Error(format string, v ...interface{}) {
-	l.dispatch("error", format, v...)
+func (l WOFLogger) Error(v ...interface{}) {
+	l.dispatch("error", v...)
 }
 
-func (l WOFLogger) Fatal(format string, v ...interface{}) {
-	l.dispatch("fatal", format, v...)
+func (l WOFLogger) Fatal(v ...interface{}) {
+	l.dispatch("fatal", v...)
 	os.Exit(1)
 }
 
-func (l WOFLogger) dispatch(level string, format string, v ...interface{}) {
+func (l WOFLogger) dispatch(level string, args ...interface{}) {
+
+	format := "%v"
+
+	if len(args) > 1 {
+		format = args[0].(string)
+		args = args[1:]
+	}
 
 	for minlevel, logger := range l.Loggers {
 
 		if l.emit(level, minlevel) {
 
-			msg := fmt.Sprintf(format, v...)
+			msg := fmt.Sprintf(format, args...)
 
 			out := fmt.Sprintf("%s %s %s", l.Prefix, strings.ToUpper(level), msg)
 			logger.Println(out)
