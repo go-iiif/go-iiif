@@ -4,14 +4,14 @@
 
 FROM golang:alpine as builder
 
-ARG VIPS_VERSION=8.7.0
+ARG VIPS_VERSION=8.7.4
 
 ENV VIPS_DIR=/vips
 ENV PKG_CONFIG_PATH=${VIPS_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
 
 ADD . /go-iiif
 
-RUN wget -O- https://github.com/jcupitt/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.gz | tar xzC /tmp \
+RUN wget -O- https://github.com/libvips/libvips/releases/download/v${VIPS_VERSION}/vips-${VIPS_VERSION}.tar.gz | tar xzC /tmp \
     && apk update \
     && apk upgrade \
     && apk add \
