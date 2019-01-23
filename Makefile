@@ -74,14 +74,25 @@ bin: 	self
 	@GOPATH=$(GOPATH) go build -o bin/iiif-process cmd/iiif-process.go
 	@GOPATH=$(GOPATH) go build -o bin/iiif-dump-config cmd/iiif-dump-config.go
 
+docker-build:
+	@make docker-cli-build
+	@make docker-server-build
+
 docker-cli-build:
-	docker build -t go-iiif-cli docker/cli
+	docker build -f Dockerfile.cli -t go-iiif-cli .
+
+# for example (and note the mapped folders below)
+# make docker-cli-run CONFIG=/etc/go-iiif/config.json INSTRUCTIONS=/etc/go-iiif/instructions.json URI=test2.jpg
 
 docker-cli-run:
-	docker run -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif -e IIIF_SERVER_CONFIG=/etc/go-iiif/config.json -e IIIF_FORMAT=$(FORMAT) -e IIIF_QUALITY=$(QUALITY) -e IIIF_REGION=$(REGION) -e IIIF_ROTATION=$(ROTATION) -e IIIF_SIZE=$(SIZE) -e URI=$(URI) go-iiif-cli
+	docker run -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif go-iiif-cli /bin/iiif-process -config=$(CONFIG) -instructions=$(INSTRUCTIONS) $(URI)
 
 docker-server-build:
-	docker build -f docker/server/Dockerfile -t go-iiif-server 
+	docker build -f Dockerfile.server -t go-iiif-server .
+
+# for example (and note the mapped folders below)
+# make docker-server-run CONFIG=/etc/go-iiif/config.json
+# curl localhost:6161/test2.jpg/info.json
 
 docker-server-run:
-	docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/go-iiif/config.json -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif go-iiif-server
+	docker run -it -p 6161:8080 -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif go-iiif-server /bin/iiif-server -host 0.0.0.0 -config=$(CONFIG)

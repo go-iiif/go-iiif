@@ -36,14 +36,15 @@ RUN wget -O- https://github.com/libvips/libvips/releases/download/v${VIPS_VERSIO
 FROM alpine
 
 COPY --from=builder /vips/lib/ /usr/local/lib
-COPY --from=builder /go-iiif/bin/iiif-transform /bin/iiif-transform
+COPY --from=builder /go-iiif/bin/iiif-server /bin/iiif-server
 
 RUN apk update \
     && apk upgrade \
     && apk add \
     zlib libxml2 glib gobject-introspection \
     libjpeg-turbo libexif lcms2 fftw giflib libpng \
-    libwebp orc tiff poppler-glib librsvg libgsf openexr
+    libwebp orc tiff poppler-glib librsvg libgsf openexr \
+    ca-certificates
 
 RUN mkdir /etc/go-iiif
 RUN mkdir /usr/local/go-iiif
@@ -51,5 +52,4 @@ RUN mkdir /usr/local/go-iiif
 VOLUME /etc/go-iiif
 VOLUME /usr/local/go-iiif
 
-COPY entrypoint.sh /bin/entrypoint.sh
-ENTRYPOINT "/bin/entrypoint.sh"
+EXPOSE 8080
