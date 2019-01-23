@@ -3,6 +3,7 @@ package aws
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"github.com/whosonfirst/go-whosonfirst-aws/s3"
 	"io"
 	"io/ioutil"
@@ -41,6 +42,8 @@ func S3GetWrapper(conn *s3.S3Connection, key string) ([]byte, error) {
 }
 
 func S3SetWrapper(conn *s3.S3Connection, key string, body []byte) error {
+
+	key = fmt.Sprintf("%s#acl=public-read", key)
 
 	r := bytes.NewReader(body)
 	fh := ioutil.NopCloser(r)
