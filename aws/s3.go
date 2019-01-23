@@ -33,7 +33,7 @@ func NewS3Connection(s3cfg S3Config) (*S3Connection, error) {
 
 	cfg := aws.NewConfig()
 	cfg.WithRegion(s3cfg.Region)
-
+	
 	if strings.HasPrefix(s3cfg.Credentials, "env:") {
 
 		creds := credentials.NewEnvCredentials()
