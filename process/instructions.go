@@ -26,8 +26,8 @@ func ReadInstructions(str_instructions string) (IIIFInstructionSet, error) {
 		raw_instructions = []byte(str_instructions)
 
 	} else {
-		path := strings.Replace(str_instructions, "file://", "", -1)
-
+		
+		path := str_instructions
 		fh, err := os.Open(path)
 
 		if err != nil {
