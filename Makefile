@@ -15,6 +15,7 @@ self:   prep rmdeps
 	cp -r http src/github.com/thisisaaronland/go-iiif/
 	cp -r image src/github.com/thisisaaronland/go-iiif/
 	cp -r level src/github.com/thisisaaronland/go-iiif/
+	cp -r process src/github.com/thisisaaronland/go-iiif/
 	cp -r profile src/github.com/thisisaaronland/go-iiif/
 	cp -r service src/github.com/thisisaaronland/go-iiif/
 	cp -r source src/github.com/thisisaaronland/go-iiif/
@@ -60,6 +61,7 @@ fmt:
 	go fmt http/*.go
 	go fmt image/*.go
 	go fmt level/*.go
+	go fmt process/*.go
 	go fmt profile/*.go
 	go fmt service/*.go
 	go fmt source/*.go
