@@ -82,11 +82,14 @@ docker-build:
 docker-cli-build:
 	docker build -f Dockerfile.cli -t go-iiif-cli .
 
-# for example (and note the mapped folders below)
+# for example (and note the mapped folders below):
 # make docker-cli-run CONFIG=/etc/go-iiif/config.json INSTRUCTIONS=/etc/go-iiif/instructions.json URI=test2.jpg
 
+# if you need to pass AWS/S3 hoohah you'll need to do this by hand:
+# docker run -v /Users/asc/aaronland/go-iiif/docker/etc:/etc/go-iiif -e AWS_ACCESS_KEY_ID={ID} -e AWS_SECRET_ACCESS_KEY={KEY} go-iiif-cli /bin/iiif-process -config=/etc/go-iiif/config.json -instructions=/etc/go-iiif/instructions.json -uri=1360979033.png
+
 docker-cli-run:
-	docker run -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif go-iiif-cli /bin/iiif-process -config=$(CONFIG) -instructions=$(INSTRUCTIONS) $(URI)
+	docker run -v $(CWD)/docker/etc:/etc/go-iiif -v $(CWD)/docker/images:/usr/local/go-iiif go-iiif-cli /bin/iiif-process -config=$(CONFIG) -instructions=$(INSTRUCTIONS) -uri=$(URI)
 
 docker-server-build:
 	docker build -f Dockerfile.server -t go-iiif-server .

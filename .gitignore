@@ -10,3 +10,4 @@ bin/
 *.json
 .gitmodules
 vips-*
+credentials*
