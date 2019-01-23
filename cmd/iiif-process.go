@@ -15,6 +15,7 @@ import (
 	"github.com/thisisaaronland/go-iiif/config"
 	// "github.com/thisisaaronland/go-iiif/image"
 	"github.com/thisisaaronland/go-iiif/process"
+	"github.com/whosonfirst/go-whosonfirst-cli/flags"	
 	"log"
 )
 
@@ -23,6 +24,9 @@ func main() {
 	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file")
 	var instructions = flag.String("instructions", "", "...")
 
+	var uris flags.MultiString
+	flag.Var(&uris, "uri", "...")
+	
 	flag.Parse()
 
 	instruction_set, err := process.ReadInstructions(*instructions)
@@ -51,7 +55,7 @@ func main() {
 		}
 	*/
 
-	for _, uri := range flag.Args() {
+	for _, uri := range uris {
 
 		r, err := pr.ProcessURIWithInstructionSet(uri, instruction_set)
 
