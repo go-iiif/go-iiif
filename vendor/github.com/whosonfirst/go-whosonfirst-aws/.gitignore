@@ -1,0 +1,12 @@
+.DS_Store
+.vagrant
+ubuntu-xenial-16.04-cloudimg-console.log
+pkg/
+src/
+bin/
+!bin/README.md
+*~
+!vendor/src
+*.json
+.gitmodules
+vips-*

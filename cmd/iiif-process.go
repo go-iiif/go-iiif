@@ -15,7 +15,7 @@ import (
 	"github.com/thisisaaronland/go-iiif/config"
 	// "github.com/thisisaaronland/go-iiif/image"
 	"github.com/thisisaaronland/go-iiif/process"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"	
+	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
 )
 
@@ -26,7 +26,7 @@ func main() {
 
 	var uris flags.MultiString
 	flag.Var(&uris, "uri", "...")
-	
+
 	flag.Parse()
 
 	instruction_set, err := process.ReadInstructions(*instructions)

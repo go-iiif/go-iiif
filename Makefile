@@ -38,11 +38,11 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "gopkg.in/h2non/bimg.v1"
 	@GOPATH=$(GOPATH) go get -u "github.com/koyachi/go-atkinson"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-sanitize"
+	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-aws"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-cli"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-csv"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-log"
 	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
-	@GOPATH=$(GOPATH) go get -u "github.com/aws/aws-sdk-go"
 	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-colours"
 
 vendor-deps: rmdeps deps

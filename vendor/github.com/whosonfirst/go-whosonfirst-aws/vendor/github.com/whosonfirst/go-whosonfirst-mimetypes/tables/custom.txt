@@ -1,0 +1,5 @@
+# this file is modeled after https://svn.apache.org/viewvc/httpd/httpd/branches/2.2.x/docs/conf/mime.types?view=co
+# MIME type (lowercased)			Extensions
+# ============================================	==========
+# https://sgillies.net/2014/05/22/the-geojson-media-type.html
+application/vnd.geo+json	geojson

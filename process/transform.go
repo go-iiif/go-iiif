@@ -28,7 +28,7 @@ func TransformURIWithInstructions(uri string, i IIIFInstructions, config *iiifco
 	}
 
 	// BUT WHAT IF WE WANT TO FORCE THE TRANSFORM...
-	
+
 	_, err = dest_cache.Get(new_uri)
 
 	if err == nil {
@@ -40,7 +40,7 @@ func TransformURIWithInstructions(uri string, i IIIFInstructions, config *iiifco
 	if err != nil {
 		return "", err
 	}
-	
+
 	err = im.Transform(transformation)
 
 	if err != nil {
