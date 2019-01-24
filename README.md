@@ -963,26 +963,37 @@ All of the notes so far have assumed that you are using `iiif-tile-seed`. If you
 
 ## Docker
 
-[Yes](Dockerfile), or more specifically yes there is a Dockerfile for running a
-copy of `iiif-server`. It would probably be useful to have a Dockerfile for
-tiling a folder ("volume") full of images but that hasn't happened yet.
+Yes. There are two Dockerfiles included with this distribution.
 
-### Building 
+* [Dockerfile.server](Dockerfile.server) will build a container that runs `iiif-server` on port `8080`.
+* [Dockerfile.cli](Dockerfile.cli) will build a container that can run the  `iiif-process` command-line tool.
 
-```
-docker build -t iiif-server .
-```
+It would probably be useful to have a Dockerfile for tiling a folder ("volume") full of images but that hasn't happened yet.
 
-### Running 
+### iiif-server
 
-This is just here as a "for example" and because I can never remember the syntax for this stuff - it
-assumes that you've created the /usr/local/go-iiif/docker/... directories (for mounting with the volumes
-above) locally and copied in the relevant config file and images; adjust to taste 
+To build the `iiif-server` container run:
 
 ```
-$> docker run -it -p 6161:8080 -e IIIF_SERVER_CONFIG=/etc/iiif-server/config.json -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server iiif-server
+docker build -f Dockerfile.server -t go-iiif-server .
+```
+
+You can also just run the handy `make docker-cli-build` target defined in the Makefile.
+
+To run the `iiif-server` container run:
+
+```
+$> docker run -it -p 6161:8080 \
+   -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
+   iiif-server \
+   /bin/iiif-server -host 0.0.0.0 -config /etc/iiif-server/config.json
+   
 2018/06/20 23:03:10 Listening for requests at 0.0.0.0:8080
+```
 
+And then, in another terminal:
+
+```
 $> curl localhost:6161/test.jpg/info.json
 {"@context":"http://iiif.io/api/image/2/context.json","@id":"http://localhost:6161/test.jpg","@type":"iiif:Image","protocol":"http://iiif.io/api/image","width":3897,"height":4096,"profile":["http://iiif.io/api/image/2/level2.json",{"formats":["gif","webp","jpg","png","tif"],"qualities":["default","color","dither"],"supports":["full","regionByPx","regionByPct","regionSquare","sizeByDistortedWh","sizeByWh","full","max","sizeByW","sizeByH","sizeByPct","sizeByConfinedWh","none","rotationBy90s","mirroring","noAutoRotate","baseUriRedirect","cors","jsonldMediaType"]}],"service":[{"@context":"x-urn:service:go-iiif#palette","profile":"x-urn:service:go-iiif#palette","label":"x-urn:service:go-iiif#palette","palette":[{"name":"#2f2013","hex":"#2f2013","reference":"vibrant"},{"name":"#9e8e65","hex":"#9e8e65","reference":"vibrant"},{"name":"#c6bca6","hex":"#c6bca6","reference":"vibrant"},{"name":"#5f4d32","hex":"#5f4d32","reference":"vibrant"}]}]}
 ```
@@ -991,37 +1002,21 @@ Let's say you're using S3 as an image source and reading (S3) credentials from e
 
 ```
 $> docker run -it -p 6161:8080 \
-       -e IIIF_SERVER_CONFIG=/etc/iiif-server/config-s3.json \
+       -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
        -e AWS_ACCESS_KEY_ID={AWS_KEY} -e AWS_SECRET_ACCESS_KEY={AWS_SECRET} \
-       -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
-       iiif-server
+       go-iiif-server \
+       /bin/iiif-server -host 0.0.0.0 -config /etc/iiif-server/config.json       
 ```
 
-It is also possible to tell `iiif-server` to read its config data from an
-environment variable which can be useful in a Docker scenario. Rather than
-specifying the path to a file in the `-e IIIF_SERVER_CONFIG=` environment
-variable you would pass a string whose syntax is:
+### iiif-process
+
+To build the `iiif-process` container run:
 
 ```
-env:{NAME_OF_ANOTHER_CONFIG_VARIABLE_TO_READ}
+docker build -f Dockerfile.cli -t go-iiif-cli .
 ```
 
-It's a little convoluted but it does work. For example:
-
-```
-$> setenv IIIF_CONFIG_JSON `cat /etc/iiif-server/config-s3.json`
-
-$> docker run -it -p 6161:8080 \
-       -e IIIF_SERVER_CONFIG=env:IIIF_CONFIG_JSON -e IIIF_CONFIG_JSON="${IIIF_CONFIG_JSON}" \
-       -e AWS_ACCESS_KEY_ID={AWS_KEY} -e AWS_SECRET_ACCESS_KEY={AWS_SECRET} \       
-       -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
-       iiif-server
-
-```
-
-Which is a good a segue in to talking about Amazon's Elastic Container Service
-as any. Like the config-as-environment-variable stuff (which pretty much exists
-entirely for ECS) it works but... it's weird.
+You can also just run the handy `make docker-cli-build` target defined in the Makefile.
 
 ### Amazon ECS
 
