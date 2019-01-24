@@ -966,7 +966,7 @@ All of the notes so far have assumed that you are using `iiif-tile-seed`. If you
 Yes. There are two Dockerfiles included with this distribution.
 
 * [Dockerfile.server](Dockerfile.server) will build a container that runs `iiif-server` on port `8080`.
-* [Dockerfile.cli](Dockerfile.cli) will build a container that can run the  `iiif-process` command-line tool.
+* [Dockerfile.process](Dockerfile.process) will build a container that can run the  `iiif-process` command-line tool.
 
 It would probably be useful to have a Dockerfile for tiling a folder ("volume") full of images but that hasn't happened yet.
 
@@ -1013,10 +1013,18 @@ $> docker run -it -p 6161:8080 \
 To build the `iiif-process` container run:
 
 ```
-docker build -f Dockerfile.cli -t go-iiif-cli .
+docker build -f Dockerfile.process -t go-iiif-process .
 ```
 
-You can also just run the handy `make docker-cli-build` target defined in the Makefile.
+You can also just run the handy `make docker-process-build` target defined in the Makefile.
+
+```
+$> docker run \
+   -v /usr/local/go-iiif/docker/etc:/etc/go-iiif \
+   go-iiif-process
+   /bin/iiif-process -config=/etc/go-iiif/config.json -instructions=/etc/go-iiif/instructions.json
+   -uri=test.jpg
+```
 
 ### Amazon ECS
 
