@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/thisisaaronland/go-iiif/cache"	
 	"github.com/thisisaaronland/go-iiif/config"
 	"github.com/thisisaaronland/go-iiif/process"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
@@ -42,6 +43,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	dest_cache, err := cache.NewDerivativesCacheFromConfig(cfg)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	
 	results := make(map[string]interface{})
 	
 	for _, uri := range uris {
@@ -52,15 +59,28 @@ func main() {
 			log.Fatal(err)
 		}
 
+		enc_rsp, err := json.Marshal(rsp)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		key := fmt.Sprintf("%s.processed.json", uri)
+		err = dest_cache.Set(key, enc_rsp)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		
 		results[uri] = rsp
 	}
-
+		
 	enc_results, err := json.Marshal(results)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	fmt.Println(string(enc_results))
 	os.Exit(0)
 }
