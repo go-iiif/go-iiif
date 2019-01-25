@@ -58,9 +58,9 @@ $> ./bin/iiif-process -config config.json -instructions instructions.json -uri a
 }
 ```
 
-#### instructions.json
+#### "instructions" files
 
-For example:
+An instruction file is a JSON-encoded dictionary. Keys are user-defined and values are dictionary of IIIF one or more transformation instructions. For example:
 
 ```
 {
@@ -69,6 +69,18 @@ For example:
     "d": {"size": "full", "quality": "dither", "region": "-1,-1,320,320", "format": "jpg" }	
 }
 
+```
+
+The complete list of possible instructions is:
+
+```
+type IIIFInstructions struct {
+	Region   string `json:"region"`
+	Size     string `json:"size"`
+	Rotation string `json:"rotation"`
+	Quality  string `json:"quality"`
+	Format   string `json:"format"`
+}
 ```
 
 ### iiif-server
