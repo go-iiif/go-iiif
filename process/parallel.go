@@ -18,16 +18,31 @@ type ParallelProcessor struct {
 
 func NewParallelProcessor(config *iiifconfig.Config) (Processor, error) {
 
-	source_cache, err := iiifcache.NewImagesCacheFromConfig(config)
+	return NewParallelProcessorWithCaches(config, nil, nil)
+}
 
-	if err != nil {
-		return nil, err
+func NewParallelProcessorWithCaches(config *iiifconfig.Config, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (Processor, error) {
+
+	if source_cache == nil {
+
+		c, err := iiifcache.NewImagesCacheFromConfig(config)
+
+		if err != nil {
+			return nil, err
+		}
+
+		source_cache = c
 	}
 
-	dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+	if dest_cache == nil {
 
-	if err != nil {
-		return nil, err
+		c, err := iiifcache.NewDerivativesCacheFromConfig(config)
+
+		if err != nil {
+			return nil, err
+		}
+
+		dest_cache = c
 	}
 
 	pr := ParallelProcessor{

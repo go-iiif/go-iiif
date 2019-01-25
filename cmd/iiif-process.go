@@ -71,7 +71,7 @@ func main() {
 
 				if err != nil {
 					log.Printf("Unable to write process report %s, %s", key, err)
-				} 
+				}
 			}()
 		}
 
