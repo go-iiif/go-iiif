@@ -1,31 +1,26 @@
 package main
 
-/*
-
-./bin/iiif-process -config ./config.json -instructions file://instructions.json example.jpg
-2019/01/22 16:13:07 d example.jpg/-1,-1,320,320/full/0/dither.jpg
-2019/01/22 16:13:07 b example.jpg/full/!2048,1536/0/color.jpg
-2019/01/22 16:13:07 o example.jpg/full/full/-1/color.jpg
-
-*/
+// ./bin/iiif-process -config config.json -instructions instructions.json -uri avocado.png
+// {"avocado.png":{"b":"avocado.png/full/!2048,1536/0/color.jpg","d":"avocado.png/-1,-1,320,320/full/0/dither.jpg","o":"avocado.png/full/full/-1/color.jpg"}}
 
 import (
+	"encoding/json"
 	"flag"
-	// "github.com/thisisaaronland/go-iiif/cache"
+	"fmt"
 	"github.com/thisisaaronland/go-iiif/config"
-	// "github.com/thisisaaronland/go-iiif/image"
 	"github.com/thisisaaronland/go-iiif/process"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
+	"os"
 )
 
 func main() {
 
-	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file")
-	var instructions = flag.String("instructions", "", "...")
+	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file.")
+	var instructions = flag.String("instructions", "", "Path to a valid go-iiif processing instructions file.")
 
 	var uris flags.MultiString
-	flag.Var(&uris, "uri", "...")
+	flag.Var(&uris, "uri", "One or more valid IIIF URIs.")
 
 	flag.Parse()
 
@@ -47,35 +42,25 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*
-		dest_cache, err := cache.NewDerivativesCacheFromConfig(cfg)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-	*/
-
+	results := make(map[string]interface{})
+	
 	for _, uri := range uris {
 
-		r, err := pr.ProcessURIWithInstructionSet(uri, instruction_set)
+		rsp, err := pr.ProcessURIWithInstructionSet(uri, instruction_set)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		for label, new_uri := range r {
-
-			log.Println(label, new_uri)
-
-			/*
-				im, err := image.NewImageFromConfigWithCache(cfg, dest_cache, new_uri)
-
-				if err != nil {
-					log.Fatal(err)
-				}
-			*/
-		}
-
+		results[uri] = rsp
 	}
 
+	enc_results, err := json.Marshal(results)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	
+	fmt.Println(string(enc_results))
+	os.Exit(0)
 }
