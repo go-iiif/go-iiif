@@ -7,18 +7,23 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/thisisaaronland/go-iiif/cache"	
+	"github.com/thisisaaronland/go-iiif/cache"
 	"github.com/thisisaaronland/go-iiif/config"
 	"github.com/thisisaaronland/go-iiif/process"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
 	"os"
+	"path/filepath"
+	"sync"
 )
 
 func main() {
 
 	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file.")
 	var instructions = flag.String("instructions", "", "Path to a valid go-iiif processing instructions file.")
+
+	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
+	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
 
 	var uris flags.MultiString
 	flag.Var(&uris, "uri", "One or more valid IIIF URIs.")
@@ -43,14 +48,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dest_cache, err := cache.NewDerivativesCacheFromConfig(cfg)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-	
 	results := make(map[string]interface{})
-	
+	wg := new(sync.WaitGroup)
+
 	for _, uri := range uris {
 
 		rsp, err := pr.ProcessURIWithInstructionSet(uri, instruction_set)
@@ -59,22 +59,27 @@ func main() {
 			log.Fatal(err)
 		}
 
-		enc_rsp, err := json.Marshal(rsp)
+		if *report {
 
-		if err != nil {
-			log.Fatal(err)
+			key := filepath.Join(uri, *report_name)
+			wg.Add(1)
+
+			go func() {
+
+				defer wg.Done()
+				err := report_processing(cfg, key, rsp)
+
+				if err != nil {
+					log.Printf("Unable to write process report %s, %s", key, err)
+				} 
+			}()
 		}
 
-		key := fmt.Sprintf("%s.processed.json", uri)
-		err = dest_cache.Set(key, enc_rsp)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-		
 		results[uri] = rsp
 	}
-		
+
+	wg.Wait()
+
 	enc_results, err := json.Marshal(results)
 
 	if err != nil {
@@ -83,4 +88,22 @@ func main() {
 
 	fmt.Println(string(enc_results))
 	os.Exit(0)
+}
+
+func report_processing(cfg *config.Config, key string, rsp map[string]string) error {
+
+	dest_cache, err := cache.NewDerivativesCacheFromConfig(cfg)
+
+	if err != nil {
+		return err
+
+	}
+
+	enc_rsp, err := json.Marshal(rsp)
+
+	if err != nil {
+		return err
+	}
+
+	return dest_cache.Set(key, enc_rsp)
 }

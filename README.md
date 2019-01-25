@@ -30,7 +30,22 @@ $> make bin
 
 ### iiif-process
 
-...
+```
+> ./bin/iiif-process -h
+Usage of ./bin/iiif-process:
+  -config string
+    	Path to a valid go-iiif config file.
+  -instructions string
+    	Path to a valid go-iiif processing instructions file.
+  -report
+    	Store a process report (JSON) for each URI in the cache tree.
+  -report-name string
+    	The filename for process reports. Default is 'process.json' as in '${URI}/process.json'. (default "process.json")
+  -uri value
+    	One or more valid IIIF URIs.
+```
+
+For example:
 
 ```
 $> ./bin/iiif-process -config config.json -instructions instructions.json -uri avocado.png | jq
@@ -41,6 +56,19 @@ $> ./bin/iiif-process -config config.json -instructions instructions.json -uri a
     "o": "avocado.png/full/full/-1/color.jpg"
   }
 }
+```
+
+#### instructions.json
+
+For example:
+
+```
+{
+    "o": {"size": "full", "format": "", "rotation": "-1" },
+    "b": {"size": "!2048,1536", "format": "jpg" },
+    "d": {"size": "full", "quality": "dither", "region": "-1,-1,320,320", "format": "jpg" }	
+}
+
 ```
 
 ### iiif-server
