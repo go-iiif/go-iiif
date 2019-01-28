@@ -18,7 +18,7 @@ type Config struct {
 	Flickr      FlickrConfig      `json:"flickr,omitempty"`
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
 	Palette     PaletteConfig     `json:"palette,omitempty"`
-	Custom	    interface{}	      `json:"custom,omitempty"`
+	Custom      interface{}       `json:"custom,omitempty"`
 }
 
 type ProfileConfig struct {

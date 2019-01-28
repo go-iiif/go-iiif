@@ -14,11 +14,27 @@ import (
 )
 
 type PaletteService struct {
-	Service `json:",omitempty"`
-	Context string           `json:"@context"`
-	Profile string           `json:"profile"`
-	Label   string           `json:"label"`
-	Palette []colours.Colour `json:"palette,omitempty"`
+	Service        `json:",omitempty"`
+	PaletteContext string           `json:"@context"`
+	PaletteProfile string           `json:"profile"`
+	PaletteLabel   string           `json:"label"`
+	Palette        []colours.Colour `json:"palette,omitempty"`
+}
+
+func (s *PaletteService) Context() string {
+	return s.PaletteContext
+}
+
+func (s *PaletteService) Profile() string {
+	return s.PaletteProfile
+}
+
+func (s *PaletteService) Label() string {
+	return s.PaletteLabel
+}
+
+func (s *PaletteService) Value() interface{} {
+	return s.Palette
 }
 
 func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
@@ -92,10 +108,10 @@ func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Ser
 	}
 
 	s := PaletteService{
-		Context: "x-urn:service:go-iiif#palette",
-		Profile: "x-urn:service:go-iiif#palette",
-		Label:   "x-urn:service:go-iiif#palette",
-		Palette: has_colours,
+		PaletteContext: "x-urn:service:go-iiif#palette",
+		PaletteProfile: "x-urn:service:go-iiif#palette",
+		PaletteLabel:   "x-urn:service:go-iiif#palette",
+		Palette:        has_colours,
 	}
 
 	return &s, nil
