@@ -45,7 +45,7 @@ Usage of ./bin/iiif-process:
     	One or more valid IIIF URIs.
 ```
 
-For example:
+Perform a series of IIIF image processing tasks, defined in a JSON-based "instructions" file, on one or more (IIIF) URIs. For example:
 
 ```
 $> ./bin/iiif-process -config config.json -instructions instructions.json -uri avocado.png | jq
@@ -57,6 +57,8 @@ $> ./bin/iiif-process -config config.json -instructions instructions.json -uri a
   }
 }
 ```
+
+Images are read-from and stored-to whatever source or derivatives caches defined in your `config.json` file.
 
 #### "instructions" files
 
@@ -1025,6 +1027,8 @@ Yes. There are two Dockerfiles included with this distribution.
 
 It would probably be useful to have a Dockerfile for tiling a folder ("volume") full of images but that hasn't happened yet.
 
+_Note: There used to be a single Dockerfile bundled with this package for building the `iiif-server`. It is now called `Dockerfile.server`._
+
 ### iiif-server
 
 To build the `iiif-server` container run:
@@ -1033,20 +1037,21 @@ To build the `iiif-server` container run:
 docker build -f Dockerfile.server -t go-iiif-server .
 ```
 
-You can also just run the handy `make docker-cli-build` target defined in the Makefile.
-
-To run the `iiif-server` container run:
+To start the `iiif-server` container run:
 
 ```
 $> docker run -it -p 6161:8080 \
-   -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
+   -v /usr/local/go-iiif/docker/etc:/etc/iiif-server \
+   -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
    iiif-server \
    /bin/iiif-server -host 0.0.0.0 -config /etc/iiif-server/config.json
    
 2018/06/20 23:03:10 Listening for requests at 0.0.0.0:8080
 ```
 
-And then, in another terminal:
+See the way we are mapping `/etc/iiif-server` and `/usr/local/iiif-server` to local directories? By default the `iiif-server` Dockerfile does not bundle config files or images. Maybe some day, but that day is not today.
+
+Then, in another terminal:
 
 ```
 $> curl localhost:6161/test.jpg/info.json
@@ -1071,7 +1076,7 @@ To build the `iiif-process` container run:
 docker build -f Dockerfile.process -t go-iiif-process .
 ```
 
-You can also just run the handy `make docker-process-build` target defined in the Makefile.
+The process an image using the `iiif-process` Docker container you would run something like:
 
 ```
 $> docker run \
@@ -1081,12 +1086,16 @@ $> docker run \
    -uri=test.jpg
 ```
 
+Again, see the way we're mapping `/etc/go-iiif` to a local folder, like we do in the `iiif-server` Docker example? The same rules apply here.
+
 ### Amazon ECS
 
 I still find ECS to be a world of [poorly-to-weirdly documented](https://aws.amazon.com/getting-started/tutorials/deploy-docker-containers/) strangeness. Remy Dewolf's
 [AWS Fargate: First hands-on experience and
 review](https://medium.com/@remy.dewolf/aws-fargate-first-hands-on-experience-and-review-1b52fca2148e)
 is a pretty good introduction.
+
+#### iiif-server
 
 What follows are non-comprehensive notes for getting `iiif-server` to work under
 ECS. The bad news is that it's fiddly (and weird, did I mention that?) The good
@@ -1101,28 +1110,26 @@ derivatives. I have not tried any of this with [EBS volumes mounted as Docker
 volumes](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/using_data_volumes.html)
 so if you have I'd love to hear about it.
 
-#### Services
+##### Services
 
 You will need to ensure that the service has `Auto-assign public IP(s)`
-enabled. Without it all your instances will fail with [mysterious `...ECS
-"CannotPullContainerError"`
-errors](https://github.com/aws/amazon-ecs-agent/issues/1128).
+enabled.This is necessary in order to fetch the actual Docker container.
 
 The corollary to that is that unless you are _wanting_ to expose your instances
 of `iiif-server` to the public internet you will need to add a security group
 (to your ECS service) with suitable restrictions.
 
-#### Containers
+##### Task definitions
 
-##### Entrypoint
+##### Command 
 
-`/bin/entrypoint.sh`
+`/bin/iiif-server`
 
-##### Port mappings
+###### Port mappings
 
 `8080`
 
-##### Environment variables
+###### Environment variables
 
 | Variable | Value |
 | --- | --- |
@@ -1135,6 +1142,39 @@ As of this writing the `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` variables
 are necessary because if you specify `credential="iam:"` for an S3 source (in
 your IIIF config file) the server fails to start up with a weird error I've
 never seen before. Computers...
+
+#### iiif-process
+
+I have had an easier time setting up a Docker-ized `iiif-process` container in ECS and running it as a simple ECS task.
+
+##### Services
+
+You will need to ensure that the service has `Auto-assign public IP(s)` enabled.This is necessary in order to fetch the actual Docker container.
+
+#### Task definitions
+
+Your "task definition" will need a suitable AWS IAM role with the following properties:
+
+* A trust definition with `ecs-tasks.amazonaws.com`
+
+And the following policies assigned to it:
+
+* `AmazonECSTaskExecutionRolePolicy`
+* A custom policy with the necessary permissions your task will need to read-from and write-to source and derivative caches (typically S3)
+
+The task should be run in `awsvpc` network mode and required the `FARGATE` capability.
+
+Unlike the `iiif-server` container as of this writing it is not possible to pass in the IIIF config file (or the instructions file) as an environment variable. I've never really loved that approach and want to reconsider it for all the `ifff-` tools.
+
+This means you have a container that can run `/bin/iiif-process` but where does it find any of it's configuration information? The short answer is you don't use the `Dockerfile.process` Dockerfile in this package.
+
+Instead you should use the `Dockerfile.process.ecs` Dockerfile defined in the [go-iiif-aws](https://github.com/aaronland/go-iiif-aws) package. This package will create a custom `iiif-process` container copying a custom IIIF config and instructions file into `/etc/go-iiif/config.json` and `/etc/go-iiif/instructions.json` respectively. This is the container image that you would then upload as a task to your AWS ECS account.
+
+It will also build a `iiif-process-ecs` tool that can be:
+
+* Used to invoke your task directly from the command-line, passing in one or more URIs to process.
+* Bundled as an AWS Lambda function that can be run to invoke your task.
+* Used to invoke that Lambda function (to invoke your task) from the command-line.
 
 ## Notes
 
