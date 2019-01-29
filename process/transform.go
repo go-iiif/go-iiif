@@ -7,24 +7,24 @@ import (
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 )
 
-func TransformURIWithInstructions(uri string, i IIIFInstructions, config *iiifconfig.Config, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (string, iiifimage.Image, error) {
+func TransformURIWithInstructions(u URI, i IIIFInstructions, config *iiifconfig.Config, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (URI, iiifimage.Image, error) {
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://localhost")
 
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
 	transformation, err := iiifimage.NewTransformation(level, i.Region, i.Size, i.Rotation, i.Quality, i.Format)
 
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
-	new_uri, err := transformation.ToURI(uri)
+	new_uri, err := transformation.ToURI(u.URL())
 
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
 	/*
@@ -37,23 +37,29 @@ func TransformURIWithInstructions(uri string, i IIIFInstructions, config *iiifco
 
 	*/
 
-	im, err := iiifimage.NewImageFromConfigWithCache(config, source_cache, uri)
+	im, err := iiifimage.NewImageFromConfigWithCache(config, source_cache, u.URL())
 
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
 	err = im.Transform(transformation)
 
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
 	err = dest_cache.Set(new_uri, im.Body())
 
 	if err != nil {
-		return "", nil, err
+		return nil, nil, err
 	}
 
-	return new_uri, im, nil
+	new_u, err := NewIIIFURI(new_uri)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return new_u, im, nil
 }

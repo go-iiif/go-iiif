@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, instruction_set IIIFInstructionSet, uri string) (map[string]interface{}, error) {
+func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, instruction_set IIIFInstructionSet, u URI) (map[string]interface{}, error) {
 
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
@@ -30,10 +30,10 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, 
 			done_ch <- true
 		}()
 
-		im, err := iiifimage.NewImageFromConfig(cfg, uri)
+		im, err := iiifimage.NewImageFromConfig(cfg, u.URL())
 
 		if err != nil {
-			msg := fmt.Sprintf("failed to derive palette for %s : %s", uri, err)
+			msg := fmt.Sprintf("failed to derive palette for %s : %s", u, err)
 			err_ch <- errors.New(msg)
 			return
 		}
@@ -45,7 +45,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, 
 				s, err := iiifservice.NewPaletteService(cfg.Palette, im)
 
 				if err != nil {
-					msg := fmt.Sprintf("failed to derive palette for %s : %s", uri, err)
+					msg := fmt.Sprintf("failed to derive palette for %s : %s", u, err)
 					err_ch <- errors.New(msg)
 					return
 				}
@@ -61,16 +61,16 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, 
 
 		i = EnsureInstructions(i)
 
-		go func(uri string, label string, i IIIFInstructions) {
+		go func(u URI, label string, i IIIFInstructions) {
 
 			defer func() {
 				done_ch <- true
 			}()
 
-			new_uri, im, err := pr.ProcessURIWithInstructions(uri, label, i)
+			new_uri, im, err := pr.ProcessURIWithInstructions(u, label, i)
 
 			if err != nil {
-				msg := fmt.Sprintf("failed to process %s (%s) : %s", uri, label, err)
+				msg := fmt.Sprintf("failed to process %s (%s) : %s", u, label, err)
 				err_ch <- errors.New(msg)
 				return
 			}
@@ -78,14 +78,14 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, 
 			dims, err := im.Dimensions()
 
 			if err != nil {
-				msg := fmt.Sprintf("failed to process %s (%s) : %s", uri, label, err)
+				msg := fmt.Sprintf("failed to process %s (%s) : %s", u, label, err)
 				err_ch <- errors.New(msg)
 				return
 			}
 
 			mu.Lock()
 
-			uris[label] = new_uri
+			uris[label] = new_uri.String()
 
 			dimensions[label] = []int{
 				dims.Width(),
@@ -94,7 +94,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, 
 
 			mu.Unlock()
 
-		}(uri, label, i)
+		}(u, label, i)
 	}
 
 	for remaining > 0 {

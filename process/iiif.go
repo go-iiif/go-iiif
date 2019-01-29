@@ -6,6 +6,28 @@ import (
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 )
 
+type IIIFURI struct {
+	URI
+	raw string
+}
+
+func NewIIIFURI(raw string) (URI, error) {
+
+	u := IIIFURI{
+		raw: raw,
+	}
+
+	return &u, nil
+}
+
+func (u *IIIFURI) URL() string {
+	return u.raw
+}
+
+func (u *IIIFURI) String() string {
+	return u.raw
+}
+
 type IIIFProcessor struct {
 	Processor
 	config       *iiifconfig.Config
@@ -50,7 +72,7 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, source_cache iiifcach
 	return &pr, nil
 }
 
-func (pr *IIIFProcessor) ProcessURIWithInstructions(uri string, label string, i IIIFInstructions) (string, iiifimage.Image, error) {
+func (pr *IIIFProcessor) ProcessURIWithInstructions(u URI, label string, i IIIFInstructions) (URI, iiifimage.Image, error) {
 
-	return TransformURIWithInstructions(uri, i, pr.config, pr.source_cache, pr.dest_cache)
+	return TransformURIWithInstructions(u, i, pr.config, pr.source_cache, pr.dest_cache)
 }

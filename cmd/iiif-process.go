@@ -53,7 +53,13 @@ func main() {
 
 	for _, uri := range uris {
 
-		rsp, err := process.ParallelProcessURIWithInstructionSet(cfg, pr, instruction_set, uri)
+		u, err := process.NewIIIFURI(uri)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		rsp, err := process.ParallelProcessURIWithInstructionSet(cfg, pr, instruction_set, u)
 
 		if err != nil {
 			log.Fatal(err)
