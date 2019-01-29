@@ -5,6 +5,7 @@ import (
 	"fmt"
 	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	iiifimage "github.com/thisisaaronland/go-iiif/image"	
 	"log"
 	"sync"
 )
@@ -54,14 +55,18 @@ func NewParallelProcessorWithCaches(config *iiifconfig.Config, source_cache iiif
 	return &pr, nil
 }
 
-func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instruction_set IIIFInstructionSet) (map[string]string, error) {
+func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instruction_set IIIFInstructionSet) (map[string]interface{}, error) {
 
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
 
 	remaining := len(instruction_set)
 
-	results := make(map[string]string)
+	results := make(map[string]interface{})
+
+	uris := make(map[string]string)
+	dimensions := make(map[string][]int)
+
 	mu := new(sync.RWMutex)
 
 	for label, i := range instruction_set {
@@ -74,15 +79,31 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 				done_ch <- true
 			}()
 
-			new_uri, err := pr.ProcessURIWithInstructions(uri, i)
+			new_uri, im, err := pr.ProcessURIWithInstructions(uri, i)
 
 			if err != nil {
 				msg := fmt.Sprintf("failed to process %s (%s) : %s", uri, label, err)
 				err_ch <- errors.New(msg)
+				return
 			}
 
+			dims, err := im.Dimensions()
+
+			if err != nil {
+				msg := fmt.Sprintf("failed to process %s (%s) : %s", uri, label, err)
+				err_ch <- errors.New(msg)
+				return
+			}
+			
 			mu.Lock()
-			results[label] = new_uri
+
+			uris[label] = new_uri
+			
+			dimensions[label] = []int{
+				dims.Width(),
+				dims.Height(),
+			}
+
 			mu.Unlock()
 
 		}(uri, label, i)
@@ -100,10 +121,13 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 		}
 	}
 
+	results["uris"] = uris
+	results["dimensions"] = dimensions
+
 	return results, nil
 }
 
-func (pr *ParallelProcessor) ProcessURIWithInstructions(uri string, i IIIFInstructions) (string, error) {
+func (pr *ParallelProcessor) ProcessURIWithInstructions(uri string, i IIIFInstructions) (string, iiifimage.Image, error) {
 
 	return TransformURIWithInstructions(uri, i, pr.config, pr.source_cache, pr.dest_cache)
 }

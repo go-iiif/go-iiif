@@ -90,7 +90,7 @@ func main() {
 	os.Exit(0)
 }
 
-func report_processing(cfg *config.Config, key string, rsp map[string]string) error {
+func report_processing(cfg *config.Config, key string, rsp map[string]interface{}) error {
 
 	dest_cache, err := cache.NewDerivativesCacheFromConfig(cfg)
 
