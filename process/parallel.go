@@ -5,7 +5,8 @@ import (
 	"fmt"
 	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"	
+	iiifimage "github.com/thisisaaronland/go-iiif/image"
+	iiifservice "github.com/thisisaaronland/go-iiif/service"
 	"log"
 	"sync"
 )
@@ -60,7 +61,7 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
 
-	remaining := len(instruction_set)
+	remaining := len(instruction_set) + 1 // + 1 because we fetch the palette for the source image
 
 	results := make(map[string]interface{})
 
@@ -68,6 +69,39 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 	dimensions := make(map[string][]int)
 
 	mu := new(sync.RWMutex)
+
+	go func() {
+
+		defer func() {
+			done_ch <- true
+		}()
+
+		im, err := iiifimage.NewImageFromConfig(pr.config, uri)
+
+		if err != nil {
+			msg := fmt.Sprintf("failed to derive palette for %s : %s", uri, err)
+			err_ch <- errors.New(msg)
+			return
+		}
+
+		for _, service_name := range pr.config.Profile.Services.Enable {
+
+			if service_name == "palette" {
+
+				s, err := iiifservice.NewPaletteService(pr.config.Palette, im)
+
+				if err != nil {
+					msg := fmt.Sprintf("failed to derive palette for %s : %s", uri, err)
+					err_ch <- errors.New(msg)
+					return
+				}
+
+				results["palette"] = s.Value()
+				break
+			}
+		}
+
+	}()
 
 	for label, i := range instruction_set {
 
@@ -94,11 +128,11 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 				err_ch <- errors.New(msg)
 				return
 			}
-			
+
 			mu.Lock()
 
 			uris[label] = new_uri
-			
+
 			dimensions[label] = []int{
 				dims.Width(),
 				dims.Height(),

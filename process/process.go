@@ -1,7 +1,7 @@
 package process
 
 import (
-	iiifimage "github.com/thisisaaronland/go-iiif/image"		
+	iiifimage "github.com/thisisaaronland/go-iiif/image"
 )
 
 type Processor interface {

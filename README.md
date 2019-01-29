@@ -48,12 +48,56 @@ Usage of ./bin/iiif-process:
 Perform a series of IIIF image processing tasks, defined in a JSON-based "instructions" file, on one or more (IIIF) URIs. For example:
 
 ```
-$> ./bin/iiif-process -config config.json -instructions instructions.json -uri avocado.png | jq
+$> ./bin/iiif-process -config config.json -instructions instructions.json -uri source/IMG_0084.JPG | jq
+
 {
-  "avocado.png": {
-    "b": "avocado.png/full/!2048,1536/0/color.jpg",
-    "d": "avocado.png/-1,-1,320,320/full/0/dither.jpg",
-    "o": "avocado.png/full/full/-1/color.jpg"
+  "source/IMG_0084.JPG": {
+    "dimensions": {
+      "b": [
+        2048,
+        1536
+      ],
+      "d": [
+        320,
+        320
+      ],
+      "o": [
+        4032,
+        3024
+      ]
+    },
+    "palette": [
+      {
+        "name": "#b87531",
+        "hex": "#b87531",
+        "reference": "vibrant"
+      },
+      {
+        "name": "#805830",
+        "hex": "#805830",
+        "reference": "vibrant"
+      },
+      {
+        "name": "#7a7a82",
+        "hex": "#7a7a82",
+        "reference": "vibrant"
+      },
+      {
+        "name": "#c7c3b3",
+        "hex": "#c7c3b3",
+        "reference": "vibrant"
+      },
+      {
+        "name": "#5c493a",
+        "hex": "#5c493a",
+        "reference": "vibrant"
+      }
+    ],
+    "uris": {
+      "b": "source/IMG_0084.JPG/full/!2048,1536/0/color.jpg",
+      "d": "source/IMG_0084.JPG/-1,-1,320,320/full/0/dither.jpg",
+      "o": "source/IMG_0084.JPG/full/full/-1/color.jpg"
+    }
   }
 }
 ```
@@ -84,6 +128,8 @@ type IIIFInstructions struct {
 	Format   string `json:"format"`
 }
 ```
+
+As of this writing there is no explicit response type for image beyond `map[string]interface{}`. There probably could be but it's still early days.
 
 ### iiif-server
 

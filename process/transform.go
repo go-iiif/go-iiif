@@ -29,14 +29,14 @@ func TransformURIWithInstructions(uri string, i IIIFInstructions, config *iiifco
 
 	/*
 
-	cached_im, err := dest_cache.Get(new_uri)
+		cached_im, err := dest_cache.Get(new_uri)
 
-	if err == nil {
-		return new_uri, cached_im, nil
-	}
+		if err == nil {
+			return new_uri, cached_im, nil
+		}
 
 	*/
-	
+
 	im, err := iiifimage.NewImageFromConfigWithCache(config, source_cache, uri)
 
 	if err != nil {
