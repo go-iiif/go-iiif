@@ -5,6 +5,5 @@ import (
 )
 
 type Processor interface {
-	ProcessURIWithInstructionSet(string, IIIFInstructionSet) (map[string]interface{}, error)
-	ProcessURIWithInstructions(string, IIIFInstructions) (string, iiifimage.Image, error)
+	ProcessURIWithInstructions(string, string, IIIFInstructions) (string, iiifimage.Image, error)
 }

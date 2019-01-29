@@ -3,7 +3,6 @@ package process
 import (
 	"errors"
 	"fmt"
-	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	iiifservice "github.com/thisisaaronland/go-iiif/service"
@@ -11,52 +10,7 @@ import (
 	"sync"
 )
 
-type ParallelProcessor struct {
-	Processor
-	config       *iiifconfig.Config
-	source_cache iiifcache.Cache
-	dest_cache   iiifcache.Cache
-}
-
-func NewParallelProcessor(config *iiifconfig.Config) (Processor, error) {
-
-	return NewParallelProcessorWithCaches(config, nil, nil)
-}
-
-func NewParallelProcessorWithCaches(config *iiifconfig.Config, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (Processor, error) {
-
-	if source_cache == nil {
-
-		c, err := iiifcache.NewImagesCacheFromConfig(config)
-
-		if err != nil {
-			return nil, err
-		}
-
-		source_cache = c
-	}
-
-	if dest_cache == nil {
-
-		c, err := iiifcache.NewDerivativesCacheFromConfig(config)
-
-		if err != nil {
-			return nil, err
-		}
-
-		dest_cache = c
-	}
-
-	pr := ParallelProcessor{
-		config:       config,
-		source_cache: source_cache,
-		dest_cache:   dest_cache,
-	}
-
-	return &pr, nil
-}
-
-func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instruction_set IIIFInstructionSet) (map[string]interface{}, error) {
+func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, instruction_set IIIFInstructionSet, uri string) (map[string]interface{}, error) {
 
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
@@ -76,7 +30,7 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 			done_ch <- true
 		}()
 
-		im, err := iiifimage.NewImageFromConfig(pr.config, uri)
+		im, err := iiifimage.NewImageFromConfig(cfg, uri)
 
 		if err != nil {
 			msg := fmt.Sprintf("failed to derive palette for %s : %s", uri, err)
@@ -84,11 +38,11 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 			return
 		}
 
-		for _, service_name := range pr.config.Profile.Services.Enable {
+		for _, service_name := range cfg.Profile.Services.Enable {
 
 			if service_name == "palette" {
 
-				s, err := iiifservice.NewPaletteService(pr.config.Palette, im)
+				s, err := iiifservice.NewPaletteService(cfg.Palette, im)
 
 				if err != nil {
 					msg := fmt.Sprintf("failed to derive palette for %s : %s", uri, err)
@@ -113,7 +67,7 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 				done_ch <- true
 			}()
 
-			new_uri, im, err := pr.ProcessURIWithInstructions(uri, i)
+			new_uri, im, err := pr.ProcessURIWithInstructions(uri, label, i)
 
 			if err != nil {
 				msg := fmt.Sprintf("failed to process %s (%s) : %s", uri, label, err)
@@ -159,9 +113,4 @@ func (pr *ParallelProcessor) ProcessURIWithInstructionSet(uri string, instructio
 	results["dimensions"] = dimensions
 
 	return results, nil
-}
-
-func (pr *ParallelProcessor) ProcessURIWithInstructions(uri string, i IIIFInstructions) (string, iiifimage.Image, error) {
-
-	return TransformURIWithInstructions(uri, i, pr.config, pr.source_cache, pr.dest_cache)
 }

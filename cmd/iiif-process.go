@@ -42,7 +42,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	pr, err := process.NewParallelProcessor(cfg)
+	pr, err := process.NewIIIFProcessor(cfg)
 
 	if err != nil {
 		log.Fatal(err)
@@ -53,7 +53,7 @@ func main() {
 
 	for _, uri := range uris {
 
-		rsp, err := pr.ProcessURIWithInstructionSet(uri, instruction_set)
+		rsp, err := process.ParallelProcessURIWithInstructionSet(cfg, pr, instruction_set, uri)
 
 		if err != nil {
 			log.Fatal(err)
