@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type IIIFInstructionSet map[string]IIIFInstructions
+type IIIFInstructionSet map[Label]IIIFInstructions
 
 type IIIFInstructions struct {
 	Region   string `json:"region"`

@@ -72,7 +72,7 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, source_cache iiifcach
 	return &pr, nil
 }
 
-func (pr *IIIFProcessor) ProcessURIWithInstructions(u URI, label string, i IIIFInstructions) (URI, iiifimage.Image, error) {
+func (pr *IIIFProcessor) ProcessURIWithInstructions(u URI, label Label, i IIIFInstructions) (URI, iiifimage.Image, error) {
 
 	return TransformURIWithInstructions(u, i, pr.config, pr.source_cache, pr.dest_cache)
 }

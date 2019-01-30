@@ -12,5 +12,5 @@ type URI interface {
 type Label string
 
 type Processor interface {
-	ProcessURIWithInstructions(URI, string, IIIFInstructions) (URI, iiifimage.Image, error)
+	ProcessURIWithInstructions(URI, Label, IIIFInstructions) (URI, iiifimage.Image, error)
 }

@@ -19,8 +19,8 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, 
 
 	results := make(map[string]interface{})
 
-	uris := make(map[string]string)
-	dimensions := make(map[string][]int)
+	uris := make(map[Label]string)
+	dimensions := make(map[Label][]int)
 
 	mu := new(sync.RWMutex)
 
@@ -61,7 +61,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, pr Processor, 
 
 		i = EnsureInstructions(i)
 
-		go func(u URI, label string, i IIIFInstructions) {
+		go func(u URI, label Label, i IIIFInstructions) {
 
 			defer func() {
 				done_ch <- true
