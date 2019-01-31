@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 	_ "log"
 	"regexp"
 )

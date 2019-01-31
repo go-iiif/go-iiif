@@ -1,11 +1,11 @@
 package http
 
 import (
-	iiifcache "github.com/thisisaaronland/go-iiif/cache"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifsource "github.com/thisisaaronland/go-iiif/source"
+	iiifcache "github.com/go-iiif/go-iiif/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiifsource "github.com/go-iiif/go-iiif/source"
 	gohttp "net/http"
 	"sync/atomic"
 	"time"

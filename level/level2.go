@@ -2,8 +2,8 @@ package level
 
 import (
 	_ "fmt"
-	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	iiifcompliance "github.com/go-iiif/go-iiif/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 	_ "log"
 )
 

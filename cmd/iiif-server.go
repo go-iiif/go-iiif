@@ -4,12 +4,12 @@ import (
 	"flag"
 	"fmt"
 	"github.com/facebookgo/grace/gracehttp"
+	iiifcache "github.com/go-iiif/go-iiif/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifhttp "github.com/go-iiif/go-iiif/http"
+	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/gorilla/mux"
-	iiifcache "github.com/thisisaaronland/go-iiif/cache"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifhttp "github.com/thisisaaronland/go-iiif/http"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifsource "github.com/thisisaaronland/go-iiif/source"
 	"log"
 	"net/http"
 	"os"
@@ -104,7 +104,7 @@ func main() {
 	router.HandleFunc("/ping", ping_handler)
 	router.HandleFunc("/debug/vars", expvar_handler)
 
-	// https://github.com/thisisaaronland/go-iiif/issues/4
+	// https://github.com/go-iiif/go-iiif/issues/4
 
 	router.HandleFunc("/{identifier:.+}/info.json", info_handler)
 	router.HandleFunc("/{identifier:.+}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)

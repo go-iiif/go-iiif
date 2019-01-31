@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/aaronland/go-iiif-uri"
+	"github.com/go-iiif/go-iiif-uri"
 	"log"
 )
 

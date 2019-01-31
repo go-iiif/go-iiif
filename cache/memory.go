@@ -2,8 +2,8 @@ package cache
 
 import (
 	"errors"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 	gocache "github.com/patrickmn/go-cache"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	_ "log"
 	"sync"
 	"time"

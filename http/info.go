@@ -2,11 +2,11 @@ package http
 
 import (
 	"encoding/json"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
-	iiifservice "github.com/thisisaaronland/go-iiif/service"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiifprofile "github.com/go-iiif/go-iiif/profile"
+	iiifservice "github.com/go-iiif/go-iiif/service"
 	gohttp "net/http"
 )
 

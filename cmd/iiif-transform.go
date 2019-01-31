@@ -13,10 +13,10 @@ way. It might grow the ability to load files from other sources. I'm not sure ye
 
 import (
 	"flag"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifsource "github.com/thisisaaronland/go-iiif/source"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiifsource "github.com/go-iiif/go-iiif/source"
 	"io/ioutil"
 	"log"
 	"os"

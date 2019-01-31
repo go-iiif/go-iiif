@@ -1,7 +1,7 @@
 package cache
 
 import (
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 )
 
 type Cache interface {

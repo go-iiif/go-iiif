@@ -2,8 +2,8 @@ package main
 
 import (
 	"flag"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiiftile "github.com/thisisaaronland/go-iiif/tile"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiiftile "github.com/go-iiif/go-iiif/tile"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"

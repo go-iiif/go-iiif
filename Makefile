@@ -6,20 +6,20 @@ prep:
 
 self:   prep rmdeps
 	if test -d src; then rm -rf src; fi
-	mkdir -p src/github.com/thisisaaronland/go-iiif
-	cp iiif.go src/github.com/thisisaaronland/go-iiif/
-	cp -r aws src/github.com/thisisaaronland/go-iiif/
-	cp -r cache src/github.com/thisisaaronland/go-iiif/
-	cp -r compliance src/github.com/thisisaaronland/go-iiif/
-	cp -r config src/github.com/thisisaaronland/go-iiif/
-	cp -r http src/github.com/thisisaaronland/go-iiif/
-	cp -r image src/github.com/thisisaaronland/go-iiif/
-	cp -r level src/github.com/thisisaaronland/go-iiif/
-	cp -r process src/github.com/thisisaaronland/go-iiif/
-	cp -r profile src/github.com/thisisaaronland/go-iiif/
-	cp -r service src/github.com/thisisaaronland/go-iiif/
-	cp -r source src/github.com/thisisaaronland/go-iiif/
-	cp -r tile src/github.com/thisisaaronland/go-iiif/
+	mkdir -p src/github.com/go-iiif/go-iiif
+	cp iiif.go src/github.com/go-iiif/go-iiif/
+	cp -r aws src/github.com/go-iiif/go-iiif/
+	cp -r cache src/github.com/go-iiif/go-iiif/
+	cp -r compliance src/github.com/go-iiif/go-iiif/
+	cp -r config src/github.com/go-iiif/go-iiif/
+	cp -r http src/github.com/go-iiif/go-iiif/
+	cp -r image src/github.com/go-iiif/go-iiif/
+	cp -r level src/github.com/go-iiif/go-iiif/
+	cp -r process src/github.com/go-iiif/go-iiif/
+	cp -r profile src/github.com/go-iiif/go-iiif/
+	cp -r service src/github.com/go-iiif/go-iiif/
+	cp -r source src/github.com/go-iiif/go-iiif/
+	cp -r tile src/github.com/go-iiif/go-iiif/
 	cp -r vendor/* src/
 
 rmdeps:
@@ -43,7 +43,7 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-csv"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-log"
 	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
-	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-iiif-uri"
+	@GOPATH=$(GOPATH) go get -u "github.com/go-iiif/go-iiif-uri"
 	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-colours"
 
 vendor-deps: rmdeps deps

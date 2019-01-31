@@ -11,8 +11,8 @@ very much related but somehow seem like they should be in separate namespaces. I
 import (
 	"errors"
 	"fmt"
-	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	iiifcompliance "github.com/go-iiif/go-iiif/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 	_ "log"
 )
 

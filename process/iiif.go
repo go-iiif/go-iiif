@@ -1,10 +1,10 @@
 package process
 
 import (
-	iiifuri "github.com/aaronland/go-iiif-uri"
-	iiifcache "github.com/thisisaaronland/go-iiif/cache"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
+	iiifuri "github.com/go-iiif/go-iiif-uri"
+	iiifcache "github.com/go-iiif/go-iiif/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
 )
 
 type IIIFProcessor struct {

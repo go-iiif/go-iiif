@@ -6,8 +6,8 @@ prep:
 
 self:   prep rmdeps
 	if test -d src; then rm -rf src; fi
-	mkdir -p src/github.com/aaronland/go-iiif-uri
-	cp *.go src/github.com/aaronland/go-iiif-uri/
+	mkdir -p src/github.com/go-iiif/go-iiif-uri
+	cp *.go src/github.com/go-iiif/go-iiif-uri/
 	cp -r vendor/* src/
 
 rmdeps:

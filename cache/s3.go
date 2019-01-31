@@ -1,8 +1,8 @@
 package cache
 
 import (
-	iiifaws "github.com/thisisaaronland/go-iiif/aws"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
+	iiifaws "github.com/go-iiif/go-iiif/aws"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"github.com/whosonfirst/go-whosonfirst-aws/s3"
 )
 

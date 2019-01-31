@@ -22,5 +22,5 @@ That's it, really. It is a tiny bit sad-making but also not really a big deal.
 
 ## See also
 
-* https://github.com/aaronland/go-iiif
-* https://github.com/aaronland/go-iiif-aws
+* https://github.com/go-iiif/go-iiif
+* https://github.com/go-iiif/go-iiif-aws

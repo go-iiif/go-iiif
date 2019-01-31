@@ -2,9 +2,9 @@ package image
 
 import (
 	"errors"
-	iiifcache "github.com/thisisaaronland/go-iiif/cache"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifsource "github.com/thisisaaronland/go-iiif/source"
+	iiifcache "github.com/go-iiif/go-iiif/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifsource "github.com/go-iiif/go-iiif/source"
 	_ "log"
 	"os"
 )

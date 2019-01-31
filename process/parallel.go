@@ -3,10 +3,10 @@ package process
 import (
 	"errors"
 	"fmt"
-	iiifuri "github.com/aaronland/go-iiif-uri"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
-	iiifservice "github.com/thisisaaronland/go-iiif/service"
+	iiifuri "github.com/go-iiif/go-iiif-uri"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiifservice "github.com/go-iiif/go-iiif/service"
 	"log"
 	"sync"
 )

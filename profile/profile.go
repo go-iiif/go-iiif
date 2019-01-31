@@ -2,9 +2,9 @@ package profile
 
 import (
 	"fmt"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifservice "github.com/thisisaaronland/go-iiif/service"
+	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiifservice "github.com/go-iiif/go-iiif/service"
 )
 
 type Profile struct {

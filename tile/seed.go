@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	iiifcache "github.com/thisisaaronland/go-iiif/cache"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiifimage "github.com/thisisaaronland/go-iiif/image"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
-	iiifprofile "github.com/thisisaaronland/go-iiif/profile"
-	iiifsource "github.com/thisisaaronland/go-iiif/source"
+	iiifcache "github.com/go-iiif/go-iiif/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiifprofile "github.com/go-iiif/go-iiif/profile"
+	iiifsource "github.com/go-iiif/go-iiif/source"
 	"log"
 	"math"
 	"runtime"
@@ -84,8 +84,8 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, err
 	}
 
-	// https://github.com/thisisaaronland/go-iiif/issues/25
-	// https://github.com/thisisaaronland/go-iiif/issues/27
+	// https://github.com/go-iiif/go-iiif/issues/25
+	// https://github.com/go-iiif/go-iiif/issues/27
 
 	// 191733_5755a1309e4d66a7_k.jpg,191733_5755a1309e4d66a7
 	// means

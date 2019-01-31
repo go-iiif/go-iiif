@@ -1,13 +1,13 @@
 package main
 
-// because this: https://github.com/thisisaaronland/go-iiif/issues/12
+// because this: https://github.com/go-iiif/go-iiif/issues/12
 
 import (
 	"flag"
 	"fmt"
-	iiifcompliance "github.com/thisisaaronland/go-iiif/compliance"
-	iiifconfig "github.com/thisisaaronland/go-iiif/config"
-	iiiflevel "github.com/thisisaaronland/go-iiif/level"
+	iiifcompliance "github.com/go-iiif/go-iiif/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiiflevel "github.com/go-iiif/go-iiif/level"
 	"log"
 	"sort"
 )
