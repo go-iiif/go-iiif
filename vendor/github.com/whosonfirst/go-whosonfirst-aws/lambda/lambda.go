@@ -21,12 +21,12 @@ func NewLambdaServiceWithDSN(str_dsn string) (*aws_lambda.Lambda, error) {
 	return svc, nil
 }
 
-func InvokeFunction(svc *aws_lambda.Lambda, lambda_func string, lambda_type string, payload interface{}) error {
+func InvokeFunction(svc *aws_lambda.Lambda, lambda_func string, lambda_type string, payload interface{}) (*aws_lambda.InvokeOutput, error) {
 
 	enc_payload, err := json.Marshal(payload)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	input := &aws_lambda.InvokeInput{
@@ -42,23 +42,24 @@ func InvokeFunction(svc *aws_lambda.Lambda, lambda_func string, lambda_type stri
 	rsp, err := svc.Invoke(input)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if *input.InvocationType == "RequestResponse" {
-
-		enc_result := *rsp.LogResult
-
-		result, err := base64.StdEncoding.DecodeString(enc_result)
-
-		if err != nil {
-			return err
-		}
-
-		if *rsp.StatusCode != 200 {
-			return errors.New(string(result))
-		}
+	if *input.InvocationType != "RequestResponse" {
+		return nil, nil
 	}
 
-	return nil
+	enc_result := *rsp.LogResult
+
+	result, err := base64.StdEncoding.DecodeString(enc_result)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if *rsp.StatusCode != 200 {
+		return nil, errors.New(string(result))
+	}
+
+	return rsp, nil
 }

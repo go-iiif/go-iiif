@@ -1,0 +1,11 @@
+*~
+pkg
+src
+!vendor/src
+bin
+!bin/.gitignore
+*.zip
+*.json
+!data/*.json
+*.csv
+tmp

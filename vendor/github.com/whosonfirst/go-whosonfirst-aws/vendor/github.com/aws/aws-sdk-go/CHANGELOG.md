@@ -1,3 +1,181 @@
+Release v1.16.26 (2019-01-25)
+===
+
+### Service Client Updates
+* `service/codecommit`: Updates service API and documentation
+  * The PutFile API will now throw new exception FilePathConflictsWithSubmodulePathException when a submodule exists at the input file path; PutFile API will also throw FolderContentSizeLimitExceededException when the total size of any folder on the path exceeds the limit as a result of the operation.
+* `service/devicefarm`: Updates service API and documentation
+  * Introduces a new rule in Device Pools - "Availability". Customers can now ensure they pick devices that are available (i.e., not being used by other customers).
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/mediaconnect`: Updates service API and documentation
+* `service/medialive`: Updates service API and documentation
+  * This release adds support for Frame Capture output groups and for I-frame only manifests (playlists) in HLS output groups.
+
+Release v1.16.25 (2019-01-24)
+===
+
+### Service Client Updates
+* `service/codebuild`: Updates service API and documentation
+  * This release adds support for cross-account ECR images and private registry authentication.
+* `service/ecr`: Updates service API
+  * Amazon ECR updated the default endpoint URL to support AWS Private Link.
+* `service/elasticloadbalancingv2`: Updates service API and documentation
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/logs`: Updates service documentation
+  * Documentation updates for CloudWatch Logs
+* `service/rds`: Updates service API and documentation
+  * The Amazon RDS API allows you to add or remove Identity and Access Management (IAM) role associated with a specific feature name with an RDS database instance. This helps with capabilities such as invoking Lambda functions from within a trigger in the database, load data from Amazon S3 and so on
+* `service/sms-voice`: Updates service API and documentation
+
+Release v1.16.24 (2019-01-23)
+===
+
+### Service Client Updates
+* `service/acm-pca`: Updates service API, documentation, and waiters
+* `service/apigatewaymanagementapi`: Updates service API
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/worklink`: Adds new service
+
+### SDK Enhancements
+* `aws`: Update Context to be an alias of context.Context for Go 1.9 ([#2412](https://github.com/aws/aws-sdk-go/pull/2412))
+  * Updates aws.Context interface to be an alias of the standard libraries context.Context type instead of redefining the interface. This will allow IDEs and utilities to interpret the aws.Context as the exactly same type as the standard libraries context.Context.
+
+Release v1.16.23 (2019-01-21)
+===
+
+### Service Client Updates
+* `service/appstream`: Updates service API and documentation
+  * This API update includes support for tagging Stack, Fleet, and ImageBuilder resources at creation time.
+* `service/discovery`: Updates service API, documentation, and paginators
+  * The Application Discovery Service's import APIs allow you to import information about your on-premises servers and applications into ADS so that you can track the status of your migrations through the Migration Hub console.
+* `service/dms`: Updates service waiters
+  * Update for DMS TestConnectionSucceeds waiter
+* `service/fms`: Updates service API and documentation
+* `service/ssm`: Updates service API and documentation
+  * AWS Systems Manager State Manager now supports configuration management of all AWS resources through integration with Automation.
+
+Release v1.16.22 (2019-01-18)
+===
+
+### Service Client Updates
+* `service/ec2`: Updates service API
+  * Adjust EC2's available instance types.
+* `service/glue`: Updates service API and documentation
+  * AllocatedCapacity field is being deprecated and replaced with MaxCapacity field
+
+Release v1.16.21 (2019-01-17)
+===
+
+### Service Client Updates
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/lambda`: Updates service documentation and examples
+  * Documentation updates for AWS Lambda
+* `service/lightsail`: Updates service API and documentation
+  * This release adds functionality to the CreateDiskSnapshot API that allows users to snapshot instance root volumes. It also adds various documentation updates.
+* `service/pinpoint`: Updates service API and documentation
+  * This release updates the PutEvents operation. AppPackageName, AppTitle, AppVersionCode, SdkName fields will now be accepted as a part of the event when submitting events.
+* `service/rekognition`: Updates service API and documentation
+  * GetLabelDetection now returns bounding box information for common objects and a hierarchical taxonomy of detected labels. The version of the model used for video label detection is also returned. DetectModerationLabels now returns the version of the model used for detecting unsafe content.
+
+### SDK Enhancements
+* `aws/request: Improve error handling in shouldRetryCancel ([#2298](https://github.com/aws/aws-sdk-go/pull/2298))
+  * Simplifies and improves SDK's detection of HTTP request errors that should be retried. Previously the SDK would incorrectly attempt to retry `EHOSTDOWN` connection errors. This change fixes this, by using the `Temporary` interface when available.
+
+Release v1.16.20 (2019-01-16)
+===
+
+### Service Client Updates
+* `service/backup`: Adds new service
+* `service/ce`: Updates service documentation
+* `service/dynamodb`: Updates service API and documentation
+  * Amazon DynamoDB now integrates with AWS Backup, a centralized backup service that makes it easy for customers to configure and audit the AWS resources they want to backup, automate backup scheduling, set retention policies, and monitor all recent backup and restore activity. AWS Backup provides a fully managed, policy-based backup solution, simplifying your backup management, and helping you meet your business and regulatory backup compliance requirements. For more information, see the Amazon DynamoDB Developer Guide.
+
+Release v1.16.19 (2019-01-14)
+===
+
+### Service Client Updates
+* `service/mediaconvert`: Updates service API and documentation
+  * IMF decode from a Composition Playlist for IMF specializations App #2 and App #2e; up to 99 input clippings; caption channel selection for MXF; and updated rate control for CBR jobs. Added support for acceleration in preview
+* `service/storagegateway`: Updates service API and documentation
+  * JoinDomain API supports two more  parameters: organizational unit(OU) and domain controllers.  Two new APIs are introduced: DetachVolume and AttachVolume.
+
+### SDK Enhancements
+* `aws/endpoints`: Add customization for AWS GovCloud (US) Application Autoscalling ([#2395](https://github.com/aws/aws-sdk-go/pull/2395))
+  * Adds workaround to correct the endpoint for Application Autoscaling running in AWS GovCloud (US).
+  * Fixes [#2391](https://github.com/aws/aws-sdk-go/issues/2391)
+
+Release v1.16.18 (2019-01-11)
+===
+
+### Service Client Updates
+* `service/elasticmapreduce`: Updates service API and documentation
+  * Documentation updates for Amazon EMR
+* `service/rds-data`: Updates service API, documentation, paginators, and examples
+
+Release v1.16.17 (2019-01-10)
+===
+
+### Service Client Updates
+* `service/codedeploy`: Updates service documentation
+  * Documentation updates for codedeploy
+* `service/ec2`: Updates service API and documentation
+  * EC2 Spot: a) CreateFleet support for Single AvailabilityZone requests and b) support for paginated DescribeSpotInstanceRequests.
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/iot`: Updates service API and documentation
+  * This release adds tagging support for rules of AWS IoT Rules Engine. Tags enable you to categorize your rules in different ways, for example, by purpose, owner, or environment. For more information about tagging, see AWS Tagging Strategies (https://aws.amazon.com/answers/account-management/aws-tagging-strategies/). For technical documentation, look for the tagging operations in the AWS IoT Core API reference or User Guide (https://docs.aws.amazon.com/iot/latest/developerguide/tagging-iot.html).
+* `service/sagemaker`: Updates service API and documentation
+  * SageMaker Training Jobs now support Inter-Container traffic encryption.
+
+Release v1.16.16 (2019-01-09)
+===
+
+### Service Client Updates
+* `service/docdb`: Adds new service
+  * Amazon DocumentDB (with MongoDB compatibility) is a fast, reliable, and fully-managed database service. Amazon DocumentDB makes it easy for developers to set up, run, and scale MongoDB-compatible databases in the cloud.
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/redshift`: Updates service API and documentation
+  * DescribeSnapshotSchedules returns a list of snapshot schedules. With this release, this API will have a list of clusters and number of clusters associated with the schedule.
+
+Release v1.16.15 (2019-01-07)
+===
+
+### Service Client Updates
+* `service/appmesh`: Updates service API and documentation
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+
+Release v1.16.14 (2019-01-04)
+===
+
+### Service Client Updates
+* `service/devicefarm`: Updates service API and documentation
+  * "This release provides support for running Appium Node.js and Appium Ruby tests on AWS Device Farm.
+* `service/ecs`: Updates service documentation
+  * Documentation updates for Amazon ECS tagging feature.
+
+Release v1.16.13 (2019-01-03)
+===
+
+### Service Client Updates
+* `aws/endpoints`: Updated Regions and Endpoints metadata.
+* `service/iotanalytics`: Updates service API and documentation
+
+### SDK Enhancements
+* `aws/credentials`: Add support for getting credential's ExpiresAt. ([#2375](https://github.com/aws/aws-sdk-go/pull/2375))
+  * Adds an Expirer interface that Providers can implement, and add a suitable implementation to Expiry class used by most Providers. Add a method on Credentials to get the expiration time of the underlying Provider, if Expirer is supported, without exposing Provider to callers.
+  * Fix [#1329](https://github.com/aws/aws-sdk-go/pull/1329)
+
+### SDK Bugs
+* `aws/ec2metadata`: bounds check region identifier before split ([#2380](https://github.com/aws/aws-sdk-go/pull/2380))
+  * Adds empty response checking to ec2metadata's Region request to prevent a out of bounds panic if empty response received.
+* Fix SDK's generated API reference doc page's constants section links ([#2373](https://github.com/aws/aws-sdk-go/pull/2373))
+  * Fixes the SDK's generated API reference documentation page's constants section links to to be clickable.
+Release v1.16.12 (2019-01-03)
+===
+
+### Service Client Updates
+* `service/opsworkscm`: Updates service documentation
+  * Documentation updates for opsworkscm
+
 Release v1.16.11 (2018-12-21)
 ===
 
