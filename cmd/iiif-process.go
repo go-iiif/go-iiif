@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/aaronland/go-iiif-uri"	
 	"github.com/thisisaaronland/go-iiif/cache"
 	"github.com/thisisaaronland/go-iiif/config"
 	"github.com/thisisaaronland/go-iiif/process"
@@ -51,9 +52,9 @@ func main() {
 	results := make(map[string]interface{})
 	wg := new(sync.WaitGroup)
 
-	for _, uri := range uris {
+	for _, str_uri := range uris {
 
-		u, err := process.NewIIIFURI(uri)
+		u, err := uri.NewIIIFURI(str_uri)
 
 		if err != nil {
 			log.Fatal(err)
@@ -67,7 +68,7 @@ func main() {
 
 		if *report {
 
-			key := filepath.Join(uri, *report_name)
+			key := filepath.Join(str_uri, *report_name)
 			wg.Add(1)
 
 			go func() {
@@ -81,7 +82,7 @@ func main() {
 			}()
 		}
 
-		results[uri] = rsp
+		results[str_uri] = rsp
 	}
 
 	wg.Wait()

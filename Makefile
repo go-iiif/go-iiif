@@ -43,6 +43,7 @@ deps:	rmdeps
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-csv"
 	@GOPATH=$(GOPATH) go get -u "github.com/whosonfirst/go-whosonfirst-log"
 	@GOPATH=$(GOPATH) go get -u "github.com/jtacoma/uritemplates"
+	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-iiif-uri"
 	@GOPATH=$(GOPATH) go get -u "github.com/aaronland/go-colours"
 
 vendor-deps: rmdeps deps

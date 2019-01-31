@@ -1,32 +1,11 @@
 package process
 
 import (
+	iiifuri "github.com/aaronland/go-iiif-uri"
 	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 )
-
-type IIIFURI struct {
-	URI
-	raw string
-}
-
-func NewIIIFURI(raw string) (URI, error) {
-
-	u := IIIFURI{
-		raw: raw,
-	}
-
-	return &u, nil
-}
-
-func (u *IIIFURI) URL() string {
-	return u.raw
-}
-
-func (u *IIIFURI) String() string {
-	return u.raw
-}
 
 type IIIFProcessor struct {
 	Processor
@@ -72,7 +51,7 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, source_cache iiifcach
 	return &pr, nil
 }
 
-func (pr *IIIFProcessor) ProcessURIWithInstructions(u URI, label Label, i IIIFInstructions) (URI, iiifimage.Image, error) {
+func (pr *IIIFProcessor) ProcessURIWithInstructions(u iiifuri.URI, label Label, i IIIFInstructions) (iiifuri.URI, iiifimage.Image, error) {
 
 	return TransformURIWithInstructions(u, i, pr.config, pr.source_cache, pr.dest_cache)
 }

@@ -1,13 +1,14 @@
 package process
 
 import (
+	iiifuri "github.com/aaronland/go-iiif-uri"
 	iiifcache "github.com/thisisaaronland/go-iiif/cache"
 	iiifconfig "github.com/thisisaaronland/go-iiif/config"
 	iiifimage "github.com/thisisaaronland/go-iiif/image"
 	iiiflevel "github.com/thisisaaronland/go-iiif/level"
 )
 
-func TransformURIWithInstructions(u URI, i IIIFInstructions, config *iiifconfig.Config, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (URI, iiifimage.Image, error) {
+func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://localhost")
 
@@ -55,7 +56,7 @@ func TransformURIWithInstructions(u URI, i IIIFInstructions, config *iiifconfig.
 		return nil, nil, err
 	}
 
-	new_u, err := NewIIIFURI(new_uri)
+	new_u, err := iiifuri.NewIIIFURI(new_uri)
 
 	if err != nil {
 		return nil, nil, err
