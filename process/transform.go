@@ -56,7 +56,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	new_u, err := iiifuri.NewIIIFURI(new_uri)
+	new_u, err := iiifuri.NewStringURI(new_uri)
 
 	if err != nil {
 		return nil, nil, err

@@ -5,14 +5,14 @@ import (
 	"github.com/aaronland/go-string/random"
 )
 
-type RewriteURI struct {
+type IdSecretURI struct {
 	URI
 	dsn_map dsn.DSN
 }
 
-func NewRewriteURI(raw string) (URI, error) {
+func NewIdSecretURI(raw string) (URI, error) {
 
-	dsn_map, err := dsn.StringToDSN(raw)
+	dsn_map, err := dsn.StringToDSNWithKeys(raw, "id", "uri")
 
 	if err != nil {
 		return nil, err
@@ -47,18 +47,18 @@ func NewRewriteURI(raw string) (URI, error) {
 		dsn_map["secret_o"] = s
 	}
 
-	u := RewriteURI{
+	u := IdSecretURI{
 		dsn_map: dsn_map,
 	}
 
 	return &u, nil
 }
 
-func (u *RewriteURI) URL() string {
+func (u *IdSecretURI) URL() string {
 	url, _ := u.dsn_map["uri"]
 	return url
 }
 
-func (u *RewriteURI) String() string {
+func (u *IdSecretURI) String() string {
 	return u.dsn_map.String()
 }

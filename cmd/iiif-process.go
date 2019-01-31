@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/aaronland/go-iiif-uri"	
+	"github.com/aaronland/go-iiif-uri"
 	"github.com/thisisaaronland/go-iiif/cache"
 	"github.com/thisisaaronland/go-iiif/config"
 	"github.com/thisisaaronland/go-iiif/process"
@@ -25,6 +25,8 @@ func main() {
 
 	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
 	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
+
+	var uri_type = flag.String("uri-type", "string", "A valid (go-iiif-uri) URI type. Valid options are: string, idsecret")
 
 	var uris flags.MultiString
 	flag.Var(&uris, "uri", "One or more valid IIIF URIs.")
@@ -54,7 +56,7 @@ func main() {
 
 	for _, str_uri := range uris {
 
-		u, err := uri.NewIIIFURI(str_uri)
+		u, err := uri.NewURIWithType(str_uri, *uri_type)
 
 		if err != nil {
 			log.Fatal(err)

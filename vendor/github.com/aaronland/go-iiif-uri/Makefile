@@ -27,6 +27,7 @@ vendor-deps: rmdeps deps
 
 fmt:
 	go fmt *.go
+	go fmt cmd/*.go
 
 bin: 	self
 	rm -rf bin/*
