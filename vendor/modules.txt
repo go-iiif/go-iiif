@@ -1,0 +1,132 @@
+# github.com/RobCherry/vibrant v0.0.0-20160903000000-0680b8cf1c899723ebac8f11c6a18d40011098e1
+github.com/RobCherry/vibrant
+# github.com/aaronland/go-colours v0.1.0
+github.com/aaronland/go-colours
+github.com/aaronland/go-colours/extruder
+github.com/aaronland/go-colours/grid
+github.com/aaronland/go-colours/palette
+# github.com/aaronland/go-string v0.1.0
+github.com/aaronland/go-string/dsn
+github.com/aaronland/go-string/random
+# github.com/aws/aws-sdk-go v1.19.31
+github.com/aws/aws-sdk-go/aws
+github.com/aws/aws-sdk-go/aws/awserr
+github.com/aws/aws-sdk-go/aws/session
+github.com/aws/aws-sdk-go/service/s3
+github.com/aws/aws-sdk-go/service/s3/s3manager
+github.com/aws/aws-sdk-go/aws/credentials
+github.com/aws/aws-sdk-go/aws/endpoints
+github.com/aws/aws-sdk-go/internal/sdkio
+github.com/aws/aws-sdk-go/aws/client
+github.com/aws/aws-sdk-go/aws/corehandlers
+github.com/aws/aws-sdk-go/aws/credentials/processcreds
+github.com/aws/aws-sdk-go/aws/credentials/stscreds
+github.com/aws/aws-sdk-go/aws/csm
+github.com/aws/aws-sdk-go/aws/defaults
+github.com/aws/aws-sdk-go/aws/request
+github.com/aws/aws-sdk-go/internal/ini
+github.com/aws/aws-sdk-go/internal/shareddefaults
+github.com/aws/aws-sdk-go/aws/awsutil
+github.com/aws/aws-sdk-go/aws/client/metadata
+github.com/aws/aws-sdk-go/aws/signer/v4
+github.com/aws/aws-sdk-go/internal/s3err
+github.com/aws/aws-sdk-go/private/protocol
+github.com/aws/aws-sdk-go/private/protocol/eventstream
+github.com/aws/aws-sdk-go/private/protocol/eventstream/eventstreamapi
+github.com/aws/aws-sdk-go/private/protocol/rest
+github.com/aws/aws-sdk-go/private/protocol/restxml
+github.com/aws/aws-sdk-go/service/s3/s3iface
+github.com/aws/aws-sdk-go/internal/sdkrand
+github.com/aws/aws-sdk-go/service/sts
+github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds
+github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
+github.com/aws/aws-sdk-go/aws/ec2metadata
+github.com/aws/aws-sdk-go/private/protocol/query
+github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
+github.com/aws/aws-sdk-go/internal/sdkuri
+github.com/aws/aws-sdk-go/private/protocol/query/queryutil
+# github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a
+github.com/facebookgo/clock
+# github.com/facebookgo/grace v0.0.0-20180705000000-75cf19382434e82df4dd84953f566b8ad23d6e9e
+github.com/facebookgo/grace/gracehttp
+github.com/facebookgo/grace/gracenet
+# github.com/facebookgo/httpdown v0.0.0-20180706035922-5979d39b15c2
+github.com/facebookgo/httpdown
+# github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4
+github.com/facebookgo/stats
+# github.com/fogleman/gg v1.3.0
+github.com/fogleman/gg
+# github.com/fogleman/primitive v0.0.0-20190214000000-673f57e7b1b5ae5bc415b47c76130bab35b08297
+github.com/fogleman/primitive/primitive
+# github.com/go-iiif/go-iiif-uri v0.0.2
+github.com/go-iiif/go-iiif-uri
+# github.com/go-ini/ini v1.42.0
+github.com/go-ini/ini
+# github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
+github.com/golang/freetype/raster
+github.com/golang/freetype/truetype
+# github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac
+github.com/gonum/blas
+github.com/gonum/blas/blas64
+github.com/gonum/blas/native
+github.com/gonum/blas/native/internal/math32
+# github.com/gonum/floats v0.0.0-20181209220543-c233463c7e82
+github.com/gonum/floats
+# github.com/gonum/internal v0.0.0-20181124074243-f884aa714029
+github.com/gonum/internal/asm/f64
+github.com/gonum/internal/asm/f32
+# github.com/gonum/lapack v0.0.0-20181123203213-e4cdc5a0bff9
+github.com/gonum/lapack
+github.com/gonum/lapack/lapack64
+github.com/gonum/lapack/native
+# github.com/gonum/matrix v0.0.0-20181209220409-c518dec07be9
+github.com/gonum/matrix
+github.com/gonum/matrix/mat64
+# github.com/gonum/stat v0.0.0-20181125101827-41a0da705a5b
+github.com/gonum/stat
+# github.com/gorilla/mux v1.7.1
+github.com/gorilla/mux
+# github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
+github.com/jmespath/go-jmespath
+# github.com/jtacoma/uritemplates v1.0.0
+github.com/jtacoma/uritemplates
+# github.com/koyachi/go-atkinson v0.0.0-20161206000000-dacd7cb9e0c5d7ce6ece2fee25d765ed11472cf8
+github.com/koyachi/go-atkinson
+# github.com/lucasb-eyer/go-colorful v1.0.2
+github.com/lucasb-eyer/go-colorful
+# github.com/neocortical/noborders v0.0.0-20180218000000-427885311d44ef7204ee600f909ae577f8fc617e
+github.com/neocortical/noborders
+# github.com/nfnt/resize v0.0.0-20180218000000-83c6a9932646f83e3267f353373d47347b6036b2
+github.com/nfnt/resize
+# github.com/patrickmn/go-cache v2.1.0+incompatible
+github.com/patrickmn/go-cache
+# github.com/whosonfirst/go-sanitize v0.1.0
+github.com/whosonfirst/go-sanitize
+# github.com/whosonfirst/go-whosonfirst-aws v0.1.0
+github.com/whosonfirst/go-whosonfirst-aws/s3
+github.com/whosonfirst/go-whosonfirst-aws/session
+github.com/whosonfirst/go-whosonfirst-aws/util
+github.com/whosonfirst/go-whosonfirst-aws/config
+# github.com/whosonfirst/go-whosonfirst-cli v0.1.0
+github.com/whosonfirst/go-whosonfirst-cli/flags
+# github.com/whosonfirst/go-whosonfirst-csv v0.1.0
+github.com/whosonfirst/go-whosonfirst-csv
+# github.com/whosonfirst/go-whosonfirst-log v0.1.0
+github.com/whosonfirst/go-whosonfirst-log
+# github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
+github.com/whosonfirst/go-whosonfirst-mimetypes
+github.com/whosonfirst/go-whosonfirst-mimetypes/lookup
+# golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
+golang.org/x/image/tiff
+golang.org/x/image/webp
+golang.org/x/image/math/fixed
+golang.org/x/image/tiff/lzw
+golang.org/x/image/riff
+golang.org/x/image/vp8
+golang.org/x/image/vp8l
+golang.org/x/image/draw
+golang.org/x/image/font
+golang.org/x/image/font/basicfont
+golang.org/x/image/math/f64
+# gopkg.in/h2non/bimg.v1 v1.0.19
+gopkg.in/h2non/bimg.v1

@@ -2,12 +2,12 @@
 
 A simple Go package to implement a "dict reader" style CSV parser (on top of the default `encoding/csv` package) to return rows a key-value dictionaries rather than lists.
 
-## Setup
+## Install
 
-Run the handy `build` target in the [Makefile](Makefile).
+You will need to have both `Go` (specifically [version 1.12](https://golang.org/dl/) or higher because we're using [Go modules](https://github.com/golang/go/wiki/Modules)) and the `make` programs installed on your computer. Assuming you do just type:
 
 ```
-make build
+make tools
 ```
 
 ## Usage
