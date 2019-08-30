@@ -19,7 +19,7 @@ Currently all the image processing is handled by the [bimg](https://github.com/h
 Once you have things like`Go` and `libvips` installed just type:
 
 ```
-$> make bin
+$> make tools
 ```
 
 ## Usage

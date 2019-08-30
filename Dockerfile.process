@@ -2,9 +2,9 @@
 # https://github.com/felixbuenemann/vips-alpine/blob/master/Dockerfile
 # https://github.com/mikestead/docker-imaginary-alpine/blob/master/Dockerfile
 
-FROM golang:alpine as builder
+FROM golang:1.12-alpine as builder
 
-ARG VIPS_VERSION=8.7.4
+ARG VIPS_VERSION=8.8.2
 
 ENV VIPS_DIR=/vips
 ENV PKG_CONFIG_PATH=${VIPS_DIR}/lib/pkgconfig:$PKG_CONFIG_PATH
@@ -31,7 +31,7 @@ RUN wget -O- https://github.com/libvips/libvips/releases/download/v${VIPS_VERSIO
                    --enable-silent-rules \
     && make -s install-strip \
     && cd /go-iiif \
-    && make bin
+    && make tools
 
 FROM alpine
 
