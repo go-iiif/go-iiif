@@ -1,19 +1,21 @@
 package native
 
+// to consider... https://github.com/corona10/goimghdr
+
 import (
 	"bufio"
 	"bytes"
 	"errors"
 	_ "fmt"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifimage "github.com/go-iiif/go-iiif/image"
-	iiifsource "github.com/go-iiif/go-iiif/source"
-	"github.com/whosonfirst/go-whosonfirst-mimetypes"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
 	"github.com/anthonynsimon/bild/transform"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
+	"github.com/whosonfirst/go-whosonfirst-mimetypes"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
@@ -132,7 +134,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		}
 
 		if rgi.SmartCrop {
-			
+
 			resizer := nfnt.NewDefaultResizer()
 			analyzer := smartcrop.NewAnalyzer(resizer)
 			topCrop, err := analyzer.FindBestCrop(im.img, rgi.Width, rgi.Height)
@@ -140,18 +142,18 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 			if err != nil {
 				return err
 			}
-			
+
 			type SubImager interface {
 				SubImage(r image.Rectangle) image.Image
 			}
-			
+
 			img := im.img.(SubImager).SubImage(topCrop)
 			im.img = img
-			
+
 		} else {
 
 			// result := transform.Crop(img, image.Rect(70,70,210,210))
-			return errors.New("Please write me... region")			
+			return errors.New("Please write me... region")
 		}
 	}
 
@@ -164,13 +166,13 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		}
 
 		if !rgi.SmartCrop {
-			
+
 			si, err := t.SizeInstructions(im)
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			img := transform.Resize(im.img, si.Width, si.Height, transform.Linear)
 			im.img = img
 		}
@@ -183,23 +185,23 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 	}
 
 	// auto-rotate checks... necessary?
-	
+
 	if ri.Angle > 0.0 {
 
 		angle := float64(ri.Angle)
-		
+
 		img := transform.Rotate(im.img, angle, nil)
 		im.img = img
 	}
 
 	// result := transform.FlipH(img)
 	// result := transform.FlipV(img)
-	
+
 	switch ri.Flip {
 	default:
 		// pass
 	}
-	
+
 	if t.Quality == "color" || t.Quality == "default" {
 		// do nothing.
 	} else if t.Quality == "gray" {
