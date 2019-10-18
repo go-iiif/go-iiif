@@ -13,8 +13,8 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
-	"github.com/muesli/smartcrop"
-	"github.com/muesli/smartcrop/nfnt"
+	// "github.com/muesli/smartcrop"
+	// "github.com/muesli/smartcrop/nfnt"
 	"github.com/whosonfirst/go-whosonfirst-mimetypes"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
@@ -102,9 +102,9 @@ func (im *NativeImage) Dimensions() (iiifimage.Dimensions, error) {
 
 func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
-	log.Println("TRANSFORM", t)
-
 	if t.Region != "full" {
+
+		log.Println("PROCESS REGION")
 
 		rgi, err := t.RegionInstructions(im)
 
@@ -114,20 +114,30 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		if rgi.SmartCrop {
 
-			resizer := nfnt.NewDefaultResizer()
-			analyzer := smartcrop.NewAnalyzer(resizer)
-			topCrop, err := analyzer.FindBestCrop(im.img, rgi.Width, rgi.Height)
+			return errors.New("Smart cropping is unavailable for native image processing")
 
-			if err != nil {
-				return err
-			}
+			/*
+				si, err := t.SizeInstructions(im)
 
-			type SubImager interface {
-				SubImage(r image.Rectangle) image.Image
-			}
+				if err != nil {
+					return err
+				}
 
-			img := im.img.(SubImager).SubImage(topCrop)
-			im.img = img
+				resizer := nfnt.NewDefaultResizer()
+				analyzer := smartcrop.NewAnalyzer(resizer)
+				topCrop, err := analyzer.FindBestCrop(im.img, si.Width, si.Height)
+
+				if err != nil {
+					return err
+				}
+
+				type SubImager interface {
+					SubImage(r image.Rectangle) image.Image
+				}
+
+				img := im.img.(SubImager).SubImage(topCrop)
+				im.img = img
+			*/
 
 		} else {
 
@@ -138,26 +148,23 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 	if t.Size != "max" && t.Size != "full" {
 
-		rgi, err := t.RegionInstructions(im)
+		log.Println("PROCESS SIZE")
+
+		si, err := t.SizeInstructions(im)
+
+		log.Println("SIZE", si)
 
 		if err != nil {
 			return err
 		}
 
-		if !rgi.SmartCrop {
-
-			si, err := t.SizeInstructions(im)
-
-			if err != nil {
-				return err
-			}
-
-			img := transform.Resize(im.img, si.Width, si.Height, transform.Linear)
-			im.img = img
-		}
+		img := transform.Resize(im.img, si.Width, si.Height, transform.Linear)
+		im.img = img
 	}
 
 	ri, err := t.RotationInstructions(im)
+
+	log.Println("ROTATION", ri)
 
 	if err != nil {
 		return nil
@@ -181,18 +188,16 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		// pass
 	}
 
-	if t.Quality == "color" || t.Quality == "default" {
+	switch t.Quality {
+	case "color", "default":
 		// do nothing.
-	} else if t.Quality == "gray" {
-
+	case "gray":
 		img := effect.Grayscale(im.img)
 		im.img = img
-	} else if t.Quality == "bitonal" {
-
+	case "bitonal":
 		img := segment.Threshold(im.img, 128)
 		im.img = img
-
-	} else {
+	default:
 		// this should be trapped above
 	}
 
@@ -347,6 +352,7 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 		opts := jpeg.Options{Quality: 100}
 		err = jpeg.Encode(wr, im, &opts)
 	case "png":
+		log.Println("PNG ME")
 		err = png.Encode(wr, im)
 	case "gif":
 		opts := gif.Options{}
@@ -362,7 +368,7 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 		return nil, err
 	}
 
-	// wr.Flush()
+	wr.Flush()
 
 	return b.Bytes(), nil
 }

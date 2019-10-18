@@ -351,6 +351,15 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 			return nil, errors.New(message)
 		}
 
+		dims, err := im.Dimensions()
+
+		if err != nil {
+			return nil, err
+		}
+
+		width := dims.Width()
+		height := dims.Height()
+
 		wi, err_w := strconv.ParseInt(sizes[0], 10, 64)
 		hi, err_h := strconv.ParseInt(sizes[1], 10, 64)
 
@@ -365,18 +374,6 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 
 			if best {
 
-				// we used to use the vip/bimg "enlarge" command here but
-				// that did not work as expected (20180524/thisisaaronland)
-
-				dims, err := im.Dimensions()
-
-				if err != nil {
-					return nil, err
-				}
-
-				width := dims.Width()
-				height := dims.Height()
-
 				ratio_w := float64(w) / float64(width)
 				ratio_h := float64(h) / float64(height)
 
@@ -390,10 +387,14 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 			}
 
 		} else if err_h != nil {
+
+			ratio := float64(wi) / float64(width)
 			w = int(wi)
-			h = 0
+			h = int(float64(height) * ratio)
 		} else {
-			w = 0
+
+			ratio := float64(hi) / float64(height)
+			w = int(float64(width) * ratio)
 			h = int(hi)
 		}
 

@@ -107,10 +107,6 @@ github.com/jtacoma/uritemplates
 github.com/koyachi/go-atkinson
 # github.com/lucasb-eyer/go-colorful v1.0.2
 github.com/lucasb-eyer/go-colorful
-# github.com/muesli/smartcrop v0.3.0
-github.com/muesli/smartcrop
-github.com/muesli/smartcrop/nfnt
-github.com/muesli/smartcrop/options
 # github.com/neocortical/noborders v0.0.0-20180218000000-427885311d44ef7204ee600f909ae577f8fc617e
 github.com/neocortical/noborders
 # github.com/nfnt/resize v0.0.0-20180218000000-83c6a9932646f83e3267f353373d47347b6036b2
