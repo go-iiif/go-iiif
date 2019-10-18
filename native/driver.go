@@ -57,20 +57,6 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		format:    fmt,
 	}
 
-	/*
-
-		Hey look - see the 'isgif' flag? We're going to hijack the fact that
-		img doesn't handle GIF files and if someone requests them then we
-		will do the conversion after the final call to im.img.Process and
-		after we do handle any custom features. We are relying on the fact
-		that both img.NewImage and img.Image() expect and return raw bytes
-		and we are ignoring whatever img thinks in the Format() function.
-		So basically you should not try to any processing in img/libvips
-		after the -> GIF transformation. (20160922/thisisaaronland)
-
-		See also: https://github.com/h2non/img/issues/41
-	*/
-
 	return &im, nil
 }
 

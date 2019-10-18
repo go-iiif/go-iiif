@@ -116,11 +116,67 @@ func (im *NativeImage) Dimensions() (iiifimage.Dimensions, error) {
 	return dims, nil
 }
 
-// https://godoc.org/github.com/h2non/img#Options
-
 func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
-	return errors.New("Please write me")
+	if t.Region != "full" {
+
+		rgi, err := t.RegionInstructions(im)
+
+		if err != nil {
+			return err
+		}
+
+		if rgi.SmartCrop {
+			return errors.New("Smart crop is not supported by native driver")
+		}
+
+		return errors.New("Please write me... region")
+	}
+
+	if t.Size != "max" && t.Size != "full" {
+
+		_, err := t.SizeInstructions(im)
+
+		if err != nil {
+			return err
+		}
+
+		return errors.New("Please write me... size")
+	}
+
+	ri, err := t.RotationInstructions(im)
+
+	if err != nil {
+		return nil
+	}
+
+	if !ri.NoAutoRotate {
+
+		return errors.New("Please write me... rotation")
+	}
+
+	if t.Quality == "color" || t.Quality == "default" {
+		// do nothing.
+	} else if t.Quality == "gray" {
+		return errors.New("Please write me... gray scale")
+	} else if t.Quality == "bitonal" {
+		return errors.New("Please write me... B/W")
+	} else {
+		// this should be trapped above
+	}
+
+	fi, err := t.FormatInstructions(im)
+
+	if err != nil {
+		return err
+	}
+
+	if fi.Format != im.format {
+
+		return errors.New("Please write me... format (encoding)")
+	}
+
+	return nil
 
 	// PLEASE PUT THIS IN A COMMON PACKAGE
 
