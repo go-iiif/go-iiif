@@ -128,5 +128,3 @@ golang.org/x/image/draw
 golang.org/x/image/font
 golang.org/x/image/font/basicfont
 golang.org/x/image/math/f64
-# gopkg.in/h2non/bimg.v1 v1.0.19
-gopkg.in/h2non/bimg.v1

@@ -26,7 +26,6 @@ require (
 	github.com/whosonfirst/go-whosonfirst-csv v0.1.0
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
-	gopkg.in/h2non/bimg.v1 v1.0.19
 )
 
 go 1.12
