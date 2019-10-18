@@ -6,7 +6,7 @@ package image
 import (
 	"bytes"
 	"github.com/fogleman/primitive/primitive"
-	"image"
+	goimage "image"
 	"image/color/palette"
 	"image/draw"
 	"image/gif"
@@ -92,8 +92,8 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 				Quantizer: nil,
 			}
 
-			dst := image.NewPaletted(src.Bounds(), palette.Plan9[:opts.NumColors])
-			opts.Drawer.Draw(dst, dst.Rect, src, image.ZP)
+			dst := goimage.NewPaletted(src.Bounds(), palette.Plan9[:opts.NumColors])
+			opts.Drawer.Draw(dst, dst.Rect, src, goimage.ZP)
 
 			g.Image = append(g.Image, dst)
 

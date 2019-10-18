@@ -1,5 +1,7 @@
 package image
 
+// https://iiif.io/api/image/2.1/#image-request-parameters
+
 import (
 	"errors"
 	"fmt"

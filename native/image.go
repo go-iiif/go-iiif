@@ -6,15 +6,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
-	_ "fmt"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
 	"github.com/anthonynsimon/bild/transform"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
-	// "github.com/muesli/smartcrop"
-	// "github.com/muesli/smartcrop/nfnt"
 	"github.com/whosonfirst/go-whosonfirst-mimetypes"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
@@ -23,7 +20,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"log"
+	_ "log"
 )
 
 type NativeImage struct {
@@ -104,7 +101,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 	if t.Region != "full" {
 
-		log.Println("PROCESS REGION")
+		// log.Println("PROCESS REGION")
 
 		rgi, err := t.RegionInstructions(im)
 
@@ -114,6 +111,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		if rgi.SmartCrop {
 
+			// "github.com/muesli/smartcrop"
 			return errors.New("Smart cropping is unavailable for native image processing")
 
 			/*
@@ -141,18 +139,18 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		} else {
 
-			// result := transform.Crop(img, image.Rect(70,70,210,210))
-			return errors.New("Please write me... region")
+			bounds := image.Rect(rgi.X, rgi.Y, rgi.Width, rgi.Height)
+
+			img := transform.Crop(im.img, bounds)
+			im.img = img
 		}
 	}
 
 	if t.Size != "max" && t.Size != "full" {
 
-		log.Println("PROCESS SIZE")
+		// log.Println("PROCESS SIZE")
 
 		si, err := t.SizeInstructions(im)
-
-		log.Println("SIZE", si)
 
 		if err != nil {
 			return err
@@ -164,7 +162,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 	ri, err := t.RotationInstructions(im)
 
-	log.Println("ROTATION", ri)
+	// log.Println("ROTATION", ri)
 
 	if err != nil {
 		return nil
@@ -173,19 +171,14 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 	// auto-rotate checks... necessary?
 
 	if ri.Angle > 0.0 {
-
 		angle := float64(ri.Angle)
-
 		img := transform.Rotate(im.img, angle, nil)
 		im.img = img
 	}
 
-	// result := transform.FlipH(img)
-	// result := transform.FlipV(img)
-
-	switch ri.Flip {
-	default:
-		// pass
+	if ri.Flip {
+		img := transform.FlipH(im.img)
+		im.img = img
 	}
 
 	switch t.Quality {
@@ -238,96 +231,11 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		im.format = format
 	}
 
-	return nil
+	err = iiifimage.ApplyCustomTransformations(t, im)
 
-	// PLEASE PUT THIS IN A COMMON PACKAGE
-
-	// None of what follows is part of the IIIF spec so it's not clear
-	// to me yet how to make this in to a sane interface. For the time
-	// being since there is only lipvips we'll just take the opportunity
-	// to think about it... (20160917/thisisaaronland)
-
-	// Also note the way we are diligently setting in `im.isgif` in each
-	// of the features below. That's because this is a img/libvips-ism
-	// and we assume that any of these can encode GIFs because pure-Go and
-	// the rest of the code does need to know about it...
-	// (20160922/thisisaaronland)
-
-	/*
-
-		if t.Quality == "dither" {
-
-			err = DitherImage(im)
-
-			if err != nil {
-				return err
-			}
-
-			if fi.Format == "gif" {
-				im.isgif = true
-			}
-
-		} else if strings.HasPrefix(t.Quality, "primitive:") {
-
-			parts := strings.Split(t.Quality, ":")
-			parts = strings.Split(parts[1], ",")
-
-			mode, err := strconv.Atoi(parts[0])
-
-			if err != nil {
-				return err
-			}
-
-			iters, err := strconv.Atoi(parts[1])
-
-			if err != nil {
-				return err
-			}
-
-			max_iters := im.config.Primitive.MaxIterations
-
-			if max_iters > 0 && iters > max_iters {
-				return errors.New("Invalid primitive iterations")
-			}
-
-			alpha, err := strconv.Atoi(parts[2])
-
-			if err != nil {
-				return err
-			}
-
-			if alpha > 255 {
-				return errors.New("Invalid primitive alpha")
-			}
-
-			animated := false
-
-			if fi.Format == "gif" {
-				animated = true
-			}
-
-			opts := PrimitiveOptions{
-				Alpha:      alpha,
-				Mode:       mode,
-				Iterations: iters,
-				Size:       0,
-				Animated:   animated,
-			}
-
-			err = PrimitiveImage(im, opts)
-
-			if err != nil {
-				return err
-			}
-
-			if fi.Format == "gif" {
-				im.isgif = true
-			}
-		}
-
-	*/
-
-	// END OF none of what follows is part of the IIIF spec
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -352,7 +260,6 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 		opts := jpeg.Options{Quality: 100}
 		err = jpeg.Encode(wr, im, &opts)
 	case "png":
-		log.Println("PNG ME")
 		err = png.Encode(wr, im)
 	case "gif":
 		opts := gif.Options{}
