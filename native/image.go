@@ -1,10 +1,11 @@
-package image
+package native
 
 import (
 	"bytes"
 	"errors"
 	_ "fmt"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"image"
 	"image/gif"
@@ -34,48 +35,6 @@ func (d *NativeDimensions) Height() int {
 
 func (d *NativeDimensions) Width() int {
 	return d.bounds.Max.X
-}
-
-func NewNativeImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.Source, id string) (Image, error) {
-
-	body, err := src.Read(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	buf := bytes.NewBuffer(body)
-
-	img, _, err := gif.Decode(buf) // FIX ME...
-
-	if err != nil {
-		return nil, err
-	}
-
-	im := NativeImage{
-		config:    config,
-		source:    src,
-		source_id: id,
-		id:        id,
-		img:       img,
-		isgif:     false,
-	}
-
-	/*
-
-		Hey look - see the 'isgif' flag? We're going to hijack the fact that
-		img doesn't handle GIF files and if someone requests them then we
-		will do the conversion after the final call to im.img.Process and
-		after we do handle any custom features. We are relying on the fact
-		that both img.NewImage and img.Image() expect and return raw bytes
-		and we are ignoring whatever img thinks in the Format() function.
-		So basically you should not try to any processing in img/libvips
-		after the -> GIF transformation. (20160922/thisisaaronland)
-
-		See also: https://github.com/h2non/img/issues/41
-	*/
-
-	return &im, nil
 }
 
 func (im *NativeImage) Update(body []byte) error {
