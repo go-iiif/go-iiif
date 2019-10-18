@@ -11,6 +11,7 @@ import (
 	"github.com/go-iiif/go-iiif/cache"
 	"github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
+	_ "github.com/go-iiif/go-iiif/native"
 	"github.com/go-iiif/go-iiif/process"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"

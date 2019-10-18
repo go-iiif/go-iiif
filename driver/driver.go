@@ -7,6 +7,7 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"sort"
+	"strings"
 	"sync"
 )
 
@@ -31,11 +32,17 @@ func RegisterDriver(name string, driver Driver) {
 
 	}
 
-	if _, dup := drivers[name]; dup {
+	nrml_name := normalizeName(name)
+
+	if _, dup := drivers[nrml_name]; dup {
 		panic("index: Register called twice for driver " + name)
 	}
 
-	drivers[name] = driver
+	drivers[nrml_name] = driver
+}
+
+func normalizeName(name string) string {
+	return strings.ToUpper(name)
 }
 
 func unregisterAllDrivers() {
@@ -64,7 +71,9 @@ func NewDriver(name string) (Driver, error) {
 	driversMu.RLock()
 	defer driversMu.RUnlock()
 
-	dr, ok := drivers[name]
+	nrml_name := normalizeName(name)
+
+	dr, ok := drivers[nrml_name]
 
 	if !ok {
 		return nil, errors.New("Invalid driver")

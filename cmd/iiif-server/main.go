@@ -9,6 +9,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifhttp "github.com/go-iiif/go-iiif/http"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
+	_ "github.com/go-iiif/go-iiif/native"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/gorilla/mux"
 	"log"

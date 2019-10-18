@@ -17,6 +17,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
+	_ "github.com/go-iiif/go-iiif/native"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"io/ioutil"
 	"log"
