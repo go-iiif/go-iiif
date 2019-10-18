@@ -101,8 +101,6 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 	if t.Region != "full" {
 
-		// log.Println("PROCESS REGION")
-
 		rgi, err := t.RegionInstructions(im)
 
 		if err != nil {
@@ -138,17 +136,13 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 			*/
 
 		} else {
-
 			bounds := image.Rect(rgi.X, rgi.Y, rgi.Width, rgi.Height)
-
 			img := transform.Crop(im.img, bounds)
 			im.img = img
 		}
 	}
 
 	if t.Size != "max" && t.Size != "full" {
-
-		// log.Println("PROCESS SIZE")
 
 		si, err := t.SizeInstructions(im)
 
@@ -162,13 +156,11 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 	ri, err := t.RotationInstructions(im)
 
-	// log.Println("ROTATION", ri)
-
 	if err != nil {
 		return nil
 	}
 
-	// auto-rotate checks... necessary?
+	// auto-rotate checks... are they necessary in a plain-vanilla Go context?
 
 	if ri.Angle > 0.0 {
 		angle := float64(ri.Angle)
