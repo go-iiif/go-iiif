@@ -1,15 +1,15 @@
 package tools
 
 import (
+	"errors"
 	"flag"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
-	_ "github.com/go-iiif/go-iiif/native"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"io/ioutil"
-	"log"
+	_ "log"
 	"os"
 	"path/filepath"
 )
@@ -45,67 +45,67 @@ func (t *TransformTool) Run() error {
 	fname := filepath.Base(infile)
 
 	if *cfg == "" {
-		log.Fatal("Missing config file")
+		return errors.New("Missing config file")
 	}
 
 	config, err := iiifconfig.NewConfigFromFlag(*cfg)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://127.0.0.1")
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	transformation, err := iiifimage.NewTransformation(level, *region, *size, *rotation, *quality, *format)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	// TO DO : compare extension of infile to 'format'
 
 	if !transformation.HasTransformation() {
-		log.Fatal("No transformation")
+		return errors.New("No transformation")
 	}
 
 	body, err := ioutil.ReadFile(infile)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	source, err := iiifsource.NewMemorySource(body)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	image, err := driver.NewImageFromConfigWithSource(config, source, fname)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	err = image.Transform(transformation)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	fh, err := os.Create(outfile)
 
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	defer fh.Close()

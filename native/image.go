@@ -51,9 +51,7 @@ func (d *NativeDimensions) Width() int {
 
 func (im *NativeImage) Update(body []byte) error {
 
-	buf := bytes.NewBuffer(body)
-
-	img, fmt, err := image.Decode(buf)
+	img, fmt, err := decodeImageBytes(body)
 
 	if err != nil {
 		return err
@@ -67,29 +65,8 @@ func (im *NativeImage) Update(body []byte) error {
 
 func (im *NativeImage) Body() []byte {
 
-	var b bytes.Buffer
-	wr := bufio.NewWriter(&b)
-
-	switch im.format {
-	case "bmp":
-		bmp.Encode(wr, im.img)
-	case "jpeg":
-		opts := jpeg.Options{Quality: 100}
-		jpeg.Encode(wr, im.img, &opts)
-	case "png":
-		png.Encode(wr, im.img)
-	case "gif":
-		opts := gif.Options{}
-		gif.Encode(wr, im.img, &opts)
-	case "tiff":
-		opts := tiff.Options{}
-		tiff.Encode(wr, im.img, &opts)
-	default:
-		//
-	}
-
-	wr.Flush()
-	return b.Bytes()
+	body, _ := encodeImage(im.img, im.format)
+	return body
 }
 
 func (im *NativeImage) Format() string {
@@ -225,9 +202,35 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		return err
 	}
 
+	encode := false
+
 	if fi.Format != im.format {
 
-		return errors.New("Please write me... format (encoding)")
+		encode = true
+
+		// sigh... computers, amirite?
+
+		if fi.Format == "jpg" && im.format == "jpeg" {
+			encode = false
+		}
+	}
+
+	if encode {
+
+		body, err := encodeImage(im.img, fi.Format)
+
+		if err != nil {
+			return err
+		}
+
+		img, format, err := decodeImageBytes(body)
+
+		if err != nil {
+			return err
+		}
+
+		im.img = img
+		im.format = format
 	}
 
 	return nil
@@ -322,4 +325,44 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 	// END OF none of what follows is part of the IIIF spec
 
 	return nil
+}
+
+func decodeImageBytes(body []byte) (image.Image, string, error) {
+
+	buf := bytes.NewBuffer(body)
+	return image.Decode(buf)
+}
+
+func encodeImage(im image.Image, format string) ([]byte, error) {
+
+	var b bytes.Buffer
+	wr := bufio.NewWriter(&b)
+
+	var err error
+
+	switch format {
+	case "bmp":
+		bmp.Encode(wr, im)
+	case "jpg", "jpeg":
+		opts := jpeg.Options{Quality: 100}
+		err = jpeg.Encode(wr, im, &opts)
+	case "png":
+		err = png.Encode(wr, im)
+	case "gif":
+		opts := gif.Options{}
+		err = gif.Encode(wr, im, &opts)
+	case "tiff":
+		opts := tiff.Options{}
+		err = tiff.Encode(wr, im, &opts)
+	default:
+		err = errors.New("Unsupported encoding")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// wr.Flush()
+
+	return b.Bytes(), nil
 }
