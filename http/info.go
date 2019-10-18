@@ -3,14 +3,14 @@ package http
 import (
 	"encoding/json"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifprofile "github.com/go-iiif/go-iiif/profile"
 	iiifservice "github.com/go-iiif/go-iiif/service"
 	gohttp "net/http"
 )
 
-func InfoHandler(config *iiifconfig.Config) (gohttp.HandlerFunc, error) {
+func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.HandlerFunc, error) {
 
 	fn := func(w gohttp.ResponseWriter, r *gohttp.Request) {
 
@@ -28,7 +28,7 @@ func InfoHandler(config *iiifconfig.Config) (gohttp.HandlerFunc, error) {
 			return
 		}
 
-		image, err := iiifimage.NewImageFromConfig(config, id)
+		image, err := driver.NewImageFromConfig(config, id)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)

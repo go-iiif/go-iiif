@@ -73,6 +73,6 @@ func NewDriver(name string) (Driver, error) {
 	return dr, nil
 }
 
-func NewDriverFromConfig(cfg iiifconfig.Config) (Driver, error) {
-	return NewDriver(cfg.Graphics.Source.Name)
+func NewDriverFromConfig(config *iiifconfig.Config) (Driver, error) {
+	return NewDriver(config.Graphics.Source.Name)
 }

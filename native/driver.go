@@ -43,7 +43,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 
 	buf := bytes.NewBuffer(body)
 
-	img, _, err := gif.Decode(buf) // FIX ME...
+	img, err := gif.Decode(buf) // FIX ME...
 
 	if err != nil {
 		return nil, err

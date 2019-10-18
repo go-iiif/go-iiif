@@ -10,6 +10,7 @@ import (
 	"github.com/go-iiif/go-iiif-uri"
 	"github.com/go-iiif/go-iiif/cache"
 	"github.com/go-iiif/go-iiif/config"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	"github.com/go-iiif/go-iiif/process"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
@@ -45,7 +46,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	pr, err := process.NewIIIFProcessor(cfg)
+	driver, err := iiifdriver.NewDriverFromConfig(cfg)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	pr, err := process.NewIIIFProcessor(cfg, driver)
 
 	if err != nil {
 		log.Fatal(err)
@@ -62,7 +69,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		rsp, err := process.ParallelProcessURIWithInstructionSet(cfg, pr, instruction_set, u)
+		rsp, err := process.ParallelProcessURIWithInstructionSet(cfg, driver, pr, instruction_set, u)
 
 		if err != nil {
 			log.Fatal(err)

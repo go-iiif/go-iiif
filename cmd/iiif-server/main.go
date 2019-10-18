@@ -82,7 +82,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	info_handler, err := iiifhttp.InfoHandler(config)
+	info_handler, err := iiifhttp.InfoHandler(config, driver)
 
 	if err != nil {
 		log.Fatal(err)

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"	
 	iiiftile "github.com/go-iiif/go-iiif/tile"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
@@ -44,7 +45,13 @@ func main() {
 		golog.Fatal(err)
 	}
 
-	ts, err := iiiftile.NewTileSeed(config, 256, 256, *endpoint, *quality, *format)
+	driver, err := iiifdriver.NewDriverFromConfig(config)
+
+	if err != nil {
+		golog.Fatal(err)
+	}
+
+	ts, err := iiiftile.NewTileSeed(config, driver, 256, 256, *endpoint, *quality, *format)
 
 	if err != nil {
 		golog.Fatal(err)

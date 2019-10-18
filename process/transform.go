@@ -4,11 +4,12 @@ import (
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 )
 
-func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
+func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://localhost")
 
@@ -38,7 +39,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 
 	*/
 
-	im, err := iiifimage.NewImageFromConfigWithCache(config, source_cache, u.URL())
+	im, err := driver.NewImageFromConfigWithCache(config, source_cache, u.URL())
 
 	if err != nil {
 		return nil, nil, err
