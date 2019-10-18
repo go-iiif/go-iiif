@@ -162,6 +162,19 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 	width := dims.Width()
 	height := dims.Height()
 
+	if t.Region == "full" {
+
+		instruction := RegionInstruction{
+			X:         0,
+			Y:         0,
+			Width:     width,
+			Height:    height,
+			SmartCrop: false,
+		}
+
+		return &instruction, nil
+	}
+
 	if t.Region == "square" {
 
 		var x int

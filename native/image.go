@@ -23,7 +23,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	_ "log"
+	"log"
 )
 
 type NativeImage struct {
@@ -124,6 +124,8 @@ func (im *NativeImage) Dimensions() (iiifimage.Dimensions, error) {
 }
 
 func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
+
+	log.Println("TRANSFORM", t)
 
 	if t.Region != "full" {
 
