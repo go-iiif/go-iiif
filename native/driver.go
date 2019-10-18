@@ -8,8 +8,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
-	_ "image"
-	"image/gif"
+	"image"
 	_ "log"
 )
 
@@ -43,7 +42,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 
 	buf := bytes.NewBuffer(body)
 
-	img, err := gif.Decode(buf) // FIX ME...
+	img, fmt, err := image.Decode(buf)
 
 	if err != nil {
 		return nil, err
@@ -55,7 +54,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		source_id: id,
 		id:        id,
 		img:       img,
-		isgif:     false,
+		format:    fmt,
 	}
 
 	/*
@@ -89,7 +88,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 			return nil, err
 		}
 
-		image, err = NewImageFromConfigWithSource(config, source, id)
+		image, err = dr.NewImageFromConfigWithSource(config, source, id)
 
 		if err != nil {
 			return nil, err
@@ -97,7 +96,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 
 	} else {
 
-		image, err = NewImageFromConfig(config, id)
+		image, err = dr.NewImageFromConfig(config, id)
 
 		if err != nil {
 			return nil, err
@@ -109,7 +108,6 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 	}
 
 	return image, nil
-
 }
 
 func (dr *NativeDriver) NewImageFromConfig(config *iiifconfig.Config, id string) (iiifimage.Image, error) {

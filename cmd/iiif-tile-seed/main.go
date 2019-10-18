@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifdriver "github.com/go-iiif/go-iiif/driver"	
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiiftile "github.com/go-iiif/go-iiif/tile"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"

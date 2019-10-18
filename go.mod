@@ -25,6 +25,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-cli v0.1.0
 	github.com/whosonfirst/go-whosonfirst-csv v0.1.0
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
+	github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
 	golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
 )
 

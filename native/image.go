@@ -1,17 +1,22 @@
 package native
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	_ "fmt"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
+	"github.com/whosonfirst/go-whosonfirst-mimetypes"
+	"golang.org/x/image/bmp"
+	"golang.org/x/image/tiff"
+	_ "golang.org/x/image/webp"
 	"image"
 	"image/gif"
+	"image/jpeg"
+	"image/png"
 	_ "log"
-	"strconv"
-	"strings"
 )
 
 type NativeImage struct {
@@ -21,7 +26,7 @@ type NativeImage struct {
 	source_id string
 	id        string
 	img       image.Image
-	isgif     bool
+	format    string
 }
 
 type NativeDimensions struct {
@@ -39,41 +44,58 @@ func (d *NativeDimensions) Width() int {
 
 func (im *NativeImage) Update(body []byte) error {
 
-	img := img.NewImage(body)
+	buf := bytes.NewBuffer(body)
+
+	img, fmt, err := image.Decode(buf)
+
+	if err != nil {
+		return err
+	}
+
 	im.img = img
+	im.format = fmt
 
 	return nil
 }
 
 func (im *NativeImage) Body() []byte {
 
-	return im.img.Image()
+	var b bytes.Buffer
+	wr := bufio.NewWriter(&b)
+
+	switch im.format {
+	case "bmp":
+		bmp.Encode(wr, im.img)
+	case "jpeg":
+		opts := jpeg.Options{Quality: 100}
+		jpeg.Encode(wr, im.img, &opts)
+	case "png":
+		png.Encode(wr, im.img)
+	case "gif":
+		opts := gif.Options{}
+		gif.Encode(wr, im.img, &opts)
+	case "tiff":
+		opts := tiff.Options{}
+		tiff.Encode(wr, im.img, &opts)
+	default:
+		//
+	}
+
+	wr.Flush()
+	return b.Bytes()
 }
 
 func (im *NativeImage) Format() string {
 
-	return im.img.Type()
+	return im.format
 }
 
 func (im *NativeImage) ContentType() string {
 
 	format := im.Format()
 
-	if format == "jpg" || format == "jpeg" {
-		return "image/jpeg"
-	} else if format == "png" {
-		return "image/png"
-	} else if format == "webp" {
-		return "image/webp"
-	} else if format == "svg" {
-		return "image/svg+xml"
-	} else if format == "tif" || format == "tiff" {
-		return "image/tiff"
-	} else if format == "gif" {
-		return "image/gif"
-	} else {
-		return ""
-	}
+	t := mimetypes.TypesByExtension(format)
+	return t[0]
 }
 
 func (im *NativeImage) Identifier() string {
@@ -85,45 +107,20 @@ func (im *NativeImage) Rename(id string) error {
 	return nil
 }
 
-func (im *NativeImage) Dimensions() (Dimensions, error) {
+func (im *NativeImage) Dimensions() (iiifimage.Dimensions, error) {
 
-	// see notes in NewNativeImageFromConfigWithSource
-	// ideally this never gets triggered but just in case...
-
-	if im.isgif {
-
-		buf := bytes.NewBuffer(im.Body())
-		goimg, err := gif.Decode(buf)
-
-		if err != nil {
-			return nil, err
-		}
-
-		d := GolangImageDimensions{
-			image: goimg,
-		}
-
-		return &d, nil
+	dims := &NativeDimensions{
+		bounds: im.img.Bounds(),
 	}
 
-	sz, err := im.img.Size()
-
-	if err != nil {
-		return nil, err
-	}
-
-	d := NativeDimensions{
-		imagesize: sz,
-	}
-
-	return &d, nil
+	return dims, nil
 }
 
 // https://godoc.org/github.com/h2non/img#Options
 
-func (im *NativeImage) Transform(t *Transformation) error {
+func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
-	// ... PLEASE WRITE ME ....
+	return errors.New("Please write me")
 
 	// PLEASE PUT THIS IN A COMMON PACKAGE
 
@@ -138,97 +135,81 @@ func (im *NativeImage) Transform(t *Transformation) error {
 	// the rest of the code does need to know about it...
 	// (20160922/thisisaaronland)
 
-	if t.Quality == "dither" {
+	/*
 
-		err = DitherImage(im)
+		if t.Quality == "dither" {
 
-		if err != nil {
-			return err
+			err = DitherImage(im)
+
+			if err != nil {
+				return err
+			}
+
+			if fi.Format == "gif" {
+				im.isgif = true
+			}
+
+		} else if strings.HasPrefix(t.Quality, "primitive:") {
+
+			parts := strings.Split(t.Quality, ":")
+			parts = strings.Split(parts[1], ",")
+
+			mode, err := strconv.Atoi(parts[0])
+
+			if err != nil {
+				return err
+			}
+
+			iters, err := strconv.Atoi(parts[1])
+
+			if err != nil {
+				return err
+			}
+
+			max_iters := im.config.Primitive.MaxIterations
+
+			if max_iters > 0 && iters > max_iters {
+				return errors.New("Invalid primitive iterations")
+			}
+
+			alpha, err := strconv.Atoi(parts[2])
+
+			if err != nil {
+				return err
+			}
+
+			if alpha > 255 {
+				return errors.New("Invalid primitive alpha")
+			}
+
+			animated := false
+
+			if fi.Format == "gif" {
+				animated = true
+			}
+
+			opts := PrimitiveOptions{
+				Alpha:      alpha,
+				Mode:       mode,
+				Iterations: iters,
+				Size:       0,
+				Animated:   animated,
+			}
+
+			err = PrimitiveImage(im, opts)
+
+			if err != nil {
+				return err
+			}
+
+			if fi.Format == "gif" {
+				im.isgif = true
+			}
 		}
 
-		if fi.Format == "gif" {
-			im.isgif = true
-		}
-
-	} else if strings.HasPrefix(t.Quality, "primitive:") {
-
-		parts := strings.Split(t.Quality, ":")
-		parts = strings.Split(parts[1], ",")
-
-		mode, err := strconv.Atoi(parts[0])
-
-		if err != nil {
-			return err
-		}
-
-		iters, err := strconv.Atoi(parts[1])
-
-		if err != nil {
-			return err
-		}
-
-		max_iters := im.config.Primitive.MaxIterations
-
-		if max_iters > 0 && iters > max_iters {
-			return errors.New("Invalid primitive iterations")
-		}
-
-		alpha, err := strconv.Atoi(parts[2])
-
-		if err != nil {
-			return err
-		}
-
-		if alpha > 255 {
-			return errors.New("Invalid primitive alpha")
-		}
-
-		animated := false
-
-		if fi.Format == "gif" {
-			animated = true
-		}
-
-		opts := PrimitiveOptions{
-			Alpha:      alpha,
-			Mode:       mode,
-			Iterations: iters,
-			Size:       0,
-			Animated:   animated,
-		}
-
-		err = PrimitiveImage(im, opts)
-
-		if err != nil {
-			return err
-		}
-
-		if fi.Format == "gif" {
-			im.isgif = true
-		}
-	}
+	*/
 
 	// END OF none of what follows is part of the IIIF spec
-
-	// see notes in NewNativeImageFromConfigWithSource
-
-	if fi.Format == "gif" && !im.isgif {
-
-		goimg, err := IIIFImageToGolangImage(im)
-
-		if err != nil {
-			return err
-		}
-
-		im.isgif = true
-
-		err = GolangImageToIIIFImage(goimg, im)
-
-		if err != nil {
-			return err
-		}
-
-	}
 
 	return nil
 }

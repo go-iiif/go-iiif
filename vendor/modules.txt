@@ -119,6 +119,7 @@ github.com/whosonfirst/go-whosonfirst-mimetypes/lookup
 # golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
 golang.org/x/image/tiff
 golang.org/x/image/webp
+golang.org/x/image/bmp
 golang.org/x/image/math/fixed
 golang.org/x/image/tiff/lzw
 golang.org/x/image/riff
