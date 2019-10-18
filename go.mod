@@ -2,6 +2,7 @@ module github.com/go-iiif/go-iiif
 
 require (
 	github.com/aaronland/go-colours v0.1.0
+	github.com/anthonynsimon/bild v0.10.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9 // indirect
@@ -18,6 +19,7 @@ require (
 	github.com/gorilla/mux v1.7.1
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20161206000000-dacd7cb9e0c5d7ce6ece2fee25d765ed11472cf8
+	github.com/muesli/smartcrop v0.3.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/whosonfirst/go-sanitize v0.1.0

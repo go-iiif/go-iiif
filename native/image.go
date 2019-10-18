@@ -9,6 +9,11 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/whosonfirst/go-whosonfirst-mimetypes"
+	"github.com/anthonynsimon/bild/effect"
+	"github.com/anthonynsimon/bild/segment"
+	"github.com/anthonynsimon/bild/transform"
+	"github.com/muesli/smartcrop"
+	"github.com/muesli/smartcrop/nfnt"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
@@ -127,21 +132,48 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		}
 
 		if rgi.SmartCrop {
-			return errors.New("Smart crop is not supported by native driver")
-		}
+			
+			resizer := nfnt.NewDefaultResizer()
+			analyzer := smartcrop.NewAnalyzer(resizer)
+			topCrop, err := analyzer.FindBestCrop(im.img, rgi.Width, rgi.Height)
 
-		return errors.New("Please write me... region")
+			if err != nil {
+				return err
+			}
+			
+			type SubImager interface {
+				SubImage(r image.Rectangle) image.Image
+			}
+			
+			img := im.img.(SubImager).SubImage(topCrop)
+			im.img = img
+			
+		} else {
+
+			// result := transform.Crop(img, image.Rect(70,70,210,210))
+			return errors.New("Please write me... region")			
+		}
 	}
 
 	if t.Size != "max" && t.Size != "full" {
 
-		_, err := t.SizeInstructions(im)
+		rgi, err := t.RegionInstructions(im)
 
 		if err != nil {
 			return err
 		}
 
-		return errors.New("Please write me... size")
+		if !rgi.SmartCrop {
+			
+			si, err := t.SizeInstructions(im)
+			
+			if err != nil {
+				return err
+			}
+			
+			img := transform.Resize(im.img, si.Width, si.Height, transform.Linear)
+			im.img = img
+		}
 	}
 
 	ri, err := t.RotationInstructions(im)
@@ -150,17 +182,35 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		return nil
 	}
 
-	if !ri.NoAutoRotate {
+	// auto-rotate checks... necessary?
+	
+	if ri.Angle > 0.0 {
 
-		return errors.New("Please write me... rotation")
+		angle := float64(ri.Angle)
+		
+		img := transform.Rotate(im.img, angle, nil)
+		im.img = img
 	}
 
+	// result := transform.FlipH(img)
+	// result := transform.FlipV(img)
+	
+	switch ri.Flip {
+	default:
+		// pass
+	}
+	
 	if t.Quality == "color" || t.Quality == "default" {
 		// do nothing.
 	} else if t.Quality == "gray" {
-		return errors.New("Please write me... gray scale")
+
+		img := effect.Grayscale(im.img)
+		im.img = img
 	} else if t.Quality == "bitonal" {
-		return errors.New("Please write me... B/W")
+
+		img := segment.Threshold(im.img, 128)
+		im.img = img
+
 	} else {
 		// this should be trapped above
 	}

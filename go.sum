@@ -6,6 +6,8 @@ github.com/aaronland/go-colours v0.1.0 h1:NCTeeTMmhn/dgKnClS6NB9PKQJcs+A+7W5X+3G
 github.com/aaronland/go-colours v0.1.0/go.mod h1:nWFzEsx3ok+L8lQSm6U7uCiKuEEYer8YIT5rPHlC//w=
 github.com/aaronland/go-string v0.1.0 h1:HU6OHmEpN2m9b5SOIwU6HoOq87Fvemj/0g6DTp8yzpk=
 github.com/aaronland/go-string v0.1.0/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
+github.com/anthonynsimon/bild v0.10.0 h1:Mhqk6Latm2snVkfT2LCjh3ostMBsSlv/YgsQCpgPFSc=
+github.com/anthonynsimon/bild v0.10.0/go.mod h1:rY8HbNSqiIVRGquP67cbI8etkQGyCZzQ5Fkp0MdtXCQ=
 github.com/aws/aws-sdk-go v1.19.31 h1:6N7YBci5Nfbedd9k9ZpQlJgAfzuYQqGPSrJ52+Aja1s=
 github.com/aws/aws-sdk-go v1.19.31/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
@@ -64,6 +66,8 @@ github.com/koyachi/go-atkinson v0.0.0-20161206000000-dacd7cb9e0c5d7ce6ece2fee25d
 github.com/koyachi/go-atkinson v0.0.0-20161206000000-dacd7cb9e0c5d7ce6ece2fee25d765ed11472cf8/go.mod h1:XAhg1uGqN8s0xjsf66PskU5UUBpHQc4X7TJ2p03hmqk=
 github.com/lucasb-eyer/go-colorful v1.0.2 h1:mCMFu6PgSozg9tDNMMK3g18oJBX7oYGrC09mS6CXfO4=
 github.com/lucasb-eyer/go-colorful v1.0.2/go.mod h1:0MS4r+7BZKSJ5mw4/S5MPN+qHFF1fYclkSPilDOKW0s=
+github.com/muesli/smartcrop v0.3.0 h1:JTlSkmxWg/oQ1TcLDoypuirdE8Y/jzNirQeLkxpA6Oc=
+github.com/muesli/smartcrop v0.3.0/go.mod h1:i2fCI/UorTfgEpPPLWiFBv4pye+YAG78RwcQLUkocpI=
 github.com/neocortical/noborders v0.0.0-20180218000000-427885311d44ef7204ee600f909ae577f8fc617e h1:Sp+utcQCL+Z0pCoE0LGdNQMDq1EsHuPw45PpLY/3i6k=
 github.com/neocortical/noborders v0.0.0-20180218000000-427885311d44ef7204ee600f909ae577f8fc617e/go.mod h1:TdMiJh4xFUBh+sdNgBEKMjml8loRKoeoJsEHj49YDoY=
 github.com/nfnt/resize v0.0.0-20180218000000-83c6a9932646f83e3267f353373d47347b6036b2 h1:FeMu4yK8LhS3+pm+mdCgZhHtSlFAYbb4ZhuglW46GVk=
