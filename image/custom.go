@@ -31,6 +31,18 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 
 	} else if strings.HasPrefix(t.Quality, "primitive:") {
 
+		/*
+
+		    "features": {
+			"append": {
+			    "quality": {
+				"primitive": { "primitive": "dither", "required": false, "supported": true, "match": "^primitive:\\d,\\d+,\\d+$" }
+			    }
+			}
+		    },
+
+		*/
+
 		fi, err := t.FormatInstructions(im)
 
 		if err != nil {
