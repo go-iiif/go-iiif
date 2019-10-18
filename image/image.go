@@ -1,7 +1,6 @@
 package image
 
-import (
-)
+import ()
 
 type Image interface {
 	Identifier() string

@@ -15,7 +15,7 @@ import (
 )
 
 type NativeImage struct {
-	Image
+	iiifimage.Image
 	config    *iiifconfig.Config
 	source    iiifsource.Source
 	source_id string
@@ -25,7 +25,7 @@ type NativeImage struct {
 }
 
 type NativeDimensions struct {
-	Dimensions
+	iiifimage.Dimensions
 	bounds image.Rectangle
 }
 

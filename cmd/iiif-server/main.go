@@ -6,6 +6,7 @@ import (
 	"github.com/facebookgo/grace/gracehttp"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifhttp "github.com/go-iiif/go-iiif/http"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifsource "github.com/go-iiif/go-iiif/source"
@@ -31,6 +32,12 @@ func main() {
 	}
 
 	config, err := iiifconfig.NewConfigFromFlag(*cfg)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {
 		log.Fatal(err)
@@ -81,7 +88,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	image_handler, err := iiifhttp.ImageHandler(config, images_cache, derivatives_cache)
+	image_handler, err := iiifhttp.ImageHandler(config, driver, images_cache, derivatives_cache)
 
 	if err != nil {
 		log.Fatal(err)

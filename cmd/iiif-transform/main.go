@@ -14,6 +14,7 @@ way. It might grow the ability to load files from other sources. I'm not sure ye
 import (
 	"flag"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifsource "github.com/go-iiif/go-iiif/source"
@@ -53,6 +54,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	driver, err := iiifdriver.NewDriverFromConfig(config)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://127.0.0.1")
 
 	if err != nil {
@@ -83,7 +90,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	image, err := iiifimage.NewImageFromConfigWithSource(config, source, fname)
+	image, err := driver.NewImageFromConfigWithSource(config, source, fname)
 
 	if err != nil {
 		log.Fatal(err)

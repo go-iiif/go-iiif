@@ -3,7 +3,7 @@ package native
 import (
 	"bytes"
 	_ "fmt"
-	iiif "github.com/go-iiif/go-iiif"
+	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
@@ -14,13 +14,14 @@ import (
 )
 
 func init() {
+
 	dr, err := NewNativeDriver()
 
 	if err != nil {
 		panic(err)
 	}
 
-	iiif.RegisterDriver("native", dr)
+	iiifdriver.RegisterDriver("native", dr)
 }
 
 type NativeDriver struct {

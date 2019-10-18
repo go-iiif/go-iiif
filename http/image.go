@@ -3,6 +3,7 @@ package http
 import (
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifsource "github.com/go-iiif/go-iiif/source"
@@ -11,7 +12,7 @@ import (
 	"time"
 )
 
-func ImageHandler(config *iiifconfig.Config, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache) (gohttp.HandlerFunc, error) {
+func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache) (gohttp.HandlerFunc, error) {
 
 	fn := func(w gohttp.ResponseWriter, r *gohttp.Request) {
 
@@ -69,14 +70,14 @@ func ImageHandler(config *iiifconfig.Config, images_cache iiifcache.Cache, deriv
 			cacheHit.Add(1)
 
 			source, _ := iiifsource.NewMemorySource(body)
-			image, _ := iiifimage.NewImageFromConfigWithSource(config, source, "cache")
+			image, _ := driver.NewImageFromConfigWithSource(config, source, "cache")
 
 			w.Header().Set("Content-Type", image.ContentType())
 			w.Write(image.Body())
 			return
 		}
 
-		image, err := iiifimage.NewImageFromConfigWithCache(config, images_cache, params.Identifier)
+		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
