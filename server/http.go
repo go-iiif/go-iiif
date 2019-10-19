@@ -1,10 +1,10 @@
 package server
 
 import (
-	_ "log"
-	"net/url"
-	"net/http"
 	"github.com/gorilla/mux"
+	_ "log"
+	"net/http"
+	"net/url"
 )
 
 type HTTPServer struct {

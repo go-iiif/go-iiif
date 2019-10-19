@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"fmt"
 	iiifaws "github.com/go-iiif/go-iiif/aws"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"github.com/whosonfirst/go-whosonfirst-aws/s3"
@@ -10,12 +11,17 @@ type S3Cache struct {
 	S3 *s3.S3Connection
 }
 
-func NewS3Cache(cfg iiifconfig.CacheConfig) (*S3Cache, error) {
+func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	bucket := cfg.Path
 	prefix := cfg.Prefix
 	region := cfg.Region
 	creds := cfg.Credentials
+
+	uri := fmt.Sprintf("s3://%s?region=%s&credentials=%s&prefix=%s", bucket, region, creds, prefix)
+	return NewBlobCacheFromURI(uri)
+
+	// PLEASE REMOVE EVERYTHING ELSE AS SOON AS POSSIBLE
 
 	s3cfg := &s3.S3Config{
 		Bucket:      bucket,

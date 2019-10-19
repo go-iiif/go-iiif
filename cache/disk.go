@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"fmt"
 	"github.com/go-iiif/go-iiif/config"
 	"io/ioutil"
 	_ "log"
@@ -14,9 +15,15 @@ type DiskCache struct {
 	root string
 }
 
-func NewDiskCache(cfg config.CacheConfig) (*DiskCache, error) {
+func NewDiskCache(cfg config.CacheConfig) (Cache, error) {
 
 	root := cfg.Path
+	uri := fmt.Sprintf("file://%s", root)
+
+	return NewBlobCacheFromURI(uri)
+
+	// PLEASE REMOVE EVERYTHING ELSE AS SOON AS POSSIBLE
+
 	_, err := os.Stat(root)
 
 	if os.IsNotExist(err) {

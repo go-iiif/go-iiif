@@ -7,7 +7,11 @@ type MemorySource struct {
 	body []byte
 }
 
-func NewMemorySource(body []byte) (*MemorySource, error) {
+func NewMemorySource(body []byte) (Source, error) {
+
+	return NewBlobSourceFromURI("mem://")
+
+	// PLEASE REMOVE EVERYTHING ELSE AS SOON AS POSSIBLE
 
 	mem := MemorySource{
 		body: body,

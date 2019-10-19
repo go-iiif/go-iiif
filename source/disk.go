@@ -1,6 +1,7 @@
 package source
 
 import (
+	"fmt"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"io/ioutil"
 	"os"
@@ -12,9 +13,14 @@ type DiskSource struct {
 	root string
 }
 
-func NewDiskSource(config *iiifconfig.Config) (*DiskSource, error) {
+func NewDiskSource(config *iiifconfig.Config) (Source, error) {
 
 	cfg := config.Images
+	uri := fmt.Sprintf("file://%s", cfg.Source.Path)
+
+	return NewBlobSourceFromURI(uri)
+
+	// PLEASE REMOVE EVERYTHING ELSE AS SOON AS POSSIBLE
 
 	ds := DiskSource{
 		root: cfg.Source.Path,

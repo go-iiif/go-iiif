@@ -1,10 +1,10 @@
 package server
 
 import (
+	"github.com/gorilla/mux"
 	"github.com/whosonfirst/algnhsa"
 	_ "log"
 	"net/url"
-	"github.com/gorilla/mux"	
 )
 
 type LambdaServer struct {
@@ -25,7 +25,7 @@ func (s *LambdaServer) Address() string {
 	return s.url.String()
 }
 
-func (s *LambdaServer) ListenAndServe(router	*mux.Router) error {
+func (s *LambdaServer) ListenAndServe(router *mux.Router) error {
 
 	// this cr^H^H^H stuff is important (20180713/thisisaaronland)
 	// go-rasterzen/README.md#lambda-api-gateway-and-images#lambda-api-gateway-and-images

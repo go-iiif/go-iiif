@@ -10,7 +10,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifhttp "github.com/go-iiif/go-iiif/http"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
-	iiifserver "github.com/go-iiif/go-iiif/server"	
+	iiifserver "github.com/go-iiif/go-iiif/server"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/gorilla/mux"
 	"log"
@@ -33,7 +33,7 @@ func NewIIIFServerTool() (Tool, error) {
 func (t *IIIFServerTool) Run() error {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
-	var proto = flag.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")	
+	var proto = flag.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
 	var host = flag.String("host", "localhost", "Bind the server to this host")
 	var port = flag.Int("port", 8080, "Bind the server to this port")
 	var example = flag.Bool("example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
@@ -160,7 +160,7 @@ func (t *IIIFServerTool) Run() error {
 	if err != nil {
 		return err
 	}
-	
+
 	s, err := iiifserver.NewServer(*proto, u)
 
 	if err != nil {
@@ -177,17 +177,17 @@ func (t *IIIFServerTool) Run() error {
 
 	/*
 
-	
-	endpoint := fmt.Sprintf("%s:%d", *host, *port)
 
-	log.Printf("Listening for requests at %s\n", endpoint)
+		endpoint := fmt.Sprintf("%s:%d", *host, *port)
 
-	err = http.ListenAndServe(&http.Server{Addr: endpoint, Handler: router})
+		log.Printf("Listening for requests at %s\n", endpoint)
 
-	if err != nil {
-		return err
-	}
+		err = http.ListenAndServe(&http.Server{Addr: endpoint, Handler: router})
+
+		if err != nil {
+			return err
+		}
 	*/
-	
+
 	return nil
 }

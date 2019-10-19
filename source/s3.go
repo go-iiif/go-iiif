@@ -1,6 +1,7 @@
 package source
 
 import (
+	"fmt"
 	iiifaws "github.com/go-iiif/go-iiif/aws"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"github.com/whosonfirst/go-whosonfirst-aws/s3"
@@ -11,7 +12,7 @@ type S3Source struct {
 	S3 *s3.S3Connection
 }
 
-func NewS3Source(cfg *iiifconfig.Config) (*S3Source, error) {
+func NewS3Source(cfg *iiifconfig.Config) (Source, error) {
 
 	src := cfg.Images.Source
 
@@ -19,6 +20,11 @@ func NewS3Source(cfg *iiifconfig.Config) (*S3Source, error) {
 	prefix := src.Prefix
 	region := src.Region
 	creds := src.Credentials
+
+	uri := fmt.Sprintf("s3://%s?region=%s&credentials=%s&prefix=%s", bucket, region, creds, prefix)
+	return NewBlobSourceFromURI(uri)
+
+	// PLEASE REMOVE EVERYTHING ELSE AS SOON AS POSSIBLE
 
 	s3cfg := &s3.S3Config{
 		Bucket:      bucket,

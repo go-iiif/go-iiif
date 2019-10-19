@@ -2,8 +2,8 @@ package cache
 
 import (
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"github.com/aaronland/gocloud-blob-bucket"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"gocloud.dev/blob"
 	"io/ioutil"
 )
@@ -16,9 +16,16 @@ type BlobCache struct {
 func NewBlobCache(config *iiifconfig.Config) (Cache, error) {
 
 	cfg := config.Images
+	uri := cfg.Cache.Path
+
+	return NewBlobCacheFromURI(uri)
+}
+
+func NewBlobCacheFromURI(uri string) (Cache, error) {
+
 	ctx := context.Background()
-	
-	b, err := bucket.OpenBucket(ctx, cfg.Cache.Path)
+
+	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
 		return nil, err

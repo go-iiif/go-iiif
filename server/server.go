@@ -2,10 +2,10 @@ package server
 
 import (
 	"errors"
+	"github.com/gorilla/mux"
 	_ "log"
 	"net/url"
 	"strings"
-	"github.com/gorilla/mux"	
 )
 
 type Server interface {

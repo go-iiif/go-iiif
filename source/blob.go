@@ -2,8 +2,8 @@ package source
 
 import (
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"github.com/aaronland/gocloud-blob-bucket"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"gocloud.dev/blob"
 	"io/ioutil"
 )
@@ -16,9 +16,16 @@ type BlobSource struct {
 func NewBlobSource(config *iiifconfig.Config) (Source, error) {
 
 	cfg := config.Images
+	uri := cfg.Source.Path
+
+	return NewBlobSourceFromURI(uri)
+}
+
+func NewBlobSourceFromURI(uri string) (Source, error) {
+
 	ctx := context.Background()
-	
-	b, err := bucket.OpenBucket(ctx, cfg.Source.Path)
+
+	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
 		return nil, err
