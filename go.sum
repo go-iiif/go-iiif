@@ -6,8 +6,12 @@ github.com/aaronland/go-colours v0.1.0 h1:NCTeeTMmhn/dgKnClS6NB9PKQJcs+A+7W5X+3G
 github.com/aaronland/go-colours v0.1.0/go.mod h1:nWFzEsx3ok+L8lQSm6U7uCiKuEEYer8YIT5rPHlC//w=
 github.com/aaronland/go-string v0.1.0 h1:HU6OHmEpN2m9b5SOIwU6HoOq87Fvemj/0g6DTp8yzpk=
 github.com/aaronland/go-string v0.1.0/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
+github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7/go.mod h1:HhzjNA0EjUWcwHTUMwqrpeAdIF3gRmpH0HpWx1hYJSc=
 github.com/anthonynsimon/bild v0.10.0 h1:Mhqk6Latm2snVkfT2LCjh3ostMBsSlv/YgsQCpgPFSc=
 github.com/anthonynsimon/bild v0.10.0/go.mod h1:rY8HbNSqiIVRGquP67cbI8etkQGyCZzQ5Fkp0MdtXCQ=
+github.com/aws/aws-lambda-go v1.9.0/go.mod h1:zUsUQhAUjYzR8AuduJPCfhBuKWUaDbQiPOG+ouzmE1A=
+github.com/aws/aws-lambda-go v1.10.0 h1:uafgdfYGQD0UeT7d2uKdyWW8j/ZYRifRPIdmeqLzLCk=
+github.com/aws/aws-lambda-go v1.10.0/go.mod h1:zUsUQhAUjYzR8AuduJPCfhBuKWUaDbQiPOG+ouzmE1A=
 github.com/aws/aws-sdk-go v1.19.31 h1:6N7YBci5Nfbedd9k9ZpQlJgAfzuYQqGPSrJ52+Aja1s=
 github.com/aws/aws-sdk-go v1.19.31/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
@@ -83,6 +87,8 @@ github.com/smartystreets/goconvey v0.0.0-20190330032615-68dc04aab96a/go.mod h1:s
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
+github.com/whosonfirst/algnhsa v0.1.0 h1:8wVksKaz1qor2Y6+fiLEPEPxsEEvUQgSdtSTQLMrnlA=
+github.com/whosonfirst/algnhsa v0.1.0/go.mod h1:swLBXxaVTv3s6dJLhekdQCuCTshUew+xHjptRC21RG0=
 github.com/whosonfirst/go-sanitize v0.1.0 h1:ygSqCnakwdzH/m8UEa15zXGDsoo5/JJeRkgmAjXZrBU=
 github.com/whosonfirst/go-sanitize v0.1.0/go.mod h1:p/emgbafMM0p5iVAz2XWwecYPl06Tw4Jos9rhTKIrt8=
 github.com/whosonfirst/go-whosonfirst-aws v0.1.0 h1:q+esqP3703MwJpgW90Ft9yyO1gmLZ7ymG5OLSvCmges=

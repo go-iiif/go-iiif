@@ -21,6 +21,12 @@ github.com/anthonynsimon/bild/math/f64
 github.com/anthonynsimon/bild/parallel
 github.com/anthonynsimon/bild/util
 github.com/anthonynsimon/bild/fcolor
+# github.com/aws/aws-lambda-go v1.10.0
+github.com/aws/aws-lambda-go/events
+github.com/aws/aws-lambda-go/lambda
+github.com/aws/aws-lambda-go/lambda/handlertrace
+github.com/aws/aws-lambda-go/lambda/messages
+github.com/aws/aws-lambda-go/lambdacontext
 # github.com/aws/aws-sdk-go v1.19.31
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/awserr
@@ -58,15 +64,6 @@ github.com/aws/aws-sdk-go/private/protocol/query
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol/query/queryutil
-# github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a
-github.com/facebookgo/clock
-# github.com/facebookgo/grace v0.0.0-20180705000000-75cf19382434e82df4dd84953f566b8ad23d6e9e
-github.com/facebookgo/grace/gracehttp
-github.com/facebookgo/grace/gracenet
-# github.com/facebookgo/httpdown v0.0.0-20180706035922-5979d39b15c2
-github.com/facebookgo/httpdown
-# github.com/facebookgo/stats v0.0.0-20151006221625-1b76add642e4
-github.com/facebookgo/stats
 # github.com/fogleman/gg v1.3.0
 github.com/fogleman/gg
 # github.com/fogleman/primitive v0.0.0-20190214000000-673f57e7b1b5ae5bc415b47c76130bab35b08297
@@ -117,6 +114,8 @@ github.com/neocortical/noborders
 github.com/nfnt/resize
 # github.com/patrickmn/go-cache v2.1.0+incompatible
 github.com/patrickmn/go-cache
+# github.com/whosonfirst/algnhsa v0.1.0
+github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/go-sanitize v0.1.0
 github.com/whosonfirst/go-sanitize
 # github.com/whosonfirst/go-whosonfirst-aws v0.1.0
