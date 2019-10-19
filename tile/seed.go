@@ -59,7 +59,8 @@ func NewTileSeed(config *iiifconfig.Config, driver iiifdriver.Driver, h int, w i
 	}
 
 	procs := runtime.NumCPU()
-
+	procs = procs * 2
+	
 	ts := TileSeed{
 		config:            config,
 		driver:            driver,
@@ -132,7 +133,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		crops, err := ts.TileSizes(image, scale)
 
 		if err != nil {
-			// log.Println(err)
+			log.Println(err)
 			continue
 		}
 
@@ -152,7 +153,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 				}()
 
 				uri, _ := tr.ToURI(alt_id)
-
+				
 				if !refresh {
 
 					_, err := ts.derivatives_cache.Get(uri)
