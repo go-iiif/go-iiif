@@ -2,6 +2,7 @@ module github.com/go-iiif/go-iiif
 
 require (
 	github.com/aaronland/go-colours v0.1.0
+	github.com/aaronland/gocloud-blob-bucket v0.0.1
 	github.com/anthonynsimon/bild v0.10.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
@@ -28,6 +29,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-csv v0.1.0
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
+	gocloud.dev v0.16.0
 	golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
 )
 
