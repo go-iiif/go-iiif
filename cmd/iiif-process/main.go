@@ -1,126 +1,22 @@
 package main
 
-// ./bin/iiif-process -config config.json -instructions instructions.json -uri avocado.png
-// {"avocado.png":{"b":"avocado.png/full/!2048,1536/0/color.jpg","d":"avocado.png/-1,-1,320,320/full/0/dither.jpg","o":"avocado.png/full/full/-1/color.jpg"}}
-
 import (
-	"encoding/json"
-	"flag"
-	"fmt"
-	"github.com/go-iiif/go-iiif-uri"
-	"github.com/go-iiif/go-iiif/cache"
-	"github.com/go-iiif/go-iiif/config"
-	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	_ "github.com/go-iiif/go-iiif/native"
-	"github.com/go-iiif/go-iiif/process"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"github.com/go-iiif/go-iiif/tools"
 	"log"
-	"os"
-	"path/filepath"
-	"sync"
 )
 
 func main() {
 
-	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file.")
-	var instructions = flag.String("instructions", "", "Path to a valid go-iiif processing instructions file.")
-
-	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
-	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
-
-	var uri_type = flag.String("uri-type", "string", "A valid (go-iiif-uri) URI type. Valid options are: string, idsecret")
-
-	var uris flags.MultiString
-	flag.Var(&uris, "uri", "One or more valid IIIF URIs.")
-
-	flag.Parse()
-
-	instruction_set, err := process.ReadInstructions(*instructions)
+	tool, err := tools.NewProcessTool()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	cfg, err := config.NewConfigFromFlag(*iiif_config)
+	err = tool.Run()
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	driver, err := iiifdriver.NewDriverFromConfig(cfg)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pr, err := process.NewIIIFProcessor(cfg, driver)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	results := make(map[string]interface{})
-	wg := new(sync.WaitGroup)
-
-	for _, str_uri := range uris {
-
-		u, err := uri.NewURIWithType(str_uri, *uri_type)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		rsp, err := process.ParallelProcessURIWithInstructionSet(cfg, driver, pr, instruction_set, u)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if *report {
-
-			key := filepath.Join(str_uri, *report_name)
-			wg.Add(1)
-
-			go func() {
-
-				defer wg.Done()
-				err := report_processing(cfg, key, rsp)
-
-				if err != nil {
-					log.Printf("Unable to write process report %s, %s", key, err)
-				}
-			}()
-		}
-
-		results[str_uri] = rsp
-	}
-
-	wg.Wait()
-
-	enc_results, err := json.Marshal(results)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(string(enc_results))
-	os.Exit(0)
-}
-
-func report_processing(cfg *config.Config, key string, rsp map[string]interface{}) error {
-
-	dest_cache, err := cache.NewDerivativesCacheFromConfig(cfg)
-
-	if err != nil {
-		return err
-
-	}
-
-	enc_rsp, err := json.Marshal(rsp)
-
-	if err != nil {
-		return err
-	}
-
-	return dest_cache.Set(key, enc_rsp)
 }

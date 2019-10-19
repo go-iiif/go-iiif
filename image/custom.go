@@ -33,13 +33,13 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 
 		/*
 
-		    "features": {
-			"append": {
-			    "quality": {
-				"primitive": { "primitive": "dither", "required": false, "supported": true, "match": "^primitive:\\d,\\d+,\\d+$" }
-			    }
-			}
-		    },
+			    "features": {
+				"append": {
+				    "quality": {
+					"primitive": { "primitive": "dither", "required": false, "supported": true, "match": "^primitive:\\d,\\d+,\\d+$" }
+				    }
+				}
+			    },
 
 		*/
 

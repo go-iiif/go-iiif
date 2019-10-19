@@ -12,6 +12,8 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
+	"github.com/muesli/smartcrop"
+	"github.com/muesli/smartcrop/nfnt"
 	"github.com/whosonfirst/go-whosonfirst-mimetypes"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
@@ -109,33 +111,32 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		if rgi.SmartCrop {
 
-			// "github.com/muesli/smartcrop"
-			return errors.New("Smart cropping is unavailable for native image processing")
+			si, err := t.SizeInstructions(im)
 
-			/*
-				si, err := t.SizeInstructions(im)
+			if err != nil {
+				return err
+			}
 
-				if err != nil {
-					return err
-				}
+			// this is still / super flakey... (20191018/thisisaaronland)
 
-				resizer := nfnt.NewDefaultResizer()
-				analyzer := smartcrop.NewAnalyzer(resizer)
-				topCrop, err := analyzer.FindBestCrop(im.img, si.Width, si.Height)
+			resizer := nfnt.NewDefaultResizer()
+			analyzer := smartcrop.NewAnalyzer(resizer)
 
-				if err != nil {
-					return err
-				}
+			topCrop, err := analyzer.FindBestCrop(im.img, si.Width, si.Height)
 
-				type SubImager interface {
-					SubImage(r image.Rectangle) image.Image
-				}
+			if err != nil {
+				return err
+			}
 
-				img := im.img.(SubImager).SubImage(topCrop)
-				im.img = img
-			*/
+			type SubImager interface {
+				SubImage(r image.Rectangle) image.Image
+			}
+
+			cropped := im.img.(SubImager).SubImage(topCrop)
+			im.img = cropped
 
 		} else {
+
 			bounds := image.Rect(rgi.X, rgi.Y, rgi.Width, rgi.Height)
 			img := transform.Crop(im.img, bounds)
 			im.img = img
