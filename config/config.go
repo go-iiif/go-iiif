@@ -1,8 +1,11 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"gocloud.dev/blob"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -130,6 +133,30 @@ func NewConfigFromFile(file string) (*Config, error) {
 	}
 
 	return NewConfigFromBytes(body)
+}
+
+func NewConfigFromReader(fh io.Reader) (*Config, error) {
+
+	body, err := ioutil.ReadAll(fh)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewConfigFromBytes(body)
+}
+
+func NewConfigFromBucket(ctx context.Context, bucket *blob.Bucket, fname string) (*Config, error) {
+
+	fh, err := bucket.NewReader(ctx, fname, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer fh.Close()
+
+	return NewConfigFromReader(fh)
 }
 
 func NewConfigFromEnv(name string) (*Config, error) {

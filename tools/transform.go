@@ -12,6 +12,7 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifsource "github.com/go-iiif/go-iiif/source"
+	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"gocloud.dev/blob"
 	"io/ioutil"
 	_ "log"
@@ -125,6 +126,12 @@ func (t *TransformTool) Run() error {
 	var mode = flag.String("mode", "cli", "...")
 
 	flag.Parse()
+
+	err := flags.SetFlagsFromEnvVars("IIIF_TRANSFORM")
+
+	if err != nil {
+		return err
+	}
 
 	// TO DO: validate args...
 
