@@ -93,7 +93,7 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...string) erro
 	return nil
 }
 
-func (t *ProcessTool) Run() error {
+func (t *ProcessTool) Run(ctx context.Context) error {
 
 	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
 	var instructions = flag.String("instructions", "", "Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.")
@@ -122,8 +122,6 @@ func (t *ProcessTool) Run() error {
 	if err != nil {
 		return err
 	}
-
-	ctx := context.Background()
 
 	if *iiif_config != "" {
 

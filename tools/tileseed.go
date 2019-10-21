@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"context"
 	"errors"
 	"flag"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
@@ -28,7 +29,7 @@ func NewTileSeedTool() (Tool, error) {
 	return t, nil
 }
 
-func (t *TileSeedTool) Run() error {
+func (t *TileSeedTool) Run(ctx context.Context) error {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")

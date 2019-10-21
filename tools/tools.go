@@ -1,5 +1,9 @@
 package tools
 
+import (
+	"context"
+)
+
 /*
 
 the idea for each and any of the non-native drivers to be able to provide their
@@ -19,5 +23,5 @@ func main() {
 */
 
 type Tool interface {
-	Run() error
+	Run(context.Context) error
 }

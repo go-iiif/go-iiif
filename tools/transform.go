@@ -110,7 +110,7 @@ func Transform(ctx context.Context, opts *TransformOptions, fname string) error 
 	return nil
 }
 
-func (t *TransformTool) Run() error {
+func (t *TransformTool) Run(ctx context.Context) error {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
 
@@ -136,8 +136,6 @@ func (t *TransformTool) Run() error {
 	// TO DO: validate args...
 
 	// args := flag.Args()
-
-	ctx := context.Background()
 
 	source_bucket, err := bucket.OpenBucket(ctx, *source_path)
 

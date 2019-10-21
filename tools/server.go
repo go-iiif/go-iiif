@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -30,7 +31,7 @@ func NewIIIFServerTool() (Tool, error) {
 	return t, nil
 }
 
-func (t *IIIFServerTool) Run() error {
+func (t *IIIFServerTool) Run(ctx context.Context) error {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
 	var proto = flag.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
