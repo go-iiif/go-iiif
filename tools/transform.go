@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
@@ -15,7 +16,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"gocloud.dev/blob"
 	"io/ioutil"
-	_ "log"
+	"log"
 	"path/filepath"
 )
 
@@ -112,7 +113,10 @@ func Transform(ctx context.Context, opts *TransformOptions, fname string) error 
 
 func (t *TransformTool) Run(ctx context.Context) error {
 
-	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
+	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
+
+	var config_source = flag.String("config-source", "", "")
+	var config_name = flag.String("config-name", "config.json", "")
 
 	var region = flag.String("region", "full", "")
 	var size = flag.String("size", "full", "")
@@ -149,11 +153,31 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	if *cfg == "" {
-		return errors.New("Missing config file")
+	if *cfg != "" {
+
+		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
+
+		abs_config, err := filepath.Abs(*cfg)
+
+		if err != nil {
+			return err
+		}
+
+		*config_name = filepath.Base(abs_config)
+		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	config, err := iiifconfig.NewConfigFromFlag(*cfg)
+	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
+
+	if err != nil {
+		return err
+	}
+
+	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
+
+	if err != nil {
+		return err
+	}
 
 	if err != nil {
 		return err
