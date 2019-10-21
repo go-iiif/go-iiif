@@ -158,7 +158,7 @@ func NewS3Connection(s3cfg *S3Config) (*S3Connection, error) {
 
 func (conn *S3Connection) URI(key string) string {
 
-	key = conn.prepareKey(key)
+	key = conn.PrepareKey(key)
 
 	if conn.prefix != "" {
 		key = fmt.Sprintf("%s/%s", conn.prefix, key)
@@ -172,11 +172,13 @@ func (conn *S3Connection) URI(key string) string {
 
 func (conn *S3Connection) Head(key string) (*s3.HeadObjectOutput, error) {
 
-	key = conn.prepareKey(key)
+	prepped_key := conn.PrepareKey(key)
+
+	// log.Printf("S3 HEAD '%s' -> '%s'\n", key, prepped_key)
 
 	params := &s3.HeadObjectInput{
 		Bucket: aws.String(conn.bucket),
-		Key:    aws.String(key),
+		Key:    aws.String(prepped_key),
 	}
 
 	rsp, err := conn.service.HeadObject(params)
@@ -190,7 +192,7 @@ func (conn *S3Connection) Head(key string) (*s3.HeadObjectOutput, error) {
 
 func (conn *S3Connection) Get(key string) (io.ReadCloser, error) {
 
-	key = conn.prepareKey(key)
+	key = conn.PrepareKey(key)
 
 	params := &s3.GetObjectInput{
 		Bucket: aws.String(conn.bucket),
@@ -233,18 +235,20 @@ func (conn *S3Connection) Put(key string, fh io.ReadCloser, args ...interface{})
 
 	parsed := strings.Split(key, "#")
 
-	key = parsed[0]
-	key = conn.prepareKey(key)
+	parsed_key := parsed[0]
+	prepped_key := conn.PrepareKey(parsed_key)
+
+	// log.Printf("S3 PUT '%s' -> '%s' -> '%s'\n", key, parsed_key, prepped_key)
 
 	// https://docs.aws.amazon.com/sdk-for-go/api/service/s3/s3manager/#UploadInput
 
 	params := s3manager.UploadInput{
 		Bucket: aws.String(conn.bucket),
-		Key:    aws.String(key),
+		Key:    aws.String(prepped_key),
 		Body:   fh,
 	}
 
-	ext := filepath.Ext(key)
+	ext := filepath.Ext(prepped_key)
 	types := mimetypes.TypesByExtension(ext)
 
 	if len(types) == 1 {
@@ -297,7 +301,7 @@ func (conn *S3Connection) PutBytes(key string, body []byte) error {
 
 func (conn *S3Connection) Delete(key string) error {
 
-	key = conn.prepareKey(key)
+	key = conn.PrepareKey(key)
 
 	params := &s3.DeleteObjectInput{
 		Bucket: aws.String(conn.bucket),
@@ -350,7 +354,7 @@ func (conn *S3Connection) SetACLForBucket(acl string, opts *S3ListOptions) error
 
 func (conn *S3Connection) SetACLForKey(key string, acl string) error {
 
-	key = conn.prepareKey(key)
+	key = conn.PrepareKey(key)
 
 	params := &s3.PutObjectAclInput{
 		ACL:    aws.String(acl),
@@ -553,11 +557,15 @@ func IsNotFound(err error) bool {
 	return util.IsAWSErrorWithCode(err, s3.ErrCodeNoSuchKey)
 }
 
-func (conn *S3Connection) prepareKey(key string) string {
+func (conn *S3Connection) PrepareKey(key string) string {
 
-	if conn.prefix == "" {
+	if strings.TrimSpace(conn.prefix) == "" {
+		// log.Printf("S3 PREP KEY '%s' -> '%s'\n", key, key)
 		return key
 	}
 
-	return filepath.Join(conn.prefix, key)
+	prepped_key := filepath.Join(conn.prefix, key)
+	// log.Printf("S3 PREP KEY '%s' -> '%s'\n", key, prepped_key)
+
+	return prepped_key
 }

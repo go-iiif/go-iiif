@@ -39,9 +39,14 @@ func StringToDSN(str_dsn string) (DSN, error) {
 	str_dsn = strings.Trim(str_dsn, " ")
 	dsn := make(map[string]string)
 
+	// see this? it's not particularly smart (translation: not smart at all)
+	// about properties with spaces in them - this should be fixed...
+	// for example: foo=bar?firstname lastname baz=wubwubwub
+	// (20190712/thisisaaronland)
+
 	for _, str_pair := range strings.Split(str_dsn, " ") {
 
-		pair := strings.Split(str_pair, "=")
+		pair := strings.SplitN(str_pair, "=", 2)
 
 		if len(pair) != 2 {
 			return nil, errors.New("Invalid DSN string")
