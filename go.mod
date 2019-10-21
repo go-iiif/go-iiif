@@ -4,6 +4,7 @@ require (
 	github.com/aaronland/go-colours v0.1.0
 	github.com/aaronland/gocloud-blob-bucket v0.0.1
 	github.com/anthonynsimon/bild v0.10.0
+	github.com/aws/aws-lambda-go v1.10.0
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9 // indirect
