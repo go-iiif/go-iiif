@@ -13,7 +13,7 @@ import (
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/go-iiif/go-iiif-uri"
-	// "github.com/go-iiif/go-iiif/cache"
+	iiifcache "github.com/go-iiif/go-iiif/cache"
 	"github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	"github.com/go-iiif/go-iiif/process"
@@ -39,6 +39,8 @@ type ProcessOptions struct {
 	Processor    process.Processor
 	Instructions process.IIIFInstructionSet
 	URIType      string
+	Report       bool
+	ReportName   string
 }
 
 func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...string) error {
@@ -60,23 +62,21 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...string) erro
 			return err
 		}
 
-		/*
-			if *report {
+		if opts.Report {
 
-				key := filepath.Join(str_uri, *report_name)
-				wg.Add(1)
+			key := filepath.Join(str_uri, opts.ReportName)
+			wg.Add(1)
 
-				go func() {
+			go func() {
 
-					defer wg.Done()
-					err := report_processing(opts.Config, key, rsp)
+				defer wg.Done()
+				err := report_processing(opts.Config, key, rsp)
 
-					if err != nil {
-						log.Printf("Unable to write process report %s, %s", key, err)
-					}
-				}()
-			}
-		*/
+				if err != nil {
+					log.Printf("Unable to write process report %s, %s", key, err)
+				}
+			}()
+		}
 
 		results[str_uri] = rsp
 	}
@@ -104,9 +104,8 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	var instructions_source = flag.String("instructions-source", "", "")
 	var instructions_name = flag.String("instructions-name", "instructions.json", "")
 
-	// PLEASE MAKE THIS WORK AGAIN
-	// var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
-	// var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
+	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
+	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
 
 	var uri_type = flag.String("uri-type", "string", "A valid (go-iiif-uri) URI type. Valid options are: string, idsecret")
 
@@ -193,6 +192,8 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		Driver:       driver,
 		Instructions: instructions_set,
 		URIType:      *uri_type,
+		Report:       *report,
+		ReportName:   *report_name,
 	}
 
 	uris := make([]string, 0)
@@ -245,10 +246,9 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	return nil
 }
 
-/*
 func report_processing(cfg *config.Config, key string, rsp map[string]interface{}) error {
 
-	dest_cache, err := cache.NewDerivativesCacheFromConfig(cfg)
+	dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(cfg)
 
 	if err != nil {
 		return err
@@ -263,4 +263,3 @@ func report_processing(cfg *config.Config, key string, rsp map[string]interface{
 
 	return dest_cache.Set(key, enc_rsp)
 }
-*/
