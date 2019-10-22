@@ -3,7 +3,7 @@ module github.com/go-iiif/go-iiif
 go 1.12
 
 require (
-	github.com/aaronland/go-colours v0.1.0
+	github.com/aaronland/go-colours v0.1.1
 	github.com/aaronland/gocloud-blob-bucket v0.0.1
 	github.com/anthonynsimon/bild v0.10.0
 	github.com/aws/aws-lambda-go v1.13.2

@@ -1,6 +1,8 @@
 github.com/DATA-DOG/go-sqlmock v1.3.3/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/RobCherry/vibrant v0.0.0-20160903000000-0680b8cf1c899723ebac8f11c6a18d40011098e1 h1:uQKiMXXq46upGKGTaLftXtr63wr0vi6ueeONl6GV8Yg=
 github.com/RobCherry/vibrant v0.0.0-20160903000000-0680b8cf1c899723ebac8f11c6a18d40011098e1/go.mod h1:xu1tbmzBGes+jcIUU9yATLxmOoxdCZT0hUp5HY1c6/A=
+github.com/RobCherry/vibrant v0.0.0-20160904011657-0680b8cf1c89 h1:k8/G7/7+vhkmphbzRSHulomGLxKJnM6Dp5NJ2HePGwY=
+github.com/RobCherry/vibrant v0.0.0-20160904011657-0680b8cf1c89/go.mod h1:xu1tbmzBGes+jcIUU9yATLxmOoxdCZT0hUp5HY1c6/A=
 github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac h1:Q0Jsdxl5jbxouNs1TQYt0gxesYMU4VXRbsTlgDloZ50=
 github.com/gonum/blas v0.0.0-20181208220705-f22b278b28ac/go.mod h1:P32wAyui1PQ58Oce/KYkOqQv8cVw1zAapXOl+dRFGbc=
 github.com/gonum/floats v0.0.0-20181209220543-c233463c7e82 h1:EvokxLQsaaQjcWVWSV38221VAK7qc2zhaO17bKys/18=
@@ -15,10 +17,16 @@ github.com/gonum/stat v0.0.0-20181125101827-41a0da705a5b h1:fbskpz/cPqWH8VqkQ7LJ
 github.com/gonum/stat v0.0.0-20181125101827-41a0da705a5b/go.mod h1:Z4GIJBJO3Wa4gD4vbwQxXXZ+WHmW6E9ixmNrwvs0iZs=
 github.com/lucasb-eyer/go-colorful v1.0.2 h1:mCMFu6PgSozg9tDNMMK3g18oJBX7oYGrC09mS6CXfO4=
 github.com/lucasb-eyer/go-colorful v1.0.2/go.mod h1:0MS4r+7BZKSJ5mw4/S5MPN+qHFF1fYclkSPilDOKW0s=
+github.com/neocortical/noborders v0.0.0-20180212065722-427885311d44 h1:HR9hctR25JNmTV3mtnX5lRfe+dX9cYijsy2y6OeZa1M=
+github.com/neocortical/noborders v0.0.0-20180212065722-427885311d44/go.mod h1:TdMiJh4xFUBh+sdNgBEKMjml8loRKoeoJsEHj49YDoY=
 github.com/neocortical/noborders v0.0.0-20180218000000-427885311d44ef7204ee600f909ae577f8fc617e h1:Sp+utcQCL+Z0pCoE0LGdNQMDq1EsHuPw45PpLY/3i6k=
 github.com/neocortical/noborders v0.0.0-20180218000000-427885311d44ef7204ee600f909ae577f8fc617e/go.mod h1:TdMiJh4xFUBh+sdNgBEKMjml8loRKoeoJsEHj49YDoY=
 github.com/nfnt/resize v0.0.0-20180218000000-83c6a9932646f83e3267f353373d47347b6036b2 h1:FeMu4yK8LhS3+pm+mdCgZhHtSlFAYbb4ZhuglW46GVk=
 github.com/nfnt/resize v0.0.0-20180218000000-83c6a9932646f83e3267f353373d47347b6036b2/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
+github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 h1:zYyBkD/k9seD2A7fsi6Oo2LfFZAehjjQMERAvZLEDnQ=
+github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646/go.mod h1:jpp1/29i3P1S/RLdc7JQKbRpFeM1dOBd8T9ki5s+AY8=
 golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c h1:VgWXv7ME0Tq2L5CBzVvhTMrfcKfvGs7ifTV9PBYTP3I=
 golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c/go.mod h1:kZ7UVZpmo3dzQBMxlp+ypCbDeSB+sBbTgSJuh5dn5js=
+golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 h1:hVwzHzIUGRjiF7EcUjqNxk3NCfkPxbDKRdnNE1Rpg0U=
+golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8/go.mod h1:FeLwcggjj3mMvU+oOTbSwawSJRM1uh48EjtB4UJZlP0=
 golang.org/x/text v0.3.0/go.mod h1:NqM8EUOU14njkJ3fqMW+pc6Ldnwhi/IjpwHt7yyuwOQ=
