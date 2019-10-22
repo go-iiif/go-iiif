@@ -1,26 +1,41 @@
 package source
 
-import ()
+import (
+	"context"
+	"github.com/aaronland/gocloud-blob-bucket"
+	"gocloud.dev/blob"
+)
 
 type MemorySource struct {
 	Source
-	body []byte
+	bucket *blob.Bucket
 }
 
 func NewMemorySource(body []byte) (Source, error) {
 
-	return NewBlobSourceFromURI("mem://")
+	ctx := context.Background()
 
-	// PLEASE REMOVE EVERYTHING ELSE AS SOON AS POSSIBLE
+	b, err := bucket.OpenBucket(ctx, "mem://")
 
-	mem := MemorySource{
-		body: body,
+	if err != nil {
+		return nil, err
 	}
 
-	return &mem, nil
+	err = b.WriteAll(ctx, "URI", body, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	bs := &MemorySource{
+		bucket: b,
+	}
+
+	return bs, nil
 }
 
-func (mem *MemorySource) Read(uri string) ([]byte, error) {
+func (bs *MemorySource) Read(uri string) ([]byte, error) {
 
-	return mem.body, nil
+	ctx := context.Background()
+	return bs.bucket.ReadAll(ctx, "URI")
 }

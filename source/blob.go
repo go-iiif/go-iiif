@@ -5,7 +5,6 @@ import (
 	"github.com/aaronland/gocloud-blob-bucket"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"gocloud.dev/blob"
-	"io/ioutil"
 )
 
 type BlobSource struct {
@@ -41,14 +40,5 @@ func NewBlobSourceFromURI(uri string) (Source, error) {
 func (bs *BlobSource) Read(uri string) ([]byte, error) {
 
 	ctx := context.Background()
-
-	fh, err := bs.bucket.NewReader(ctx, uri, nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer fh.Close()
-
-	return ioutil.ReadAll(fh)
+	return bs.bucket.ReadAll(ctx, uri)
 }

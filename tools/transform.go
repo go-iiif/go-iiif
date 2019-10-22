@@ -78,11 +78,15 @@ func Transform(ctx context.Context, opts *TransformOptions, fname string) error 
 		return err
 	}
 
+	log.Println("WTF 1")
+
 	image, err := opts.Driver.NewImageFromConfigWithSource(opts.Config, source, fname)
 
 	if err != nil {
 		return err
 	}
+
+	log.Println("WTF 2")
 
 	err = image.Transform(opts.Transformation)
 
@@ -90,11 +94,16 @@ func Transform(ctx context.Context, opts *TransformOptions, fname string) error 
 		return err
 	}
 
+	log.Println("WTF 3")
+
 	wr, err := opts.TargetBucket.NewWriter(ctx, fname, nil)
 
 	if err != nil {
+
 		return err
 	}
+
+	log.Println("WTF 4")
 
 	_, err = wr.Write(image.Body())
 
@@ -108,6 +117,7 @@ func Transform(ctx context.Context, opts *TransformOptions, fname string) error 
 		return err
 	}
 
+	log.Println("WTF 5")
 	return nil
 }
 
@@ -174,10 +184,6 @@ func (t *TransformTool) Run(ctx context.Context) error {
 	}
 
 	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
-
-	if err != nil {
-		return err
-	}
 
 	if err != nil {
 		return err
