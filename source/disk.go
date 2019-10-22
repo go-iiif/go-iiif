@@ -4,6 +4,7 @@ import (
 	"fmt"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"io/ioutil"
+	_ "log"
 	"os"
 	"path/filepath"
 )

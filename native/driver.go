@@ -9,7 +9,7 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"image"
-	"log"
+	_ "log"
 )
 
 func init() {
@@ -37,7 +37,6 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	body, err := src.Read(id)
 
 	if err != nil {
-		log.Println("IMG 1")
 		return nil, err
 	}
 
@@ -46,7 +45,6 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	img, fmt, err := image.Decode(buf)
 
 	if err != nil {
-		log.Println("IMG 2")
 		return nil, err
 	}
 
@@ -59,7 +57,6 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		format:    fmt,
 	}
 
-	log.Println("IMG 3")
 	return &im, nil
 }
 
