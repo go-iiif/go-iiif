@@ -179,6 +179,27 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	seed_ch := make(chan *Seed)
 	done_ch := make(chan bool)
 
+	tile_func := func(seed *Seed) error {
+		<-throttle
+
+		defer func() {
+			golog.Println("DONE")
+			throttle <- true
+		}()
+
+		src_id := seed.Source
+		alt_id := seed.Target
+
+		count, err := ts.SeedTiles(src_id, alt_id, scales, *refresh)
+
+		if err != nil {
+			return err
+		}
+
+		logger.Debug("Seeded %d tiles for '%s'", count, src_id)
+		return nil
+	}
+
 	go func() {
 
 		working := true
@@ -191,26 +212,19 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 				working = false
 			case seed := <-seed_ch:
 
-				<-throttle
+				err := tile_func(seed)
 
-				go func() {
-
-					defer func() {
-						throttle <- true
-					}()
-
-					src_id := seed.Source
-					alt_id := seed.Target
-
-					ts.SeedTiles(src_id, alt_id, scales, *refresh)
-				}()
+				if err != nil {
+					logger.Warning("Failed to seed tile '%s': %s", seed.Source, err)
+				}
 
 			default:
 				// pass
 			}
 
 			if !working {
-				return
+				golog.Println("DONE WORKING")
+				break
 			}
 		}
 	}()
