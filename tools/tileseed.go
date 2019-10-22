@@ -79,7 +79,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	var logfile = flag.String("logfile", "", "Write logging information to this file")
 	var loglevel = flag.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
 	var processes = flag.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
-	var mode = flag.String("mode", "-", "Whether to read input as a CSV file or from STDIN which can be represented as \"-\"")
+	var mode = flag.String("mode", "cli", "...")
 
 	var noextension = flag.Bool("noextension", false, "Remove any extension from destination folder name.")
 
@@ -216,7 +216,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	}()
 
 	switch *mode {
-	case "cli":
+	case "cli", "-":
 
 		for _, id := range flag.Args() {
 			seed := SeedFromString(id, *noextension)
