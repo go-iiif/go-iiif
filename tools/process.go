@@ -188,6 +188,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	}
 
 	process_opts := &ProcessOptions{
+		Config:       cfg,
 		Processor:    pr,
 		Driver:       driver,
 		Instructions: instructions_set,
