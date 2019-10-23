@@ -3,12 +3,15 @@ package main
 // because this: https://github.com/go-iiif/go-iiif/issues/12
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"github.com/aaronland/gocloud-blob-bucket"
 	iiifcompliance "github.com/go-iiif/go-iiif/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	"log"
+	"path/filepath"
 	"sort"
 )
 
@@ -35,15 +38,35 @@ func Sorted(h map[string]FeatureDetails) []string {
 
 func main() {
 
-	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
+	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
+	var config_url = flag.String("config-url", "", "")
+	var config_name = flag.String("config-name", "config.json", "")
 
 	flag.Parse()
 
-	if *cfg == "" {
-		log.Fatal("Missing config file")
+	ctx := context.Background()
+
+	if *cfg != "" {
+
+		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
+
+		abs_config, err := filepath.Abs(*cfg)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		*config_name = filepath.Base(abs_config)
+		*config_url = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	config, err := iiifconfig.NewConfigFromFlag(*cfg)
+	config_bucket, err := bucket.OpenBucket(ctx, *config_url)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
 
 	if err != nil {
 		log.Fatal(err)
