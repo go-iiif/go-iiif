@@ -20,8 +20,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	_ "sync"
-	_ "time"
+	"sync"
+	"time"
 )
 
 type Seed struct {
@@ -176,70 +176,56 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		throttle <- true
 	}
 
-	seed_ch := make(chan *Seed)
-	done_ch := make(chan bool)
+	tile_func := func(seed *Seed, wg *sync.WaitGroup) error {
 
-	tile_func := func(seed *Seed) error {
+		wg.Add(1)
+		t1 := time.Now()
+
 		<-throttle
 
-		defer func() {
-			golog.Println("DONE")
-			throttle <- true
-		}()
+		logger.Debug("Tile waiting to seed '%s': %v", seed.Source, time.Since(t1))
 
-		src_id := seed.Source
-		alt_id := seed.Target
+		go func(seed *Seed, wg *sync.WaitGroup) {
 
-		count, err := ts.SeedTiles(src_id, alt_id, scales, *refresh)
+			t1 := time.Now()
 
-		if err != nil {
-			return err
-		}
+			src_id := seed.Source
+			alt_id := seed.Target
 
-		logger.Debug("Seeded %d tiles for '%s'", count, src_id)
+			defer func() {
+				logger.Debug("Time to seed tiles for '%s': %v", seed.Source, time.Since(t1))
+				throttle <- true
+				wg.Done()
+			}()
+
+			count, err := ts.SeedTiles(src_id, alt_id, scales, *refresh)
+
+			if err != nil {
+				logger.Warning("Failed to seed tiles for '%s', %s", src_id, err)
+			} else {
+				logger.Debug("Seeded %d tiles for '%s'", count, src_id)
+			}
+
+		}(seed, wg)
+
 		return nil
 	}
-
-	go func() {
-
-		working := true
-
-		for {
-			select {
-			case <-ctx.Done():
-				working = false
-			case <-done_ch:
-				working = false
-			case seed := <-seed_ch:
-
-				err := tile_func(seed)
-
-				if err != nil {
-					logger.Warning("Failed to seed tile '%s': %s", seed.Source, err)
-				}
-
-			default:
-				// pass
-			}
-
-			if !working {
-				golog.Println("DONE WORKING")
-				break
-			}
-		}
-	}()
 
 	switch *mode {
 	case "cli", "-":
 
+		wg := new(sync.WaitGroup)
+
 		for _, id := range flag.Args() {
 			seed := SeedFromString(id, *noextension)
-			seed_ch <- seed
+			tile_func(seed, wg)
 		}
 
-		done_ch <- true
+		wg.Wait()
 
 	case "csv":
+
+		wg := new(sync.WaitGroup)
 
 		for _, path := range flag.Args() {
 
@@ -284,15 +270,18 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 					Target: alt_id,
 				}
 
-				seed_ch <- seed
+				tile_func(seed, wg)
 			}
 
-			done_ch <- true
 		}
+
+		wg.Wait()
 
 	case "lambda":
 
 		handler := func(ctx context.Context, ev aws_events.S3Event) error {
+
+			wg := new(sync.WaitGroup)
 
 			for _, r := range ev.Records {
 
@@ -303,10 +292,10 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 				s3_fname := filepath.Base(s3_key)
 
 				seed := SeedFromString(s3_fname, *noextension)
-				seed_ch <- seed
+				tile_func(seed, wg)
 			}
 
-			done_ch <- true
+			wg.Wait()
 			return nil
 		}
 
