@@ -2,10 +2,9 @@ package tools
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
-	// "github.com/facebookgo/grace/gracehttp"
+	"github.com/aaronland/gocloud-blob-bucket"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
@@ -15,7 +14,6 @@ import (
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/gorilla/mux"
 	"log"
-	// "net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -33,7 +31,10 @@ func NewIIIFServerTool() (Tool, error) {
 
 func (t *IIIFServerTool) Run(ctx context.Context) error {
 
-	var cfg = flag.String("config", "", "Path to a valid go-iiif config file")
+	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
+	var config_url = flag.String("config-url", "", "")
+	var config_name = flag.String("config-name", "config.json", "")
+
 	var proto = flag.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
 	var host = flag.String("host", "localhost", "Bind the server to this host")
 	var port = flag.Int("port", 8080, "Bind the server to this port")
@@ -42,11 +43,27 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 
 	flag.Parse()
 
-	if *cfg == "" {
-		return errors.New("Missing config file")
+	if *cfg != "" {
+
+		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
+
+		abs_config, err := filepath.Abs(*cfg)
+
+		if err != nil {
+			return err
+		}
+
+		*config_name = filepath.Base(abs_config)
+		*config_url = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	config, err := iiifconfig.NewConfigFromFlag(*cfg)
+	config_bucket, err := bucket.OpenBucket(ctx, *config_url)
+
+	if err != nil {
+		return err
+	}
+
+	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
 
 	if err != nil {
 		return err
@@ -59,10 +76,8 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 	}
 
 	/*
-
 		See this - we're just going to make sure we have a valid source
 		before we start serving images (20160901/thisisaaronland)
-
 	*/
 
 	_, err = iiifsource.NewSourceFromConfig(config)
