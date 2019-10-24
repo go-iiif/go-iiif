@@ -14,3 +14,14 @@ docker-process-build:
 
 docker-server-build:
 	docker build -f Dockerfile.server -t go-iiif-server .
+
+lambda-handlers:
+	@make lambda-process
+
+lambda-process:
+	if test -f main; then rm -f main; fi
+	if test -f iiif-process.zip; then rm -f iiif-process.zip; fi
+	GOOS=linux go build -mod vendor -o main cmd/iiif-process/main.go
+	zip iiif-process.zip main
+	rm -f main
+
