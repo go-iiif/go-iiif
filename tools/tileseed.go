@@ -11,6 +11,7 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiiftile "github.com/go-iiif/go-iiif/tile"
+	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
@@ -90,6 +91,12 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	var verbose = flag.Bool("verbose", false, "Write logging to STDOUT in addition to any other log targets that may have been defined")
 
 	flag.Parse()
+
+	err := flags.SetFlagsFromEnvVars("IIIF_TRANSFORM")
+
+	if err != nil {
+		return err
+	}
 
 	if *cfg != "" {
 
