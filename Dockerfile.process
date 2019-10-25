@@ -6,7 +6,7 @@ RUN apk update \
     && apk upgrade \
     && apk add make \
     && cd /go-iiif \
-    && make tools
+    && make cli-tools
 
 FROM alpine
 
