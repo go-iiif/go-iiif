@@ -138,22 +138,6 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	// TO DO: validate args...
-
-	// args := flag.Args()
-
-	source_bucket, err := bucket.OpenBucket(ctx, *source_path)
-
-	if err != nil {
-		return err
-	}
-
-	target_bucket, err := bucket.OpenBucket(ctx, *target_path)
-
-	if err != nil {
-		return err
-	}
-
 	if *cfg != "" {
 
 		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
@@ -181,6 +165,20 @@ func (t *TransformTool) Run(ctx context.Context) error {
 	}
 
 	driver, err := iiifdriver.NewDriverFromConfig(config)
+
+	if err != nil {
+		return err
+	}
+
+	// TO DO DEFAULT TO source/target FROM config BUT CHECK FOR OVERRIDE IN *source/target_path ARGS
+
+	source_bucket, err := bucket.OpenBucket(ctx, *source_path)
+
+	if err != nil {
+		return err
+	}
+
+	target_bucket, err := bucket.OpenBucket(ctx, *target_path)
 
 	if err != nil {
 		return err
