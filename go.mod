@@ -21,6 +21,7 @@ require (
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20161206000000-dacd7cb9e0c5d7ce6ece2fee25d765ed11472cf8
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/whosonfirst/algnhsa v0.1.0
 	github.com/whosonfirst/go-sanitize v0.1.0
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.0
 	github.com/whosonfirst/go-whosonfirst-cli v0.1.0
