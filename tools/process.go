@@ -98,11 +98,11 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
 	var instructions = flag.String("instructions", "", "Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.")
 
-	var config_source = flag.String("config-source", "", "")
-	var config_name = flag.String("config-name", "config.json", "")
+	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
+	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
 
-	var instructions_source = flag.String("instructions-source", "", "")
-	var instructions_name = flag.String("instructions-name", "instructions.json", "")
+	var instructions_source = flag.String("instructions-source", "", "A valid Go Cloud bucket URI where your go-iiif instructions file is located.")
+	var instructions_name = flag.String("instructions-name", "instructions.json", "The name of your go-iiif instructions file.")
 
 	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
 	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
@@ -112,7 +112,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	var flag_uris flags.MultiString
 	flag.Var(&flag_uris, "uri", "One or more valid IIIF URIs.")
 
-	mode := flag.String("mode", "cli", "...")
+	mode := flag.String("mode", "cli", "Valid modes are: cli, lambda.")
 
 	flag.Parse()
 

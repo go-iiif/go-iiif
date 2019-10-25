@@ -116,19 +116,19 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
 
-	var config_source = flag.String("config-source", "", "")
-	var config_name = flag.String("config-name", "config.json", "")
+	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
+	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
 
-	var region = flag.String("region", "full", "")
-	var size = flag.String("size", "full", "")
-	var rotation = flag.String("rotation", "0", "")
-	var quality = flag.String("quality", "default", "")
-	var format = flag.String("format", "jpg", "")
+	var region = flag.String("region", "full", "A valid IIIF 2.0 region value.")
+	var size = flag.String("size", "full", "A valid IIIF 2.0 size value.")
+	var rotation = flag.String("rotation", "0", "A valid IIIF 2.0 rotation value.")
+	var quality = flag.String("quality", "default", "A valid IIIF 2.0 quality value.")
+	var format = flag.String("format", "jpg", "A valid IIIF 2.0 format value.")
 
-	var source_path = flag.String("source", "file:///", "...")
-	var target_path = flag.String("target", "file:///", "...")
+	var source_path = flag.String("source", "file:///", "A valid Go Cloud bucket URI where the source file to transform is located.")
+	var target_path = flag.String("target", "file:///", "A valid Go Cloud bucket URI where the transformed file should be written.")
 
-	var mode = flag.String("mode", "cli", "...")
+	var mode = flag.String("mode", "cli", "Valid modes are: cli, lambda.")
 
 	flag.Parse()
 
