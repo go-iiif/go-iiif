@@ -1,7 +1,10 @@
 package process
 
 import (
+	"context"
 	"encoding/json"
+	"gocloud.dev/blob"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -17,6 +20,19 @@ type IIIFInstructions struct {
 	Format   string `json:"format"`
 }
 
+func ReadInstructionsFromBucket(ctx context.Context, bucket *blob.Bucket, fname string) (IIIFInstructionSet, error) {
+
+	instructions_fh, err := bucket.NewReader(ctx, fname, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer instructions_fh.Close()
+
+	return ReadInstructionsReader(instructions_fh)
+}
+
 func ReadInstructions(str_instructions string) (IIIFInstructionSet, error) {
 
 	var raw_instructions []byte
@@ -24,28 +40,38 @@ func ReadInstructions(str_instructions string) (IIIFInstructionSet, error) {
 	if strings.HasPrefix(str_instructions, "{") {
 
 		raw_instructions = []byte(str_instructions)
-
-	} else {
-
-		path := str_instructions
-		fh, err := os.Open(path)
-
-		if err != nil {
-			return nil, err
-		}
-
-		body, err := ioutil.ReadAll(fh)
-
-		if err != nil {
-			return nil, err
-		}
-
-		raw_instructions = body
+		return ReadInstructionsBytes(raw_instructions)
 	}
+
+	path := str_instructions
+	fh, err := os.Open(path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer fh.Close()
+
+	return ReadInstructionsReader(fh)
+
+}
+
+func ReadInstructionsReader(fh io.Reader) (IIIFInstructionSet, error) {
+
+	body, err := ioutil.ReadAll(fh)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return ReadInstructionsBytes(body)
+}
+
+func ReadInstructionsBytes(body []byte) (IIIFInstructionSet, error) {
 
 	var instruction_set IIIFInstructionSet
 
-	err := json.Unmarshal(raw_instructions, &instruction_set)
+	err := json.Unmarshal(body, &instruction_set)
 
 	if err != nil {
 		return nil, err
