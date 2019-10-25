@@ -71,10 +71,10 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
 
-	var config_url = flag.String("config-url", "", "")
+	var config_source = flag.String("config-source", "", "")
 	var config_name = flag.String("config-name", "config.json", "")
 
-	var csv_url = flag.String("csv-url", "", "")
+	var csv_source = flag.String("csv-source", "", "")
 
 	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	var quality = flag.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
@@ -109,10 +109,10 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		}
 
 		*config_name = filepath.Base(abs_config)
-		*config_url = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	config_bucket, err := bucket.OpenBucket(ctx, *config_url)
+	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
 
 	if err != nil {
 		return err
@@ -234,7 +234,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 	case "csv":
 
-		csv_bucket, err := bucket.OpenBucket(ctx, *csv_url)
+		csv_bucket, err := bucket.OpenBucket(ctx, *csv_source)
 
 		if err != nil {
 			return err
