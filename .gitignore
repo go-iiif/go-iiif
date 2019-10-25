@@ -10,5 +10,4 @@ bin/
 *.json
 .gitmodules
 vips-*
-credentials*
 *.zip
