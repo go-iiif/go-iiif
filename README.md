@@ -4,7 +4,7 @@
 
 ## What is this?
 
-This is a fork of [@greut's iiif](https://github.com/greut/iiif) package that moves all of the processing logic for the [IIIF Image API](http://iiif.io/api/image/) in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
+This began as a fork of [@greut's iiif](https://github.com/greut/iiif) package that moves all of the processing logic for the [IIIF Image API](http://iiif.io/api/image/) in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
 
 I did this to better understand the architecture behind (and to address my own concerns about) version 2 of the [IIIF Image API](http://iiif.io/api/image/2.1/index.html).
 
@@ -14,13 +14,19 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Setup
 
-Currently all the image processing is handled by the [bimg](https://github.com/h2non/bimg/) Go package which requires the [libvips](https://github.com/jcupitt/libvips) C library be installed. There is a detailed [setup script](setup/setup-ubuntu.sh) available for Ubuntu. Eventually there will be pure-Go alternatives for wrangling images. Otherwise all other depedencies are included with this repository in the [vendor](vendor) directory.
-
-Once you have things like`Go` and `libvips` installed just type:
+You will need to have both `Go` (specifically a version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
 
 ```
-$> make cli-tools
+make cli-tools
 ```
+
+All of this package's dependencies are bundled with the code in the `vendor` directory.
+
+## Drivers
+
+`go-iiif` was first written with the [libvips](#) library and [bimg](#) Go wrapper for image processing. `libvip` is pretty great but it introduces non-trivial build and setup requirements. As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native code.
+
+If you want or need to use `libvips` for image processing you should use the [go-iiif-vips](#) package.
 
 ## Usage
 
@@ -1240,6 +1246,10 @@ Probably. Please consult [the currently known-known issues](https://github.com/g
 ### IIIF stuff
 
 * http://iiif.io/api/image/2.1/
+
+### go-iiig stuff
+
+* https://github.com/go-iiif/go-iiif-vip/
 
 ### Go stuff
 
