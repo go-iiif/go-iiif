@@ -2,6 +2,8 @@ module github.com/go-iiif/go-iiif
 
 require (
 	github.com/aaronland/go-colours v0.1.0
+	github.com/aaronland/gocloud-blob-bucket v0.0.1
+	github.com/aws/aws-lambda-go v1.13.2
 	github.com/facebookgo/clock v0.0.0-20150410010913-600d898af40a // indirect
 	github.com/facebookgo/ensure v0.0.0-20160127193407-b4ab57deab51 // indirect
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9 // indirect
@@ -19,12 +21,12 @@ require (
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20161206000000-dacd7cb9e0c5d7ce6ece2fee25d765ed11472cf8
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/stretchr/testify v1.3.0 // indirect
 	github.com/whosonfirst/go-sanitize v0.1.0
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.0
 	github.com/whosonfirst/go-whosonfirst-cli v0.1.0
 	github.com/whosonfirst/go-whosonfirst-csv v0.1.0
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
+	gocloud.dev v0.17.0
 	golang.org/x/image v0.0.0-20190516052701-61b8692d9a5c
 	gopkg.in/h2non/bimg.v1 v1.0.19
 )
