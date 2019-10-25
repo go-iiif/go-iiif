@@ -92,7 +92,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 	flag.Parse()
 
-	err := flags.SetFlagsFromEnvVars("IIIF_TRANSFORM")
+	err := flags.SetFlagsFromEnvVars("IIIF_TILESEED")
 
 	if err != nil {
 		return err
