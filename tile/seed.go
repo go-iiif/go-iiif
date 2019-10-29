@@ -283,7 +283,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			_w := crop["width"]
 			_h := crop["height"]
 
-			_s := ts.Width
+			// _s := ts.Width
 
 			if _x+_w > w {
 				_w = w - _x
@@ -293,20 +293,41 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 				_h = h - _y
 			}
 
-			// this bit is cribbed from leaflet-iiif.js
-
-			base := float64(ts.Width * sf)
-
-			minx := float64(xpos) * base
-			maxx := math.Min(minx+base, float64(w))
-
-			diff := maxx - minx
-			sz := math.Ceil(diff / float64(sf))
-
-			_s = int(sz)
-
 			region := fmt.Sprintf("%d,%d,%d,%d", _x, _y, _w, _h)
-			size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
+
+			/*
+
+				// this bit is cribbed from leaflet-iiif.js
+
+				base := float64(ts.Width * sf)
+
+				minx := float64(xpos) * base
+				maxx := math.Min(minx+base, float64(w))
+
+				diff := maxx - minx
+				sz := math.Ceil(diff / float64(sf))
+
+				_s = int(sz)
+
+				size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
+			*/
+
+			max := math.Max(float64(ts.Width), float64(ts.Height))
+
+			ratio_w := float64(max) / float64(_w)
+			ratio_h := float64(max) / float64(_h)
+
+			ratio := math.Min(ratio_w, ratio_h)
+
+			w := int(float64(_w) * ratio)
+			h := int(float64(_h) * ratio)
+
+			size := fmt.Sprintf("%d,%d", w, h)
+
+			if w != ts.Width || h != ts.Height {
+				log.Println(size)
+			}
+
 			rotation := "0"
 			quality := quality
 			format := format

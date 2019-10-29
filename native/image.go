@@ -22,7 +22,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"log"
+	_ "log"
 	_ "math"
 )
 
@@ -147,17 +147,11 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 			img := transform.Crop(im.img, bounds)
 
-			bounds = img.Bounds()
-			size := bounds.Size()
-
-			expected_w := x2 - x1
-			expected_h := y2 - y1
-
 			// Crop returns a new image which contains the intersection between the rect and
 			// the image provided as params. Only the intersection is returned. If a rect larger
 			// than the image is provided, no fill is done to the 'empty' area.
 			// https://godoc.org/github.com/anthonynsimon/bild/transform#Crop
-						
+
 			im.img = img
 		}
 	}
@@ -173,30 +167,6 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		w := si.Width
 		h := si.Height
 
-		/*
-		if t.Region != "full" {
-
-			max_fl := math.Max(float64(w), float64(h))
-			max := int(max_fl)
-
-			bounds := im.img.Bounds()
-			dims := bounds.Max
-
-			width := dims.X
-			height := dims.Y
-			
-			ratio_w := float64(max) / float64(width)
-			ratio_h := float64(max) / float64(height)
-			
-			ratio := math.Min(ratio_w, ratio_h)
-			
-			w = int(float64(width) * ratio)
-			h = int(float64(height) * ratio)
-
-			log.Printf("%d %d BECOMES %d %d\n", si.Width, si.Height, w, h)
-		}
-		*/
-		
 		img := transform.Resize(im.img, w, h, transform.Linear)
 		im.img = img
 	}
