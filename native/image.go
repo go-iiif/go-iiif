@@ -22,7 +22,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	_ "log"
+	"log"
 )
 
 type NativeImage struct {
@@ -109,13 +109,13 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 			return err
 		}
 
+		si, err := t.SizeInstructions(im)
+
+		if err != nil {
+			return err
+		}
+
 		if rgi.SmartCrop {
-
-			si, err := t.SizeInstructions(im)
-
-			if err != nil {
-				return err
-			}
 
 			// this is still / super flakey... (20191018/thisisaaronland)
 
@@ -137,8 +137,31 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		} else {
 
-			bounds := image.Rect(rgi.X, rgi.Y, rgi.Width, rgi.Height)
+			x1 := rgi.X
+			y1 := rgi.Y
+			x2 := x1 + rgi.Width
+			y2 := y1 + rgi.Height
+
+			bounds := image.Rect(x1, y1, x2, y2)
+
 			img := transform.Crop(im.img, bounds)
+
+			bounds = img.Bounds()
+			size := bounds.Size()
+
+			w := size.X
+			h := size.Y
+
+			// Crop returns a new image which contains the intersection between the rect and
+			// the image provided as params. Only the intersection is returned. If a rect larger
+			// than the image is provided, no fill is done to the 'empty' area.
+			// https://godoc.org/github.com/anthonynsimon/bild/transform#Crop
+
+			if w != 256 || h != 256 {
+				u, _ := t.ToURI("x")
+				log.Printf("BOUNDS '%s' '%v' '%v' SI: '%v'\n", u, bounds, size, si)
+			}
+
 			im.img = img
 		}
 	}
