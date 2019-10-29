@@ -11,3 +11,4 @@ bin/
 .gitmodules
 vips-*
 *.zip
+docker
