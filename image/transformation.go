@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
-	"log"
+	_ "log"
 	"math"
 	"net/url"
 	"regexp"
@@ -364,8 +364,6 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 }
 
 func (t *Transformation) SizeInstructionsWithDimensions(im Image, width int, height int) (*SizeInstruction, error) {
-
-	log.Println("SIZE...", width, height)
 
 	sizeError := "IIIF 2.1 `size` argument is not recognized: %#v"
 
