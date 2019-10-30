@@ -9,7 +9,7 @@ import (
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifdriver "github.com/go-iiif/go-iiif/driver"
+	// iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiiftile "github.com/go-iiif/go-iiif/tile"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-csv"
@@ -128,13 +128,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	driver, err := iiifdriver.NewDriverFromConfig(config)
-
-	if err != nil {
-		return err
-	}
-
-	ts, err := iiiftile.NewTileSeed(config, driver, 256, 256, *endpoint, *quality, *format)
+	ts, err := iiiftile.NewTileSeed(config, 256, 256, *endpoint, *quality, *format)
 
 	if err != nil {
 		return err

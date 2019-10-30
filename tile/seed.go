@@ -31,7 +31,13 @@ type TileSeed struct {
 	procs             int
 }
 
-func NewTileSeed(config *iiifconfig.Config, driver iiifdriver.Driver, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
+func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
+
+	driver, err := iiifdriver.NewDriverFromConfig(config)
+
+	if err != nil {
+		return nil, err
+	}
 
 	level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
@@ -59,7 +65,6 @@ func NewTileSeed(config *iiifconfig.Config, driver iiifdriver.Driver, h int, w i
 	}
 
 	procs := runtime.NumCPU()
-	procs = procs * 2
 
 	ts := TileSeed{
 		config:            config,
@@ -133,7 +138,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		crops, err := ts.TileSizes(image, scale)
 
 		if err != nil {
-			log.Println(err)
+			// log.Println(err)
 			continue
 		}
 
@@ -152,6 +157,8 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					throttle <- true
 				}()
 
+				// log.SetOutput(os.Stdout)
+
 				uri, _ := tr.ToURI(alt_id)
 
 				if !refresh {
@@ -163,7 +170,14 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					}
 				}
 
-				tmp, _ := ts.driver.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
+				// tmp, _ := iiifimage.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
+
+				tmp, err := ts.driver.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
+
+				if err != nil {
+					log.Println(err)
+					return
+				}
 
 				err = tmp.Transform(tr)
 
@@ -293,8 +307,6 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 				_h = h - _y
 			}
 
-			region := fmt.Sprintf("%d,%d,%d,%d", _x, _y, _w, _h)
-
 			// this bit is cribbed from leaflet-iiif.js
 
 			base := float64(ts.Width * sf)
@@ -307,8 +319,8 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 			_s = int(sz)
 
+			region := fmt.Sprintf("%d,%d,%d,%d", _x, _y, _w, _h)
 			size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
-
 			rotation := "0"
 			quality := quality
 			format := format
