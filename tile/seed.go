@@ -11,6 +11,8 @@ import (
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifprofile "github.com/go-iiif/go-iiif/profile"
 	iiifsource "github.com/go-iiif/go-iiif/source"
+	goimage "image"
+	godraw "image/draw"
 	"log"
 	"math"
 	"runtime"
@@ -170,6 +172,52 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 				if err != nil {
 					log.Printf("[%s] transform failed: %s\n", im.Identifier(), err)
 					return
+				}
+
+				// THIS HERE IS WHERE WE NEED TO MAKE SURE THE IMAGE IS SQUARE...
+
+				dims, err := tmp.Dimensions()
+
+				if err != nil {
+					log.Println("DIMS", dims)
+					return
+				}
+
+				w := dims.Width()
+				h := dims.Height()
+
+				if w != ts.Width || h != ts.Height {
+
+					u, _ := tr.ToURI("example")
+					log.Printf("DIMS w: %d h: %d u: %s\n", w, h, u)
+
+					im, err := iiifimage.IIIFImageToGolangImage(tmp)
+
+					if err != nil {
+						log.Println("WUH", err)
+						return
+					}
+
+					var offset goimage.Point
+					var area goimage.Rectangle
+
+					if w != ts.Width && h != ts.Height {
+
+						// pass
+
+					} else if w != ts.Width {
+
+						offset = goimage.Pt(0, 0)
+						area = goimage.Rect(0, 0, w, h)
+
+					} else if h != ts.Height {
+						// pass
+					}
+
+					bounds := goimage.Rect(0, 0, ts.Width, ts.Height)
+					canvas := goimage.NewRGBA(bounds)
+
+					godraw.Draw(canvas, area, im, offset, godraw.Src)
 				}
 
 				err = ts.derivatives_cache.Set(uri, tmp.Body())
