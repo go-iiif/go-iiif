@@ -353,14 +353,31 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 			return nil, errors.New(message)
 		}
 
-		dims, err := im.Dimensions()
+		var width int
+		var height int
 
-		if err != nil {
-			return nil, err
+		if t.Region == "full" {
+
+			dims, err := im.Dimensions()
+
+			if err != nil {
+				return nil, err
+			}
+
+			width = dims.Width()
+			height = dims.Height()
+
+		} else {
+
+			rgi, err := t.RegionInstructions(im)
+
+			if err != nil {
+				return nil, err
+			}
+
+			width = rgi.Width
+			height = rgi.Height
 		}
-
-		width := dims.Width()
-		height := dims.Height()
 
 		wi, err_w := strconv.ParseInt(sizes[0], 10, 64)
 		hi, err_h := strconv.ParseInt(sizes[1], 10, 64)
@@ -370,6 +387,8 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 			return nil, errors.New(message)
 
 		} else if err_w == nil && err_h == nil {
+
+			// w,h
 
 			w = int(wi)
 			h = int(hi)
@@ -390,10 +409,15 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 
 		} else if err_h != nil {
 
+			// w,
+
 			ratio := float64(wi) / float64(width)
 			w = int(wi)
 			h = int(float64(height) * ratio)
+
 		} else {
+
+			// ,h
 
 			ratio := float64(hi) / float64(height)
 			w = int(float64(width) * ratio)

@@ -11,8 +11,6 @@ import (
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifprofile "github.com/go-iiif/go-iiif/profile"
 	iiifsource "github.com/go-iiif/go-iiif/source"
-	goimage "image"
-	godraw "image/draw"
 	"log"
 	"math"
 	"runtime"
@@ -174,52 +172,6 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					return
 				}
 
-				// THIS HERE IS WHERE WE NEED TO MAKE SURE THE IMAGE IS SQUARE...
-
-				dims, err := tmp.Dimensions()
-
-				if err != nil {
-					log.Println("DIMS", dims)
-					return
-				}
-
-				w := dims.Width()
-				h := dims.Height()
-
-				if w != ts.Width || h != ts.Height {
-
-					u, _ := tr.ToURI("example")
-					log.Printf("DIMS w: %d h: %d u: %s\n", w, h, u)
-
-					im, err := iiifimage.IIIFImageToGolangImage(tmp)
-
-					if err != nil {
-						log.Println("WUH", err)
-						return
-					}
-
-					var offset goimage.Point
-					var area goimage.Rectangle
-
-					if w != ts.Width && h != ts.Height {
-
-						// pass
-
-					} else if w != ts.Width {
-
-						offset = goimage.Pt(0, 0)
-						area = goimage.Rect(0, 0, w, h)
-
-					} else if h != ts.Height {
-						// pass
-					}
-
-					bounds := goimage.Rect(0, 0, ts.Width, ts.Height)
-					canvas := goimage.NewRGBA(bounds)
-
-					godraw.Draw(canvas, area, im, offset, godraw.Src)
-				}
-
 				err = ts.derivatives_cache.Set(uri, tmp.Body())
 
 				if err != nil {
@@ -331,7 +283,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			_w := crop["width"]
 			_h := crop["height"]
 
-			// _s := ts.Width
+			_s := ts.Width
 
 			if _x+_w > w {
 				_w = w - _x
@@ -343,38 +295,19 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 			region := fmt.Sprintf("%d,%d,%d,%d", _x, _y, _w, _h)
 
-			/*
+			// this bit is cribbed from leaflet-iiif.js
 
-				// this bit is cribbed from leaflet-iiif.js
+			base := float64(ts.Width * sf)
 
-				base := float64(ts.Width * sf)
+			minx := float64(xpos) * base
+			maxx := math.Min(minx+base, float64(w))
 
-				minx := float64(xpos) * base
-				maxx := math.Min(minx+base, float64(w))
+			diff := maxx - minx
+			sz := math.Ceil(diff / float64(sf))
 
-				diff := maxx - minx
-				sz := math.Ceil(diff / float64(sf))
+			_s = int(sz)
 
-				_s = int(sz)
-
-				size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
-			*/
-
-			max := math.Max(float64(ts.Width), float64(ts.Height))
-
-			ratio_w := float64(max) / float64(_w)
-			ratio_h := float64(max) / float64(_h)
-
-			ratio := math.Min(ratio_w, ratio_h)
-
-			w := int(float64(_w) * ratio)
-			h := int(float64(_h) * ratio)
-
-			size := fmt.Sprintf("%d,%d", w, h)
-
-			if w != ts.Width || h != ts.Height {
-				log.Println(size)
-			}
+			size := fmt.Sprintf("%d,", _s) // but maybe some client will send 'full' or what...?
 
 			rotation := "0"
 			quality := quality
