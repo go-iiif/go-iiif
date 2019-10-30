@@ -1249,7 +1249,9 @@ Probably. Please consult [the currently known-known issues](https://github.com/g
 
 ### go-iiig stuff
 
-* https://github.com/go-iiif/go-iiif-vip/
+* https://github.com/go-iiif/go-iiif-vips
+* https://github.com/go-iiif/go-iiif-uri
+* https://github.com/go-iiif/go-iiif-www
 
 ### Go stuff
 
