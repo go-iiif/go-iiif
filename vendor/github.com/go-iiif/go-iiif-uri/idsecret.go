@@ -41,6 +41,8 @@ type IdSecretURI struct {
 	id       int64
 	secret   string
 	secret_o string
+	label    string
+	format   string
 }
 
 func NewIdSecretURIFromDSN(dsn_raw string) (URI, error) {
@@ -99,6 +101,8 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 
 	secret := q.Get("secret")
 	secret_o := q.Get("secret_o")
+	label := q.Get("label")
+	format := q.Get("format")
 
 	rnd_opts := random.DefaultOptions()
 	rnd_opts.AlphaNumeric = true
@@ -130,6 +134,8 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 		id:       id,
 		secret:   secret,
 		secret_o: secret_o,
+		label:    label,
+		format:   format,
 	}
 
 	return &id_u, nil
@@ -146,32 +152,31 @@ func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 	tree := id2Path(u.id)
 	root := filepath.Join(tree, str_id)
 
-	uri := root
+	secret := u.secret
+	format := u.format
+	label := u.label
 
 	if opts != nil {
 
-		format := opts.Get("format")
-		label := opts.Get("label")
+		format = opts.Get("format")
+		label = opts.Get("label")
 		original := opts.Get("original")
-
-		if format == "" {
-			return "", errors.New("Missing format parameter")
-		}
-
-		if label == "" {
-			return "", errors.New("Missing label parameter")
-		}
-
-		secret := u.secret
 
 		if original != "" {
 			secret = u.secret_o
 		}
-
-		fname := fmt.Sprintf("%s_%s_%s.%s", str_id, secret, label, format)
-
-		uri = filepath.Join(root, fname)
 	}
+
+	if format == "" {
+		return "", errors.New("Missing format parameter")
+	}
+
+	if label == "" {
+		return "", errors.New("Missing label parameter")
+	}
+
+	fname := fmt.Sprintf("%s_%s_%s.%s", str_id, secret, label, format)
+	uri := filepath.Join(root, fname)
 
 	return uri, nil
 }
