@@ -50,7 +50,7 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI)
 	for _, uri := range uris {
 
 		origin := uri.Origin()
-		
+
 		rsp, err := process.ParallelProcessURIWithInstructionSet(opts.Config, opts.Driver, opts.Processor, opts.Instructions, uri)
 
 		if err != nil {
@@ -213,7 +213,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		handler := func(ctx context.Context, ev aws_events.S3Event) error {
 
 			to_process := make([]iiifuri.URI, 0)
-			
+
 			for _, r := range ev.Records {
 
 				s3_entity := r.S3
@@ -223,7 +223,6 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 				// HOW TO WRANGLE THIS IN TO A BESPOKE URI? NECESSARY?
 
 				s3_fname := filepath.Base(s3_key)
-
 
 				u, err := iiifuri.NewURI(s3_fname)
 

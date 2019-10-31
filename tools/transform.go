@@ -236,7 +236,7 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		handler := func(ctx context.Context, ev aws_events.S3Event) error {
 
 			to_transform := make([]iiifuri.URI, 0)
-			
+
 			for _, r := range ev.Records {
 
 				s3_entity := r.S3

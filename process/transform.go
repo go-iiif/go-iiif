@@ -8,6 +8,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
+	_ "log"
 )
 
 func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
@@ -27,7 +28,15 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	new_uri, err := transformation.ToURI(target)
+	tr_uri, err := transformation.ToURI(target)
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	str_uri := fmt.Sprintf("%s:///%s", u.Driver(), tr_uri)
+
+	new_uri, err := iiifuri.NewURI(str_uri)
 
 	if err != nil {
 		return nil, nil, err
@@ -45,19 +54,12 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	err = dest_cache.Set(new_uri, im.Body())
+	new_target := new_uri.Target()
+	err = dest_cache.Set(new_target, im.Body())
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	new_uri = fmt.Sprintf("%s://", u.Driver(), new_uri)
-
-	new_u, err := iiifuri.NewURI(new_uri)
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return new_u, im, nil
+	return new_uri, im, nil
 }

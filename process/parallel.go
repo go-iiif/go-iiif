@@ -32,6 +32,9 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		}()
 
 		origin := u.Origin()
+
+		log.Println("PROCESS PROFILE", origin, u.String())
+
 		// target := u.Target()
 
 		im, err := driver.NewImageFromConfig(cfg, origin)
@@ -71,13 +74,17 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				done_ch <- true
 			}()
 
+			log.Println("PROCESS URI", u.String(), u.Origin())
+
 			new_uri, im, err := pr.ProcessURIWithInstructions(u, label, i)
 
 			if err != nil {
-				msg := fmt.Sprintf("failed to process %s (%s) : %s", u, label, err)
+				msg := fmt.Sprintf("failed to process %s (%s) : %s", u.String(), label, err)
 				err_ch <- errors.New(msg)
 				return
 			}
+
+			log.Println("PROCESSED URI", u.String(), new_uri.String())
 
 			dims, err := im.Dimensions()
 
