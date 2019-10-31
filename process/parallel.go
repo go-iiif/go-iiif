@@ -33,10 +33,6 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 		origin := u.Origin()
 
-		log.Println("PROCESS PROFILE", origin, u.String())
-
-		// target := u.Target()
-
 		im, err := driver.NewImageFromConfig(cfg, origin)
 
 		if err != nil {
