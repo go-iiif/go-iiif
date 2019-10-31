@@ -102,9 +102,6 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
 	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
 
-	var flag_uris flags.MultiString
-	flag.Var(&flag_uris, "uri", "One or more valid IIIF URIs.")
-
 	mode := flag.String("mode", "cli", "Valid modes are: cli, lambda.")
 
 	flag.Parse()
