@@ -12,7 +12,7 @@ import (
 	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
-	"github.com/go-iiif/go-iiif-uri"
+	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	"github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
@@ -38,25 +38,20 @@ type ProcessOptions struct {
 	Driver       iiifdriver.Driver
 	Processor    process.Processor
 	Instructions process.IIIFInstructionSet
-	URIType      string
 	Report       bool
 	ReportName   string
 }
 
-func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...string) error {
+func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI) error {
 
 	results := make(map[string]interface{})
 	wg := new(sync.WaitGroup)
 
-	for _, str_uri := range uris {
+	for _, uri := range uris {
 
-		u, err := uri.NewURIWithType(str_uri, opts.URIType)
-
-		if err != nil {
-			return err
-		}
-
-		rsp, err := process.ParallelProcessURIWithInstructionSet(opts.Config, opts.Driver, opts.Processor, opts.Instructions, u)
+		origin := uri.Origin()
+		
+		rsp, err := process.ParallelProcessURIWithInstructionSet(opts.Config, opts.Driver, opts.Processor, opts.Instructions, uri)
 
 		if err != nil {
 			return err
@@ -64,7 +59,7 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...string) erro
 
 		if opts.Report {
 
-			key := filepath.Join(str_uri, opts.ReportName)
+			key := filepath.Join(origin, opts.ReportName)
 			wg.Add(1)
 
 			go func() {
@@ -78,7 +73,7 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...string) erro
 			}()
 		}
 
-		results[str_uri] = rsp
+		results[origin] = rsp
 	}
 
 	wg.Wait()
@@ -106,8 +101,6 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
 	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
-
-	var uri_type = flag.String("uri-type", "string", "A valid (go-iiif-uri) URI type. Valid options are: string, idsecret")
 
 	var flag_uris flags.MultiString
 	flag.Var(&flag_uris, "uri", "One or more valid IIIF URIs.")
@@ -191,22 +184,28 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		Processor:    pr,
 		Driver:       driver,
 		Instructions: instructions_set,
-		URIType:      *uri_type,
 		Report:       *report,
 		ReportName:   *report_name,
 	}
-
-	uris := make([]string, 0)
 
 	switch *mode {
 
 	case "cli":
 
-		for _, u := range flag_uris {
-			uris = append(uris, u)
+		to_process := make([]iiifuri.URI, 0)
+
+		for _, str_uri := range flag.Args() {
+
+			u, err := iiifuri.NewURI(str_uri)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			to_process = append(to_process, u)
 		}
 
-		err = ProcessMany(ctx, process_opts, uris...)
+		err = ProcessMany(ctx, process_opts, to_process...)
 
 		if err != nil {
 			return err
@@ -216,6 +215,8 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 		handler := func(ctx context.Context, ev aws_events.S3Event) error {
 
+			to_process := make([]iiifuri.URI, 0)
+			
 			for _, r := range ev.Records {
 
 				s3_entity := r.S3
@@ -225,10 +226,18 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 				// HOW TO WRANGLE THIS IN TO A BESPOKE URI? NECESSARY?
 
 				s3_fname := filepath.Base(s3_key)
-				uris = append(uris, s3_fname)
+
+
+				u, err := iiifuri.NewURI(s3_fname)
+
+				if err != nil {
+					return err
+				}
+
+				to_process = append(to_process, u)
 			}
 
-			err = ProcessMany(ctx, process_opts, uris...)
+			err = ProcessMany(ctx, process_opts, to_process...)
 
 			if err != nil {
 				return err

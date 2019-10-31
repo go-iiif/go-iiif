@@ -208,13 +208,11 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		TargetBucket:   target_bucket,
 	}
 
-	to_transform := make([]string, 0)
-
 	switch *mode {
 
 	case "cli":
 
-		to_transform = make([]iiifuri.URI, 0)
+		to_transform := make([]iiifuri.URI, 0)
 
 		for _, str_uri := range flag.Args() {
 
@@ -237,6 +235,8 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 		handler := func(ctx context.Context, ev aws_events.S3Event) error {
 
+			to_transform := make([]iiifuri.URI, 0)
+			
 			for _, r := range ev.Records {
 
 				s3_entity := r.S3
