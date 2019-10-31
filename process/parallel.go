@@ -31,7 +31,10 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 			done_ch <- true
 		}()
 
-		im, err := driver.NewImageFromConfig(cfg, u.URL())
+		origin := u.Origin()
+		// target := u.Target()
+
+		im, err := driver.NewImageFromConfig(cfg, origin)
 
 		if err != nil {
 			msg := fmt.Sprintf("failed to derive palette for %s : %s", u, err)

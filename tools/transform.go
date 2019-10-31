@@ -55,7 +55,10 @@ func TransformMany(ctx context.Context, opts *TransformOptions, uris ...iiifuri.
 
 func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) error {
 
-	fh, err := opts.SourceBucket.NewReader(ctx, uri.Origin(), nil)
+	origin := uri.Origin()
+	target := uri.Target()
+
+	fh, err := opts.SourceBucket.NewReader(ctx, origin, nil)
 
 	if err != nil {
 		return err
@@ -79,7 +82,7 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 		return err
 	}
 
-	image, err := opts.Driver.NewImageFromConfigWithSource(opts.Config, source, fname)
+	image, err := opts.Driver.NewImageFromConfigWithSource(opts.Config, source, origin)
 
 	if err != nil {
 		return err
@@ -91,7 +94,7 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 		return err
 	}
 
-	wr, err := opts.TargetBucket.NewWriter(ctx, fname, nil)
+	wr, err := opts.TargetBucket.NewWriter(ctx, target, nil)
 
 	if err != nil {
 

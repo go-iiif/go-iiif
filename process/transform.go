@@ -1,6 +1,7 @@
 package process
 
 import (
+	"fmt"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
@@ -10,6 +11,9 @@ import (
 )
 
 func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
+
+	origin := u.Origin()
+	target := u.Target()
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://localhost")
 
@@ -23,23 +27,13 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	new_uri, err := transformation.ToURI(u.URL())
+	new_uri, err := transformation.ToURI(target)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	/*
-
-		cached_im, err := dest_cache.Get(new_uri)
-
-		if err == nil {
-			return new_uri, cached_im, nil
-		}
-
-	*/
-
-	im, err := driver.NewImageFromConfigWithCache(config, source_cache, u.URL())
+	im, err := driver.NewImageFromConfigWithCache(config, source_cache, origin)
 
 	if err != nil {
 		return nil, nil, err
@@ -57,7 +51,9 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	new_u, err := iiifuri.NewStringURI(new_uri)
+	new_uri = fmt.Sprintf("%s://", u.Driver(), new_uri)
+
+	new_u, err := iiifuri.NewURI(new_uri)
 
 	if err != nil {
 		return nil, nil, err

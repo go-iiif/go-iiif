@@ -135,11 +135,19 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 	return &id_u, nil
 }
 
-func (u *IdSecretURI) Target() string {
-	root := id2Path(u.id)
-	str_id := strconv.FormatInt(u.id, 10)
+func (u *IdSecretURI) Driver() string {
+	return IdSecretDriverName
+}
 
-	return filepath.Join(root, str_id)
+func (u *IdSecretURI) Target(args ...interface{}) string {
+	
+	str_id := strconv.FormatInt(u.id, 10)
+	fname := str_id
+	
+	root := id2Path(u.id)
+	uri := filepath.Join(root, fname)
+
+	return uri
 }
 
 func (u *IdSecretURI) Origin() string {
@@ -153,7 +161,7 @@ func (u *IdSecretURI) String() string {
 	q.Set("secret", u.secret)
 	q.Set("secret_o", u.secret_o)
 
-	return fmt.Sprintf("%s://%s?%s", IdSecretDriverName, u.origin, q.Encode())
+	return fmt.Sprintf("%s://%s?%s", u.Driver(), u.origin, q.Encode())
 }
 
 func id2Path(id int64) string {
