@@ -8,6 +8,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifservice "github.com/go-iiif/go-iiif/service"
 	"log"
+	"net/url"
 	"sync"
 )
 
@@ -70,7 +71,27 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				done_ch <- true
 			}()
 
-			// log.Println("PROCESS URI", u.String(), u.Origin())
+			// this is really where we want to rewrite u.Target()... maybe?
+
+			str_label := fmt.Sprintf("%s", label)
+
+			opts := &url.Values{}
+			opts.Set("label", str_label)
+			opts.Set("format", i.Format)
+
+			if str_label == "o" {
+				opts.Set("original", "1")
+			}
+
+			target_str, err := u.Target(opts)
+
+			if err != nil {
+				msg := fmt.Sprintf("failed to derive target %s (%s) : %s", u, label, err)
+				err_ch <- errors.New(msg)
+				return
+			}
+
+			log.Println(target_str)
 
 			new_uri, im, err := pr.ProcessURIWithInstructions(u, label, i)
 
@@ -79,8 +100,6 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				err_ch <- errors.New(msg)
 				return
 			}
-
-			// log.Println("PROCESSED URI", u.String(), new_uri.String())
 
 			dims, err := im.Dimensions()
 

@@ -43,7 +43,11 @@ func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
 	}
 
 	origin := u.Origin()
-	target := u.Target()
+	target, err := u.Target(nil)
+
+	if err != nil {
+		return nil, err
+	}
 
 	if no_extension {
 		target = strings.TrimSuffix(target, filepath.Ext(target))

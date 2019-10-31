@@ -139,15 +139,33 @@ func (u *IdSecretURI) Driver() string {
 	return IdSecretDriverName
 }
 
-func (u *IdSecretURI) Target(args ...interface{}) string {
-	
-	str_id := strconv.FormatInt(u.id, 10)
-	fname := str_id
-	
-	root := id2Path(u.id)
-	uri := filepath.Join(root, fname)
+func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 
-	return uri
+	str_id := strconv.FormatInt(u.id, 10)
+	
+	tree := id2Path(u.id)
+	root := filepath.Join(tree, str_id)
+
+	uri := root
+	
+	if opts != nil {
+		
+		format := opts.Get("format")
+		label := opts.Get("label")
+		original := opts.Get("original")
+		
+		secret := u.secret
+
+		if original != "" {
+			secret = u.secret_o
+		}
+		
+		fname := fmt.Sprintf("%s_%s_%s.%s", str_id, secret, label, format)
+
+		uri = filepath.Join(root, fname)
+	}
+	
+	return uri, nil
 }
 
 func (u *IdSecretURI) Origin() string {

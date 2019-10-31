@@ -56,7 +56,11 @@ func TransformMany(ctx context.Context, opts *TransformOptions, uris ...iiifuri.
 func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) error {
 
 	origin := uri.Origin()
-	target := uri.Target()
+	target, err := uri.Target(nil)
+
+	if err != nil {
+		return err
+	}
 
 	fh, err := opts.SourceBucket.NewReader(ctx, origin, nil)
 

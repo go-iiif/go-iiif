@@ -2,9 +2,7 @@ package uri
 
 import (
 	"fmt"
-	_ "log"
 	"net/url"
-	_ "path/filepath"
 )
 
 const FileDriverName string = "file"
@@ -68,8 +66,8 @@ func (u *FileURI) Origin() string {
 	return u.origin
 }
 
-func (u *FileURI) Target(args ...interface{}) string {
-	return u.target
+func (u *FileURI) Target(opts *url.Values) (string, error) {
+	return u.target, nil
 }
 
 func (u *FileURI) String() string {
