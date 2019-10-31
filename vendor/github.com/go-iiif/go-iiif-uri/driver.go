@@ -2,7 +2,7 @@ package uri
 
 import (
 	"errors"
-	"log"
+	_ "log"
 	"net/url"
 	"sort"
 	"strings"
@@ -38,7 +38,6 @@ func NewURIWithDriver(str_uri string) (URI, error) {
 		return nil, errors.New("Unknown driver")
 	}
 
-	log.Printf("%T %s\n", driver, str_uri)
 	return driver.NewURI(str_uri)
 }
 
