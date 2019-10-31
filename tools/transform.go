@@ -8,6 +8,7 @@ import (
 	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
+	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiifimage "github.com/go-iiif/go-iiif/image"
@@ -38,11 +39,11 @@ type TransformOptions struct {
 	TargetBucket   *blob.Bucket
 }
 
-func TransformMany(ctx context.Context, opts *TransformOptions, fnames ...string) error {
+func TransformMany(ctx context.Context, opts *TransformOptions, uris ...iiifuri.URI) error {
 
-	for _, fname := range fnames {
+	for _, uri := range uris {
 
-		err := Transform(ctx, opts, fname)
+		err := Transform(ctx, opts, uri)
 
 		if err != nil {
 			return err
@@ -52,9 +53,9 @@ func TransformMany(ctx context.Context, opts *TransformOptions, fnames ...string
 	return nil
 }
 
-func Transform(ctx context.Context, opts *TransformOptions, fname string) error {
+func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) error {
 
-	fh, err := opts.SourceBucket.NewReader(ctx, fname, nil)
+	fh, err := opts.SourceBucket.NewReader(ctx, uri.Origin(), nil)
 
 	if err != nil {
 		return err
@@ -210,7 +211,18 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 	case "cli":
 
-		to_transform = flag.Args()
+		to_transform = make([]iiifuri.URI, 0)
+
+		for _, str_uri := range flag.Args() {
+
+			u, err := iiifuri.NewURI(str_uri)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			to_transform = append(to_transform, u)
+		}
 
 		err = TransformMany(ctx, transform_opts, to_transform...)
 
@@ -229,7 +241,14 @@ func (t *TransformTool) Run(ctx context.Context) error {
 				s3_key := s3_obj.Key
 
 				s3_fname := filepath.Base(s3_key)
-				to_transform = append(to_transform, s3_fname)
+
+				u, err := iiifuri.NewURI(s3_fname)
+
+				if err != nil {
+					return err
+				}
+
+				to_transform = append(to_transform, u)
 			}
 
 			err := TransformMany(ctx, transform_opts, to_transform...)
