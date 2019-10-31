@@ -8,8 +8,8 @@ import (
 	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
+	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
-	// iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiiftile "github.com/go-iiif/go-iiif/tile"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-csv"
@@ -34,31 +34,27 @@ type TileSeedTool struct {
 	Tool
 }
 
-func SeedFromString(id string, no_extension bool) *Seed {
+func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
 
-	var src_id string
-	var alt_id string
+	u, err := iiifuri.NewURI(str_uri)
 
-	pointers := strings.Split(id, ",")
-
-	if len(pointers) == 2 {
-		src_id = pointers[0]
-		alt_id = pointers[1]
-	} else {
-		src_id = pointers[0]
-		alt_id = pointers[0]
+	if err != nil {
+		return nil, err
 	}
 
+	origin := u.Origin()
+	target := u.Target()
+
 	if no_extension {
-		alt_id = strings.TrimSuffix(alt_id, filepath.Ext(alt_id))
+		target = strings.TrimSuffix(target, filepath.Ext(target))
 	}
 
 	seed := &Seed{
-		Source: src_id,
-		Target: alt_id,
+		Source: origin,
+		Target: target,
 	}
 
-	return seed
+	return seed, nil
 }
 
 func NewTileSeedTool() (Tool, error) {
@@ -220,7 +216,13 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		wg := new(sync.WaitGroup)
 
 		for _, id := range flag.Args() {
-			seed := SeedFromString(id, *noextension)
+
+			seed, err := SeedFromString(id, *noextension)
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
 			tile_func(seed, wg)
 		}
 
@@ -307,7 +309,12 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 				s3_fname := filepath.Base(s3_key)
 
-				seed := SeedFromString(s3_fname, *noextension)
+				seed, err := SeedFromString(s3_fname, *noextension)
+
+				if err != nil {
+					return err
+				}
+
 				tile_func(seed, wg)
 			}
 

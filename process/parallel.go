@@ -74,7 +74,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				done_ch <- true
 			}()
 
-			log.Println("PROCESS URI", u.String(), u.Origin())
+			// log.Println("PROCESS URI", u.String(), u.Origin())
 
 			new_uri, im, err := pr.ProcessURIWithInstructions(u, label, i)
 
@@ -84,7 +84,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				return
 			}
 
-			log.Println("PROCESSED URI", u.String(), new_uri.String())
+			// log.Println("PROCESSED URI", u.String(), new_uri.String())
 
 			dims, err := im.Dimensions()
 
