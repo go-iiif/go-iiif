@@ -142,29 +142,37 @@ func (u *IdSecretURI) Driver() string {
 func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 
 	str_id := strconv.FormatInt(u.id, 10)
-	
+
 	tree := id2Path(u.id)
 	root := filepath.Join(tree, str_id)
 
 	uri := root
-	
+
 	if opts != nil {
-		
+
 		format := opts.Get("format")
 		label := opts.Get("label")
 		original := opts.Get("original")
-		
+
+		if format == "" {
+			return "", errors.New("Missing format parameter")
+		}
+
+		if label == "" {
+			return "", errors.New("Missing label parameter")
+		}
+
 		secret := u.secret
 
 		if original != "" {
 			secret = u.secret_o
 		}
-		
+
 		fname := fmt.Sprintf("%s_%s_%s.%s", str_id, secret, label, format)
 
 		uri = filepath.Join(root, fname)
 	}
-	
+
 	return uri, nil
 }
 
@@ -184,7 +192,7 @@ func (u *IdSecretURI) String() string {
 
 func id2Path(id int64) string {
 
-	parts := []string{}
+	parts := []string{""}
 	input := strconv.FormatInt(id, 10)
 
 	for len(input) > 3 {

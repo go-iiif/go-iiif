@@ -54,7 +54,7 @@ func NewRewriteURI(str_uri string) (URI, error) {
 	if target == origin {
 		return nil, errors.New("Invalid rewrite target")
 	}
-	
+
 	rw := RewriteURI{
 		origin: origin,
 		target: target,
@@ -76,12 +76,12 @@ func (u *RewriteURI) Target(opts *url.Values) (string, error) {
 }
 
 func (u *RewriteURI) String() string {
-	
+
 	str_uri := fmt.Sprintf("%s://%s", u.Driver(), u.origin)
 
 	q := url.Values{}
 	q.Set("target", u.target)
 	str_uri = fmt.Sprintf("%s?%s", str_uri, q.Encode())
-	
+
 	return str_uri
 }

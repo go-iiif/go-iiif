@@ -49,7 +49,7 @@ func NewFileURI(str_uri string) (URI, error) {
 	if target == "" {
 		target = origin
 	}
-	
+
 	f_u := FileURI{
 		origin: origin,
 		target: target,
@@ -71,7 +71,7 @@ func (u *FileURI) Target(opts *url.Values) (string, error) {
 }
 
 func (u *FileURI) String() string {
-	
+
 	str_uri := fmt.Sprintf("%s://%s", u.Driver(), u.origin)
 
 	if u.target != "" && u.target != u.origin {
@@ -79,6 +79,6 @@ func (u *FileURI) String() string {
 		q.Set("target", u.target)
 		str_uri = fmt.Sprintf("%s?%s", str_uri, q.Encode())
 	}
-	
+
 	return str_uri
 }

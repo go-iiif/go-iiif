@@ -71,8 +71,6 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				done_ch <- true
 			}()
 
-			// this is really where we want to rewrite u.Target()... maybe?
-
 			var process_uri iiifuri.URI
 
 			switch u.Driver() {
@@ -108,6 +106,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				}
 
 				process_uri = rw_uri
+
 			default:
 				process_uri = u
 			}
