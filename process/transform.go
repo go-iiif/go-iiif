@@ -32,23 +32,34 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	tr_uri, err := transformation.ToURI(target)
+	// I do not love this...
 
-	if err != nil {
-		return nil, nil, err
-	}
+	switch u.Driver() {
 
-	str_uri := fmt.Sprintf("%s:///%s", iiifuri.FileDriverName, tr_uri)
-	new_uri, err := iiifuri.NewURI(str_uri)
+	case "rewrite":
+		// pass
+	default:
 
-	if err != nil {
-		return nil, nil, err
-	}
+		tr_uri, err := transformation.ToURI(target)
 
-	new_target, err := new_uri.Target(nil)
+		if err != nil {
+			return nil, nil, err
+		}
 
-	if err != nil {
-		return nil, nil, err
+		str_uri := fmt.Sprintf("%s:///%s", iiifuri.FileDriverName, tr_uri)
+		new_uri, err := iiifuri.NewURI(str_uri)
+
+		if err != nil {
+			return nil, nil, err
+		}
+
+		new_target, err := new_uri.Target(nil)
+
+		if err != nil {
+			return nil, nil, err
+		}
+
+		target = new_target
 	}
 
 	im, err := driver.NewImageFromConfigWithCache(config, source_cache, origin)
@@ -63,7 +74,14 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	err = dest_cache.Set(new_target, im.Body())
+	err = dest_cache.Set(target, im.Body())
+
+	if err != nil {
+		return nil, nil, err
+	}
+
+	str_uri := fmt.Sprintf("%s:///%s", iiifuri.FileDriverName, target)
+	new_uri, err := iiifuri.NewURI(str_uri)
 
 	if err != nil {
 		return nil, nil, err

@@ -73,27 +73,46 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 			// this is really where we want to rewrite u.Target()... maybe?
 
-			str_label := fmt.Sprintf("%s", label)
+			var process_uri iiifuri.URI
 
-			opts := &url.Values{}
-			opts.Set("label", str_label)
-			opts.Set("format", i.Format)
+			switch u.Driver() {
+			case "idsecret":
 
-			if str_label == "o" {
-				opts.Set("original", "1")
+				str_label := fmt.Sprintf("%s", label)
+
+				opts := &url.Values{}
+				opts.Set("label", str_label)
+				opts.Set("format", i.Format)
+
+				if str_label == "o" {
+					opts.Set("original", "1")
+				}
+
+				target_str, err := u.Target(opts)
+
+				if err != nil {
+					msg := fmt.Sprintf("failed to derive target %s (%s) : %s", u, label, err)
+					err_ch <- errors.New(msg)
+					return
+				}
+
+				origin := u.Origin()
+
+				rw_str := fmt.Sprintf("%s://%s?target=%s", iiifuri.RewriteDriverName, origin, target_str)
+				rw_uri, err := iiifuri.NewURI(rw_str)
+
+				if err != nil {
+					msg := fmt.Sprintf("failed to generate rewrite URL %s (%s) : %s", u, label, err)
+					err_ch <- errors.New(msg)
+					return
+				}
+
+				process_uri = rw_uri
+			default:
+				process_uri = u
 			}
 
-			target_str, err := u.Target(opts)
-
-			if err != nil {
-				msg := fmt.Sprintf("failed to derive target %s (%s) : %s", u, label, err)
-				err_ch <- errors.New(msg)
-				return
-			}
-
-			log.Println(target_str)
-
-			new_uri, im, err := pr.ProcessURIWithInstructions(u, label, i)
+			new_uri, im, err := pr.ProcessURIWithInstructions(process_uri, label, i)
 
 			if err != nil {
 				msg := fmt.Sprintf("failed to process %s (%s) : %s", u.String(), label, err)
