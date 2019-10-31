@@ -372,6 +372,17 @@ func (t *Transformation) SizeInstructionsWithDimensions(im Image, width int, hei
 
 	force := false
 
+	if t.Size == "full" {
+
+		instruction := SizeInstruction{
+			Height: height,
+			Width:  width,
+			Force:  force,
+		}
+
+		return &instruction, nil
+	}
+
 	arr := strings.Split(t.Size, ":")
 
 	if len(arr) == 1 {
