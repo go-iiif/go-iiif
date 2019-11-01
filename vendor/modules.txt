@@ -73,7 +73,7 @@ github.com/aws/aws-sdk-go/private/protocol/query/queryutil
 github.com/fogleman/gg
 # github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
 github.com/fogleman/primitive/primitive
-# github.com/go-iiif/go-iiif-uri v0.1.3
+# github.com/go-iiif/go-iiif-uri v0.1.4
 github.com/go-iiif/go-iiif-uri
 # github.com/go-ini/ini v1.42.0
 github.com/go-ini/ini
