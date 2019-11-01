@@ -83,7 +83,7 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 		return nil, err
 	}
 
-	origin := u.Path
+	origin := u.Host
 
 	q := u.Query()
 

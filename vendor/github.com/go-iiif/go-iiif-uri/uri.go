@@ -33,7 +33,7 @@ func NewURI(str_uri string) (URI, error) {
 		return nil, errors.New("Invalid or unsupported URI string")
 	}
 
-	file_uri := fmt.Sprintf("%s:///%s", FileDriverName, str_uri)
+	file_uri := fmt.Sprintf("%s://%s", FileDriverName, str_uri)
 	log.Println(str_uri, file_uri)
 
 	return NewURIWithDriver(file_uri)

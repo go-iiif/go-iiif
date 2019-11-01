@@ -46,7 +46,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 			return nil, nil, err
 		}
 
-		str_uri := fmt.Sprintf("%s:///%s", iiifuri.FileDriverName, tr_uri)
+		str_uri := fmt.Sprintf("%s://%s", iiifuri.FileDriverName, tr_uri)
 		new_uri, err := iiifuri.NewURI(str_uri)
 
 		if err != nil {
@@ -80,7 +80,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	str_uri := fmt.Sprintf("%s:///%s", iiifuri.FileDriverName, target)
+	str_uri := fmt.Sprintf("%s://%s", iiifuri.FileDriverName, target)
 	new_uri, err := iiifuri.NewURI(str_uri)
 
 	if err != nil {

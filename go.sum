@@ -107,6 +107,8 @@ github.com/go-iiif/go-iiif-uri v0.1.3 h1:7n/knSTC4ElpvAW7p1t4gFrIcyBhj613xpjGgh2
 github.com/go-iiif/go-iiif-uri v0.1.3/go.mod h1:XEriqBaHmCaDOjIepc1PXvb94HVCJLdkK27HFp2sAXQ=
 github.com/go-iiif/go-iiif-uri v0.1.4 h1:pILFnoQzvENiYjlwUKULYT7yWnFXHlyvFUEY/inVEL4=
 github.com/go-iiif/go-iiif-uri v0.1.4/go.mod h1:XEriqBaHmCaDOjIepc1PXvb94HVCJLdkK27HFp2sAXQ=
+github.com/go-iiif/go-iiif-uri v0.2.0 h1:dxHkPmXXRp1JR4cwpOsvIg8pw/sC3rm9PSyoTA3VJz8=
+github.com/go-iiif/go-iiif-uri v0.2.0/go.mod h1:XEriqBaHmCaDOjIepc1PXvb94HVCJLdkK27HFp2sAXQ=
 github.com/go-ini/ini v1.25.4/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
 github.com/go-ini/ini v1.42.0 h1:TWr1wGj35+UiWHlBA8er89seFXxzwFn11spilrrj+38=
 github.com/go-ini/ini v1.42.0/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
