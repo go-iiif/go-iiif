@@ -118,12 +118,13 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		if rgi.SmartCrop {
 
-			// this is still / super flakey... (20191018/thisisaaronland)
-
 			resizer := nfnt.NewDefaultResizer()
 			analyzer := smartcrop.NewAnalyzer(resizer)
 
-			topCrop, err := analyzer.FindBestCrop(im.img, si.Width, si.Height)
+			width := si.Width
+			height := si.Height
+
+			topCrop, err := analyzer.FindBestCrop(im.img, width, height)
 
 			if err != nil {
 				return err
@@ -134,6 +135,11 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 			}
 
 			cropped := im.img.(SubImager).SubImage(topCrop)
+
+			if cropped.Bounds().Dx() != width || cropped.Bounds().Dy() != height {
+				cropped = resizer.Resize(cropped, uint(width), uint(height))
+			}
+
 			im.img = cropped
 
 		} else {

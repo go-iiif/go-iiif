@@ -98,7 +98,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 				rw_str := fmt.Sprintf("%s?target=%s", origin, target_str)
 				rw_str = iiifuri.NewRewriteURIString(rw_str)
-				
+
 				rw_uri, err := iiifuri.NewURI(rw_str)
 
 				if err != nil {
