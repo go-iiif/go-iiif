@@ -9,7 +9,7 @@ require (
 	github.com/aws/aws-lambda-go v1.13.2
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
-	github.com/go-iiif/go-iiif-uri v0.2.1
+	github.com/go-iiif/go-iiif-uri v0.3.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/jtacoma/uritemplates v1.0.0

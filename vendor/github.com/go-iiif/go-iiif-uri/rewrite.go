@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 const RewriteDriverName string = "rewrite"
@@ -41,7 +42,11 @@ func NewRewriteURI(str_uri string) (URI, error) {
 		return nil, err
 	}
 
-	origin := u.Host
+	origin := strings.TrimLeft(u.Path, "/")
+
+	if origin == "" {
+		return nil, errors.New("Invalid path")
+	}
 
 	q := u.Query()
 
@@ -77,11 +82,13 @@ func (u *RewriteURI) Target(opts *url.Values) (string, error) {
 
 func (u *RewriteURI) String() string {
 
-	str_uri := fmt.Sprintf("%s://%s", u.Driver(), u.origin)
-
 	q := url.Values{}
 	q.Set("target", u.target)
-	str_uri = fmt.Sprintf("%s?%s", str_uri, q.Encode())
 
-	return str_uri
+	raw_uri := fmt.Sprintf("%s?%s", u.origin, q.Encode())
+	return NewRewriteURIString(raw_uri)
+}
+
+func NewRewriteURIString(raw_uri string) string {
+	return fmt.Sprintf("%s:///%s", RewriteDriverName, raw_uri)
 }

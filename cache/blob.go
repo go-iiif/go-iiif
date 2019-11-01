@@ -71,7 +71,7 @@ func (bc *BlobCache) Get(uri string) ([]byte, error) {
 func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	log.Println("BLOB", "SET", uri)
-	
+
 	ctx := context.Background()
 
 	fh, err := bc.bucket.NewWriter(ctx, uri, nil)

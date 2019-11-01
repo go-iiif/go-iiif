@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"strconv"
+	"strings"
 )
 
 const IdSecretDriverName string = "idsecret"
@@ -27,8 +28,6 @@ func NewIdSecretURIDriver() Driver {
 	dr := IdSecretURIDriver{}
 	return &dr
 }
-
-// idsecret://{ORIGIN}?id={ID}&secret={SECRET}
 
 func (dr *IdSecretURIDriver) NewURI(str_uri string) (URI, error) {
 
@@ -71,8 +70,10 @@ func NewIdSecretURIFromDSN(dsn_raw string) (URI, error) {
 		q.Set("secret_o", secret_o)
 	}
 
-	uri_str := fmt.Sprintf("%s://%s?%s", IdSecretDriverName, origin, q.Encode())
-	return NewIdSecretURI(uri_str)
+	raw_uri := fmt.Sprintf("%s?%s", origin, q.Encode())
+	str_uri := NewIdSecretURIString(raw_uri)
+
+	return NewIdSecretURI(str_uri)
 }
 
 func NewIdSecretURI(str_uri string) (URI, error) {
@@ -83,7 +84,11 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 		return nil, err
 	}
 
-	origin := u.Host
+	origin := strings.TrimLeft(u.Path, "/")
+
+	if origin == "" {
+		return nil, errors.New("Invalid path")
+	}
 
 	q := u.Query()
 
@@ -191,7 +196,8 @@ func (u *IdSecretURI) String() string {
 	q.Set("secret", u.secret)
 	q.Set("secret_o", u.secret_o)
 
-	return fmt.Sprintf("%s://%s?%s", u.Driver(), u.origin, q.Encode())
+	raw_uri := fmt.Sprintf("%s?%s", u.origin, q.Encode())
+	return NewIdSecretURIString(raw_uri)
 }
 
 func id2Path(id int64) string {
@@ -211,4 +217,8 @@ func id2Path(id int64) string {
 	}
 
 	return filepath.Join(parts...)
+}
+
+func NewIdSecretURIString(raw_uri string) string {
+	return fmt.Sprintf("%s:///%s", IdSecretDriverName, raw_uri)
 }

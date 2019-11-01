@@ -1,8 +1,10 @@
 package uri
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 const FileDriverName string = "file"
@@ -40,7 +42,11 @@ func NewFileURI(str_uri string) (URI, error) {
 		return nil, err
 	}
 
-	origin := u.Host
+	origin := strings.TrimLeft(u.Path, "/")
+
+	if origin == "" {
+		return nil, errors.New("Invalid path")
+	}
 
 	q := u.Query()
 
@@ -72,13 +78,17 @@ func (u *FileURI) Target(opts *url.Values) (string, error) {
 
 func (u *FileURI) String() string {
 
-	str_uri := fmt.Sprintf("%s://%s", u.Driver(), u.origin)
+	raw_uri := fmt.Sprintf("%s", u.origin)
 
 	if u.target != "" && u.target != u.origin {
 		q := url.Values{}
 		q.Set("target", u.target)
-		str_uri = fmt.Sprintf("%s?%s", str_uri, q.Encode())
+		raw_uri = fmt.Sprintf("%s?%s", raw_uri, q.Encode())
 	}
 
-	return str_uri
+	return NewFileURIString(raw_uri)
+}
+
+func NewFileURIString(str_uri string) string {
+	return fmt.Sprintf("%s:///%s", FileDriverName, str_uri)
 }
