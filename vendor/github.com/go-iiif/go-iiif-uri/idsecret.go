@@ -149,8 +149,7 @@ func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 
 	str_id := strconv.FormatInt(u.id, 10)
 
-	tree := id2Path(u.id)
-	root := filepath.Join(tree, str_id)
+	root := id2Path(u.id)
 
 	secret := u.secret
 	format := u.format

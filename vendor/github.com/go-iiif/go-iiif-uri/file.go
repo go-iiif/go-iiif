@@ -41,7 +41,7 @@ func NewFileURI(str_uri string) (URI, error) {
 	}
 
 	origin := u.Host
-	
+
 	q := u.Query()
 
 	target := q.Get("target")
