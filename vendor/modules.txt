@@ -12,7 +12,7 @@ github.com/aaronland/go-string/dsn
 github.com/aaronland/go-string/random
 # github.com/aaronland/gocloud-blob-bucket v0.0.1
 github.com/aaronland/gocloud-blob-bucket
-# github.com/anthonynsimon/bild v0.10.0
+# github.com/anthonynsimon/bild v0.11.1
 github.com/anthonynsimon/bild/effect
 github.com/anthonynsimon/bild/segment
 github.com/anthonynsimon/bild/transform

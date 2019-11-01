@@ -15,10 +15,9 @@ type BlobCache struct {
 	bucket     *blob.Bucket
 }
 
-func NewBlobCache(config *iiifconfig.Config) (Cache, error) {
+func NewBlobCache(config iiifconfig.CacheConfig) (Cache, error) {
 
-	cfg := config.Images
-	uri := cfg.Cache.Path
+	uri := config.Path
 
 	return NewBlobCacheFromURI(uri)
 }

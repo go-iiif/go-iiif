@@ -2,6 +2,7 @@ package cache
 
 import (
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	"strings"
 )
 
 type Cache interface {
@@ -23,19 +24,23 @@ func NewDerivativesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
 	return NewCacheFromConfig(cfg)
 }
 
-func NewCacheFromConfig(cfg iiifconfig.CacheConfig) (Cache, error) {
+func NewCacheFromConfig(config iiifconfig.CacheConfig) (Cache, error) {
 
-	if cfg.Name == "Disk" {
-		cache, err := NewDiskCache(cfg)
-		return cache, err
-	} else if cfg.Name == "Memory" {
-		cache, err := NewMemoryCache(cfg)
-		return cache, err
-	} else if cfg.Name == "S3" {
-		cache, err := NewS3Cache(cfg)
-		return cache, err
-	} else {
-		cache, err := NewNullCache(cfg)
-		return cache, err
+	var cache Cache
+	var err error
+
+	switch strings.ToLower(config.Name) {
+	case "blob":
+		cache, err = NewBlobCache(config)
+	case "disk":
+		cache, err = NewDiskCache(config)
+	case "memory":
+		cache, err = NewMemoryCache(config)
+	case "s3":
+		cache, err = NewS3Cache(config)
+	default:
+		cache, err = NewNullCache(config)
 	}
+
+	return cache, err
 }

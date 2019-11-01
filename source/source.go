@@ -3,6 +3,7 @@ package source
 import (
 	"errors"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
+	"strings"
 )
 
 type Source interface {
@@ -17,20 +18,23 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 	// since it assumes you're passing it []bytes and not a config
 	// file (20160907/thisisaaronland)
 
-	if cfg.Source.Name == "Disk" {
-		cache, err := NewDiskSource(config)
-		return cache, err
-	} else if cfg.Source.Name == "Flickr" {
-		cache, err := NewFlickrSource(config)
-		return cache, err
-	} else if cfg.Source.Name == "S3" {
-		cache, err := NewS3Source(config)
-		return cache, err
-	} else if cfg.Source.Name == "URI" {
-		cache, err := NewURISource(config)
-		return cache, err
-	} else {
-		err := errors.New("Unknown source type")
-		return nil, err
+	var source Source
+	var err error
+
+	switch strings.ToLower(cfg.Source.Name) {
+	case "blob":
+		source, err = NewBlobSource(config)
+	case "disk":
+		source, err = NewDiskSource(config)
+	case "flickr":
+		source, err = NewFlickrSource(config)
+	case "s3":
+		source, err = NewS3Source(config)
+	case "uri":
+		source, err = NewURISource(config)
+	default:
+		err = errors.New("Unknown source type")
 	}
+
+	return source, err
 }

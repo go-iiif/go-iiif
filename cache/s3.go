@@ -2,14 +2,9 @@ package cache
 
 import (
 	"fmt"
-	iiifaws "github.com/go-iiif/go-iiif/aws"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
-	"github.com/whosonfirst/go-whosonfirst-aws/s3"
+	_ "log"
 )
-
-type S3Cache struct {
-	S3 *s3.S3Connection
-}
 
 func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
@@ -20,53 +15,4 @@ func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	uri := fmt.Sprintf("s3://%s?region=%s&credentials=%s&prefix=%s", bucket, region, creds, prefix)
 	return NewBlobCacheFromURI(uri)
-
-	// PLEASE REMOVE EVERYTHING ELSE AS SOON AS POSSIBLE
-
-	s3cfg := &s3.S3Config{
-		Bucket:      bucket,
-		Prefix:      prefix,
-		Region:      region,
-		Credentials: creds,
-	}
-
-	s3cfg = iiifaws.S3ConfigWrapper(s3cfg)
-
-	s3conn, err := s3.NewS3Connection(s3cfg)
-
-	if err != nil {
-		return nil, err
-	}
-
-	c := S3Cache{
-		S3: s3conn,
-	}
-
-	return &c, nil
-}
-
-func (c *S3Cache) Exists(key string) bool {
-
-	_, err := c.S3.Head(key)
-
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-func (c *S3Cache) Get(key string) ([]byte, error) {
-
-	return iiifaws.S3GetWrapper(c.S3, key)
-}
-
-func (c *S3Cache) Set(key string, body []byte) error {
-
-	return iiifaws.S3SetWrapper(c.S3, key, body)
-}
-
-func (c *S3Cache) Unset(key string) error {
-
-	return c.S3.Delete(key)
 }

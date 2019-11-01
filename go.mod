@@ -5,7 +5,7 @@ go 1.12
 require (
 	github.com/aaronland/go-colours v0.1.1
 	github.com/aaronland/gocloud-blob-bucket v0.0.1
-	github.com/anthonynsimon/bild v0.10.0
+	github.com/anthonynsimon/bild v0.11.1
 	github.com/aws/aws-lambda-go v1.13.2
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
