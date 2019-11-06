@@ -12,6 +12,14 @@ For the time being this package will probably not support the other IIIF Metadat
 
 _And by "forked" I mean that [@greut](https://github.com/greut) and I decided that [it was best](https://github.com/greut/iiif/pull/2) for this code and his code to wave at each other across the divide but not necessarily to hold hands._
 
+## Important
+
+`go-iiif` was first written with the [libvips](https://github.com/jcupitt/libvips) library and [bimg](https://github.com/h2non/bimg/) Go wrapper for image processing. `libvips` is pretty great but it introduces non-trivial build and setup requirements. As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. This allows `go-iiif` to run on any platform supported by Go without the need for external dependencies.
+
+Support for alternative image processing libraries, like `libvips` is supported through the use of "drivers" (similar to the way the Go `database/sql` package works). Drivers are discussed further below.
+
+If you want or need to use `libvips` for image processing you should use the [go-iiif-vips](#) package.
+
 ## Setup
 
 You will need to have both `Go` (specifically a version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
@@ -24,9 +32,71 @@ All of this package's dependencies are bundled with the code in the `vendor` dir
 
 ## Drivers
 
-`go-iiif` was first written with the [libvips](#) library and [bimg](#) Go wrapper for image processing. `libvip` is pretty great but it introduces non-trivial build and setup requirements. As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native code.
+As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. Support for alternative image processing libraries, like `libvips` is supported through the use of "drivers" (similar to the way the Go `database/sql` package works).
 
-If you want or need to use `libvips` for image processing you should use the [go-iiif-vips](#) package.
+A driver needs to support the `driver.Driver` interface which looks like this:
+
+```
+import (
+	iiifcache "github.com/go-iiif/go-iiif/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifsource "github.com/go-iiif/go-iiif/source"
+)
+
+type Driver interface {
+	NewImageFromConfigWithSource(*iiifconfig.Config, iiifsource.Source, string) (iiifimage.Image, error)
+	NewImageFromConfigWithCache(*iiifconfig.Config, iiifcache.Cache, string) (iiifimage.Image, error)
+	NewImageFromConfig(*iiifconfig.Config, string) (iiifimage.Image, error)
+}
+```
+
+The idea here is that the bulk of the `go-iiif` code isn't aware of who or how images are _actually_ being processed only that it can reliably pass around things that implement the `image.Image` interface (the `go-iiif` image interface, not the Go language interface).
+
+Drivers are expected to "register" themselves through the `driver.RegisterDriver` method at runtime. For example:
+
+```
+package native
+
+import (
+	iiifdriver "github.com/go-iiif/go-iiif/driver"
+)
+
+func init() {
+
+	dr, err := NewNativeDriver()
+
+	if err != nil {
+		panic(err)
+	}
+
+	iiifdriver.RegisterDriver("native", dr)
+}
+```
+
+And then in your code you might do something like this:
+
+```
+import (
+	"context"
+	_ "github.com/go-iiif/go-iiif/native"
+	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifdriver "github.com/go-iiif/go-iiif/driver"	
+)
+
+ctx := context.Background()
+	
+config_bucket, _ := bucket.OpenBucket(ctx, "file:///etc/go-iiif")
+
+cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
+
+driver, _ := iiifdriver.NewDriverFromConfig(cfg)
+```
+
+```
+    "graphics": {
+	"source": { "name": "native" }
+    }
+```
 
 ## Usage
 
