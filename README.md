@@ -133,6 +133,8 @@ cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
 ```
 This allows for configuration files, and others, to be stored and retrieved from [any "bucket" source that is supported by the Go Cloud package](https://gocloud.dev/howto/blob/#services), notably remote storage services like AWS S3.
 
+In most of the command-line tools it is still possible to the use the old `-config {PATH}` flag and it will be converted to the newer syntax automatically but the `-config` flag is now officially deprecated.
+
 The `source` and `caching` layers have also been updated accordingly but support for the older `Disk`, `S3` and `Memory` sources has been updated to use the `Go Cloud` packages so there is no need to update any existing `go-iiif` configuration files.
 
 ## Usage
@@ -161,18 +163,26 @@ func main() {
 ### iiif-process
 
 ```
-> ./bin/iiif-process -h
+$> ./bin/iiif-process -h
 Usage of ./bin/iiif-process:
   -config string
-    	Path to a valid go-iiif config file.
+    	Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.
+  -config-name string
+    	The name of your go-iiif config file. (default "config.json")
+  -config-source string
+    	A valid Go Cloud bucket URI where your go-iiif config file is located.
   -instructions string
-    	Path to a valid go-iiif processing instructions file.
+    	Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.
+  -instructions-name string
+    	The name of your go-iiif instructions file. (default "instructions.json")
+  -instructions-source string
+    	A valid Go Cloud bucket URI where your go-iiif instructions file is located.
+  -mode string
+    	Valid modes are: cli, lambda. (default "cli")
   -report
     	Store a process report (JSON) for each URI in the cache tree.
   -report-name string
     	The filename for process reports. Default is 'process.json' as in '${URI}/process.json'. (default "process.json")
-  -uri value
-    	One or more valid IIIF URIs.
 ```
 
 Perform a series of IIIF image processing tasks, defined in a JSON-based "instructions" file, on one or more (IIIF) URIs. For example:
@@ -262,6 +272,27 @@ type IIIFInstructions struct {
 As of this writing there is no explicit response type for image beyond `map[string]interface{}`. There probably could be but it's still early days.
 
 ### iiif-server
+
+```
+$> ./bin/iiif-server -h
+Usage of ./bin/iiif-server:
+  -config string
+    	Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.
+  -config-name string
+    	 (default "config.json")
+  -config-url string
+    	
+  -example
+    	Add an /example endpoint to the server for testing and demonstration purposes
+  -example-root string
+    	An explicit path to a folder containing example assets (default "example")
+  -host string
+    	Bind the server to this host (default "localhost")
+  -port int
+    	Bind the server to this port (default 8080)
+  -protocol string
+    	The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda. (default "http")
+```
 
 ```
 $> bin/iiif-server -config config.json
@@ -372,11 +403,16 @@ _Note: This endpoint is only available from the machine the server is running on
 ### iiif-tile-seed
 
 ```
-$> ./bin/iiif-tile-seed -options ID1 ID2 ID3...
-
+$> ./bin/iiif-tile-seed -h
 Usage of ./bin/iiif-tile-seed:
   -config string
-    	Path to a valid go-iiif config file
+    	Path to a valid go-iiif config file. DEPRECATED - please use -config-source and -config name.
+  -config-name string
+    	The name of your go-iiif config file. (default "config.json")
+  -config-source string
+    	A valid Go Cloud bucket URI where your go-iiif config file is located.
+  -csv-source string
+    	 (default "A valid Go Cloud bucket URI where your CSV tileseed files are located.")
   -endpoint string
     	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
   -format string
@@ -386,11 +422,11 @@ Usage of ./bin/iiif-tile-seed:
   -loglevel string
     	The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal (default "info")
   -mode string
-    	Whether to read input as a CSV file or from STDIN which can be represented as "-" (default "-")
--noextension
-        Remove any extension from destination folder name.
+    	Valid modes are: cli, csv, lambda. (default "cli")
+  -noextension
+    	Remove any extension from destination folder name.
   -processes int
-    	The number of concurrent processes to use when tiling images (default 2)
+    	The number of concurrent processes to use when tiling images (default 4)
   -quality string
     	A valid IIIF quality parameter - if "default" then the code will try to determine which format you've set as the default (default "default")
   -refresh
@@ -506,23 +542,9 @@ Sample out for the `palette` service is included [below](#palette-1).
 
 ```
 	"graphics": {
-		"source": { "name": "VIPS" }
+		"source": { "name": "native" }
 	}
 ```
-
-Details about how images should be processed. Because only [libvips](https://github.com/jcupitt/libvips) is supported for image processing right now there is no reason to change this. According to the [bimg docs](https://github.com/h2non/bimg/) (which is the Go library wrapping `libvips`) the following formats can be read:
-
-```
-It can read JPEG, PNG, WEBP natively, and optionally TIFF, PDF, GIF and SVG formats if libvips@8.6+ is compiled with proper library bindings.
-```
-
-If you've installed `libvips` using [the handy setup script](setup/setup-libvips-ubuntu.sh) then all the formats listed above, save PDF, [should be supported](https://github.com/jcupitt/libvips#optional-dependencies).
-
-_Important: That's actually not true if you're reading this. It was true but then I tried running `iiif-tile-seed` on a large set of images and started triggering [this error](https://github.com/h2non/bimg/issues/111) even though it's supposed to be fixed. If you're reading this it means at least one of three things: the bug still exists; I pulled source from `gopkg.in` rather than `github.com` despite the author's notes in the issue; changes haven't propogated to `gopkg.in` yet. Which is to say that the current version of `bimg` is pegged to the [v1.0.1](https://github.com/h2non/bimg/releases/tag/v1.0.1) release which doesn't know think it knows about the PDF, GIF or SVG formats yet. It's being worked on..._
-
-The `VIPS` graphics source has the following optional properties:
-
-* **tmpdir** Specify an alternate path where libvips [should write temporary files](http://www.vips.ecs.soton.ac.uk/supported/7.42/doc/html/libvips/VipsImage.html#vips-image-new-temp-file) while processing images. This may be necessary if you are a processing many large files simultaneously and your default "temporary" directory is very small.
 
 ### features
 
@@ -678,6 +700,16 @@ Details about source images.
 
 Where to find source images.
 
+##### Blob
+
+```
+	"images": {
+		"source": { "name": "Blob", "path": "file:///example/images" }
+	}
+```
+
+Fetch sources images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
+
 ##### Disk
 
 ```
@@ -687,6 +719,8 @@ Where to find source images.
 ```
 
 Fetch source images from a locally available filesystem.
+
+_The `Disk` source is still supported but has been replaced by the `Blob` source._
 
 ##### Flickr
 
@@ -736,7 +770,9 @@ For the sake of backwards compatibilty if the value of `credentials` is any othe
 
 It is not possible to define your AWS credentials as properties in your `go-iiif` config file.
 
-_Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times._
+Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times.
+
+_The `S3` source is still supported but has been replaced by the `Blob` source._
 
 ![](misc/go-iiif-aws-source-cache.png)
 
@@ -754,6 +790,16 @@ Fetch source images from a remote URI. The `path` parameter must be a valid (Lev
 
 Caching options for source images.
 
+##### Blob
+
+```
+	"images": {
+		"cache": { "name": "Blob", "path": "file:///example/images" }
+	}
+```
+
+Cache sources images to any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
+
 ##### Disk
 
 ```
@@ -763,6 +809,8 @@ Caching options for source images.
 ```
 
 Cache images to a locally available filesystem.
+
+_The `Disk` cache is still supported but has been replaced by the `Blob` cache._
 
 ##### Memory
 
@@ -801,6 +849,16 @@ Details about derivative images.
 
 Caching options for derivative images.
 
+##### Blob
+
+```
+	"derivatives": {
+		"cache": { "name": "Blob", "path": "file:///example/images" }
+	}
+```
+
+Cache derivation images to any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
+
 ##### Disk
 
 ```
@@ -810,6 +868,8 @@ Caching options for derivative images.
 ```
 
 Cache images to a locally available filesystem.
+
+_The `Disk` cache is still supported but has been replaced by the `Blob` cache._
 
 ##### Memory
 
@@ -857,7 +917,9 @@ For the sake of backwards compatibilty if the value of `credentials` is any othe
 
 It is not possible to define your AWS credentials as properties in your `go-iiif` config file.
 
-_Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times._
+Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times.
+
+_The `S3` cache is still supported but has been replaced by the `Blob` cache._
 
 ![](misc/go-iiif-aws-source-cache.png)
 
