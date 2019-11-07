@@ -32,8 +32,9 @@ func NewIIIFServerTool() (Tool, error) {
 func (t *IIIFServerTool) Run(ctx context.Context) error {
 
 	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
-	var config_url = flag.String("config-url", "", "")
-	var config_name = flag.String("config-name", "config.json", "")
+
+	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
+	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
 
 	var proto = flag.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
 	var host = flag.String("host", "localhost", "Bind the server to this host")
@@ -54,10 +55,10 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		}
 
 		*config_name = filepath.Base(abs_config)
-		*config_url = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	config_bucket, err := bucket.OpenBucket(ctx, *config_url)
+	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
 
 	if err != nil {
 		return err

@@ -279,9 +279,9 @@ Usage of ./bin/iiif-server:
   -config string
     	Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.
   -config-name string
-    	 (default "config.json")
-  -config-url string
-    	
+    	The name of your go-iiif config file. (default "config.json")
+  -config-source string
+    	A valid Go Cloud bucket URI where your go-iiif config file is located.
   -example
     	Add an /example endpoint to the server for testing and demonstration purposes
   -example-root string
