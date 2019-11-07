@@ -14,11 +14,12 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Important
 
-`go-iiif` was first written with the [libvips](https://github.com/jcupitt/libvips) library and [bimg](https://github.com/h2non/bimg/) Go wrapper for image processing. `libvips` is pretty great but it introduces non-trivial build and setup requirements. As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. This allows `go-iiif` to run on any platform supported by Go without the need for external dependencies.
+Version 2 and higher of the `go-iiif` package introduces two backwards incompatible changes. They are:
 
-Support for alternative image processing libraries, like `libvips` is supported through the use of "drivers" (similar to the way the Go `database/sql` package works). Drivers are discussed further below.
+1. The removal of the `libvips` and `bimg` package for default image processing and the introduction of "drivers" for defining image processing functionality.
+2. The use of the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing files.
 
-If you want or need to use `libvips` for image processing you should use the [go-iiif-vips](#) package.
+Both changes are discussed in detail below.
 
 ## Setup
 
@@ -31,6 +32,10 @@ make cli-tools
 All of this package's dependencies are bundled with the code in the `vendor` directory.
 
 ## Drivers
+
+`go-iiif` was first written with the [libvips](https://github.com/jcupitt/libvips) library and [bimg](https://github.com/h2non/bimg/) Go wrapper for image processing. `libvips` is pretty great but it introduces non-trivial build and setup requirements. As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. This allows `go-iiif` to run on any platform supported by Go without the need for external dependencies.
+
+A longer discussion about drivers and how they work follows but if you want or need to use `libvips` for image processing you should use the [go-iiif-vips](https://github.com/go-iiif/go-iiif-vips) package.
 
 As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. Support for alternative image processing libraries, like `libvips` is supported through the use of "drivers" (similar to the way the Go `database/sql` package works).
 
@@ -78,6 +83,7 @@ And then in your code you might do something like this:
 ```
 import (
 	"context"
+	"github.com/aaronland/gocloud-blob-bucket"	
 	_ "github.com/go-iiif/go-iiif/native"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"	
@@ -92,11 +98,42 @@ cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
 driver, _ := iiifdriver.NewDriverFromConfig(cfg)
 ```
 
+That's really the only change to existing code. Careful readers may not the calls to `bucket.OpenBucket` and `config.NewConfigFromBucket` to load `go-iiif` configuration files. This is discussed below. In the meantime the only other change is to update the previously default `graphics.source` property in the configuration file from `VIPS` (or `vips`) to `native`. For example:
+
+```
+    "graphics": {
+	"source": { "name": "VIPS" }
+    }
+```
+
 ```
     "graphics": {
 	"source": { "name": "native" }
     }
 ```
+
+The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` object and to invoke the relevant `NewImageFrom...` method as needed. It is assumed that the driver package in question will also implement it's own implementation of the `go-iiif` `image.Image` interface. For working examples you should consult either of the following packages:
+
+* https://github.com/go-iiif/go-iiif/native
+* https://github.com/go-iiif/go-iiif-vips
+
+## Buckets
+
+As of version 2 the `go-iiif` package uses the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing all files. For example, instead of doing this:
+
+```
+cfg, _ := config.NewConfigFromFile("/etc/go-iiif/config.json")
+```
+
+It is now necessary to do this:
+
+```
+config_bucket, _ := bucket.OpenBucket(ctx, "file:///etc/go-iiif")
+cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
+```
+This allows for configuration files, and others, to be stored and retrieved from [any "bucket" source that is supported by the Go Cloud package](https://gocloud.dev/howto/blob/#services), notably remote storage services like AWS S3.
+
+The `source` and `caching` layers have also been updated accordingly but support for the older `Disk`, `S3` and `Memory` sources has been updated to use the `Go Cloud` packages so there is no need to update any existing `go-iiif` configuration files.
 
 ## Usage
 
