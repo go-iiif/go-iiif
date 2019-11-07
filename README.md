@@ -141,6 +141,23 @@ The `source` and `caching` layers have also been updated accordingly but support
 
 ## Tools
 
+As of version 2 all of the logic, including defining and parsing command line arguments, for any `go-iiif` tool that performs image processing has been moved in to the `tools` package. This change allows non-core image processing packages (like [go-iiif-vips](https://github.com/go-iiif/go-iiif-vips)) to more easily re-use functionality defined in the core `go-iiif` package. For example:
+
+```
+package main
+
+import (
+	"context"
+	_ "github.com/go-iiif/go-iiif-vips"
+	"github.com/go-iiif/go-iiif/tools"
+)
+
+func main() {
+	tool, _ := tools.NewProcessTool()
+	tool.Run(context.Background())
+}
+```
+
 ### iiif-process
 
 ```
