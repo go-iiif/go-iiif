@@ -181,6 +181,7 @@ Valid parameters for the `idsecret://` URI scheme are:
 | id | int64 | yes |
 | label | string | yes |
 | format | string | yes |
+| original | string | no |
 | secret | string | no |
 | secret_o | string | no |
 
@@ -192,9 +193,60 @@ If either the `secret` or `secret_o` parameters are absent they will be auto-gen
 rewrite:///path/to/source/image.jpg?target=/path/to/target/picture.jpg
 ```
 
+The `rewrite://` URI scheme is a variant of the `file://` URI scheme except that the `target` query parameter is required and it will be used to redefine the final URI, rather than just its directory tree, of the processed image.
+
 | Name | Type | Required |
 | --- | --- | --- |
 | target | string | yes |
+
+## Example
+
+Here's a concrete example taken from the [process/parallel.go](process/parallel.go) package that processes a single source image, defined as an `idsecret://` URI, in to multiple derivatives defined in an "instructions" file.
+
+The `idsecret://` URI is output as a string using the instructions set to define the `label` and other query parameters. That string is then used to create a new `rewrite://` URI where source is derived from the original `idsecret://` URI and the target is newly generate URI string.
+
+```
+go func(u iiifuri.URI, label Label, i IIIFInstructions) {
+
+	defer func() {
+		done_ch <- true
+	}()
+
+	var process_uri iiifuri.URI
+
+	switch u.Driver() {
+	case "idsecret":
+
+		str_label := fmt.Sprintf("%s", label)
+
+		opts := &url.Values{}
+		opts.Set("label", str_label)
+		opts.Set("format", i.Format)
+
+		if str_label == "o" {
+			opts.Set("original", "1")
+		}
+
+		target_str, _ := u.Target(opts)
+
+		origin := u.Origin()
+
+		rw_str := fmt.Sprintf("%s?target=%s", origin, target_str)
+		rw_str = iiifuri.NewRewriteURIString(rw_str)
+
+		rw_uri, err := iiifuri.NewURI(rw_str)
+
+		process_uri = rw_uri
+
+	default:
+		process_uri = u
+	}
+
+	new_uri, im, _ := pr.ProcessURIWithInstructions(process_uri, label, i)
+	// do something with new_uri and im here...
+	
+}(u, label, i)
+```
 
 ## Usage
 
