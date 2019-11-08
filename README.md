@@ -201,16 +201,12 @@ The `rewrite://` URI scheme is a variant of the `file://` URI scheme except that
 
 ## Example
 
-Here's a concrete example taken from the [process/parallel.go](process/parallel.go) package that processes a single source image, defined as an `idsecret://` URI, in to multiple derivatives defined in an "instructions" file.
+Here's a excerpted example taken from the [process/parallel.go](process/parallel.go) package that processes a single source image, defined as an `idsecret://` URI, in to multiple derivatives defined in an "instructions" file.
 
 The `idsecret://` URI is output as a string using the instructions set to define the `label` and other query parameters. That string is then used to create a new `rewrite://` URI where source is derived from the original `idsecret://` URI and the target is newly generate URI string.
 
 ```
 go func(u iiifuri.URI, label Label, i IIIFInstructions) {
-
-	defer func() {
-		done_ch <- true
-	}()
 
 	var process_uri iiifuri.URI
 
