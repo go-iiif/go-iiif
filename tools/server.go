@@ -192,19 +192,5 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	/*
-
-
-		endpoint := fmt.Sprintf("%s:%d", *host, *port)
-
-		log.Printf("Listening for requests at %s\n", endpoint)
-
-		err = http.ListenAndServe(&http.Server{Addr: endpoint, Handler: router})
-
-		if err != nil {
-			return err
-		}
-	*/
-
 	return nil
 }

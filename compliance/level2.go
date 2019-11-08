@@ -12,12 +12,15 @@ import (
 // http://iiif.io/api/image/2.1/
 // http://iiif.io/api/image/2.1/compliance/
 
+// 		       "regionByPct":  { "syntax": "pct:x,y,w,h", "required": true, "supported": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
+
 var level2_spec = `{
     "image": {
     	     "region": {
 	     	       "full":         { "syntax": "full",        "required": true, "supported": true, "match": "^full$" },
 		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^-?\\d+\\,-?\\d+\\,\\d+\\,\\d+$" },
-		       "regionByPct":  { "syntax": "pct:x,y,w,h", "required": true, "supported": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
+
+	     		"regionByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?$" },			
 		       "regionSquare": { "syntax": "square",      "required": false, "supported": true, "match": "^square$" }
 	     },
 	     "size": {
@@ -25,7 +28,7 @@ var level2_spec = `{
 	     		"max":               { "syntax": "max",   "required": false, "supported": true, "match": "^max$" },
 	     		"sizeByW":           { "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
 	     		"sizeByH":           { "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
-	     		"sizeByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },			
+			"sizeByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },
 	     		"sizeByConfinedWh":  { "syntax": "!w,h",  "required": true, "supported": true, "match": "^\\!\\d+\\,\\d+$" },
 	     		"sizeByDistortedWh": { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" },
 	     		"sizeByWh":          { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" }

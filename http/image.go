@@ -7,6 +7,7 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifsource "github.com/go-iiif/go-iiif/source"
+	_ "log"
 	gohttp "net/http"
 	"sync/atomic"
 	"time"
