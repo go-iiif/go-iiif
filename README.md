@@ -14,10 +14,11 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Important
 
-Version 2 and higher of the `go-iiif` package introduces two backwards incompatible changes from previous versions. They are:
+Version 2 and higher of the `go-iiif` package introduces three backwards incompatible changes from previous versions. They are:
 
 1. The removal of the `libvips` and `bimg` package for default image processing and the introduction of "drivers" for defining image processing functionality.
 2. The use of the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing files.
+3. The use of [go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URI strings rather than paths or filenames to define images for processing.
 
 Both changes are discussed in detail below.
 
@@ -96,7 +97,7 @@ cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
 driver, _ := iiifdriver.NewDriverFromConfig(cfg)
 ```
 
-That's really the only change to existing code. Careful readers may not the calls to `bucket.OpenBucket` and `config.NewConfigFromBucket` to load `go-iiif` configuration files. This is discussed below. In the meantime the only other change is to update the previously default `graphics.source` property in the configuration file from `VIPS` (or `vips`) to `native`. For example:
+That's really the only change to existing code. Careful readers may note the calls to `bucket.OpenBucket` and `config.NewConfigFromBucket` to load `go-iiif` configuration files. This is discussed below. In the meantime the only other change is to update the previously default `graphics.source` property in the configuration file from `VIPS` (or `vips`) to `native`. For example:
 
 ```
     "graphics": {
@@ -104,20 +105,24 @@ That's really the only change to existing code. Careful readers may not the call
     }
 ```
 
+Becomes:
+
 ```
     "graphics": {
 	"source": { "name": "native" }
     }
 ```
 
+The value of the `graphics.source` property should match the name that driver uses to register itself with `go-iiif`.
+
 The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` object and to invoke the relevant `NewImageFrom...` method as needed. It is assumed that the driver package in question will also implement it's own implementation of the `go-iiif` `image.Image` interface. For working examples you should consult either of the following packages:
 
-* https://github.com/go-iiif/go-iiif/native
+* https://github.com/go-iiif/go-iiif/tree/master/native
 * https://github.com/go-iiif/go-iiif-vips
 
 ## Buckets
 
-As of version 2 the `go-iiif` package uses the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing all files. For example, instead of doing this:
+Starting with version 2 the `go-iiif` package uses the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing all files. For example, instead of doing this:
 
 ```
 cfg, _ := config.NewConfigFromFile("/etc/go-iiif/config.json")
