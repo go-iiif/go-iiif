@@ -20,7 +20,7 @@ Version 2 and higher of the `go-iiif` package introduces three backwards incompa
 2. The use of the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing files.
 3. The use of [go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URI strings rather than paths or filenames to define images for processing.
 
-Both changes are discussed in detail below.
+All three changes are discussed in detail below.
 
 ## Setup
 
@@ -139,6 +139,62 @@ This allows for configuration files, and others, to be stored and retrieved from
 In most of the command-line tools it is still possible to the use the old `-config {PATH}` flag and it will be converted to the newer syntax automatically but the `-config` flag is now officially deprecated.
 
 The `source` and `caching` layers have also been updated accordingly but support for the older `Disk`, `S3` and `Memory` sources has been updated to use the `Go Cloud` packages so there is no need to update any existing `go-iiif` configuration files.
+
+## URIs
+
+[go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URI strings are still a work in progress. While they may still change a bit around the edges efforts will be made to ensure backwards compatibility going forward.
+
+`go-iiif-uri` URI strings are defined by a named scheme which indicates how an URI should be processed, a path which is a reference to an image and zero or more query parameters which are the specific instructions for processing the URI.
+
+### file
+
+```
+file:///path/to/source/image.jpg
+```
+
+```
+file:///path/to/source/image.jpg?target=/path/to/target/image.jpg
+```
+
+The `file://` URI scheme is basically just a path or filename. It has an option `target` property which allows the name of the source image to be changed. These filenames are _not_ the final name of the image as processed by `go-iiif` but the name of the directory structure that files will be written to, as in the weird IIIF instructions-based URIs. 
+
+Valid parameters for the `file://` URI scheme are:
+
+| Name | Type | Required |
+| --- | --- | --- |
+| target | string | no |
+
+### idsecret
+
+```
+idsecret:///path/to/source/image.jpg?id=1234&secret=s33kret&secret_o=seekr3t&label
+```
+
+The `idsecret://` URI scheme is designed to rewrite a source image URI to {UNIQUE_ID} + {SECRET} + {LABEL} style filenames. For example `cat.jpg` becomes `1234_s33kret_b.jpg` and specifically `123/4/1234_s33kret_b.jpg` where the unique ID is used to generate a nested directory tree in which the final image lives.
+
+The `idsecret://` URI scheme was developed for use with `go-iiif` "instructions" files where a single image produced multiple derivatives that need to share commonalities in their final URIs.
+
+Valid parameters for the `idsecret://` URI scheme are:
+
+| Name | Type | Required |
+| --- | --- | --- |
+| id | int64 | yes |
+| label | string | yes |
+| format | string | yes |
+| secret | string | no |
+| secret_o | string | no |
+
+If either the `secret` or `secret_o` parameters are absent they will be auto-generated.
+
+### rewrite
+
+```
+rewrite:///path/to/source/image.jpg?target=/path/to/target/picture.jpg
+```
+
+| Name | Type | Required |
+| --- | --- | --- |
+| target | string | yes |
 
 ## Usage
 
