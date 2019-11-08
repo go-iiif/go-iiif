@@ -6,15 +6,15 @@
 
 This began as a fork of [@greut's iiif](https://github.com/greut/iiif) package that moves all of the processing logic for the [IIIF Image API](http://iiif.io/api/image/) in to discrete Go packages and defines source, derivative and graphics details in a [JSON config file](README.md#config-files). There is an additional caching layer for both source images and derivatives.
 
-I did this to better understand the architecture behind (and to address my own concerns about) version 2 of the [IIIF Image API](http://iiif.io/api/image/2.1/index.html).
+I did this to better understand the architecture behind (and to address my own concerns about) the [IIIF Image API](http://iiif.io/api/image/2.1/index.html).
 
-For the time being this package will probably not support the other IIIF Metadata or Publication APIs. Honestly, as of this writing it may still be lacking some parts of Image API but it's a start and it does all the basics.
+For the time being this package will probably not support the other IIIF Metadata or Publication APIs.
 
 _And by "forked" I mean that [@greut](https://github.com/greut) and I decided that [it was best](https://github.com/greut/iiif/pull/2) for this code and his code to wave at each other across the divide but not necessarily to hold hands._
 
 ## Important
 
-Version 2 and higher of the `go-iiif` package introduces two backwards incompatible changes. They are:
+Version 2 and higher of the `go-iiif` package introduces two backwards incompatible changes from previous versions. They are:
 
 1. The removal of the `libvips` and `bimg` package for default image processing and the introduction of "drivers" for defining image processing functionality.
 2. The use of the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing files.
@@ -23,10 +23,10 @@ Both changes are discussed in detail below.
 
 ## Setup
 
-You will need to have both `Go` (specifically a version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
+You will need to have both `Go` (specifically version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
 
 ```
-make cli-tools
+$> make cli-tools
 ```
 
 All of this package's dependencies are bundled with the code in the `vendor` directory.
@@ -37,9 +37,7 @@ All of this package's dependencies are bundled with the code in the `vendor` dir
 
 A longer discussion about drivers and how they work follows but if you want or need to use `libvips` for image processing you should use the [go-iiif-vips](https://github.com/go-iiif/go-iiif-vips) package.
 
-As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. Support for alternative image processing libraries, like `libvips` is supported through the use of "drivers" (similar to the way the Go `database/sql` package works).
-
-A driver needs to support the `driver.Driver` interface which looks like this:
+Support for alternative image processing libraries, like `libvips` is supported through the use of "drivers" (similar to the way the Go `database/sql` package works). A driver needs to support the `driver.Driver` interface which looks like this:
 
 ```
 import (
