@@ -242,6 +242,7 @@ go func(u iiifuri.URI, label Label, i IIIFInstructions) {
 	// do something with new_uri and im here...
 	
 }(u, label, i)
+```
 
 ## Usage
 
