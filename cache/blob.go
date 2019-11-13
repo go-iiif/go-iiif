@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"github.com/aaronland/gocloud-blob-bucket"
-	"github.com/aws/aws-sdk-go/aws"	
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"gocloud.dev/blob"
 	"io/ioutil"
-	"log"
+	_ "log"
 	"net/url"
 )
 
@@ -38,7 +38,21 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 		return nil, err
 	}
 
-	u, _ := url.Parse(uri)
+	// something something something permissions and ACLs in Go Cloud
+	// basically we need to trap a `acl=VALUE` query parameter in order
+	// to set permission - as of this writing we a) only handle S3 and
+	// b) we assign ACL values at the bucket level and not for specific
+	// blobs, at least not yet (20191113/thisisaaronland)
+	//
+	// https://github.com/google/go-cloud/issues/1108
+	// https://godoc.org/gocloud.dev/blob
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
 	q := u.Query()
 
 	scheme := u.Scheme
@@ -82,19 +96,13 @@ func (bc *BlobCache) Get(uri string) ([]byte, error) {
 	return ioutil.ReadAll(fh)
 }
 
-// something something something permissions and ACLs
-// https://github.com/google/go-cloud/issues/1108
-// https://godoc.org/gocloud.dev/blob
-
 func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	ctx := context.Background()
 
-	bc.acl = "public-read"
-
-	log.Println("SET", uri, bc.scheme, bc.acl)
-
 	var wr_opts *blob.WriterOptions
+
+	// see notes above in NewBlobCacheFromURI
 
 	if bc.scheme == "s3" && bc.acl != "" {
 
