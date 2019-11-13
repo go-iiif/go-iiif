@@ -10,7 +10,7 @@ github.com/aaronland/go-colours/palette
 # github.com/aaronland/go-string v0.1.1
 github.com/aaronland/go-string/dsn
 github.com/aaronland/go-string/random
-# github.com/aaronland/gocloud-blob-bucket v0.0.1
+# github.com/aaronland/gocloud-blob-bucket v0.0.2
 github.com/aaronland/gocloud-blob-bucket
 # github.com/anthonynsimon/bild v0.11.1
 github.com/anthonynsimon/bild/effect
@@ -25,13 +25,13 @@ github.com/anthonynsimon/bild/math/f64
 github.com/anthonynsimon/bild/parallel
 github.com/anthonynsimon/bild/util
 github.com/anthonynsimon/bild/fcolor
-# github.com/aws/aws-lambda-go v1.13.2
+# github.com/aws/aws-lambda-go v1.13.3
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.20.21
+# github.com/aws/aws-sdk-go v1.25.34
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/service/s3/s3manager
 github.com/aws/aws-sdk-go/aws/awserr
@@ -62,9 +62,11 @@ github.com/aws/aws-sdk-go/private/protocol/restxml
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
 github.com/aws/aws-sdk-go/internal/sdkrand
 github.com/aws/aws-sdk-go/service/sts
+github.com/aws/aws-sdk-go/service/sts/stsiface
 github.com/aws/aws-sdk-go/aws/credentials/ec2rolecreds
 github.com/aws/aws-sdk-go/aws/credentials/endpointcreds
 github.com/aws/aws-sdk-go/aws/ec2metadata
+github.com/aws/aws-sdk-go/internal/sdkmath
 github.com/aws/aws-sdk-go/private/protocol/query
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
@@ -165,7 +167,7 @@ go.opencensus.io/internal
 go.opencensus.io/trace/internal
 go.opencensus.io/trace/tracestate
 go.opencensus.io
-# gocloud.dev v0.17.0
+# gocloud.dev v0.18.0
 gocloud.dev/blob
 gocloud.dev/blob/fileblob
 gocloud.dev/blob/memblob
