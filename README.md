@@ -14,7 +14,7 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Important
 
-Version 2 and higher of the `go-iiif` package introduces three backwards incompatible changes from previous versions. They are:
+Version 2.0.0 and higher of the `go-iiif` package introduces three backwards incompatible changes from previous versions. They are:
 
 1. The removal of the `libvips` and `bimg` package for default image processing and the introduction of "drivers" for defining image processing functionality.
 2. The use of the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing files.
@@ -1611,6 +1611,7 @@ Probably. Please consult [the currently known-known issues](https://github.com/g
 * https://labs.cooperhewitt.org/2017/parting-gifts/
 * https://millsfield.sfomuseum.org/blog/2018/07/18/iiif/
 * https://millsfield.sfomuseum.org/blog/2019/02/12/iiif-aws/
+* https://millsfield.sfomuseum.org/blog/2019/11/13/iiif-v2/
 
 ### Other stuff
 
