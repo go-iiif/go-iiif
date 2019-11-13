@@ -7,6 +7,7 @@ require (
 	github.com/aaronland/gocloud-blob-bucket v0.0.1
 	github.com/anthonynsimon/bild v0.11.1
 	github.com/aws/aws-lambda-go v1.13.2
+	github.com/aws/aws-sdk-go v1.20.21
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
 	github.com/go-iiif/go-iiif-uri v0.3.0
