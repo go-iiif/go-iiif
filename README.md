@@ -125,7 +125,6 @@ The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` o
 Starting with version 2 the `go-iiif` package uses the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing all files. For example, instead of doing this:
 
 ```
-<<<<<<< HEAD
 cfg, _ := config.NewConfigFromFile("/etc/go-iiif/config.json")
 ```
 
@@ -243,10 +242,6 @@ go func(u iiifuri.URI, label Label, i IIIFInstructions) {
 	// do something with new_uri and im here...
 	
 }(u, label, i)
-=======
-$> make cli-tools
->>>>>>> 9ed6a281afc4c32e9c034b478f2281a1ca9f2951
-```
 
 ## Usage
 
