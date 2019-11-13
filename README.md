@@ -817,6 +817,18 @@ Where to find source images.
 
 Fetch sources images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
 
+Some notes about the `Blob` source:
+
+* Under the hood the [github.com/aaronland/gocloud-blob-bucket](https://github.com/aaronland/gocloud-blob-bucket) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`.
+
+For example:
+
+```
+	"images": {
+		"source": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:" }
+	}
+```
+
 ##### Disk
 
 ```
@@ -907,6 +919,28 @@ Caching options for source images.
 
 Cache sources images to any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
 
+Some notes about the `Blob` cache:
+
+* Under the hood the [github.com/aaronland/gocloud-blob-bucket](https://github.com/aaronland/gocloud-blob-bucket) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`.
+
+For example:
+
+```
+	"images": {
+		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:" }
+	}
+```
+
+* Under the hood the `Blob` cache supports and optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/acl/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs".
+
+For example:
+
+```
+	"images": {
+		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:&acl=public-read" }
+	}
+```
+
 ##### Disk
 
 ```
@@ -965,6 +999,28 @@ Caching options for derivative images.
 ```
 
 Cache derivation images to any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
+
+Some notes about the `Blob` cache:
+
+* Under the hood the [github.com/aaronland/gocloud-blob-bucket](https://github.com/aaronland/gocloud-blob-bucket) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`.
+
+For example:
+
+```
+	"derivatives": {
+		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:" }
+	}
+```
+
+* Under the hood the `Blob` cache supports and optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/acl/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs".
+
+For example:
+
+```
+	"derivatives": {
+		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:&acl=public-read" }
+	}
+```
 
 ##### Disk
 
