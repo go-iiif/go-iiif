@@ -11,6 +11,8 @@ RUN apk update \
 FROM alpine
 
 COPY --from=builder /go-iiif/bin/iiif-process /bin/iiif-process
+COPY --from=builder /go-iiif/bin/iiif-server /bin/iiif-server
+COPY --from=builder /go-iiif/bin/iiif-tile-seed /bin/iiif-tile-seed
 
 RUN apk update \
     && apk upgrade \

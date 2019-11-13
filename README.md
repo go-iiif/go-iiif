@@ -1365,31 +1365,27 @@ All of the notes so far have assumed that you are using `iiif-tile-seed`. If you
 
 ## Docker
 
-Yes. There are two Dockerfiles included with this distribution.
+Yes. There is a [Dockerfile](Dockerfile) included with this distribution. It will build a container with the following tools:
 
-* [Dockerfile.server](Dockerfile.server) will build a container that runs `iiif-server` on port `8080`.
-* [Dockerfile.process](Dockerfile.process) will build a container that can run the  `iiif-process` command-line tool.
+* The `iiif-server` tool.
+* The `iiif-process` command-line tool.
+* The `iiif-tile-seed` command-line tool.
 
-It would probably be useful to have a Dockerfile for tiling a folder ("volume") full of images but that hasn't happened yet.
-
-_Note: There used to be a single Dockerfile bundled with this package for building the `iiif-server`. It is now called `Dockerfile.server`._
-
-### iiif-server
-
-To build the `iiif-server` container run:
+To build the container run:
 
 ```
-docker build -f Dockerfile.server -t go-iiif-server .
+$> docker build -f Dockerfile -t go-iiif .
 ```
 
-To start the `iiif-server` container run:
+To start the `iiif-server` tool run:
 
 ```
 $> docker run -it -p 6161:8080 \
    -v /usr/local/go-iiif/docker/etc:/etc/iiif-server \
    -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
-   iiif-server \
-   /bin/iiif-server -host 0.0.0.0 -config /etc/iiif-server/config.json
+   go-iiif \
+   /bin/iiif-server -host 0.0.0.0 \
+   -config-source file:///etc/iiif-server
    
 2018/06/20 23:03:10 Listening for requests at 0.0.0.0:8080
 ```
@@ -1407,30 +1403,34 @@ Let's say you're using S3 as an image source and reading (S3) credentials from e
 
 ```
 $> docker run -it -p 6161:8080 \
-       -v /usr/local/go-iiif/docker/etc:/etc/iiif-server -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
+       -v /usr/local/go-iiif/docker/etc:/etc/iiif-server \
+       -v /usr/local/go-iiif/docker/images:/usr/local/iiif-server \
        -e AWS_ACCESS_KEY_ID={AWS_KEY} -e AWS_SECRET_ACCESS_KEY={AWS_SECRET} \
-       go-iiif-server \
-       /bin/iiif-server -host 0.0.0.0 -config /etc/iiif-server/config.json       
+       go-iiif \
+       /bin/iiif-server -host 0.0.0.0 \
+       -config-source file:///etc/iiif-server
 ```
 
-### iiif-process
-
-To build the `iiif-process` container run:
-
-```
-docker build -f Dockerfile.process -t go-iiif-process .
-```
-
-The process an image using the `iiif-process` Docker container you would run something like:
+The process an image using the `iiif-process` tool you would run something like:
 
 ```
 $> docker run \
    -v /usr/local/go-iiif/docker/etc:/etc/go-iiif \
-   go-iiif-process
-   /bin/iiif-process -config=/etc/go-iiif/config.json -instructions=/etc/go-iiif/instructions.json
-   -uri=test.jpg
+   go-iiif /bin/iiif-process \
+   -config-source file:///etc/go-iiif \
+   -instructions-source file:///etc/go-iiif \
+   file:///test.jpg
 ```
 
+To tile an image using the `iiif-tile-seed` tool you would run something like:
+
+```
+$> docker run -v /usr/local/go-iiif-vips/docker:/usr/local/go-iiif \
+	go-iiif /bin/iiif-tile-seed \
+	-config-source file:////usr/local/go-iiif/config \
+	-scale-factors 1,2,4,8 \
+	file:///zuber.jpg
+```
 Again, see the way we're mapping `/etc/go-iiif` to a local folder, like we do in the `iiif-server` Docker example? The same rules apply here.
 
 ### Amazon ECS
