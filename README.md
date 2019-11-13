@@ -1476,6 +1476,7 @@ $> docker run -v /usr/local/go-iiif-vips/docker:/usr/local/go-iiif \
 	-scale-factors 1,2,4,8 \
 	file:///zuber.jpg
 ```
+
 Again, see the way we're mapping `/etc/go-iiif` to a local folder, like we do in the `iiif-server` Docker example? The same rules apply here.
 
 ### Amazon ECS
