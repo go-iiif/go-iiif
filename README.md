@@ -927,7 +927,7 @@ Some notes about the `Blob` cache:
 	}
 ```
 
-* Under the hood the `Blob` cache supports and optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/acl/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs". For example:
+* Under the hood the `Blob` cache supports an optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/master/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs". For example:
 
 ```
 	"images": {
@@ -1004,7 +1004,7 @@ Some notes about the `Blob` cache:
 	}
 ```
 
-* Under the hood the `Blob` cache supports and optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/acl/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs". For example:
+* Under the hood the `Blob` cache supports an optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/master/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs". For example:
 
 ```
 	"derivatives": {
