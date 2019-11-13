@@ -18,7 +18,7 @@ Version 2 and higher of the `go-iiif` package introduces three backwards incompa
 
 1. The removal of the `libvips` and `bimg` package for default image processing and the introduction of "drivers" for defining image processing functionality.
 2. The use of the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing files.
-3. The use of [go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URI strings rather than paths or filenames to define images for processing.
+3. The introduction of [go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URI strings rather than paths or filenames to define images for processing.
 
 All three changes are discussed in detail below.
 
