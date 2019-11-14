@@ -160,6 +160,10 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
+	if *config_source == "" {
+		return errors.New("Required -config-source flag is empty.")
+	}
+
 	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
 
 	if err != nil {

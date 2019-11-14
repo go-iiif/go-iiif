@@ -140,6 +140,14 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		*instructions_source = fmt.Sprintf("file://%s", filepath.Dir(abs_instructions))
 	}
 
+	if *config_source == "" {
+		return errors.New("Required -config-source flag is empty.")
+	}
+
+	if *instructions_source == "" {
+		return errors.New("Required -instructions-source flag is empty.")
+	}
+
 	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
 
 	if err != nil {

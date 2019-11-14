@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/aaronland/gocloud-blob-bucket"
@@ -56,6 +57,10 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 
 		*config_name = filepath.Base(abs_config)
 		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+	}
+
+	if *config_source == "" {
+		return errors.New("Required -config-source flag is empty.")
 	}
 
 	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
