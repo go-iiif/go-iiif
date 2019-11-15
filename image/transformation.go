@@ -281,7 +281,7 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 		sizes := strings.Split(arr[1], ",")
 
 		if len(sizes) != 4 {
-			message := fmt.Sprintf("Invalid region", t.Region)
+			message := fmt.Sprintf("Invalid region '%s'", t.Region)
 			return nil, errors.New(message)
 		}
 

@@ -9,10 +9,10 @@ import (
 
 type Level2 struct {
 	Level      `json:"-"`
-	Formats    []string                  `json:"formats"`
-	Qualities  []string                  `json:"qualities"`
-	Supports   []string                  `json:"supports"`
-	compliance iiifcompliance.Compliance `json:"-"`
+	Formats    []string `json:"formats"`
+	Qualities  []string `json:"qualities"`
+	Supports   []string `json:"supports"`
+	compliance iiifcompliance.Compliance
 }
 
 func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
