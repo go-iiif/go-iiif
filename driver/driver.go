@@ -2,6 +2,7 @@ package driver
 
 import (
 	"errors"
+	"fmt"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
@@ -76,7 +77,8 @@ func NewDriver(name string) (Driver, error) {
 	dr, ok := drivers[nrml_name]
 
 	if !ok {
-		return nil, errors.New("Invalid driver")
+		msg := fmt.Sprintf("Invalid go-iiif driver '%s' ('%s')", name, nrml_name)
+		return nil, errors.New(msg)
 	}
 
 	return dr, nil
