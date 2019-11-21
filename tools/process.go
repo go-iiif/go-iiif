@@ -25,11 +25,20 @@ import (
 
 type ProcessTool struct {
 	Tool
+	URIFunc URIFunc
 }
 
 func NewProcessTool() (Tool, error) {
+	uri_func := DefaultURIFunc()
+	return NewProcessToolWithURIFunc(uri_func)
+}
 
-	t := &ProcessTool{}
+func NewProcessToolWithURIFunc(uri_func URIFunc) (Tool, error) {
+
+	t := &ProcessTool{
+		URIFunc: uri_func,
+	}
+
 	return t, nil
 }
 
@@ -201,7 +210,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 		for _, str_uri := range flag.Args() {
 
-			u, err := iiifuri.NewURI(str_uri)
+			u, err := t.URIFunc(str_uri)
 
 			if err != nil {
 				log.Fatal(err)
@@ -228,11 +237,9 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 				s3_obj := s3_entity.Object
 				s3_key := s3_obj.Key
 
-				// HOW TO WRANGLE THIS IN TO A BESPOKE URI? NECESSARY?
-
 				s3_fname := filepath.Base(s3_key)
-
-				u, err := iiifuri.NewURI(s3_fname)
+				
+				u, err := t.URIFunc(s3_fname)
 
 				if err != nil {
 					return err
