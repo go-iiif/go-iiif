@@ -62,7 +62,6 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI)
 
 func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI) (*ProcessResultsReport, error) {
 
-	// results := make(map[string]interface{})
 	results := make(ProcessResultsReport)
 
 	wg := new(sync.WaitGroup)

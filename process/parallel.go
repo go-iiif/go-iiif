@@ -1,6 +1,8 @@
 package process
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -39,10 +41,17 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		im, err := driver.NewImageFromConfig(cfg, origin)
 
 		if err != nil {
-			msg := fmt.Sprintf("failed to derive palette for %s : %s", u, err)
+			msg := fmt.Sprintf("failed to load image (%s) for processing profile.services : %s", u, err)
 			err_ch <- errors.New(msg)
 			return
 		}
+
+		hash := sha1.Sum(im.Body())
+		fingerprint := hex.EncodeToString(hash[:])
+
+		mu.Lock()
+		results["origin_fingerprint"] = fingerprint
+		mu.Unlock()
 
 		for _, service_name := range cfg.Profile.Services.Enable {
 
@@ -56,7 +65,10 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 					return
 				}
 
+				mu.Lock()
 				results["palette"] = s.Value()
+
+				mu.Unlock()
 				break
 			}
 		}
