@@ -20,6 +20,8 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 	remaining := len(instruction_set) + 1 // + 1 because we fetch the palette for the source image
 
 	results := make(map[string]interface{})
+	results["origin"] = u.Origin()
+	results["origin_uri"] = u.String()
 
 	uris := make(map[Label]string)
 	dimensions := make(map[Label][]int)
