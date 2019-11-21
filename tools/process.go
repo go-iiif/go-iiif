@@ -19,6 +19,7 @@ import (
 	"github.com/go-iiif/go-iiif/process"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"log"
+	"net/url"
 	"path/filepath"
 	"sync"
 )
@@ -68,18 +69,30 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI)
 
 		if opts.Report {
 
-			key := filepath.Join(origin, opts.ReportName)
-			wg.Add(1)
+			uri_opts := &url.Values{}
+			uri_opts.Set("format", "jpg") // this is made up (and not necessarily part of the instructions file)
+			uri_opts.Set("label", "x")    // this is made up (and not necessarily part of the instructions file)
 
-			go func() {
+			target, err := uri.Target(uri_opts)
 
-				defer wg.Done()
-				err := report_processing(opts.Config, key, rsp)
+			if err != nil {
+				log.Printf("Unable to generate target URL for report %s", err)
+			} else {
+				root := filepath.Dir(target)
 
-				if err != nil {
-					log.Printf("Unable to write process report %s, %s", key, err)
-				}
-			}()
+				key := filepath.Join(root, opts.ReportName)
+				wg.Add(1)
+
+				go func() {
+
+					defer wg.Done()
+					err := report_processing(opts.Config, key, rsp)
+
+					if err != nil {
+						log.Printf("Unable to write process report %s, %s", key, err)
+					}
+				}()
+			}
 		}
 
 		results[origin] = rsp
@@ -238,7 +251,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 				s3_key := s3_obj.Key
 
 				s3_fname := filepath.Base(s3_key)
-				
+
 				u, err := t.URIFunc(s3_fname)
 
 				if err != nil {
