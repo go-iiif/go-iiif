@@ -43,6 +43,8 @@ func NewProcessToolWithURIFunc(uri_func URIFunc) (Tool, error) {
 	return t, nil
 }
 
+type ProcessResultsReport map[string]interface{}
+
 type ProcessOptions struct {
 	Config       *config.Config
 	Driver       iiifdriver.Driver
@@ -54,7 +56,15 @@ type ProcessOptions struct {
 
 func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI) error {
 
-	results := make(map[string]interface{})
+	_, err := ProcessManyWithReport(ctx, opts, uris...)
+	return err
+}
+
+func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI) (*ProcessResultsReport, error) {
+
+	// results := make(map[string]interface{})
+	results := make(ProcessResultsReport)
+
 	wg := new(sync.WaitGroup)
 
 	for _, uri := range uris {
@@ -64,7 +74,7 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI)
 		rsp, err := process.ParallelProcessURIWithInstructionSet(opts.Config, opts.Driver, opts.Processor, opts.Instructions, uri)
 
 		if err != nil {
-			return err
+			return &results, err
 		}
 
 		if opts.Report {
@@ -100,14 +110,7 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI)
 
 	wg.Wait()
 
-	enc_results, err := json.Marshal(results)
-
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(string(enc_results))
-	return nil
+	return &results, nil
 }
 
 func (t *ProcessTool) Run(ctx context.Context) error {
