@@ -354,7 +354,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 						if err != nil {
 							logger.Warning("Failed to determine seed from path '%s' (%s), %s", rel_path, abs_path, err)
-							return
+							continue
 						}
 
 						tile_func(seed, wg)

@@ -292,14 +292,14 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 						if err != nil {
 							log.Printf("Failed to parse path '%s' (%s)', %s\n", rel_path, abs_path, err)
-							return
+							continue
 						}
 
 						err = ProcessMany(ctx, process_opts, u)
 
 						if err != nil {
 							log.Printf("Failed to process '%s' ('%s'), %s", rel_path, u, err)
-							return
+							continue
 						}
 					}
 
