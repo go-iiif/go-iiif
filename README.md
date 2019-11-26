@@ -285,7 +285,7 @@ Usage of ./bin/iiif-process:
   -instructions-source string
     	A valid Go Cloud bucket URI where your go-iiif instructions file is located.
   -mode string
-    	Valid modes are: cli, lambda. (default "cli")
+    	Valid modes are: cli, fsnotify, lambda. (default "cli")
   -report
     	Store a process report (JSON) for each URI in the cache tree.
   -report-name string
@@ -529,7 +529,7 @@ Usage of ./bin/iiif-tile-seed:
   -loglevel string
     	The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal (default "info")
   -mode string
-    	Valid modes are: cli, csv, lambda. (default "cli")
+    	Valid modes are: cli, csv, fsnotify, lambda. (default "cli")
   -noextension
     	Remove any extension from destination folder name.
   -processes int
