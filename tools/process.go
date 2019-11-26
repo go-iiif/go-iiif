@@ -22,6 +22,7 @@ import (
 	"log"
 	"net/url"
 	"path/filepath"
+	"strings"
 	"sync"
 )
 
@@ -257,6 +258,8 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 		root := u.Path
 
+		log.Printf("Watching '%s'\n", root)
+
 		watcher, err := fsnotify.NewWatcher()
 
 		if err != nil {
@@ -278,26 +281,26 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 						return
 					}
 
-					// log.Println("event:", event)
-
 					if event.Op == fsnotify.Create {
 
-						path := event.Name
+						abs_path := event.Name
 
-						u, err := t.URIFunc(path)
+						rel_path := strings.Replace(abs_path, root, "", 1)
+						rel_path = strings.TrimLeft(rel_path, "/")
+
+						u, err := t.URIFunc(rel_path)
 
 						if err != nil {
-							log.Println(path, err)
+							log.Printf("Failed to parse path '%s' (%s)', %s\n", rel_path, abs_path, err)
 							return
 						}
 
 						err = ProcessMany(ctx, process_opts, u)
 
 						if err != nil {
-							log.Println(path, u, err)
+							log.Printf("Failed to process '%s' ('%s'), %s", rel_path, u, err)
 							return
 						}
-
 					}
 
 				case err, ok := <-watcher.Errors:
