@@ -13,6 +13,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/go-iiif/go-iiif-uri v0.3.0
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
+	github.com/gonum/integrate v0.0.0-20181209220457-a422b5c0fdf2 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5

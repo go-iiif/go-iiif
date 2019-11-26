@@ -84,7 +84,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	var logfile = flag.String("logfile", "", "Write logging information to this file")
 	var loglevel = flag.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
 	var processes = flag.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
-	var mode = flag.String("mode", "cli", "Valid modes are: cli, csv, lambda.")
+	var mode = flag.String("mode", "cli", "Valid modes are: cli, csv, fsnotify, lambda.")
 
 	var noextension = flag.Bool("noextension", false, "Remove any extension from destination folder name.")
 
@@ -320,6 +320,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		}
 
 		root := u.Path
+		logger.Info("Watching %s", root)
 
 		watcher, err := fsnotify.NewWatcher()
 
@@ -342,16 +343,17 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 						return
 					}
 
-					// log.Println("event:", event)
-
 					if event.Op == fsnotify.Create {
 
-						path := event.Name
+						abs_path := event.Name
 
-						seed, err := SeedFromString(path, *noextension)
+						rel_path := strings.Replace(abs_path, root, "", 1)
+						rel_path = strings.TrimLeft(rel_path, "/")
+
+						seed, err := SeedFromString(rel_path, *noextension)
 
 						if err != nil {
-							logger.Warning(path, err)
+							logger.Warning("Failed to determine seed from path '%s' (%s), %s", rel_path, abs_path, err)
 							return
 						}
 
