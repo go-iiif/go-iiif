@@ -294,7 +294,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 						err = ProcessMany(ctx, process_opts, u)
 
 						if err != nil {
-							log.Println(path, u, err)							
+							log.Println(path, u, err)
 							return
 						}
 

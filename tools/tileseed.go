@@ -8,6 +8,7 @@ import (
 	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
+	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiiftile "github.com/go-iiif/go-iiif/tile"
@@ -16,6 +17,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"io"
 	golog "log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -300,6 +302,81 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 			}
 
 		}
+
+		wg.Wait()
+
+	case "fsnotify":
+
+		images_source := config.Images.Source.Path
+
+		u, err := url.Parse(images_source)
+
+		if err != nil {
+			return err
+		}
+
+		if u.Scheme != "file" {
+			return errors.New("Invalid image source for -mode fsnotify")
+		}
+
+		root := u.Path
+
+		watcher, err := fsnotify.NewWatcher()
+
+		if err != nil {
+			return err
+		}
+
+		defer watcher.Close()
+
+		done := make(chan bool)
+		wg := new(sync.WaitGroup)
+
+		go func() {
+
+			for {
+				select {
+				case event, ok := <-watcher.Events:
+
+					if !ok {
+						return
+					}
+
+					// log.Println("event:", event)
+
+					if event.Op == fsnotify.Create {
+
+						path := event.Name
+
+						seed, err := SeedFromString(path, *noextension)
+
+						if err != nil {
+							logger.Warning(path, err)
+							return
+						}
+
+						tile_func(seed, wg)
+
+					}
+
+				case err, ok := <-watcher.Errors:
+
+					if !ok {
+						return
+					}
+
+					logger.Warning("fsnotify error: %s", err)
+				}
+			}
+		}()
+
+		err = watcher.Add(root)
+
+		if err != nil {
+			return err
+		}
+
+		<-done
 
 		wg.Wait()
 
