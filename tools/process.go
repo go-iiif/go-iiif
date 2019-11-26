@@ -12,6 +12,7 @@ import (
 	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
+	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	"github.com/go-iiif/go-iiif/config"
@@ -126,7 +127,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
 	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
 
-	mode := flag.String("mode", "cli", "Valid modes are: cli, lambda.")
+	mode := flag.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
 
 	flag.Parse()
 
@@ -239,6 +240,86 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+
+	case "fsnotify":
+
+		images_source := cfg.Images.Source.Path
+
+		u, err := url.Parse(images_source)
+
+		if err != nil {
+			return err
+		}
+
+		if u.Scheme != "file" {
+			return errors.New("Invalid image source for -mode fsnotify")
+		}
+
+		root := u.Path
+
+		watcher, err := fsnotify.NewWatcher()
+
+		if err != nil {
+			return err
+		}
+
+		defer watcher.Close()
+
+		done := make(chan bool)
+		wg := new(sync.WaitGroup)
+
+		go func() {
+
+			for {
+				select {
+				case event, ok := <-watcher.Events:
+
+					if !ok {
+						return
+					}
+
+					// log.Println("event:", event)
+
+					if event.Op == fsnotify.Create {
+
+						path := event.Name
+
+						u, err := t.URIFunc(path)
+
+						if err != nil {
+							log.Println(path, err)
+							return
+						}
+
+						err = ProcessMany(ctx, process_opts, u)
+
+						if err != nil {
+							log.Println(path, u, err)							
+							return
+						}
+
+					}
+
+				case err, ok := <-watcher.Errors:
+
+					if !ok {
+						return
+					}
+
+					log.Println("error:", err)
+				}
+			}
+		}()
+
+		err = watcher.Add(root)
+
+		if err != nil {
+			return err
+		}
+
+		<-done
+
+		wg.Wait()
 
 	case "lambda":
 
