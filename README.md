@@ -290,6 +290,8 @@ Usage of ./bin/iiif-process:
     	Store a process report (JSON) for each URI in the cache tree.
   -report-name string
     	The filename for process reports. Default is 'process.json' as in '${URI}/process.json'. (default "process.json")
+  -report-source string
+    	A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.
 ```
 
 Perform a series of IIIF image processing tasks, defined in a JSON-based "instructions" file, on one or more (IIIF) URIs. For example:
