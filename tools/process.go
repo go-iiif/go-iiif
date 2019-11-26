@@ -19,6 +19,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	"github.com/go-iiif/go-iiif/process"
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"gocloud.dev/blob"
 	"log"
 	"net/url"
 	"path/filepath"
@@ -54,6 +55,7 @@ type ProcessOptions struct {
 	Instructions process.IIIFInstructionSet
 	Report       bool
 	ReportName   string
+	ReportBucket *blob.Bucket
 }
 
 func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI) error {
@@ -97,7 +99,7 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 				go func() {
 
 					defer wg.Done()
-					err := report_processing(opts.Config, key, rsp)
+					err := report_processing(ctx, opts, key, rsp)
 
 					if err != nil {
 						log.Printf("Unable to write process report %s, %s", key, err)
@@ -127,6 +129,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
 	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
+	var report_source = flag.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
 
 	mode := flag.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
 
@@ -180,6 +183,8 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		return err
 	}
 
+	defer config_bucket.Close()
+
 	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, *config_name)
 
 	if err != nil {
@@ -190,6 +195,22 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	if err != nil {
 		return err
+	}
+
+	defer instructions_bucket.Close()
+
+	var report_bucket *blob.Bucket
+
+	if *report_source != "" {
+
+		b, err := bucket.OpenBucket(ctx, *report_source)
+
+		if err != nil {
+			return err
+		}
+
+		report_bucket = b
+		defer report_bucket.Close()
 	}
 
 	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, *instructions_name)
@@ -217,6 +238,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		Instructions: instructions_set,
 		Report:       *report,
 		ReportName:   *report_name,
+		ReportBucket: report_bucket,
 	}
 
 	switch *mode {
@@ -365,14 +387,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	return nil
 }
 
-func report_processing(cfg *config.Config, key string, rsp map[string]interface{}) error {
-
-	dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(cfg)
-
-	if err != nil {
-		return err
-
-	}
+func report_processing(ctx context.Context, opts *ProcessOptions, key string, rsp map[string]interface{}) error {
 
 	enc_rsp, err := json.Marshal(rsp)
 
@@ -380,5 +395,33 @@ func report_processing(cfg *config.Config, key string, rsp map[string]interface{
 		return err
 	}
 
-	return dest_cache.Set(key, enc_rsp)
+	if opts.ReportBucket == nil {
+
+		cfg := opts.Config
+
+		dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(cfg)
+
+		if err != nil {
+			return err
+
+		}
+
+		return dest_cache.Set(key, enc_rsp)
+	}
+
+	fname := filepath.Base(key)
+
+	wr, err := opts.ReportBucket.NewWriter(ctx, fname, nil)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = wr.Write(enc_rsp)
+
+	if err != nil {
+		return err
+	}
+
+	return wr.Close()
 }
