@@ -91,9 +91,16 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 			if err != nil {
 				log.Printf("Unable to generate target URL for report %s", err)
 			} else {
+
 				root := filepath.Dir(target)
 
-				key := filepath.Join(root, opts.ReportName)
+				ext := filepath.Ext(target)
+				fname := filepath.Base(target)
+				fname = strings.TrimRight(fname, ext)
+
+				report_name := fmt.Sprintf("%s-%s", fname, opts.ReportName)
+
+				key := filepath.Join(root, report_name)
 				wg.Add(1)
 
 				go func() {
