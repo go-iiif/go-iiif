@@ -135,7 +135,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 	var instructions_name = flag.String("instructions-name", "instructions.json", "The name of your go-iiif instructions file.")
 
 	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
-	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}/process.json'.")
+	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}-process.json'.")
 	var report_source = flag.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
 
 	mode := flag.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
