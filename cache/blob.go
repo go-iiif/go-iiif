@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	_ "log"
 	"net/url"
+	"strings"
 )
 
 type BlobCache struct {
@@ -103,7 +104,7 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	// see notes above in NewBlobCacheFromURI
 
-	if bc.scheme == "s3" && bc.acl != "" {
+	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
 
 		before := func(asFunc func(interface{}) bool) error {
 
