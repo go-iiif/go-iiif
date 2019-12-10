@@ -2,7 +2,6 @@ package source
 
 import (
 	"context"
-	"github.com/aaronland/gocloud-blob-bucket"
 	"gocloud.dev/blob"
 )
 
@@ -16,7 +15,7 @@ func NewMemorySource(body []byte) (Source, error) {
 
 	ctx := context.Background()
 
-	b, err := bucket.OpenBucket(ctx, "mem://")
+	b, err := blob.OpenBucket(ctx, "mem://")
 
 	if err != nil {
 		return nil, err

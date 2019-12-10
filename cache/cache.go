@@ -38,6 +38,8 @@ func NewCacheFromConfig(config iiifconfig.CacheConfig) (Cache, error) {
 		cache, err = NewMemoryCache(config)
 	case "s3":
 		cache, err = NewS3Cache(config)
+	case "s3blob":
+		cache, err = NewS3Cache(config)
 	default:
 		cache, err = NewNullCache(config)
 	}

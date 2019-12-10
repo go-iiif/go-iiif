@@ -30,6 +30,8 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 		source, err = NewFlickrSource(config)
 	case "s3":
 		source, err = NewS3Source(config)
+	case "s3blob":
+		source, err = NewS3Source(config)
 	case "uri":
 		source, err = NewURISource(config)
 	default:

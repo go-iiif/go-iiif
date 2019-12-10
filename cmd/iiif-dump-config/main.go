@@ -6,10 +6,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"github.com/aaronland/gocloud-blob-bucket"
+	_ "github.com/aaronland/go-cloud-s3blob"
 	iiifcompliance "github.com/go-iiif/go-iiif/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
+	"gocloud.dev/blob"
+	_ "gocloud.dev/blob/fileblob"
 	"log"
 	"path/filepath"
 	"sort"
@@ -60,7 +62,7 @@ func main() {
 		*config_url = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	config_bucket, err := bucket.OpenBucket(ctx, *config_url)
+	config_bucket, err := blob.OpenBucket(ctx, *config_url)
 
 	if err != nil {
 		log.Fatal(err)

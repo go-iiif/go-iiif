@@ -1,7 +1,9 @@
 # github.com/RobCherry/vibrant v0.0.0-20160904011657-0680b8cf1c89
 github.com/RobCherry/vibrant
-# github.com/aaronland/go-aws-session v0.0.3
+# github.com/aaronland/go-aws-session v0.0.4
 github.com/aaronland/go-aws-session
+# github.com/aaronland/go-cloud-s3blob v0.0.0-20191122231736-37020545e7bd
+github.com/aaronland/go-cloud-s3blob
 # github.com/aaronland/go-colours v0.1.1
 github.com/aaronland/go-colours
 github.com/aaronland/go-colours/extruder
@@ -10,8 +12,6 @@ github.com/aaronland/go-colours/palette
 # github.com/aaronland/go-string v0.1.1
 github.com/aaronland/go-string/dsn
 github.com/aaronland/go-string/random
-# github.com/aaronland/gocloud-blob-bucket v0.0.2
-github.com/aaronland/gocloud-blob-bucket
 # github.com/anthonynsimon/bild v0.11.1
 github.com/anthonynsimon/bild/effect
 github.com/anthonynsimon/bild/segment
@@ -172,7 +172,6 @@ go.opencensus.io
 # gocloud.dev v0.18.0
 gocloud.dev/blob
 gocloud.dev/blob/fileblob
-gocloud.dev/blob/memblob
 gocloud.dev/blob/s3blob
 gocloud.dev/blob/driver
 gocloud.dev/gcerrors

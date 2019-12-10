@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/aaronland/gocloud-blob-bucket"
 	iiifcache "github.com/go-iiif/go-iiif/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
@@ -14,6 +13,7 @@ import (
 	iiifserver "github.com/go-iiif/go-iiif/server"
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/gorilla/mux"
+	"gocloud.dev/blob"
 	"log"
 	"net/url"
 	"os"
@@ -63,7 +63,7 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
+	config_bucket, err := blob.OpenBucket(ctx, *config_source)
 
 	if err != nil {
 		return err

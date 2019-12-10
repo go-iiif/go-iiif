@@ -3,8 +3,9 @@ module github.com/go-iiif/go-iiif
 go 1.12
 
 require (
+	github.com/aaronland/go-cloud-s3blob v0.0.0-20191122231736-37020545e7bd
 	github.com/aaronland/go-colours v0.1.1
-	github.com/aaronland/gocloud-blob-bucket v0.0.2
+	github.com/aaronland/gocloud-blob-bucket v0.0.2 // indirect
 	github.com/anthonynsimon/bild v0.11.1
 	github.com/aws/aws-lambda-go v1.13.3
 	github.com/aws/aws-sdk-go v1.25.34
@@ -28,4 +29,5 @@ require (
 	github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
 	gocloud.dev v0.18.0
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
 )

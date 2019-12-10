@@ -27,6 +27,10 @@ github.com/RobCherry/vibrant v0.0.0-20160904011657-0680b8cf1c89 h1:k8/G7/7+vhkmp
 github.com/RobCherry/vibrant v0.0.0-20160904011657-0680b8cf1c89/go.mod h1:xu1tbmzBGes+jcIUU9yATLxmOoxdCZT0hUp5HY1c6/A=
 github.com/aaronland/go-aws-session v0.0.3 h1:lTOw1ifDKD7QgM8sWAOcFdlUIhs1JmcbMlfZv5GxYDc=
 github.com/aaronland/go-aws-session v0.0.3/go.mod h1:nc4r+JFoGM6sop/lTspmUDcRIUW/V2NWs9Nd6jQWk90=
+github.com/aaronland/go-aws-session v0.0.4 h1:GddU3E4pXAm3JWVjcdgyYhdGaWSRtiZl6Iwwt7+OLcU=
+github.com/aaronland/go-aws-session v0.0.4/go.mod h1:1OD+6F7D052nJMkz2tLx5FvMVpreAVU0ye9ur5O+nno=
+github.com/aaronland/go-cloud-s3blob v0.0.0-20191122231736-37020545e7bd h1:6GwSIcyzNazKWdk/20GNbJTY/+8UFobwzCBA8pbo4cY=
+github.com/aaronland/go-cloud-s3blob v0.0.0-20191122231736-37020545e7bd/go.mod h1:WAv8p20qbjrl8TSN4HkL9qy+Agt8ds0aY8OGd/j4OCY=
 github.com/aaronland/go-colours v0.1.1 h1:wBLEx+wNqGM3w6kwlsvE6Y9sYyONeInNX4I5jNvQbcs=
 github.com/aaronland/go-colours v0.1.1/go.mod h1:dEmUq7Kb5dg3VxlauVTayEXhZ9BPcnBx7BAYkLAMPQc=
 github.com/aaronland/go-string v0.1.0/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=

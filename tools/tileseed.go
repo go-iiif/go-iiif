@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
@@ -15,6 +14,7 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-cli/flags"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
+	"gocloud.dev/blob"
 	"io"
 	golog "log"
 	"net/url"
@@ -118,7 +118,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
+	config_bucket, err := blob.OpenBucket(ctx, *config_source)
 
 	if err != nil {
 		return err
@@ -240,7 +240,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 	case "csv":
 
-		csv_bucket, err := bucket.OpenBucket(ctx, *csv_source)
+		csv_bucket, err := blob.OpenBucket(ctx, *csv_source)
 
 		if err != nil {
 			return err

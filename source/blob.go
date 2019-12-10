@@ -2,9 +2,9 @@ package source
 
 import (
 	"context"
-	"github.com/aaronland/gocloud-blob-bucket"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	"gocloud.dev/blob"
+	_ "log"
 )
 
 type BlobSource struct {
@@ -24,7 +24,7 @@ func NewBlobSourceFromURI(uri string) (Source, error) {
 
 	ctx := context.Background()
 
-	b, err := bucket.OpenBucket(ctx, uri)
+	b, err := blob.OpenBucket(ctx, uri)
 
 	if err != nil {
 		return nil, err

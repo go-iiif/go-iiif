@@ -9,7 +9,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/aaronland/gocloud-blob-bucket"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
@@ -184,7 +183,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		return errors.New("Required -instructions-source flag is empty.")
 	}
 
-	config_bucket, err := bucket.OpenBucket(ctx, *config_source)
+	config_bucket, err := blob.OpenBucket(ctx, *config_source)
 
 	if err != nil {
 		return err
@@ -198,7 +197,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	instructions_bucket, err := bucket.OpenBucket(ctx, *instructions_source)
+	instructions_bucket, err := blob.OpenBucket(ctx, *instructions_source)
 
 	if err != nil {
 		return err
@@ -210,7 +209,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	if *report_source != "" {
 
-		b, err := bucket.OpenBucket(ctx, *report_source)
+		b, err := blob.OpenBucket(ctx, *report_source)
 
 		if err != nil {
 			return err
