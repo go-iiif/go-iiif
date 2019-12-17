@@ -34,6 +34,7 @@ type Seed struct {
 
 type TileSeedTool struct {
 	Tool
+	URIFunc URIFunc
 }
 
 func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
@@ -43,6 +44,11 @@ func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	return SeedFromURI(u, no_extension)
+}
+
+func SeedFromURI(u iiifuri.URI, no_extension bool) (*Seed, error) {
 
 	origin := u.Origin()
 	target, err := u.Target(nil)
@@ -65,7 +71,14 @@ func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
 
 func NewTileSeedTool() (Tool, error) {
 
-	t := &TileSeedTool{}
+	uri_func := DefaultURIFunc()
+	return NewTileSeedToolWithURIFunc(uri_func)
+}
+
+func NewTileSeedToolWithURIFunc(uri_func URIFunc) (Tool, error) {
+	t := &TileSeedTool{
+		URIFunc: uri_func,
+	}
 	return t, nil
 }
 
@@ -227,7 +240,13 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 		for _, id := range flag.Args() {
 
-			seed, err := SeedFromString(id, *noextension)
+			u, err := t.URIFunc(id)
+
+			if err != nil {
+				logger.Fatal(err)
+			}
+
+			seed, err := SeedFromURI(u, *noextension)
 
 			if err != nil {
 				logger.Fatal(err)
@@ -350,7 +369,14 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 						rel_path := strings.Replace(abs_path, root, "", 1)
 						rel_path = strings.TrimLeft(rel_path, "/")
 
-						seed, err := SeedFromString(rel_path, *noextension)
+						u, err := t.URIFunc(rel_path)
+
+						if err != nil {
+							logger.Warning("Failed to run URI function from path '%s' (%s), %s", rel_path, abs_path, err)
+							continue
+						}
+
+						seed, err := SeedFromURI(u, *noextension)
 
 						if err != nil {
 							logger.Warning("Failed to determine seed from path '%s' (%s), %s", rel_path, abs_path, err)
@@ -395,6 +421,8 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 				s3_key := s3_obj.Key
 
 				s3_fname := filepath.Base(s3_key)
+
+				// TILE FUNC HERE...
 
 				seed, err := SeedFromString(s3_fname, *noextension)
 
