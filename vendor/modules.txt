@@ -172,6 +172,7 @@ go.opencensus.io
 # gocloud.dev v0.18.0
 gocloud.dev/blob
 gocloud.dev/blob/fileblob
+gocloud.dev/blob/memblob
 gocloud.dev/blob/s3blob
 gocloud.dev/blob/driver
 gocloud.dev/gcerrors

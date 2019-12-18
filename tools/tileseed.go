@@ -383,8 +383,12 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 							continue
 						}
 
-						tile_func(seed, wg)
+						err = tile_func(seed, wg)
 
+						if err != nil {
+							logger.Warning("Failed to generate tiles for path '%s', %s", rel_path, err)
+							continue
+						}
 					}
 
 				case err, ok := <-watcher.Errors:

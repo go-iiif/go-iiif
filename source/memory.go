@@ -3,6 +3,7 @@ package source
 import (
 	"context"
 	"gocloud.dev/blob"
+	_ "gocloud.dev/blob/memblob"
 )
 
 type MemorySource struct {
