@@ -443,9 +443,13 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 				s3_fname := filepath.Base(s3_key)
 
-				// TILE FUNC HERE...
+				u, err := t.uriFunc(s3_fname)
 
-				seed, err := SeedFromString(s3_fname, *noextension)
+				if err != nil {
+					return err
+				}
+
+				seed, err := SeedFromURI(u, *noextension)
 
 				if err != nil {
 					return err
