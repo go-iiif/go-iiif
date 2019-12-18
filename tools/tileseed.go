@@ -32,9 +32,12 @@ type Seed struct {
 	Target string
 }
 
+type TileSeedOnCompleteFunc func(*iiifconfig.Config, string, string, int, error)
+
 type TileSeedTool struct {
 	Tool
-	URIFunc URIFunc
+	uriFunc        URIFunc
+	onCompleteFunc TileSeedOnCompleteFunc
 }
 
 func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
@@ -77,7 +80,17 @@ func NewTileSeedTool() (Tool, error) {
 
 func NewTileSeedToolWithURIFunc(uri_func URIFunc) (Tool, error) {
 	t := &TileSeedTool{
-		URIFunc: uri_func,
+		uriFunc: uri_func,
+	}
+	return t, nil
+}
+
+// PLEASE MAKE THIS LESS STUPID (20191217/thisisaaronland)
+
+func NewTileSeedToolWithURIFuncAndOnCompleteFunc(uri_func URIFunc, complete_func TileSeedOnCompleteFunc) (Tool, error) {
+	t := &TileSeedTool{
+		uriFunc:        uri_func,
+		onCompleteFunc: complete_func,
 	}
 	return t, nil
 }
@@ -222,6 +235,10 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 			count, err := ts.SeedTiles(src_id, alt_id, scales, *refresh)
 
+			if t.onCompleteFunc != nil {
+				t.onCompleteFunc(config, src_id, alt_id, count, err)
+			}
+
 			if err != nil {
 				logger.Warning("Failed to seed tiles for '%s', %s", src_id, err)
 			} else {
@@ -240,7 +257,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 		for _, id := range flag.Args() {
 
-			u, err := t.URIFunc(id)
+			u, err := t.uriFunc(id)
 
 			if err != nil {
 				logger.Fatal(err)
@@ -369,7 +386,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 						rel_path := strings.Replace(abs_path, root, "", 1)
 						rel_path = strings.TrimLeft(rel_path, "/")
 
-						u, err := t.URIFunc(rel_path)
+						u, err := t.uriFunc(rel_path)
 
 						if err != nil {
 							logger.Warning("Failed to run URI function from path '%s' (%s), %s", rel_path, abs_path, err)
