@@ -34,6 +34,11 @@ type Seed struct {
 
 type TileSeedOnCompleteFunc func(*iiifconfig.Config, string, string, int, error)
 
+type TileSeedToolOptions struct {
+	URIFunc        URIFunc
+	OnCompleteFunc TileSeedOnCompleteFunc
+}
+
 type TileSeedTool struct {
 	Tool
 	uriFunc        URIFunc
@@ -78,20 +83,26 @@ func NewTileSeedTool() (Tool, error) {
 	return NewTileSeedToolWithURIFunc(uri_func)
 }
 
+// this maintains parity with tools/process.go
+
 func NewTileSeedToolWithURIFunc(uri_func URIFunc) (Tool, error) {
-	t := &TileSeedTool{
-		uriFunc: uri_func,
+
+	opts := &TileSeedToolOptions{
+		URIFunc: uri_func,
 	}
-	return t, nil
+
+	return NewTileSeedToolWithOptions(opts)
 }
 
-// PLEASE MAKE THIS LESS STUPID (20191217/thisisaaronland)
+// this is the kitchen sink
 
-func NewTileSeedToolWithURIFuncAndOnCompleteFunc(uri_func URIFunc, complete_func TileSeedOnCompleteFunc) (Tool, error) {
+func NewTileSeedToolWithOptions(opts *TileSeedToolOptions) (Tool, error) {
+
 	t := &TileSeedTool{
-		uriFunc:        uri_func,
-		onCompleteFunc: complete_func,
+		uriFunc:        opts.URIFunc,
+		onCompleteFunc: opts.OnCompleteFunc,
 	}
+
 	return t, nil
 }
 
