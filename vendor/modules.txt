@@ -2,7 +2,7 @@
 github.com/RobCherry/vibrant
 # github.com/aaronland/go-aws-session v0.0.4
 github.com/aaronland/go-aws-session
-# github.com/aaronland/go-cloud-s3blob v0.0.0-20191122231736-37020545e7bd
+# github.com/aaronland/go-cloud-s3blob v0.1.0
 github.com/aaronland/go-cloud-s3blob
 # github.com/aaronland/go-colours v0.1.1
 github.com/aaronland/go-colours
@@ -31,7 +31,7 @@ github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.25.34
+# github.com/aws/aws-sdk-go v1.26.8
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/service/s3/s3manager
 github.com/aws/aws-sdk-go/aws/awserr
@@ -51,6 +51,7 @@ github.com/aws/aws-sdk-go/aws/csm
 github.com/aws/aws-sdk-go/aws/defaults
 github.com/aws/aws-sdk-go/internal/ini
 github.com/aws/aws-sdk-go/internal/shareddefaults
+github.com/aws/aws-sdk-go/aws/arn
 github.com/aws/aws-sdk-go/aws/client/metadata
 github.com/aws/aws-sdk-go/aws/signer/v4
 github.com/aws/aws-sdk-go/internal/s3err
@@ -60,6 +61,7 @@ github.com/aws/aws-sdk-go/private/protocol/eventstream/eventstreamapi
 github.com/aws/aws-sdk-go/private/protocol/rest
 github.com/aws/aws-sdk-go/private/protocol/restxml
 github.com/aws/aws-sdk-go/private/protocol/xml/xmlutil
+github.com/aws/aws-sdk-go/service/s3/internal/arn
 github.com/aws/aws-sdk-go/internal/sdkrand
 github.com/aws/aws-sdk-go/service/sts
 github.com/aws/aws-sdk-go/service/sts/stsiface
@@ -182,7 +184,7 @@ gocloud.dev/internal/openurl
 gocloud.dev/internal/escape
 gocloud.dev/aws
 gocloud.dev/internal/retry
-# golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8
+# golang.org/x/image v0.0.0-20191214001246-9130b4cfad52
 golang.org/x/image/tiff
 golang.org/x/image/webp
 golang.org/x/image/bmp
@@ -196,7 +198,7 @@ golang.org/x/image/draw
 golang.org/x/image/font
 golang.org/x/image/font/basicfont
 golang.org/x/image/math/f64
-# golang.org/x/net v0.0.0-20190620200207-3b0461eec859
+# golang.org/x/net v0.0.0-20190619014844-b5b0513f8c1b
 golang.org/x/net/trace
 golang.org/x/net/internal/timeseries
 golang.org/x/net/http2
