@@ -138,7 +138,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		crops, err := ts.TileSizes(image, scale)
 
 		if err != nil {
-			log.Printf("Unable to determine tile sizes for %s (%s), %s\n", scale, image, err)
+			log.Printf("Unable to determine tile sizes for %d (%s), %s\n", scale, image.Identifier(), err)
 			continue
 		}
 
