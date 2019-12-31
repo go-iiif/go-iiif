@@ -175,7 +175,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		// https://github.com/anthonynsimon/bild/#resize-resampling-filters
 		// https://godoc.org/github.com/anthonynsimon/bild/transform#ResampleFilter
-		
+
 		img := transform.Resize(im.img, w, h, transform.Lanczos)
 		im.img = img
 	}
