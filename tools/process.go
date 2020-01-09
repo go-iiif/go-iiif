@@ -316,7 +316,7 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 
 		to_process := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range flag.Args() {
+		for _, str_uri := range fs.Args() {
 
 			u, err := t.URIFunc(str_uri)
 
