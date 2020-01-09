@@ -21,6 +21,7 @@ import (
 	"gocloud.dev/blob"
 	"log"
 	"net/url"
+	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -122,24 +123,86 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 	return &results, nil
 }
 
+func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
+
+	fs := flag.NewFlagSet("process", flag.ExitOnError)
+
+	fs.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
+	fs.String("instructions", "", "Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.")
+
+	fs.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
+	fs.String("config-name", "config.json", "The name of your go-iiif config file.")
+
+	fs.String("instructions-source", "", "A valid Go Cloud bucket URI where your go-iiif instructions file is located.")
+	fs.String("instructions-name", "instructions.json", "The name of your go-iiif instructions file.")
+
+	fs.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
+	fs.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}-process.json'.")
+	fs.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
+
+	fs.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
+
+	return fs, nil
+}
+
 func (t *ProcessTool) Run(ctx context.Context) error {
 
-	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
-	var instructions = flag.String("instructions", "", "Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.")
+	fs, err := ProcessToolFlagSet(ctx)
 
-	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
+	if err != nil {
+		return err
+	}
 
-	var instructions_source = flag.String("instructions-source", "", "A valid Go Cloud bucket URI where your go-iiif instructions file is located.")
-	var instructions_name = flag.String("instructions-name", "instructions.json", "The name of your go-iiif instructions file.")
+	return t.RunWithFlagSet(ctx, fs)
+}
 
-	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
-	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}-process.json'.")
-	var report_source = flag.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
+func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
-	mode := flag.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
+	fs.Parse(os.Args[1:])
 
-	flag.Parse()
+	var iiif_config string
+	var instructions string
+
+	var config_source string
+	var config_name string
+
+	var instructions_source string
+	var instructions_name string
+
+	var report bool
+	var report_source string
+	var report_name string
+
+	var mode string
+
+	fs.VisitAll(func(fl *flag.Flag) {
+
+		switch fl.Name {
+		case "config":
+			iiif_config = fl.Value.(flag.Getter).Get().(string)
+		case "instructions":
+			instructions = fl.Value.(flag.Getter).Get().(string)
+		case "config-source":
+			config_source = fl.Value.(flag.Getter).Get().(string)
+		case "config-name":
+			config_name = fl.Value.(flag.Getter).Get().(string)
+		case "instructions-source":
+			instructions_source = fl.Value.(flag.Getter).Get().(string)
+		case "instructions-name":
+			instructions_name = fl.Value.(flag.Getter).Get().(string)
+		case "report":
+			report = fl.Value.(flag.Getter).Get().(bool)
+		case "report-name":
+			report_name = fl.Value.(flag.Getter).Get().(string)
+		case "report-source":
+			report_source = fl.Value.(flag.Getter).Get().(string)
+		case "mode":
+			mode = fl.Value.(flag.Getter).Get().(string)
+		default:
+			// pass
+		}
+
+	})
 
 	err := flags.SetFlagsFromEnvVars("IIIF_PROCESS")
 
@@ -147,43 +210,43 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	if *iiif_config != "" {
+	if iiif_config != "" {
 
 		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
 
-		abs_config, err := filepath.Abs(*iiif_config)
+		abs_config, err := filepath.Abs(iiif_config)
 
 		if err != nil {
 			return err
 		}
 
-		*config_name = filepath.Base(abs_config)
-		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+		config_name = filepath.Base(abs_config)
+		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	if *instructions != "" {
+	if instructions != "" {
 
 		log.Println("-instructions flag is deprecated. Please use -instructions-source and -instructions-name (setting them now).")
 
-		abs_instructions, err := filepath.Abs(*instructions)
+		abs_instructions, err := filepath.Abs(instructions)
 
 		if err != nil {
 			return err
 		}
 
-		*instructions_name = filepath.Base(abs_instructions)
-		*instructions_source = fmt.Sprintf("file://%s", filepath.Dir(abs_instructions))
+		instructions_name = filepath.Base(abs_instructions)
+		instructions_source = fmt.Sprintf("file://%s", filepath.Dir(abs_instructions))
 	}
 
-	if *config_source == "" {
+	if config_source == "" {
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	if *instructions_source == "" {
+	if instructions_source == "" {
 		return errors.New("Required -instructions-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, *config_source)
+	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return err
@@ -191,13 +254,13 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	defer config_bucket.Close()
 
-	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, *config_name)
+	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
 		return err
 	}
 
-	instructions_bucket, err := blob.OpenBucket(ctx, *instructions_source)
+	instructions_bucket, err := blob.OpenBucket(ctx, instructions_source)
 
 	if err != nil {
 		return err
@@ -207,9 +270,9 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	var report_bucket *blob.Bucket
 
-	if *report_source != "" {
+	if report_source != "" {
 
-		b, err := blob.OpenBucket(ctx, *report_source)
+		b, err := blob.OpenBucket(ctx, report_source)
 
 		if err != nil {
 			return err
@@ -219,7 +282,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		defer report_bucket.Close()
 	}
 
-	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, *instructions_name)
+	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, instructions_name)
 
 	if err != nil {
 		return err
@@ -242,12 +305,12 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		Processor:    pr,
 		Driver:       driver,
 		Instructions: instructions_set,
-		Report:       *report,
-		ReportName:   *report_name,
+		Report:       report,
+		ReportName:   report_name,
 		ReportBucket: report_bucket,
 	}
 
-	switch *mode {
+	switch mode {
 
 	case "cli":
 
