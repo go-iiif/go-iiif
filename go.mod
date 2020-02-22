@@ -10,6 +10,7 @@ require (
 	github.com/aws/aws-lambda-go v1.13.3
 	github.com/aws/aws-sdk-go v1.26.8
 	github.com/buckket/go-blurhash v1.0.3
+	github.com/corona10/goimagehash v1.0.2
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
 	github.com/fsnotify/fsnotify v1.4.7

@@ -5,18 +5,18 @@ package service
 
 import (
 	"context"
+	"github.com/aaronland/go-image-resize"
+	"github.com/buckket/go-blurhash"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	_ "log"
-	"github.com/buckket/go-blurhash"
-	"github.com/aaronland/go-image-resize"
 )
 
 type BlurHashService struct {
-	Service        `json:",omitempty"`
-	BlurHashContext string           `json:"@context"`
-	BlurHashProfile string           `json:"profile"`
-	BlurHashLabel   string           `json:"label"`
+	Service         `json:",omitempty"`
+	BlurHashContext string `json:"@context"`
+	BlurHashProfile string `json:"profile"`
+	BlurHashLabel   string `json:"label"`
 	BlurHash        string `json:"hash,omitempty"`
 }
 
@@ -50,13 +50,13 @@ func NewBlurHashService(cfg iiifconfig.BlurHashConfig, image iiifimage.Image) (S
 	if err != nil {
 		return nil, err
 	}
-	
+
 	hash, err := blurhash.Encode(cfg.X, cfg.Y, &im)
 
 	if err != nil {
 		return nil, err
 	}
-	
+
 	s := BlurHashService{
 		BlurHashContext: "x-urn:service:go-iiif#palette",
 		BlurHashProfile: "x-urn:service:go-iiif#palette",

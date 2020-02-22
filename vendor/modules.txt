@@ -82,6 +82,10 @@ github.com/aws/aws-sdk-go/private/protocol/query/queryutil
 # github.com/buckket/go-blurhash v1.0.3
 github.com/buckket/go-blurhash
 github.com/buckket/go-blurhash/base83
+# github.com/corona10/goimagehash v1.0.2
+github.com/corona10/goimagehash
+github.com/corona10/goimagehash/etcs
+github.com/corona10/goimagehash/transforms
 # github.com/fogleman/gg v1.3.0
 github.com/fogleman/gg
 # github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
