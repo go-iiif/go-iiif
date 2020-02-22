@@ -9,6 +9,12 @@ github.com/aaronland/go-colours
 github.com/aaronland/go-colours/extruder
 github.com/aaronland/go-colours/grid
 github.com/aaronland/go-colours/palette
+# github.com/aaronland/go-image-resize v0.0.0-20200215211032-65f2cf14b638
+github.com/aaronland/go-image-resize
+# github.com/aaronland/go-image-transform v0.0.0-20200215193528-9bb7b64c2728
+github.com/aaronland/go-image-transform
+# github.com/aaronland/go-roster v0.0.1
+github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.1
 github.com/aaronland/go-string/dsn
 github.com/aaronland/go-string/random
@@ -73,6 +79,9 @@ github.com/aws/aws-sdk-go/private/protocol/query
 github.com/aws/aws-sdk-go/internal/sdkuri
 github.com/aws/aws-sdk-go/private/protocol/json/jsonutil
 github.com/aws/aws-sdk-go/private/protocol/query/queryutil
+# github.com/buckket/go-blurhash v1.0.3
+github.com/buckket/go-blurhash
+github.com/buckket/go-blurhash/base83
 # github.com/fogleman/gg v1.3.0
 github.com/fogleman/gg
 # github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5

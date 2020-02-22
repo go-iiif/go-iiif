@@ -21,6 +21,7 @@ type Config struct {
 	Flickr      FlickrConfig      `json:"flickr,omitempty"`
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
 	Palette     PaletteConfig     `json:"palette,omitempty"`
+	BlurHash    BlurHashConfig     `json:"blurhash,omitempty"`	
 	Custom      interface{}       `json:"custom,omitempty"`
 }
 
@@ -38,6 +39,12 @@ type PaletteConfig struct {
 	Extruder SourceConfig   `json:"extruder"`
 	Grid     SourceConfig   `json:"grid"`
 	Palettes []SourceConfig `json:"palettes"`
+}
+
+type BlurHashConfig struct {
+	X int `json:"x"`
+	Y int `json:"y"`
+	Size int `json:"size"`
 }
 
 type LevelConfig struct {

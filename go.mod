@@ -5,9 +5,11 @@ go 1.12
 require (
 	github.com/aaronland/go-cloud-s3blob v0.1.0
 	github.com/aaronland/go-colours v0.1.1
+	github.com/aaronland/go-image-resize v0.0.0-20200215211032-65f2cf14b638
 	github.com/anthonynsimon/bild v0.11.1
 	github.com/aws/aws-lambda-go v1.13.3
 	github.com/aws/aws-sdk-go v1.26.8
+	github.com/buckket/go-blurhash v1.0.3
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
 	github.com/fsnotify/fsnotify v1.4.7
