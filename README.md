@@ -624,8 +624,8 @@ Additional configurations for a IIIF profile (aka `info.json`). Currently this i
 
 Services configurations are currently limited to enabling a fixed set of named services, where that fixed set numbers exactly three:
 
-* `blurhash` for ... (as defined by the `blurhash` configuration below).
-* `imagehash` for generating perceptual hashes of an image (as defined by the `imagehash` configuration below).
+* `blurhash` for generateing a compact base-83 encoded representation of an image using the [BlurHash](https://github.com/woltapp/blurhash/blob/master/Algorithm.md) algorithm.
+* `imagehash` for generating average and difference perceptual hashes of an image (as defined by the `imagehash` configuration below).
 * `palette` for extracting a colour palette for an image (as defined by the `palette` configuration below).
 
 As of this writing adding custom services is a nuisance. [There is an open issue](https://github.com/go-iiif/go-iiif/issues/71) to address this problem, but no ETA yet for its completion.
@@ -634,19 +634,21 @@ As of this writing adding custom services is a nuisance. [There is an open issue
 
 ```
     "blurhash": {
-    	"x": 8,
-	"y": 8,
-	"size": 200
+    	"x": 4,
+	"y": 3,
+	"size": 32
     }
 ```
 
-`go-iiif` uses the [go-blurhash](https://github.com/buckket/go-blurhash) 
+`go-iiif` uses the [go-blurhash](https://github.com/buckket/go-blurhash) to generate a compact base-83 encoded representation of an image using the [BlurHash](https://github.com/woltapp/blurhash/blob/master/Algorithm.md) algorithm.
 
 The blurhash service configuration has no specific properties as of this writing.
 
-* **x**
-* **y**
-* **size**
+* **x** is the number of BlurHash components along the `x` axis.
+* **y** is the number of BlurHash components along the `y` axis.
+* **size** is the maximum dimension to resize an image to before attempting to generate a BlurHash.
+
+Sample out for the `blurhash` service is included [below](#non-standard-services).
 
 ##### imagehash
 
@@ -654,9 +656,11 @@ The blurhash service configuration has no specific properties as of this writing
     "imagehash": {}
 ```
 
-`go-iiif` uses the [goimagehash](https://github.com/corona10/goimagehash) to extract perceptual hashes.
+`go-iiif` uses the [goimagehash](https://github.com/corona10/goimagehash) to extract [average](http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html) and [difference](http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html) perceptual hashes.
 
 The imagehash service configuration has no specific properties as of this writing.
+
+Sample out for the `imagehash` service is included [below](#non-standard-services).
 
 ##### palette
 
@@ -679,7 +683,7 @@ A palette service configuration has the following properties:
 * **grid** is a simple dictionary with a `name` property. Since there is currently only one grid (defined by `go-colours`) there is no need to change this.
 * **palettes**  is a list of simple dictionaries, each of which has a `name` property. Valid names are: `crayola`, `css3` or `css4`.
 
-Sample out for the `palette` service is included [below](#palette-1).
+Sample out for the `palette` service is included [below](#non-standard-services).
 
 ### graphics
 
@@ -1256,10 +1260,17 @@ _Note: You will need to [manually enable support for GIF images](https://github.
 
 ### palette
 
-`go-iiif` supports using the [go-colours](https://github.com/aaronland/go-colours) package to extract colours as an additional service for profiles. Details for configuring the `palette` service are discussed [above](#services) but here is the output for a service with the default settings:
+`go-iiif` supports the following additional services for profiles:
+
+* `blurhash` for generateing a compact base-83 encoded representation of an image.
+* `imagehash` for generating average and difference perceptual hashes of an image.
+* `palette` for extracting a colour palette for an image.
+
+Details for configuring these service are discussed [above](#services) but here is the output for a service with the default settings:
 
 ```
-curl -s localhost:8080/example.jpg/info.json | jq '.service'
+$> curl -s localhost:8080/spanking.jpg/info.json | jq '.service'
+
 [
   {
     "@context": "x-urn:service:go-iiif#palette",
@@ -1267,94 +1278,41 @@ curl -s localhost:8080/example.jpg/info.json | jq '.service'
     "label": "x-urn:service:go-iiif#palette",
     "palette": [
       {
-        "name": "#6098c6",
-        "hex": "#6098c6",
-        "reference": "vibrant",
-        "closest": [
-          {
-            "name": "Blue Gray",
-            "hex": "#6699cc",
-            "reference": "crayola"
-          },
-          {
-            "name": "cadetblue",
-            "hex": "#5f9ea0",
-            "reference": "css4"
-          }
-        ]
+        "name": "#4e3c24",
+        "hex": "#4e3c24",
+        "reference": "vibrant"
       },
       {
-        "name": "#84bad9",
-        "hex": "#84bad9",
-        "reference": "vibrant",
-        "closest": [
-          {
-            "name": "Wild Blue Yonder",
-            "hex": "#a2add0",
-            "reference": "crayola"
-          },
-          {
-            "name": "skyblue",
-            "hex": "#87ceeb",
-            "reference": "css4"
-          }
-        ]
+        "name": "#9d8959",
+        "hex": "#9d8959",
+        "reference": "vibrant"
       },
       {
-        "name": "#2c4061",
-        "hex": "#2c4061",
-        "reference": "vibrant",
-        "closest": [
-          {
-            "name": "Midnight Blue",
-            "hex": "#1a4876",
-            "reference": "crayola"
-          },
-          {
-            "name": "darkslategrey",
-            "hex": "#2f4f4f",
-            "reference": "css4"
-          }
-        ]
+        "name": "#c7bca6",
+        "hex": "#c7bca6",
+        "reference": "vibrant"
       },
       {
-        "name": "#808275",
-        "hex": "#808275",
-        "reference": "vibrant",
-        "closest": [
-          {
-            "name": "Sonic Silver",
-            "hex": "#757575",
-            "reference": "crayola"
-          },
-          {
-            "name": "grey",
-            "hex": "#808080",
-            "reference": "css4"
-          }
-        ]
-      },
-      {
-        "name": "#b1bebc",
-        "hex": "#b1bebc",
-        "reference": "vibrant",
-        "closest": [
-          {
-            "name": "Cadet Blue",
-            "hex": "#b0b7c6",
-            "reference": "crayola"
-          },
-          {
-            "name": "silver",
-            "hex": "#c0c0c0",
-            "reference": "css4"
-          }
-        ]
+        "name": "#5a4b36",
+        "hex": "#5a4b36",
+        "reference": "vibrant"
       }
     ]
+  },
+  {
+    "@context": "x-urn:service:go-iiif#blurhash",
+    "profile": "x-urn:service:go-iiif#blurhash",
+    "label": "x-urn:service:go-iiif#blurhash",
+    "hash": "LOOWsZxu_4-;~pj[Rjof-;kBIAWB"
+  },
+  {
+    "@context": "x-urn:service:go-iiif#imagehash",
+    "profile": "x-urn:service:go-iiif#imagehash",
+    "label": "x-urn:service:go-iiif#imagehash",
+    "average": "a:ffffc7e7c3c3c3c3",
+    "difference": "d:c48c0c0e8e8f0e0f"
   }
-]
-```
+]```
 
 _Please remember that `go-colours` itself is a work in progress so you should approach the `palette` service accordingly._
 
