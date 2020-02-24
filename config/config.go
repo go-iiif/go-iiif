@@ -22,6 +22,7 @@ type Config struct {
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
 	Palette     PaletteConfig     `json:"palette,omitempty"`
 	BlurHash    BlurHashConfig    `json:"blurhash,omitempty"`
+	ImageHash   ImageHashConfig   `json:"imagehash,omitempty"`
 	Custom      interface{}       `json:"custom,omitempty"`
 }
 

@@ -46,7 +46,7 @@ func NewImageHashService(cfg iiifconfig.ImageHashConfig, image iiifimage.Image) 
 	}
 
 	// please do these concurrently
-	
+
 	avg_hash, err := goimagehash.AverageHash(im)
 
 	if err != nil {

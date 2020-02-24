@@ -53,7 +53,33 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 		for _, service_name := range config.Profile.Services.Enable {
 
+			// this is dumb (20200224/thisisaaronland)
+			// https://github.com/go-iiif/go-iiif/issues/71
+			
 			switch service_name {
+
+			case "blurhash":
+
+				service, err := iiifservice.NewBlurHashService(config.BlurHash, image)
+
+				if err != nil {
+					gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+					return
+				}
+
+				profile.AddService(service)
+
+			case "imagehash":
+
+				service, err := iiifservice.NewImageHashService(config.ImageHash, image)
+
+				if err != nil {
+					gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+					return
+				}
+
+				profile.AddService(service)
+
 			case "palette":
 
 				service, err := iiifservice.NewPaletteService(config.Palette, image)
