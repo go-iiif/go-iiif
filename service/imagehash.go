@@ -32,7 +32,10 @@ func (s *ImageHashService) Label() string {
 }
 
 func (s *ImageHashService) Value() interface{} {
-	return s.ImageHashAvg
+	return map[string]string{
+		"average":    s.ImageHashAvg,
+		"difference": s.ImageHashDiff,
+	}
 }
 
 func NewImageHashService(cfg iiifconfig.ImageHashConfig, image iiifimage.Image) (Service, error) {

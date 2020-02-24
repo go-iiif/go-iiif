@@ -55,7 +55,38 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 		for _, service_name := range cfg.Profile.Services.Enable {
 
-			if service_name == "palette" {
+			// this is dumb (20200224/thisisaaronland)
+			// https://github.com/go-iiif/go-iiif/issues/71
+
+			var service_rsp iiifservice.Service
+			
+			switch service_name {
+
+			case "blurhash":
+
+				s, err := iiifservice.NewBlurHashService(cfg.BlurHash, im)
+
+				if err != nil {
+					msg := fmt.Sprintf("failed to derive blurhash for %s : %s", u, err)
+					err_ch <- errors.New(msg)
+					return
+				}
+
+				service_rsp = s
+				
+			case "imagehash":
+
+				s, err := iiifservice.NewImageHashService(cfg.ImageHash, im)
+
+				if err != nil {
+					msg := fmt.Sprintf("failed to derive image hash for %s : %s", u, err)
+					err_ch <- errors.New(msg)
+					return
+				}
+
+				service_rsp = s
+
+			case "palette":
 
 				s, err := iiifservice.NewPaletteService(cfg.Palette, im)
 
@@ -65,12 +96,15 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 					return
 				}
 
-				mu.Lock()
-				results["palette"] = s.Value()
+				service_rsp = s
 
-				mu.Unlock()
-				break
+			default:
+				continue
 			}
+
+			mu.Lock()
+			results[service_name] = service_rsp.Value()
+			mu.Unlock()
 		}
 
 	}()
