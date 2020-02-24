@@ -622,7 +622,41 @@ Additional configurations for a IIIF profile (aka `info.json`). Currently this i
     }
 ```
 
-Services configurations are currently limited to enabling a fixed set of named services, where that fixed set numbers exactly one: `palette` for extracting a colour palette for an image (as defined by the `palette` configuration below).
+Services configurations are currently limited to enabling a fixed set of named services, where that fixed set numbers exactly three:
+
+* `blurhash` for ... (as defined by the `blurhash` configuration below).
+* `imagehash` for generating perceptual hashes of an image (as defined by the `imagehash` configuration below).
+* `palette` for extracting a colour palette for an image (as defined by the `palette` configuration below).
+
+As of this writing adding custom services is a nuisance. [There is an open issue](https://github.com/go-iiif/go-iiif/issues/71) to address this problem, but no ETA yet for its completion.
+
+##### blurhash
+
+```
+    "blurhash": {
+    	"x": 8,
+	"y": 8,
+	"size": 200
+    }
+```
+
+`go-iiif` uses the [go-blurhash](https://github.com/buckket/go-blurhash) 
+
+The blurhash service configuration has no specific properties as of this writing.
+
+* **x**
+* **y**
+* **size**
+
+##### imagehash
+
+```
+    "imagehash": {}
+```
+
+`go-iiif` uses the [goimagehash](https://github.com/corona10/goimagehash) to extract perceptual hashes.
+
+The imagehash service configuration has no specific properties as of this writing.
 
 ##### palette
 
@@ -639,7 +673,7 @@ Services configurations are currently limited to enabling a fixed set of named s
 
 `go-iiif` uses the [go-colours](https://github.com/aaronland/go-colours) package to extract colours. `go-colours` itself is a work in progress so you should approach colours extraction as a service accordingly.
 
-A palette service has the following properties:
+A palette service configuration has the following properties:
 
 * **extruder** is a simple dictionary with a `name` and a `count` property. Since there is currently only one extruder (defined by `go-colours`) there is no need to change this.
 * **grid** is a simple dictionary with a `name` property. Since there is currently only one grid (defined by `go-colours`) there is no need to change this.
