@@ -58,9 +58,9 @@ func NewBlurHashService(cfg iiifconfig.BlurHashConfig, image iiifimage.Image) (S
 	}
 
 	s := BlurHashService{
-		BlurHashContext: "x-urn:service:go-iiif#palette",
-		BlurHashProfile: "x-urn:service:go-iiif#palette",
-		BlurHashLabel:   "x-urn:service:go-iiif#palette",
+		BlurHashContext: "x-urn:service:go-iiif#blurhash",
+		BlurHashProfile: "x-urn:service:go-iiif#blurhash",
+		BlurHashLabel:   "x-urn:service:go-iiif#blurhash",
 		BlurHash:        hash,
 	}
 

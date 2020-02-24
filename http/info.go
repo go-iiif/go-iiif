@@ -55,7 +55,7 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 			// this is dumb (20200224/thisisaaronland)
 			// https://github.com/go-iiif/go-iiif/issues/71
-			
+
 			switch service_name {
 
 			case "blurhash":
