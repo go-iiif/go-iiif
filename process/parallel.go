@@ -59,7 +59,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 			// https://github.com/go-iiif/go-iiif/issues/71
 
 			var service_rsp iiifservice.Service
-			
+
 			switch service_name {
 
 			case "blurhash":
@@ -73,7 +73,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				}
 
 				service_rsp = s
-				
+
 			case "imagehash":
 
 				s, err := iiifservice.NewImageHashService(cfg.ImageHash, im)

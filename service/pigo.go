@@ -1,20 +1,33 @@
 package service
 
-// https://groups.google.com/forum/#!topic/iiif-discuss/sPU5BvSWEOo
-
 import (
+	"context"
 	pigo "github.com/esimov/pigo/core"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	_ "log"
 )
 
+func init() {
+
+	ctx := context.Background()
+	err := RegisterService(ctx, "pigo", initPigoService)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initPigoService(ctx context.Context, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+	return NewPigoService(cfg.Pigo, im)
+}
+
 type PigoService struct {
-	Service          `json:",omitempty"`
-	PigoContext string `json:"@context"`
-	PigoProfile string `json:"profile"`
-	PigoLabel   string `json:"label"`
-	PigoResults interface{} `json:"results"`	// FIX ME
+	Service     `json:",omitempty"`
+	PigoContext string      `json:"@context"`
+	PigoProfile string      `json:"profile"`
+	PigoLabel   string      `json:"label"`
+	PigoResults interface{} `json:"results"` // FIX ME
 }
 
 func (s *PigoService) Context() string {
@@ -52,7 +65,7 @@ func NewPigoService(cfg iiifconfig.PigoConfig, image iiifimage.Image) (Service, 
 		MaxSize:     1000,
 		ShiftFactor: 0.1,
 		ScaleFactor: 1.1,
-	
+
 		ImageParams: pigo.ImageParams{
 			Pixels: pixels,
 			Rows:   rows,
@@ -63,13 +76,13 @@ func NewPigoService(cfg iiifconfig.PigoConfig, image iiifimage.Image) (Service, 
 
 	pigo := pigo.NewPigo()
 
-	var cascadeFile []byte	// FIX ME...
+	var cascadeFile []byte // FIX ME...
 	classifier, err := pigo.Unpack(cascadeFile)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	angle := 0.0 // cascade rotation angle. 0.0 is 0 radians and 1.0 is 2*pi radians
 
 	dets := classifier.RunCascade(cParams, angle)

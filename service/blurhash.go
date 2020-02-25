@@ -1,8 +1,5 @@
 package service
 
-// https://groups.google.com/forum/#!topic/iiif-discuss/sPU5BvSWEOo
-// http://palette.davidnewbury.com/
-
 import (
 	"context"
 	"github.com/aaronland/go-image-resize"
@@ -11,6 +8,20 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	_ "log"
 )
+
+func init() {
+
+	ctx := context.Background()
+	err := RegisterService(ctx, "blurhash", initBlurHashService)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initBlurHashService(ctx context.Context, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+	return NewBlurHashService(cfg.BlurHash, im)
+}
 
 type BlurHashService struct {
 	Service         `json:",omitempty"`

@@ -1,14 +1,26 @@
 package service
 
-// https://groups.google.com/forum/#!topic/iiif-discuss/sPU5BvSWEOo
-// http://palette.davidnewbury.com/
-
 import (
+	"context"
 	"github.com/corona10/goimagehash"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	_ "log"
 )
+
+func init() {
+
+	ctx := context.Background()
+	err := RegisterService(ctx, "imagehash", initImageHashService)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initImageHashService(ctx context.Context, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+	return NewImageHashService(cfg.ImageHash, im)
+}
 
 type ImageHashService struct {
 	Service          `json:",omitempty"`
