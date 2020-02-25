@@ -23,6 +23,7 @@ type Config struct {
 	Palette     PaletteConfig     `json:"palette,omitempty"`
 	BlurHash    BlurHashConfig    `json:"blurhash,omitempty"`
 	ImageHash   ImageHashConfig   `json:"imagehash,omitempty"`
+	Pigo	PigoConfig `json:"pigo,omitempty"`
 	Custom      interface{}       `json:"custom,omitempty"`
 }
 
@@ -40,6 +41,10 @@ type PaletteConfig struct {
 	Extruder SourceConfig   `json:"extruder"`
 	Grid     SourceConfig   `json:"grid"`
 	Palettes []SourceConfig `json:"palettes"`
+}
+
+type PigoConfig struct {
+
 }
 
 type BlurHashConfig struct {

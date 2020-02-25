@@ -11,11 +11,11 @@ require (
 	github.com/aws/aws-sdk-go v1.26.8
 	github.com/buckket/go-blurhash v1.0.3
 	github.com/corona10/goimagehash v1.0.2
+	github.com/esimov/pigo v1.4.0
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
 	github.com/fsnotify/fsnotify v1.4.7
 	github.com/go-iiif/go-iiif-uri v0.3.0
-	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gorilla/mux v1.7.3
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
