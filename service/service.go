@@ -13,7 +13,7 @@ import (
 
 var service_roster roster.Roster
 
-type ServiceInitializationFunc func(ctx context.Context, config iiifconfig.Config, im iiifimage.Image) (Service, error)
+type ServiceInitializationFunc func(ctx context.Context, config *iiifconfig.Config, im iiifimage.Image) (Service, error)
 
 type Service interface {
 	Context() string
@@ -22,7 +22,7 @@ type Service interface {
 	Value() interface{}
 }
 
-func NewService(ctx context.Context, uri string, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+func NewService(ctx context.Context, uri string, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
 
 	err := ensureServiceRoster()
 

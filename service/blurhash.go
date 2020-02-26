@@ -19,7 +19,7 @@ func init() {
 	}
 }
 
-func initBlurHashService(ctx context.Context, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+func initBlurHashService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
 	return NewBlurHashService(cfg.BlurHash, im)
 }
 

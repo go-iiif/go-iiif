@@ -24,7 +24,7 @@ func init() {
 	}
 }
 
-func initPaletteService(ctx context.Context, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+func initPaletteService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
 	return NewPaletteService(cfg.Palette, im)
 }
 

@@ -18,7 +18,7 @@ func init() {
 	}
 }
 
-func initPigoService(ctx context.Context, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+func initPigoService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
 	return NewPigoService(cfg.Pigo, im)
 }
 

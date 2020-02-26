@@ -18,7 +18,7 @@ func init() {
 	}
 }
 
-func initImageHashService(ctx context.Context, cfg iiifconfig.Config, im iiifimage.Image) (Service, error) {
+func initImageHashService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
 	return NewImageHashService(cfg.ImageHash, im)
 }
 
