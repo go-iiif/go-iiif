@@ -61,10 +61,10 @@ func NewPigoService(cfg iiifconfig.PigoConfig, image iiifimage.Image) (Service, 
 	rows := bounds.Max.Y
 
 	cParams := pigo.CascadeParams{
-		MinSize:     20,
-		MaxSize:     1000,
-		ShiftFactor: 0.1,
-		ScaleFactor: 1.1,
+		MinSize:     cfg.MinSize,
+		MaxSize:     cfg.MaxSize,
+		ShiftFactor: cfg.ShiftFactor,
+		ScaleFactor: cfg.ScaleFactor,
 
 		ImageParams: pigo.ImageParams{
 			Pixels: pixels,

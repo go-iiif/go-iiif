@@ -44,6 +44,10 @@ type PaletteConfig struct {
 }
 
 type PigoConfig struct {
+	MinSize int `json:"min_size"`
+	MaxSize int `json:"max_size"`
+	ShiftFactor float64 `json:"shift_factor"`
+	ScaleFactor float64 `json:"scale_factor"`	
 }
 
 type BlurHashConfig struct {

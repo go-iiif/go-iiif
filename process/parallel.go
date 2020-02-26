@@ -1,6 +1,7 @@
 package process
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/hex"
 	"errors"
@@ -53,57 +54,21 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		results["origin_fingerprint"] = fingerprint
 		mu.Unlock()
 
+		ctx := context.Background()
+
 		for _, service_name := range cfg.Profile.Services.Enable {
 
-			// this is dumb (20200224/thisisaaronland)
-			// https://github.com/go-iiif/go-iiif/issues/71
+			service_uri := fmt.Sprintf("%s://", service_name)
+			service, err := iiifservice.NewService(ctx, service_uri, cfg, im)
 
-			var service_rsp iiifservice.Service
-
-			switch service_name {
-
-			case "blurhash":
-
-				s, err := iiifservice.NewBlurHashService(cfg.BlurHash, im)
-
-				if err != nil {
-					msg := fmt.Sprintf("failed to derive blurhash for %s : %s", u, err)
-					err_ch <- errors.New(msg)
-					return
-				}
-
-				service_rsp = s
-
-			case "imagehash":
-
-				s, err := iiifservice.NewImageHashService(cfg.ImageHash, im)
-
-				if err != nil {
-					msg := fmt.Sprintf("failed to derive image hash for %s : %s", u, err)
-					err_ch <- errors.New(msg)
-					return
-				}
-
-				service_rsp = s
-
-			case "palette":
-
-				s, err := iiifservice.NewPaletteService(cfg.Palette, im)
-
-				if err != nil {
-					msg := fmt.Sprintf("failed to derive palette for %s : %s", u, err)
-					err_ch <- errors.New(msg)
-					return
-				}
-
-				service_rsp = s
-
-			default:
-				continue
+			if err != nil {
+				msg := fmt.Sprintf("failed to create service for %s : %v", service_name, err)
+				err_ch <- errors.New(msg)
+				return
 			}
 
 			mu.Lock()
-			results[service_name] = service_rsp.Value()
+			results[service_name] = service.Value()
 			mu.Unlock()
 		}
 
