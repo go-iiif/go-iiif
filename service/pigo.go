@@ -5,6 +5,8 @@ import (
 	pigo "github.com/esimov/pigo/core"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
+	"gocloud.dev/blob"
+	"io/ioutil"
 	_ "log"
 )
 
@@ -74,10 +76,30 @@ func NewPigoService(cfg iiifconfig.PigoConfig, image iiifimage.Image) (Service, 
 		},
 	}
 
+	ctx := context.Background()
 	pigo := pigo.NewPigo()
 
-	var cascadeFile []byte // FIX ME...
-	classifier, err := pigo.Unpack(cascadeFile)
+	cascade_bucket, err := blob.OpenBucket(ctx, cfg.CascadeSource)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cascade_fh, err := cascade_bucket.NewReader(ctx, cfg.CascadeFile, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer cascade_fh.Close()
+
+	cascade_body, err := ioutil.ReadAll(cascade_fh)
+
+	if err != nil {
+		return nil, err
+	}
+
+	classifier, err := pigo.Unpack(cascade_body)
 
 	if err != nil {
 		return nil, err
