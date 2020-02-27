@@ -1373,7 +1373,7 @@ func NewExampleService(cfg *iiifconfig.Config, im iiifimage.Image) (iiifservice.
 }
 ```
 
-Finally, you will need to create custom versions of any `go-iiif` tools you want to you use your new service. For example, here's a modified version of the [cmd/iiif-server/main.go](cmd/iiif-server/main.go) server implementation. The only change is the addition of the `_ "github.com/example/go-iiif-example"` import statement. That will allow the core `go-iiif` software to find and use your custom service.
+Finally, you will need to create custom versions of any `go-iiif` tools you want to you use your new service. For example, here's a modified version of the [cmd/iiif-server/main.go](cmd/iiif-server/main.go) server implementation.
 
 ```
 package main
@@ -1406,6 +1406,10 @@ func main() {
 	}
 }
 ```
+
+ The only change from the default server tool is the addition of the `_ "github.com/example/go-iiif-example"` import statement. That will allow the core `go-iiif` software to find and use your custom service.
+
+It's unfortunate that using custom and bespoke services requires compiling your own version of the `go-iiif` tools but such is life when you are using a language like Go.
 
 ## Example
 
