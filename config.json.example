@@ -7,7 +7,7 @@
 		    "enable": [
 		    	"palette",
 			"blurhash",
-		    	"imagehash",
+		    	"imagehash"
 		    ]
 	}
     },
