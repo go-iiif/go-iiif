@@ -1312,7 +1312,8 @@ $> curl -s localhost:8080/spanking.jpg/info.json | jq '.service'
     "average": "a:ffffc7e7c3c3c3c3",
     "difference": "d:c48c0c0e8e8f0e0f"
   }
-]```
+]
+```
 
 _Please remember that `go-colours` itself is a work in progress so you should approach the `palette` service accordingly._
 
