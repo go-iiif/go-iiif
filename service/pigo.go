@@ -56,6 +56,7 @@ func (s *PigoService) Value() interface{} {
 Why do I end up with different hashes for the same image...
 (20200226/thisisaaronland)
 
+
 go run cmd/pigo/main.go -in ~/sfomuseum/iiif/source/commissioners.jpg -out test.jpg -json -cf cascade/facefinder
 Processing... ⠋
 2020/02/26 11:58:59 PIGO 762 600 457200
