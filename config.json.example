@@ -7,8 +7,7 @@
 		    "enable": [
 		    	"palette",
 			"blurhash",
-		    	"imagehash",
-			"pigo"
+		    	"imagehash"
 		    ]
 	}
     },
@@ -22,14 +21,6 @@
     },
     "blurhash": { "x": 8, "y": 8, "size": 200 },
     "imagehash": {},
-    "pigo": {
-	"cascade_source":"file:///path/to/go-iiif/var/pigo/cascade/",
-	"cascade_file":"facefinder",
-	"min_size":20,
-	"max_size":1000,
-	"shift_factor":0.1,
-	"scale_factor":1.1
-    },    
     "graphics": {
 	"source": { "name": "native" }    
     },

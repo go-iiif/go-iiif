@@ -43,15 +43,6 @@ type PaletteConfig struct {
 	Palettes []SourceConfig `json:"palettes"`
 }
 
-type PigoConfig struct {
-	CascadeSource string  `json:"cascade_source"`
-	CascadeFile   string  `json:"cascade_file"`
-	MinSize       int     `json:"min_size"`
-	MaxSize       int     `json:"max_size"`
-	ShiftFactor   float64 `json:"shift_factor"`
-	ScaleFactor   float64 `json:"scale_factor"`
-}
-
 type BlurHashConfig struct {
 	X    int `json:"x"`
 	Y    int `json:"y"`
@@ -59,6 +50,15 @@ type BlurHashConfig struct {
 }
 
 type ImageHashConfig struct {
+}
+
+type PigoConfig struct {
+	CascadeSource string  `json:"cascade_source"`
+	CascadeFile   string  `json:"cascade_file"`
+	MinSize       int     `json:"min_size"`
+	MaxSize       int     `json:"max_size"`
+	ShiftFactor   float64 `json:"shift_factor"`
+	ScaleFactor   float64 `json:"scale_factor"`
 }
 
 type LevelConfig struct {
