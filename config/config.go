@@ -23,7 +23,6 @@ type Config struct {
 	Palette     PaletteConfig     `json:"palette,omitempty"`
 	BlurHash    BlurHashConfig    `json:"blurhash,omitempty"`
 	ImageHash   ImageHashConfig   `json:"imagehash,omitempty"`
-	Pigo        PigoConfig        `json:"pigo,omitempty"`
 	Custom      interface{}       `json:"custom,omitempty"`
 }
 
@@ -41,15 +40,6 @@ type PaletteConfig struct {
 	Extruder SourceConfig   `json:"extruder"`
 	Grid     SourceConfig   `json:"grid"`
 	Palettes []SourceConfig `json:"palettes"`
-}
-
-type PigoConfig struct {
-	CascadeSource string  `json:"cascade_source"`
-	CascadeFile   string  `json:"cascade_file"`
-	MinSize       int     `json:"min_size"`
-	MaxSize       int     `json:"max_size"`
-	ShiftFactor   float64 `json:"shift_factor"`
-	ScaleFactor   float64 `json:"scale_factor"`
 }
 
 type BlurHashConfig struct {
