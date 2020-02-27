@@ -1322,13 +1322,9 @@ _Please remember that `go-colours` itself is a work in progress so you should ap
 Services are invoked by the `go-iiif` codebase using URI-style identifiers. For example, assuming an "example" service you would invoke it like this:
 
 ```
-    	service_name := "example"
-	
+    	service_name := "example"	
 	service_uri := fmt.Sprintf("%s://", service_name)
 	service, _ := iiifservice.NewService(ctx, service_uri, cfg, im)
-
-	service_data := service.Value()
-	
 ```
 
 In addition to implementing the `service.Service` interface custom services need to also "register" themselves on initialization with a (golang) context, a (go-iiif), a unique scheme used to identify the service and a `service.ServiceInitializationFunc` callback function. The callback function implements the following interface:
@@ -1350,7 +1346,6 @@ import (
 )
 
 func init() {
-
 	ctx := context.Background()
 	iiifservice.RegisterService(ctx, "example", initExampleService)
 }
@@ -1364,7 +1359,7 @@ type ExampleService struct {
 	// your properties here...
 }
 
-// your implementation of the iiifservice.Service ...
+// your implementation of the iiifservice.Service interface here...
 
 func NewExampleService(cfg *iiifconfig.Config, im iiifimage.Image) (iiifservice.Service, error){
 
