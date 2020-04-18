@@ -17,7 +17,7 @@ import (
 	"github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	"github.com/go-iiif/go-iiif/process"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"log"
 	"net/url"
@@ -204,7 +204,7 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 
 	})
 
-	err := flags.SetFlagsFromEnvVars("IIIF_PROCESS")
+	err := flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
 
 	if err != nil {
 		return err

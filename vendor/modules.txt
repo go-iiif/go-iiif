@@ -153,6 +153,8 @@ github.com/neocortical/noborders
 github.com/nfnt/resize
 # github.com/patrickmn/go-cache v2.1.0+incompatible
 github.com/patrickmn/go-cache
+# github.com/sfomuseum/go-flags v0.0.4
+github.com/sfomuseum/go-flags
 # github.com/whosonfirst/algnhsa v0.1.0
 github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/go-sanitize v0.1.0
