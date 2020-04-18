@@ -4,6 +4,7 @@ package service
 // http://palette.davidnewbury.com/
 
 import (
+	"context"
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
@@ -12,6 +13,20 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	_ "log"
 )
+
+func init() {
+
+	ctx := context.Background()
+	err := RegisterService(ctx, "palette", initPaletteService)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initPaletteService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
+	return NewPaletteService(cfg.Palette, im)
+}
 
 type PaletteService struct {
 	Service        `json:",omitempty"`

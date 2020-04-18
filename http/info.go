@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifdriver "github.com/go-iiif/go-iiif/driver"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
@@ -13,6 +14,8 @@ import (
 func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.HandlerFunc, error) {
 
 	fn := func(w gohttp.ResponseWriter, r *gohttp.Request) {
+
+		ctx := r.Context()
 
 		parser, err := NewIIIFQueryParser(r)
 
@@ -53,21 +56,15 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 		for _, service_name := range config.Profile.Services.Enable {
 
-			switch service_name {
-			case "palette":
+			service_uri := fmt.Sprintf("%s://", service_name)
+			service, err := iiifservice.NewService(ctx, service_uri, config, image)
 
-				service, err := iiifservice.NewPaletteService(config.Palette, image)
-
-				if err != nil {
-					gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
-					return
-				}
-
-				profile.AddService(service)
-			default:
-				gohttp.Error(w, "Unsupported service", gohttp.StatusInternalServerError)
+			if err != nil {
+				gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
 				return
 			}
+
+			profile.AddService(service)
 		}
 
 		b, err := json.Marshal(profile)

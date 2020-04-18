@@ -1,6 +1,7 @@
 package process
 
 import (
+	"context"
 	"crypto/sha1"
 	"encoding/hex"
 	"errors"
@@ -53,24 +54,22 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		results["origin_fingerprint"] = fingerprint
 		mu.Unlock()
 
+		ctx := context.Background()
+
 		for _, service_name := range cfg.Profile.Services.Enable {
 
-			if service_name == "palette" {
+			service_uri := fmt.Sprintf("%s://", service_name)
+			service, err := iiifservice.NewService(ctx, service_uri, cfg, im)
 
-				s, err := iiifservice.NewPaletteService(cfg.Palette, im)
-
-				if err != nil {
-					msg := fmt.Sprintf("failed to derive palette for %s : %s", u, err)
-					err_ch <- errors.New(msg)
-					return
-				}
-
-				mu.Lock()
-				results["palette"] = s.Value()
-
-				mu.Unlock()
-				break
+			if err != nil {
+				msg := fmt.Sprintf("failed to create service for %s : %v", service_name, err)
+				err_ch <- errors.New(msg)
+				return
 			}
+
+			mu.Lock()
+			results[service_name] = service.Value()
+			mu.Unlock()
 		}
 
 	}()
