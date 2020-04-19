@@ -154,18 +154,18 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	return t.RunWithFlagSet(ctx, fs)
-}
-
-func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
-
 	flags.Parse(fs)
 
-	err := flags.SetFlagsFromEnvVars(fs, "IIIF_TILESEED")
+	err = flags.SetFlagsFromEnvVars(fs, "IIIF_TILESEED")
 
 	if err != nil {
 		return err
 	}
+
+	return t.RunWithFlagSet(ctx, fs)
+}
+
+func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
 	cfg, err := flags.StringVar(fs, "config")
 

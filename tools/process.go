@@ -163,18 +163,18 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	return t.RunWithFlagSet(ctx, fs)
-}
-
-func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
-
 	flags.Parse(fs)
 
-	err := flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
+	err = flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
 
 	if err != nil {
 		return err
 	}
+
+	return t.RunWithFlagSet(ctx, fs)
+}
+
+func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
 	iiif_config, err := flags.StringVar(fs, "config")
 
