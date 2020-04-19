@@ -588,7 +588,7 @@ _Important: The use of alternate IDs is not fully supported by `iiif-server` yet
 
 ## Config files
 
-There is a [sample config file](config.json.example) included with this repo. The easiest way to understand config files is that they consist of at least five top-level groupings, with nested section-specific details, followed by zero or more implementation specific configuration blocks. The five core blocks are:
+There is a [sample config file](docs/config.json.example) included with this repo. The easiest way to understand config files is that they consist of at least five top-level groupings, with nested section-specific details, followed by zero or more implementation specific configuration blocks. The five core blocks are:
 
 ### level
 
@@ -713,7 +713,7 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 #### compliance
 
-Here's how that dynamic plays out in reality. The table below lists all the IIIF parameters and their associate features. Each feature lists its syntax and whether or not it is required and supported [according to the official spec](compliance/level2.go) but then also according to the [example `go-iiif` config file](config.json.example), included with this repo.
+Here's how that dynamic plays out in reality. The table below lists all the IIIF parameters and their associate features. Each feature lists its syntax and whether or not it is required and supported [according to the official spec](compliance/level2.go) but then also according to the [example `go-iiif` config file](docs/config.json.example), included with this repo.
 
 _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) tool and if anyone can tell me how to make Markdown tables (in GitHub) render colours I would be grateful._
 
@@ -1164,7 +1164,7 @@ _As of this writing the `noAutoRotate` feature does not work in combination with
 	}
 ```
 
-`dither` will create a black and white [halftone](https://en.wikipedia.org/wiki/Halftone) derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](config.json.example) and you can invoke it like this:
+`dither` will create a black and white [halftone](https://en.wikipedia.org/wiki/Halftone) derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](docs/config.json.example) and you can invoke it like this:
 
 ```
 http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dither.png
@@ -1422,7 +1422,7 @@ The `iiif-server` tool also comes with a canned example (consisting of exactly o
 First, make sure have a valid `go-iiif` config file. If you don't then you can copy the example config included in this repo:
 
 ```
-$> cp config.json.example config.json
+$> cp docs/config.json.example config.json
 ```
 
 Next, pre-seed some tiles for an image. You don't necessarily need to do this step but it's included to show you how it's done:
