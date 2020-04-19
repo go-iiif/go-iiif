@@ -22,6 +22,7 @@ require (
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
 	github.com/muesli/smartcrop v0.3.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/rwcarlsen/goexif v0.0.0-20190401000000-9e8deecbddbd4989a3e8d003684b783412b41e7a
 	github.com/sfomuseum/go-flags v0.0.4
 	github.com/whosonfirst/algnhsa v0.1.0
 	github.com/whosonfirst/go-sanitize v0.1.0
