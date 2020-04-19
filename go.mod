@@ -1,4 +1,4 @@
-module github.com/go-iiif/go-iiif
+module github.com/go-iiif/go-iiif/v2
 
 go 1.12
 
