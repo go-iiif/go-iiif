@@ -132,7 +132,7 @@ func AppendTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 	fs.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
 	fs.String("format", "jpg", "A valid IIIF format parameter")
 	fs.String("logfile", "", "Write logging information to this file")
-	flag.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
+	fs.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
 
 	fs.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
 	fs.String("mode", "cli", "Valid modes are: cli, csv, fsnotify, lambda.")
@@ -191,7 +191,7 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 		return err
 	}
 
-	scale_factors, err := flags.StringVar(fs, "scale-factor")
+	scale_factors, err := flags.StringVar(fs, "scale-factors")
 
 	if err != nil {
 		return err
