@@ -316,7 +316,7 @@ func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) er
 
 		to_transform := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range flag.Args() {
+		for _, str_uri := range fs.Args() {
 
 			u, err := iiifuri.NewURI(str_uri)
 

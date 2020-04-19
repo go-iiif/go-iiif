@@ -386,8 +386,10 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 		wg := new(sync.WaitGroup)
 
-		for _, id := range flag.Args() {
+		for _, id := range fs.Args() {
 
+			golog.Println("TILE", id)
+			
 			u, err := t.uriFunc(id)
 
 			if err != nil {
