@@ -21,7 +21,6 @@ import (
 	"gocloud.dev/blob"
 	"log"
 	"net/url"
-	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -127,6 +126,17 @@ func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("process", flag.ExitOnError)
 
+	err := AppendProcessToolFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return fs, nil
+}
+
+func AppendProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
 	fs.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
 	fs.String("instructions", "", "Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.")
 
@@ -142,7 +152,7 @@ func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
 
-	return fs, nil
+	return nil
 }
 
 func (t *ProcessTool) Run(ctx context.Context) error {
@@ -158,53 +168,69 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
-	fs.Parse(os.Args[1:])
-
-	var iiif_config string
-	var instructions string
-
-	var config_source string
-	var config_name string
-
-	var instructions_source string
-	var instructions_name string
-
-	var report bool
-	var report_source string
-	var report_name string
-
-	var mode string
-
-	fs.VisitAll(func(fl *flag.Flag) {
-
-		switch fl.Name {
-		case "config":
-			iiif_config = fl.Value.(flag.Getter).Get().(string)
-		case "instructions":
-			instructions = fl.Value.(flag.Getter).Get().(string)
-		case "config-source":
-			config_source = fl.Value.(flag.Getter).Get().(string)
-		case "config-name":
-			config_name = fl.Value.(flag.Getter).Get().(string)
-		case "instructions-source":
-			instructions_source = fl.Value.(flag.Getter).Get().(string)
-		case "instructions-name":
-			instructions_name = fl.Value.(flag.Getter).Get().(string)
-		case "report":
-			report = fl.Value.(flag.Getter).Get().(bool)
-		case "report-name":
-			report_name = fl.Value.(flag.Getter).Get().(string)
-		case "report-source":
-			report_source = fl.Value.(flag.Getter).Get().(string)
-		case "mode":
-			mode = fl.Value.(flag.Getter).Get().(string)
-		default:
-			// pass
-		}
-
-	})
+	flags.Parse(fs)
 
 	err := flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
+
+	if err != nil {
+		return err
+	}
+
+	iiif_config, err := flags.StringVar(fs, "config")
+
+	if err != nil {
+		return err
+	}
+
+	instructions, err := flags.StringVar(fs, "instructions")
+
+	if err != nil {
+		return err
+	}
+
+	config_source, err := flags.StringVar(fs, "config-source")
+
+	if err != nil {
+		return err
+	}
+
+	config_name, err := flags.StringVar(fs, "config-name")
+
+	if err != nil {
+		return err
+	}
+
+	instructions_source, err := flags.StringVar(fs, "instructions-source")
+
+	if err != nil {
+		return err
+	}
+
+	instructions_name, err := flags.StringVar(fs, "instructions-name")
+
+	if err != nil {
+		return err
+	}
+
+	report, err := flags.BoolVar(fs, "report")
+
+	if err != nil {
+		return err
+	}
+
+	report_source, err := flags.StringVar(fs, "report-source")
+
+	if err != nil {
+		return err
+	}
+
+	report_name, err := flags.StringVar(fs, "report-name")
+
+	if err != nil {
+		return err
+	}
+
+	mode, err := flags.StringVar(fs, "mode")
 
 	if err != nil {
 		return err

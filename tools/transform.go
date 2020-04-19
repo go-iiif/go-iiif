@@ -13,7 +13,7 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/image"
 	iiiflevel "github.com/go-iiif/go-iiif/level"
 	iiifsource "github.com/go-iiif/go-iiif/source"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"io/ioutil"
 	"log"
@@ -139,7 +139,7 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 	flag.Parse()
 
-	err := flags.SetFlagsFromEnvVars("IIIF_TRANSFORM")
+	err := flags.SetFlagsFromEnvVars(fs, "IIIF_TRANSFORM")
 
 	if err != nil {
 		return err
