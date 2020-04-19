@@ -3,11 +3,11 @@ package service
 import (
 	"bytes"
 	"context"
-	"github.com/rwcarlsen/goexif/exif"
-	"github.com/rwcarlsen/goexif/mknote"
 	iiifconfig "github.com/go-iiif/go-iiif/config"
 	iiifimage "github.com/go-iiif/go-iiif/image"
-	_ "log"
+	"github.com/rwcarlsen/goexif/exif"
+	"github.com/rwcarlsen/goexif/mknote"
+	"log"
 )
 
 func init() {
@@ -25,11 +25,11 @@ func initExifService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.I
 }
 
 type ExifService struct {
-	Service          `json:",omitempty"`
-	ExifContext string `json:"@context"`
-	ExifProfile string `json:"profile"`
-	ExifLabel   string `json:"label"`
-	ExifData    *exif.Exif `json:"data"`
+	Service     `json:",omitempty"`
+	ExifContext string     `json:"@context"`
+	ExifProfile string     `json:"profile"`
+	ExifLabel   string     `json:"label"`
+	ExifData    *exif.Exif `json:"data,omitempty"`
 }
 
 func (s *ExifService) Context() string {
@@ -50,21 +50,42 @@ func (s *ExifService) Value() interface{} {
 
 func NewExifService(cfg iiifconfig.ExifConfig, image iiifimage.Image) (Service, error) {
 
-	br := bytes.NewReader(image.Body())
+	var data *exif.Exif
+	var valid bool
 
-	exif.RegisterParsers(mknote.All...)
+	content_type := image.ContentType()
+	switch content_type {
+	case "image/jpeg":
+		valid = true
+	case "image/tiff":
+		valid = true
+	default:
+		valid = false
+	}
 
-	data, err := exif.Decode(br)
+	if valid {
 
-	if err != nil {
-		return nil, err
+		// the problem is that EXIF data has already been stripped
+		// from image.Body() (20200419/thisisaaronland)
+		
+		br := bytes.NewReader(image.Body())
+
+		exif.RegisterParsers(mknote.All...)
+
+		x, err := exif.Decode(br)
+
+		if err != nil && err.Error() != "EOF" {
+			return nil, err
+		}
+
+		data = x
 	}
 
 	s := ExifService{
 		ExifContext: "x-urn:service:go-iiif#exif",
 		ExifProfile: "x-urn:service:go-iiif#exif",
 		ExifLabel:   "x-urn:service:go-iiif#exif",
-		ExifData:     data,
+		ExifData:    data,
 	}
 
 	return &s, nil

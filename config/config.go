@@ -23,7 +23,7 @@ type Config struct {
 	Palette     PaletteConfig     `json:"palette,omitempty"`
 	BlurHash    BlurHashConfig    `json:"blurhash,omitempty"`
 	ImageHash   ImageHashConfig   `json:"imagehash,omitempty"`
-	Exif	 ExifConfig `json:"exif,omitempty"`
+	Exif        ExifConfig        `json:"exif,omitempty"`
 	Custom      interface{}       `json:"custom,omitempty"`
 }
 
@@ -49,9 +49,9 @@ type BlurHashConfig struct {
 	Size int `json:"size"`
 }
 
-type ImageHashConfig struct {}
+type ImageHashConfig struct{}
 
-type ExifConfig struct {}
+type ExifConfig struct{}
 
 type LevelConfig struct {
 	Compliance string `json:"compliance"`
