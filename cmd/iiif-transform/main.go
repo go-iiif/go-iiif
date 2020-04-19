@@ -3,11 +3,14 @@ package main
 // ./bin/iiif-transform -config config.json -quality dither -size ,300 /usr/local/cooperhewitt/iiif/images/184512_5f7f47e5b3c66207_x.jpg /vagrant/test2.jpg
 
 import (
-	"context"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/native"
-	"github.com/go-iiif/go-iiif/tools"
+	_ "github.com/go-iiif/go-iiif/v2/native"
 	_ "gocloud.dev/blob/fileblob"
+)
+
+import (
+	"context"
+	"github.com/go-iiif/go-iiif/v2/tools"
 	"log"
 )
 
