@@ -267,7 +267,7 @@ func main() {
 }
 ```
 
-Under the hood, the `tool.Run` command is doing tool-specific work to define, parse and set command line flags and eventually invoking its `RunWithFlagSet` method. It looks something like this:
+Under the hood, the `tool.Run()` command is doing tool-specific work to define, parse and set command line flags and eventually invoking its `RunWithFlagSet()` method. For example:
 
 ```
 package main
@@ -295,7 +295,7 @@ func main() {
 }
 ```
 
-For a complete example of how this all works, and how it can be used to stitch to together custom IIIF processing tools, take a look at the source code for the [cmd/iiif-process-and-tile](cmd/iiif-process-and-tile.go) tool.
+For a complete example of how this all works, and how it can be used to stitch to together custom IIIF processing tools, take a look at the source code for the [cmd/iiif-process-and-tile](cmd/iiif-process-and-tile/main.go) tool.
 
 ### iiif-process
 
