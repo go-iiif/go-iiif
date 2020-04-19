@@ -3,6 +3,7 @@ cli-tools:
 	go build -mod vendor -o bin/iiif-tile-seed cmd/iiif-tile-seed/main.go
 	go build -mod vendor -o bin/iiif-transform cmd/iiif-transform/main.go
 	go build -mod vendor -o bin/iiif-process cmd/iiif-process/main.go
+	go build -mod vendor -o bin/iiif-process-and-tile cmd/iiif-process-and-tile/main.go
 	go build -mod vendor -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
 
 docker-build:

@@ -8,12 +8,12 @@ import (
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifdriver "github.com/go-iiif/go-iiif/driver"
-	iiifimage "github.com/go-iiif/go-iiif/image"
-	iiiflevel "github.com/go-iiif/go-iiif/level"
-	iiifsource "github.com/go-iiif/go-iiif/source"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v2/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v2/level"
+	iiifsource "github.com/go-iiif/go-iiif/v2/source"
+	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"io/ioutil"
 	"log"
@@ -119,57 +119,168 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 	return nil
 }
 
-func (t *TransformTool) Run(ctx context.Context) error {
+func TransformToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
-	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
+	fs := flag.NewFlagSet("transform", flag.ExitOnError)
 
-	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
+	err := AppendCommonTransformToolFlags(ctx, fs)
 
-	var region = flag.String("region", "full", "A valid IIIF 2.0 region value.")
-	var size = flag.String("size", "full", "A valid IIIF 2.0 size value.")
-	var rotation = flag.String("rotation", "0", "A valid IIIF 2.0 rotation value.")
-	var quality = flag.String("quality", "default", "A valid IIIF 2.0 quality value.")
-	var format = flag.String("format", "jpg", "A valid IIIF 2.0 format value.")
+	if err != nil {
+		return nil, err
+	}
 
-	var source_path = flag.String("source", "file:///", "A valid Go Cloud bucket URI where the source file to transform is located.")
-	var target_path = flag.String("target", "file:///", "A valid Go Cloud bucket URI where the transformed file should be written.")
+	err = AppendTransformToolFlags(ctx, fs)
 
-	var mode = flag.String("mode", "cli", "Valid modes are: cli, lambda.")
+	if err != nil {
+		return nil, err
+	}
 
-	flag.Parse()
+	return fs, nil
+}
 
-	err := flags.SetFlagsFromEnvVars("IIIF_TRANSFORM")
+func AppendCommonTransformToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	err := AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
 		return err
 	}
 
-	if *cfg != "" {
+	err = AppendCommonToolModeFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AppendTransformToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	fs.String("region", "full", "A valid IIIF 2.0 region value.")
+	fs.String("size", "full", "A valid IIIF 2.0 size value.")
+	fs.String("rotation", "0", "A valid IIIF 2.0 rotation value.")
+	fs.String("quality", "default", "A valid IIIF 2.0 quality value.")
+	fs.String("format", "jpg", "A valid IIIF 2.0 format value.")
+
+	fs.String("source", "file:///", "A valid Go Cloud bucket URI where the source file to transform is located.")
+	fs.String("target", "file:///", "A valid Go Cloud bucket URI where the transformed file should be written.")
+
+	return nil
+}
+
+func (t *TransformTool) Run(ctx context.Context) error {
+
+	fs, err := TransformToolFlagSet(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	flags.Parse(fs)
+
+	err = flags.SetFlagsFromEnvVars(fs, "IIIF_TRANSFORM")
+
+	if err != nil {
+		return err
+	}
+
+	return t.RunWithFlagSet(ctx, fs)
+}
+
+func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
+
+	cfg, err := flags.StringVar(fs, "config")
+
+	if err != nil {
+		return err
+	}
+
+	config_name, err := flags.StringVar(fs, "config-name")
+
+	if err != nil {
+		return err
+	}
+
+	config_source, err := flags.StringVar(fs, "config-source")
+
+	if err != nil {
+		return err
+	}
+
+	region, err := flags.StringVar(fs, "region")
+
+	if err != nil {
+		return err
+	}
+
+	size, err := flags.StringVar(fs, "size")
+
+	if err != nil {
+		return err
+	}
+
+	rotation, err := flags.StringVar(fs, "rotation")
+
+	if err != nil {
+		return err
+	}
+
+	quality, err := flags.StringVar(fs, "quality")
+
+	if err != nil {
+		return err
+	}
+
+	format, err := flags.StringVar(fs, "format")
+
+	if err != nil {
+		return err
+	}
+
+	source_path, err := flags.StringVar(fs, "source")
+
+	if err != nil {
+		return err
+	}
+
+	target_path, err := flags.StringVar(fs, "target")
+
+	if err != nil {
+		return err
+	}
+
+	mode, err := flags.StringVar(fs, "mode")
+
+	if err != nil {
+		return err
+	}
+
+	if cfg != "" {
 
 		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
 
-		abs_config, err := filepath.Abs(*cfg)
+		abs_config, err := filepath.Abs(cfg)
 
 		if err != nil {
 			return err
 		}
 
-		*config_name = filepath.Base(abs_config)
-		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+		config_name = filepath.Base(abs_config)
+		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	if *config_source == "" {
+	if config_source == "" {
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, *config_source)
+	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return err
 	}
 
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
+	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
 		return err
@@ -183,13 +294,13 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 	// TO DO DEFAULT TO source/target FROM config BUT CHECK FOR OVERRIDE IN *source/target_path ARGS
 
-	source_bucket, err := blob.OpenBucket(ctx, *source_path)
+	source_bucket, err := blob.OpenBucket(ctx, source_path)
 
 	if err != nil {
 		return err
 	}
 
-	target_bucket, err := blob.OpenBucket(ctx, *target_path)
+	target_bucket, err := blob.OpenBucket(ctx, target_path)
 
 	if err != nil {
 		return err
@@ -201,7 +312,7 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	transformation, err := iiifimage.NewTransformation(level, *region, *size, *rotation, *quality, *format)
+	transformation, err := iiifimage.NewTransformation(level, region, size, rotation, quality, format)
 
 	if err != nil {
 		return err
@@ -215,13 +326,13 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		TargetBucket:   target_bucket,
 	}
 
-	switch *mode {
+	switch mode {
 
 	case "cli":
 
 		to_transform := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range flag.Args() {
+		for _, str_uri := range fs.Args() {
 
 			u, err := iiifuri.NewURI(str_uri)
 

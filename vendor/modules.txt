@@ -31,13 +31,13 @@ github.com/anthonynsimon/bild/parallel
 github.com/anthonynsimon/bild/segment
 github.com/anthonynsimon/bild/transform
 github.com/anthonynsimon/bild/util
-# github.com/aws/aws-lambda-go v1.14.0
+# github.com/aws/aws-lambda-go v1.16.0
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.29.11
+# github.com/aws/aws-sdk-go v1.30.9
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
 github.com/aws/aws-sdk-go/aws/awserr
@@ -95,12 +95,10 @@ github.com/esimov/pigo/core
 github.com/fogleman/gg
 # github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
 github.com/fogleman/primitive/primitive
-# github.com/fsnotify/fsnotify v1.4.7
+# github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/go-iiif/go-iiif-uri v0.3.0
 github.com/go-iiif/go-iiif-uri
-# github.com/go-ini/ini v1.42.0
-github.com/go-ini/ini
 # github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
@@ -137,7 +135,7 @@ github.com/google/wire
 github.com/googleapis/gax-go
 # github.com/gorilla/mux v1.7.4
 github.com/gorilla/mux
-# github.com/jmespath/go-jmespath v0.0.0-20180206201540-c2b33e8439af
+# github.com/jmespath/go-jmespath v0.3.0
 github.com/jmespath/go-jmespath
 # github.com/jtacoma/uritemplates v1.0.0
 github.com/jtacoma/uritemplates
@@ -155,6 +153,8 @@ github.com/neocortical/noborders
 github.com/nfnt/resize
 # github.com/patrickmn/go-cache v2.1.0+incompatible
 github.com/patrickmn/go-cache
+# github.com/sfomuseum/go-flags v0.0.4
+github.com/sfomuseum/go-flags
 # github.com/whosonfirst/algnhsa v0.1.0
 github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/go-sanitize v0.1.0
@@ -164,8 +164,6 @@ github.com/whosonfirst/go-whosonfirst-aws/config
 github.com/whosonfirst/go-whosonfirst-aws/s3
 github.com/whosonfirst/go-whosonfirst-aws/session
 github.com/whosonfirst/go-whosonfirst-aws/util
-# github.com/whosonfirst/go-whosonfirst-cli v0.1.0
-github.com/whosonfirst/go-whosonfirst-cli/flags
 # github.com/whosonfirst/go-whosonfirst-csv v0.1.0
 github.com/whosonfirst/go-whosonfirst-csv
 # github.com/whosonfirst/go-whosonfirst-log v0.1.0
@@ -223,7 +221,7 @@ golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20190624142023-c5567b49c5d0
+# golang.org/x/sys v0.0.0-20191005200804-aed5e4c7ecf9
 golang.org/x/sys/unix
 # golang.org/x/text v0.3.2
 golang.org/x/text/secure/bidirule

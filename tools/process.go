@@ -13,11 +13,11 @@ import (
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifcache "github.com/go-iiif/go-iiif/cache"
-	"github.com/go-iiif/go-iiif/config"
-	iiifdriver "github.com/go-iiif/go-iiif/driver"
-	"github.com/go-iiif/go-iiif/process"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	iiifcache "github.com/go-iiif/go-iiif/v2/cache"
+	"github.com/go-iiif/go-iiif/v2/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
+	"github.com/go-iiif/go-iiif/v2/process"
+	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"log"
 	"net/url"
@@ -122,68 +122,175 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 	return &results, nil
 }
 
-func (t *ProcessTool) Run(ctx context.Context) error {
+func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
-	var iiif_config = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
-	var instructions = flag.String("instructions", "", "Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.")
+	fs := flag.NewFlagSet("process", flag.ExitOnError)
 
-	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
+	err := AppendCommonProcessToolFlags(ctx, fs)
 
-	var instructions_source = flag.String("instructions-source", "", "A valid Go Cloud bucket URI where your go-iiif instructions file is located.")
-	var instructions_name = flag.String("instructions-name", "instructions.json", "The name of your go-iiif instructions file.")
+	if err != nil {
+		return nil, err
+	}
 
-	var report = flag.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
-	var report_name = flag.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}-process.json'.")
-	var report_source = flag.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
+	err = AppendProcessToolFlags(ctx, fs)
 
-	mode := flag.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
+	if err != nil {
+		return nil, err
+	}
 
-	flag.Parse()
+	return fs, nil
+}
 
-	err := flags.SetFlagsFromEnvVars("IIIF_PROCESS")
+func AppendCommonProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	err := AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
 		return err
 	}
 
-	if *iiif_config != "" {
+	err = AppendCommonInstructionsFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	err = AppendCommonToolModeFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AppendProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	fs.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
+	fs.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}-process.json'.")
+	fs.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
+
+	return nil
+}
+
+func (t *ProcessTool) Run(ctx context.Context) error {
+
+	fs, err := ProcessToolFlagSet(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	flags.Parse(fs)
+
+	err = flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
+
+	if err != nil {
+		return err
+	}
+
+	return t.RunWithFlagSet(ctx, fs)
+}
+
+func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
+
+	iiif_config, err := flags.StringVar(fs, "config")
+
+	if err != nil {
+		return err
+	}
+
+	instructions, err := flags.StringVar(fs, "instructions")
+
+	if err != nil {
+		return err
+	}
+
+	config_source, err := flags.StringVar(fs, "config-source")
+
+	if err != nil {
+		return err
+	}
+
+	config_name, err := flags.StringVar(fs, "config-name")
+
+	if err != nil {
+		return err
+	}
+
+	instructions_source, err := flags.StringVar(fs, "instructions-source")
+
+	if err != nil {
+		return err
+	}
+
+	instructions_name, err := flags.StringVar(fs, "instructions-name")
+
+	if err != nil {
+		return err
+	}
+
+	report, err := flags.BoolVar(fs, "report")
+
+	if err != nil {
+		return err
+	}
+
+	report_source, err := flags.StringVar(fs, "report-source")
+
+	if err != nil {
+		return err
+	}
+
+	report_name, err := flags.StringVar(fs, "report-name")
+
+	if err != nil {
+		return err
+	}
+
+	mode, err := flags.StringVar(fs, "mode")
+
+	if err != nil {
+		return err
+	}
+
+	if iiif_config != "" {
 
 		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
 
-		abs_config, err := filepath.Abs(*iiif_config)
+		abs_config, err := filepath.Abs(iiif_config)
 
 		if err != nil {
 			return err
 		}
 
-		*config_name = filepath.Base(abs_config)
-		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+		config_name = filepath.Base(abs_config)
+		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	if *instructions != "" {
+	if instructions != "" {
 
 		log.Println("-instructions flag is deprecated. Please use -instructions-source and -instructions-name (setting them now).")
 
-		abs_instructions, err := filepath.Abs(*instructions)
+		abs_instructions, err := filepath.Abs(instructions)
 
 		if err != nil {
 			return err
 		}
 
-		*instructions_name = filepath.Base(abs_instructions)
-		*instructions_source = fmt.Sprintf("file://%s", filepath.Dir(abs_instructions))
+		instructions_name = filepath.Base(abs_instructions)
+		instructions_source = fmt.Sprintf("file://%s", filepath.Dir(abs_instructions))
 	}
 
-	if *config_source == "" {
+	if config_source == "" {
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	if *instructions_source == "" {
+	if instructions_source == "" {
 		return errors.New("Required -instructions-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, *config_source)
+	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return err
@@ -191,13 +298,13 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	defer config_bucket.Close()
 
-	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, *config_name)
+	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
 		return err
 	}
 
-	instructions_bucket, err := blob.OpenBucket(ctx, *instructions_source)
+	instructions_bucket, err := blob.OpenBucket(ctx, instructions_source)
 
 	if err != nil {
 		return err
@@ -207,9 +314,9 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	var report_bucket *blob.Bucket
 
-	if *report_source != "" {
+	if report_source != "" {
 
-		b, err := blob.OpenBucket(ctx, *report_source)
+		b, err := blob.OpenBucket(ctx, report_source)
 
 		if err != nil {
 			return err
@@ -219,7 +326,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		defer report_bucket.Close()
 	}
 
-	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, *instructions_name)
+	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, instructions_name)
 
 	if err != nil {
 		return err
@@ -242,18 +349,18 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		Processor:    pr,
 		Driver:       driver,
 		Instructions: instructions_set,
-		Report:       *report,
-		ReportName:   *report_name,
+		Report:       report,
+		ReportName:   report_name,
 		ReportBucket: report_bucket,
 	}
 
-	switch *mode {
+	switch mode {
 
 	case "cli":
 
 		to_process := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range flag.Args() {
+		for _, str_uri := range fs.Args() {
 
 			u, err := t.URIFunc(str_uri)
 

@@ -9,9 +9,9 @@ import (
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiiftile "github.com/go-iiif/go-iiif/tile"
-	"github.com/whosonfirst/go-whosonfirst-cli/flags"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiiftile "github.com/go-iiif/go-iiif/v2/tile"
+	"github.com/sfomuseum/go-flags"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"gocloud.dev/blob"
@@ -106,62 +106,201 @@ func NewTileSeedToolWithOptions(opts *TileSeedToolOptions) (Tool, error) {
 	return t, nil
 }
 
-func (t *TileSeedTool) Run(ctx context.Context) error {
+func TileSeedToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
-	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-source and -config name.")
+	fs := flag.NewFlagSet("tileseed", flag.ExitOnError)
 
-	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
+	err := AppendCommonTileSeedToolFlags(ctx, fs)
 
-	var csv_source = flag.String("csv-source", "A valid Go Cloud bucket URI where your CSV tileseed files are located.", "")
+	if err != nil {
+		return nil, err
+	}
 
-	var sf = flag.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
-	var quality = flag.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
-	var format = flag.String("format", "jpg", "A valid IIIF format parameter")
-	var logfile = flag.String("logfile", "", "Write logging information to this file")
-	var loglevel = flag.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
-	var processes = flag.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
-	var mode = flag.String("mode", "cli", "Valid modes are: cli, csv, fsnotify, lambda.")
+	err = AppendTileSeedToolFlags(ctx, fs)
 
-	var noextension = flag.Bool("noextension", false, "Remove any extension from destination folder name.")
+	if err != nil {
+		return nil, err
+	}
 
-	var refresh = flag.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
-	var endpoint = flag.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
-	var verbose = flag.Bool("verbose", false, "Write logging to STDOUT in addition to any other log targets that may have been defined")
+	return fs, nil
+}
 
-	flag.Parse()
+func AppendCommonTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 
-	err := flags.SetFlagsFromEnvVars("IIIF_TILESEED")
+	err := AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
 		return err
 	}
 
-	if *cfg != "" {
+	err = AppendCommonToolModeFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func AppendTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	fs.String("csv-source", "A valid Go Cloud bucket URI where your CSV tileseed files are located.", "")
+
+	fs.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
+	fs.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
+	fs.String("format", "jpg", "A valid IIIF format parameter")
+
+	fs.String("logfile", "", "Write logging information to this file")
+	fs.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
+
+	fs.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
+
+	fs.Bool("noextension", false, "Remove any extension from destination folder name.")
+
+	fs.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
+	fs.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
+
+	fs.Bool("verbose", false, "Write logging to STDOUT in addition to any other log targets that may have been defined")
+
+	return nil
+}
+
+func (t *TileSeedTool) Run(ctx context.Context) error {
+
+	fs, err := TileSeedToolFlagSet(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	flags.Parse(fs)
+
+	err = flags.SetFlagsFromEnvVars(fs, "IIIF_TILESEED")
+
+	if err != nil {
+		return err
+	}
+
+	return t.RunWithFlagSet(ctx, fs)
+}
+
+func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
+
+	cfg, err := flags.StringVar(fs, "config")
+
+	if err != nil {
+		return err
+	}
+
+	config_source, err := flags.StringVar(fs, "config-source")
+
+	if err != nil {
+		return err
+	}
+
+	config_name, err := flags.StringVar(fs, "config-name")
+
+	if err != nil {
+		return err
+	}
+
+	csv_source, err := flags.StringVar(fs, "csv-source")
+
+	if err != nil {
+		return err
+	}
+
+	scale_factors, err := flags.StringVar(fs, "scale-factors")
+
+	if err != nil {
+		return err
+	}
+
+	quality, err := flags.StringVar(fs, "quality")
+
+	if err != nil {
+		return err
+	}
+
+	format, err := flags.StringVar(fs, "format")
+
+	if err != nil {
+		return err
+	}
+
+	logfile, err := flags.StringVar(fs, "logfile")
+
+	if err != nil {
+		return err
+	}
+
+	loglevel, err := flags.StringVar(fs, "loglevel")
+
+	if err != nil {
+		return err
+	}
+
+	processes, err := flags.IntVar(fs, "processes")
+
+	if err != nil {
+		return err
+	}
+
+	mode, err := flags.StringVar(fs, "mode")
+
+	if err != nil {
+		return err
+	}
+
+	noextension, err := flags.BoolVar(fs, "noextension")
+
+	if err != nil {
+		return err
+	}
+
+	refresh, err := flags.BoolVar(fs, "refresh")
+
+	if err != nil {
+		return err
+	}
+
+	endpoint, err := flags.StringVar(fs, "endpoint")
+
+	if err != nil {
+		return err
+	}
+
+	verbose, err := flags.BoolVar(fs, "verbose")
+
+	if err != nil {
+		return err
+	}
+
+	if cfg != "" {
 
 		golog.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
 
-		abs_config, err := filepath.Abs(*cfg)
+		abs_config, err := filepath.Abs(cfg)
 
 		if err != nil {
 			return err
 		}
 
-		*config_name = filepath.Base(abs_config)
-		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+		config_name = filepath.Base(abs_config)
+		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
-	if *config_source == "" {
+	if config_source == "" {
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, *config_source)
+	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return err
 	}
 
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
+	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
 		return err
@@ -171,7 +310,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	ts, err := iiiftile.NewTileSeed(config, 256, 256, *endpoint, *quality, *format)
+	ts, err := iiiftile.NewTileSeed(config, 256, 256, endpoint, quality, format)
 
 	if err != nil {
 		return err
@@ -179,13 +318,13 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 	writers := make([]io.Writer, 0)
 
-	if *verbose {
+	if verbose {
 		writers = append(writers, os.Stdout)
 	}
 
-	if *logfile != "" {
+	if logfile != "" {
 
-		fh, err := os.OpenFile(*logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
+		fh, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
 			return err
@@ -197,11 +336,11 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	writer := io.MultiWriter(writers...)
 
 	logger := log.NewWOFLogger("")
-	logger.AddLogger(writer, *loglevel)
+	logger.AddLogger(writer, loglevel)
 
 	scales := make([]int, 0)
 
-	for _, s := range strings.Split(*sf, ",") {
+	for _, s := range strings.Split(scale_factors, ",") {
 
 		s = strings.Trim(s, " ")
 		scale, err := strconv.Atoi(s)
@@ -216,9 +355,9 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	throttle := make(chan bool, *processes)
+	throttle := make(chan bool, processes)
 
-	for i := 0; i < *processes; i++ {
+	for i := 0; i < processes; i++ {
 		throttle <- true
 	}
 
@@ -244,7 +383,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 				wg.Done()
 			}()
 
-			count, err := ts.SeedTiles(src_id, alt_id, scales, *refresh)
+			count, err := ts.SeedTiles(src_id, alt_id, scales, refresh)
 
 			if t.onCompleteFunc != nil {
 				t.onCompleteFunc(config, src_id, alt_id, count, err)
@@ -261,12 +400,12 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		return nil
 	}
 
-	switch *mode {
+	switch mode {
 	case "cli", "-":
 
 		wg := new(sync.WaitGroup)
 
-		for _, id := range flag.Args() {
+		for _, id := range fs.Args() {
 
 			u, err := t.uriFunc(id)
 
@@ -274,7 +413,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 				logger.Fatal(err)
 			}
 
-			seed, err := SeedFromURI(u, *noextension)
+			seed, err := SeedFromURI(u, noextension)
 
 			if err != nil {
 				logger.Fatal(err)
@@ -287,7 +426,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 	case "csv":
 
-		csv_bucket, err := blob.OpenBucket(ctx, *csv_source)
+		csv_bucket, err := blob.OpenBucket(ctx, csv_source)
 
 		if err != nil {
 			return err
@@ -404,7 +543,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 							continue
 						}
 
-						seed, err := SeedFromURI(u, *noextension)
+						seed, err := SeedFromURI(u, noextension)
 
 						if err != nil {
 							logger.Warning("Failed to determine seed from path '%s' (%s), %s", rel_path, abs_path, err)
@@ -460,7 +599,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 					return err
 				}
 
-				seed, err := SeedFromURI(u, *noextension)
+				seed, err := SeedFromURI(u, noextension)
 
 				if err != nil {
 					return err

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
 	"gocloud.dev/blob"
 	"io/ioutil"
 	_ "log"

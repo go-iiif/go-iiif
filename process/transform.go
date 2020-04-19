@@ -2,11 +2,11 @@ package process
 
 import (
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifcache "github.com/go-iiif/go-iiif/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifdriver "github.com/go-iiif/go-iiif/driver"
-	iiifimage "github.com/go-iiif/go-iiif/image"
-	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiifcache "github.com/go-iiif/go-iiif/v2/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v2/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v2/level"
 	_ "log"
 )
 

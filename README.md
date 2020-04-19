@@ -42,9 +42,9 @@ Support for alternative image processing libraries, like `libvips` is supported 
 
 ```
 import (
-	iiifcache "github.com/go-iiif/go-iiif/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifsource "github.com/go-iiif/go-iiif/source"
+	iiifcache "github.com/go-iiif/go-iiif/v2/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifsource "github.com/go-iiif/go-iiif/v2/source"
 )
 
 type Driver interface {
@@ -62,7 +62,7 @@ Drivers are expected to "register" themselves through the `driver.RegisterDriver
 package native
 
 import (
-	iiifdriver "github.com/go-iiif/go-iiif/driver"
+	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
 )
 
 func init() {
@@ -83,9 +83,9 @@ And then in your code you might do something like this:
 import (
 	"context"
 	"github.com/aaronland/gocloud-blob-bucket"	
-	_ "github.com/go-iiif/go-iiif/native"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifdriver "github.com/go-iiif/go-iiif/driver"	
+	_ "github.com/go-iiif/go-iiif/v2/native"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"	
 )
 
 ctx := context.Background()
@@ -117,7 +117,7 @@ The value of the `graphics.source` property should match the name that driver us
 
 The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` object and to invoke the relevant `NewImageFrom...` method as needed. It is assumed that the driver package in question will also implement it's own implementation of the `go-iiif` `image.Image` interface. For working examples you should consult either of the following packages:
 
-* https://github.com/go-iiif/go-iiif/tree/master/native
+* https://github.com/go-iiif/go-iiif/v2/tree/master/native
 * https://github.com/go-iiif/go-iiif-vips
 
 ## Buckets
@@ -258,7 +258,7 @@ package main
 import (
 	"context"
 	_ "github.com/go-iiif/go-iiif-vips"
-	"github.com/go-iiif/go-iiif/tools"
+	"github.com/go-iiif/go-iiif/v2/tools"
 )
 
 func main() {
@@ -266,6 +266,36 @@ func main() {
 	tool.Run(context.Background())
 }
 ```
+
+Under the hood, the `tool.Run()` command is doing tool-specific work to define, parse and set command line flags and eventually invoking its `RunWithFlagSet()` method. For example:
+
+```
+package main
+
+import (
+	"context"
+	_ "github.com/go-iiif/go-iiif-vips"
+	"github.com/go-iiif/go-iiif/v2/tools"
+	"flag"
+	"github.com/sfomuseum/go-flags"	
+)
+
+func main() {
+	tool, _ := tools.NewProcessTool()
+
+	fs := flag.NewFlagSet("process", flag.ExitOnError)
+
+	tools.AppendCommonProcessToolFlags(ctx, fs)
+	tools.AppendProcessToolFlags(ctx, fs)
+
+	flags.Parse(fs)
+	flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
+
+	tool.RunWithFlagSet(context.Background(), fs)
+}
+```
+
+For a complete example of how this all works, and how it can be used to stitch to together custom IIIF processing tools, take a look at the source code for the [cmd/iiif-process-and-tile](cmd/iiif-process-and-tile/main.go) tool.
 
 ### iiif-process
 
@@ -379,6 +409,61 @@ type IIIFInstructions struct {
 ```
 
 As of this writing there is no explicit response type for image beyond `map[string]interface{}`. There probably could be but it's still early days.
+
+### iiif-process-and-tile
+
+```
+$> go ./bin/iiif-process-and-tile -h
+Usage of ./bin/iiif-process-and-tile:
+  -config string
+    	Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.
+  -config-name string
+    	The name of your go-iiif config file. (default "config.json")
+  -config-source string
+    	A valid Go Cloud bucket URI where your go-iiif config file is located.
+  -csv-source string
+    	 (default "A valid Go Cloud bucket URI where your CSV tileseed files are located.")
+  -endpoint string
+    	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
+  -format string
+    	A valid IIIF format parameter (default "jpg")
+  -instructions string
+    	Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.
+  -instructions-name string
+    	The name of your go-iiif instructions file. (default "instructions.json")
+  -instructions-source string
+    	A valid Go Cloud bucket URI where your go-iiif instructions file is located.
+  -logfile string
+    	Write logging information to this file
+  -loglevel string
+    	The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal (default "info")
+  -mode string
+    	Valid modes are: cli, csv, fsnotify, lambda. (default "cli")
+  -noextension
+    	Remove any extension from destination folder name.
+  -processes int
+    	The number of concurrent processes to use when tiling images (default 4)
+  -quality string
+    	A valid IIIF quality parameter - if "default" then the code will try to determine which format you've set as the default (default "default")
+  -refresh
+    	Refresh a tile even if already exists (default false)
+  -report
+    	Store a process report (JSON) for each URI in the cache tree.
+  -report-name string
+    	The filename for process reports. Default is 'process.json' as in '${URI}-process.json'. (default "process.json")
+  -report-source string
+    	A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.
+  -scale-factors string
+    	A comma-separated list of scale factors to seed tiles with (default "4")
+  -synchronous
+    	Run tools synchronously.
+  -verbose
+    	Write logging to STDOUT in addition to any other log targets that may have been defined
+```
+
+This tool wraps the functionality of the `iiif-process` and `iiif-tile-seed` tools in to a single operation to be performed on one or more URIs.
+
+Processing and tile-seeding operations happen asynchronously by default but can be made to happen sequentially with the `-synchronous` flag.
 
 ### iiif-server
 
@@ -588,7 +673,7 @@ _Important: The use of alternate IDs is not fully supported by `iiif-server` yet
 
 ## Config files
 
-There is a [sample config file](config.json.example) included with this repo. The easiest way to understand config files is that they consist of at least five top-level groupings, with nested section-specific details, followed by zero or more implementation specific configuration blocks. The five core blocks are:
+There is a [sample config file](docs/config.json.example) included with this repo. The easiest way to understand config files is that they consist of at least five top-level groupings, with nested section-specific details, followed by zero or more implementation specific configuration blocks. The five core blocks are:
 
 ### level
 
@@ -713,7 +798,7 @@ Finally, maybe you've got an IIIF implementation that [knows how to do things no
 
 #### compliance
 
-Here's how that dynamic plays out in reality. The table below lists all the IIIF parameters and their associate features. Each feature lists its syntax and whether or not it is required and supported [according to the official spec](compliance/level2.go) but then also according to the [example `go-iiif` config file](config.json.example), included with this repo.
+Here's how that dynamic plays out in reality. The table below lists all the IIIF parameters and their associate features. Each feature lists its syntax and whether or not it is required and supported [according to the official spec](compliance/level2.go) but then also according to the [example `go-iiif` config file](docs/config.json.example), included with this repo.
 
 _This table was generated using the [iiif-dump-config](cmd/iiif-dump-config.go) tool and if anyone can tell me how to make Markdown tables (in GitHub) render colours I would be grateful._
 
@@ -1164,7 +1249,7 @@ _As of this writing the `noAutoRotate` feature does not work in combination with
 	}
 ```
 
-`dither` will create a black and white [halftone](https://en.wikipedia.org/wiki/Halftone) derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](config.json.example) and you can invoke it like this:
+`dither` will create a black and white [halftone](https://en.wikipedia.org/wiki/Halftone) derivative of an image using the [Atkinson dithering algorithm](https://en.wikipedia.org/wiki/Dither#Algorithms). Dithering is enabled in the [example config file](docs/config.json.example) and you can invoke it like this:
 
 ```
 http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dither.png
@@ -1340,9 +1425,9 @@ package example	// for example "github.com/example/go-iiif-example"
 
 import (
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifimage "github.com/go-iiif/go-iiif/image"	
-	iiifservice "github.com/go-iiif/go-iiif/service"	
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifimage "github.com/go-iiif/go-iiif/v2/image"	
+	iiifservice "github.com/go-iiif/go-iiif/v2/service"	
 )
 
 func init() {
@@ -1385,8 +1470,8 @@ import (
 import (
 	"context"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/native"
-	"github.com/go-iiif/go-iiif/tools"
+	_ "github.com/go-iiif/go-iiif/v2/native"
+	"github.com/go-iiif/go-iiif/v2/tools"
 	_ "gocloud.dev/blob/fileblob"
 	"log"
 )
@@ -1422,7 +1507,7 @@ The `iiif-server` tool also comes with a canned example (consisting of exactly o
 First, make sure have a valid `go-iiif` config file. If you don't then you can copy the example config included in this repo:
 
 ```
-$> cp config.json.example config.json
+$> cp docs/config.json.example config.json
 ```
 
 Next, pre-seed some tiles for an image. You don't necessarily need to do this step but it's included to show you how it's done:

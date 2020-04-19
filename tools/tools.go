@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"flag"
 )
 
 /*
@@ -25,4 +26,5 @@ func main() {
 
 type Tool interface {
 	Run(context.Context) error
+	RunWithFlagSet(context.Context, *flag.FlagSet) error
 }
