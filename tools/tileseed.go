@@ -110,7 +110,13 @@ func TileSeedToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("tileseed", flag.ExitOnError)
 
-	err := AppendTileSeedToolFlags(ctx, fs)
+	err := AppendCommonTileSeedToolFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = AppendTileSeedToolFlags(ctx, fs)
 
 	if err != nil {
 		return nil, err
@@ -119,28 +125,41 @@ func TileSeedToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 	return fs, nil
 }
 
+func AppendCommonTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	err := AppendCommonConfigFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	err = AppendCommonToolModeFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func AppendTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
-
-	fs.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-source and -config name.")
-
-	fs.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	fs.String("config-name", "config.json", "The name of your go-iiif config file.")
 
 	fs.String("csv-source", "A valid Go Cloud bucket URI where your CSV tileseed files are located.", "")
 
 	fs.String("scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	fs.String("quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
 	fs.String("format", "jpg", "A valid IIIF format parameter")
+
 	fs.String("logfile", "", "Write logging information to this file")
 	fs.String("loglevel", "info", "The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal")
 
 	fs.Int("processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
-	fs.String("mode", "cli", "Valid modes are: cli, csv, fsnotify, lambda.")
 
 	fs.Bool("noextension", false, "Remove any extension from destination folder name.")
 
 	fs.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	fs.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
+
 	fs.Bool("verbose", false, "Write logging to STDOUT in addition to any other log targets that may have been defined")
 
 	return nil

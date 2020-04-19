@@ -123,7 +123,13 @@ func TransformToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("transform", flag.ExitOnError)
 
-	err := AppendTransformToolFlags(ctx, fs)
+	err := AppendCommonTransformToolFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = AppendTransformToolFlags(ctx, fs)
 
 	if err != nil {
 		return nil, err
@@ -132,12 +138,24 @@ func TransformToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 	return fs, nil
 }
 
+func AppendCommonTransformToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	err := AppendCommonConfigFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	err = AppendCommonToolModeFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func AppendTransformToolFlags(ctx context.Context, fs *flag.FlagSet) error {
-
-	fs.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
-
-	fs.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	fs.String("config-name", "config.json", "The name of your go-iiif config file.")
 
 	fs.String("region", "full", "A valid IIIF 2.0 region value.")
 	fs.String("size", "full", "A valid IIIF 2.0 size value.")
@@ -147,8 +165,6 @@ func AppendTransformToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 
 	fs.String("source", "file:///", "A valid Go Cloud bucket URI where the source file to transform is located.")
 	fs.String("target", "file:///", "A valid Go Cloud bucket URI where the transformed file should be written.")
-
-	fs.String("mode", "cli", "Valid modes are: cli, lambda.")
 
 	return nil
 }

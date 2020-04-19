@@ -35,7 +35,13 @@ func ServerToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("server", flag.ExitOnError)
 
-	err := AppendServerToolFlags(ctx, fs)
+	err := AppendCommonServerToolFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = AppendServerToolFlags(ctx, fs)
 
 	if err != nil {
 		return nil, err
@@ -44,16 +50,23 @@ func ServerToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 	return fs, nil
 }
 
+func AppendCommonServerToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	err := AppendCommonConfigFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func AppendServerToolFlags(ctx context.Context, fs *flag.FlagSet) error {
-
-	fs.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
-
-	fs.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	fs.String("config-name", "config.json", "The name of your go-iiif config file.")
 
 	fs.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
 	fs.String("host", "localhost", "Bind the server to this host")
 	fs.Int("port", 8080, "Bind the server to this port")
+
 	fs.Bool("example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
 	fs.String("example-root", "example", "An explicit path to a folder containing example assets")
 

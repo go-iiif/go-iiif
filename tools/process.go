@@ -126,7 +126,13 @@ func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("process", flag.ExitOnError)
 
-	err := AppendProcessToolFlags(ctx, fs)
+	err := AppendCommonProcessToolFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = AppendProcessToolFlags(ctx, fs)
 
 	if err != nil {
 		return nil, err
@@ -135,22 +141,34 @@ func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 	return fs, nil
 }
 
+func AppendCommonProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	err := AppendCommonConfigFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	err = AppendCommonInstructionsFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	err = AppendCommonToolModeFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func AppendProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
-
-	fs.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.")
-	fs.String("instructions", "", "Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.")
-
-	fs.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	fs.String("config-name", "config.json", "The name of your go-iiif config file.")
-
-	fs.String("instructions-source", "", "A valid Go Cloud bucket URI where your go-iiif instructions file is located.")
-	fs.String("instructions-name", "instructions.json", "The name of your go-iiif instructions file.")
 
 	fs.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
 	fs.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}-process.json'.")
 	fs.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
-
-	fs.String("mode", "cli", "Valid modes are: cli, fsnotify, lambda.")
 
 	return nil
 }
