@@ -3,11 +3,11 @@ package service
 import (
 	"bytes"
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifimage "github.com/go-iiif/go-iiif/v2/image"
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/rwcarlsen/goexif/mknote"
-	"log"
+	_ "log"
 )
 
 func init() {
