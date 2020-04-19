@@ -97,8 +97,6 @@ github.com/fogleman/primitive/primitive
 github.com/fsnotify/fsnotify
 # github.com/go-iiif/go-iiif-uri v0.3.0
 github.com/go-iiif/go-iiif-uri
-# github.com/go-ini/ini v1.42.0
-github.com/go-ini/ini
 # github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 github.com/golang/freetype/raster
 github.com/golang/freetype/truetype
@@ -164,8 +162,6 @@ github.com/whosonfirst/go-whosonfirst-aws/config
 github.com/whosonfirst/go-whosonfirst-aws/s3
 github.com/whosonfirst/go-whosonfirst-aws/session
 github.com/whosonfirst/go-whosonfirst-aws/util
-# github.com/whosonfirst/go-whosonfirst-cli v0.1.0
-github.com/whosonfirst/go-whosonfirst-cli/flags
 # github.com/whosonfirst/go-whosonfirst-csv v0.1.0
 github.com/whosonfirst/go-whosonfirst-csv
 # github.com/whosonfirst/go-whosonfirst-log v0.1.0

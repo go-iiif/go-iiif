@@ -14,6 +14,7 @@ import (
 	iiifsource "github.com/go-iiif/go-iiif/source"
 	"github.com/gorilla/mux"
 	"gocloud.dev/blob"
+	"github.com/sfomuseum/go-flags"	
 	"log"
 	"net/url"
 	"os"
@@ -30,46 +31,129 @@ func NewIIIFServerTool() (Tool, error) {
 	return t, nil
 }
 
+func ServerToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
+
+	fs := flag.NewFlagSet("server", flag.ExitOnError)
+
+	err := AppendServerToolFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return fs, nil
+}
+
+func AppendServerToolFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	fs.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
+
+	fs.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
+	fs.String("config-name", "config.json", "The name of your go-iiif config file.")
+
+	fs.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
+	fs.String("host", "localhost", "Bind the server to this host")
+	fs.Int("port", 8080, "Bind the server to this port")
+	fs.Bool("example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
+	fs.String("example-root", "example", "An explicit path to a folder containing example assets")
+
+	return nil
+}
+
 func (t *IIIFServerTool) Run(ctx context.Context) error {
 
-	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
-
-	var config_source = flag.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located.")
-	var config_name = flag.String("config-name", "config.json", "The name of your go-iiif config file.")
-
-	var proto = flag.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
-	var host = flag.String("host", "localhost", "Bind the server to this host")
-	var port = flag.Int("port", 8080, "Bind the server to this port")
-	var example = flag.Bool("example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
-	var root = flag.String("example-root", "example", "An explicit path to a folder containing example assets")
-
-	flag.Parse()
-
-	if *cfg != "" {
-
-		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
-
-		abs_config, err := filepath.Abs(*cfg)
-
-		if err != nil {
-			return err
-		}
-
-		*config_name = filepath.Base(abs_config)
-		*config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
-	}
-
-	if *config_source == "" {
-		return errors.New("Required -config-source flag is empty.")
-	}
-
-	config_bucket, err := blob.OpenBucket(ctx, *config_source)
+	fs, err := ServerToolFlagSet(ctx)
 
 	if err != nil {
 		return err
 	}
 
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
+	flags.Parse(fs)
+
+	err = flags.SetFlagsFromEnvVars(fs, "IIIF_SERVER")
+
+	if err != nil {
+		return err
+	}
+
+	return t.RunWithFlagSet(ctx, fs)
+}
+
+func (t *IIIFServerTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
+
+	cfg, err := flags.StringVar(fs, "config")
+
+	if err != nil {
+		return err
+	}
+
+	config_source, err := flags.StringVar(fs, "config-source")
+
+	if err != nil {
+		return err
+	}
+
+	config_name, err := flags.StringVar(fs, "config-name")
+
+	if err != nil {
+		return err
+	}
+
+	proto, err := flags.StringVar(fs, "protocol")
+
+	if err != nil {
+		return err
+	}
+
+	host, err := flags.StringVar(fs, "host")
+
+	if err != nil {
+		return err
+	}
+
+	port, err := flags.IntVar(fs, "port")
+
+	if err != nil {
+		return err
+	}
+
+	example, err := flags.BoolVar(fs, "example")
+
+	if err != nil {
+		return err
+	}
+
+	example_root, err := flags.StringVar(fs, "example-root")
+
+	if err != nil {
+		return err
+	}
+
+	if cfg != "" {
+
+		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
+
+		abs_config, err := filepath.Abs(cfg)
+
+		if err != nil {
+			return err
+		}
+
+		config_name = filepath.Base(abs_config)
+		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
+	}
+
+	if config_source == "" {
+		return errors.New("Required -config-source flag is empty.")
+	}
+
+	config_bucket, err := blob.OpenBucket(ctx, config_source)
+
+	if err != nil {
+		return err
+	}
+
+	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
 		return err
@@ -92,7 +176,7 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	_, err = iiiflevel.NewLevelFromConfig(config, *host)
+	_, err = iiiflevel.NewLevelFromConfig(config, host)
 
 	if err != nil {
 		return err
@@ -136,7 +220,7 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	expvar_handler, err := iiifhttp.ExpvarHandler(*host)
+	expvar_handler, err := iiifhttp.ExpvarHandler(host)
 
 	if err != nil {
 		return err
@@ -152,9 +236,9 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 	router.HandleFunc("/{identifier:.+}/info.json", info_handler)
 	router.HandleFunc("/{identifier:.+}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
 
-	if *example {
+	if example {
 
-		abs_path, err := filepath.Abs(*root)
+		abs_path, err := filepath.Abs(example_root)
 
 		if err != nil {
 			return err
@@ -175,7 +259,7 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		router.HandleFunc("/example/{ignore:.*}", example_handler)
 	}
 
-	address := fmt.Sprintf("http://%s:%d", *host, *port)
+	address := fmt.Sprintf("http://%s:%d", host, port)
 
 	u, err := url.Parse(address)
 
@@ -183,7 +267,7 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	s, err := iiifserver.NewServer(*proto, u)
+	s, err := iiifserver.NewServer(proto, u)
 
 	if err != nil {
 		return err
