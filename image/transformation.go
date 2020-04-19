@@ -5,7 +5,7 @@ package image
 import (
 	"errors"
 	"fmt"
-	iiiflevel "github.com/go-iiif/go-iiif/level"
+	iiiflevel "github.com/go-iiif/go-iiif/v2/level"
 	_ "log"
 	"math"
 	"net/url"

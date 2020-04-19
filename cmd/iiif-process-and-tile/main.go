@@ -2,14 +2,14 @@ package main
 
 import (
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/native"
+	_ "github.com/go-iiif/go-iiif/v2/native"
 	_ "gocloud.dev/blob/fileblob"
 )
 
 import (
 	"context"
 	"flag"
-	"github.com/go-iiif/go-iiif/tools"
+	"github.com/go-iiif/go-iiif/v2/tools"
 	"github.com/sfomuseum/go-flags"
 	"log"
 )

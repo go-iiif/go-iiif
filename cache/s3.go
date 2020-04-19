@@ -3,7 +3,7 @@ package cache
 import (
 	"fmt"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
 	_ "log"
 )
 

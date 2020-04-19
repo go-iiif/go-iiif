@@ -2,7 +2,7 @@ package cache
 
 import (
 	"errors"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
 	gocache "github.com/patrickmn/go-cache"
 	_ "log"
 	"sync"

@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"github.com/corona10/goimagehash"
-	iiifconfig "github.com/go-iiif/go-iiif/config"
-	iiifimage "github.com/go-iiif/go-iiif/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifimage "github.com/go-iiif/go-iiif/v2/image"
 	_ "log"
 )
 
