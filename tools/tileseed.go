@@ -388,8 +388,6 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 		for _, id := range fs.Args() {
 
-			golog.Println("TILE", id)
-			
 			u, err := t.uriFunc(id)
 
 			if err != nil {
