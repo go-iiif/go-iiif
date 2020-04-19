@@ -17,30 +17,29 @@ import (
 func main() {
 
 	ctx := context.Background()
-	ctx, cancel := context.WithCancel(ctx)
 
-	defer cancel()
+	// set up flags for tools
 
 	fs := flag.NewFlagSet("combined", flag.ExitOnError)
 
 	err := tools.AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
-		log.Fatalf("Failed to append config flags, %v", err)		
+		log.Fatalf("Failed to append config flags, %v", err)
 	}
 
 	err = tools.AppendCommonInstructionsFlags(ctx, fs)
 
 	if err != nil {
-		log.Fatalf("Failed to append config flags, %v", err)		
+		log.Fatalf("Failed to append config flags, %v", err)
 	}
-	
+
 	err = tools.AppendCommonToolModeFlags(ctx, fs)
 
 	if err != nil {
-		log.Fatalf("Failed to append tool flags, %v", err)		
+		log.Fatalf("Failed to append tool flags, %v", err)
 	}
-	
+
 	err = tools.AppendProcessToolFlags(ctx, fs)
 
 	if err != nil {
@@ -48,10 +47,16 @@ func main() {
 	}
 
 	err = tools.AppendTileSeedToolFlags(ctx, fs)
-	
+
 	if err != nil {
 		log.Fatalf("Failed to append tileseed tool flags, %v", err)
 	}
+
+	// add custom flags
+
+	fs.Bool("synchronous", false, "Run tools synchronously")
+
+	// parse flags
 
 	flags.Parse(fs)
 
@@ -60,6 +65,16 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to set flags from environment, %v", err)
 	}
+
+	// retrieve custom flags
+
+	sync, err := flags.BoolVar(fs, "synchronous")
+
+	if err != nil {
+		log.Fatalf("Failed to parse -synchronous flag, %v", err)
+	}
+
+	// create tools
 
 	pr_tool, err := tools.NewProcessTool()
 
@@ -73,16 +88,26 @@ func main() {
 		log.Fatalf("Failed to create new process tool, %v", err)
 	}
 
-	runner, err := tools.NewToolRunner(pr_tool, ts_tool)
+	// create tool runner
+
+	var runner tools.Tool
+
+	if sync {
+		runner, err = tools.NewSynchronousToolRunner(pr_tool, ts_tool)
+	} else {
+		runner, err = tools.NewToolRunner(pr_tool, ts_tool)
+	}
 
 	if err != nil {
-		log.Fatalf("Failed to create new combined tool, %v", err)
+		log.Fatalf("Failed to create new tool runner, %v", err)
 	}
-	
+
+	// run tools
+
 	err = runner.RunWithFlagSet(ctx, fs)
 
 	if err != nil {
 		log.Fatalf("Failed to run process tool, %v", err)
 	}
-	
+
 }
