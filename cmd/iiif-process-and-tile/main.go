@@ -20,7 +20,7 @@ func main() {
 
 	// set up flags for tools
 
-	fs := flag.NewFlagSet("combined", flag.ExitOnError)
+	fs := flag.NewFlagSet("iiif-process-and-tile", flag.ExitOnError)
 
 	err := tools.AppendCommonConfigFlags(ctx, fs)
 
@@ -54,7 +54,7 @@ func main() {
 
 	// add custom flags
 
-	fs.Bool("synchronous", false, "Run tools synchronously")
+	fs.Bool("synchronous", false, "Run tools synchronously.")
 
 	// parse flags
 

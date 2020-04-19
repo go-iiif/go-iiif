@@ -267,6 +267,36 @@ func main() {
 }
 ```
 
+Under the hood, the `tool.Run` command is doing tool-specific work to define, parse and set command line flags and eventually invoking its `RunWithFlagSet` method. It looks something like this:
+
+```
+package main
+
+import (
+	"context"
+	_ "github.com/go-iiif/go-iiif-vips"
+	"github.com/go-iiif/go-iiif/tools"
+	"flag"
+	"github.com/sfomuseum/go-flags"	
+)
+
+func main() {
+	tool, _ := tools.NewProcessTool()
+
+	fs := flag.NewFlagSet("process", flag.ExitOnError)
+
+	tools.AppendCommonProcessToolFlags(ctx, fs)
+	tools.AppendProcessToolFlags(ctx, fs)
+
+	flags.Parse(fs)
+	flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
+
+	tool.RunWithFlagSet(context.Background(), fs)
+}
+```
+
+For a complete example of how this all works, and how it can be used to stitch to together custom IIIF processing tools, take a look at the source code for the [cmd/iiif-process-and-tile](cmd/iiif-process-and-tile.go) tool.
+
 ### iiif-process
 
 ```
@@ -379,6 +409,61 @@ type IIIFInstructions struct {
 ```
 
 As of this writing there is no explicit response type for image beyond `map[string]interface{}`. There probably could be but it's still early days.
+
+### iiif-process-and-tile
+
+```
+$> go ./bin/iiif-process-and-tile -h
+Usage of ./bin/iiif-process-and-tile:
+  -config string
+    	Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.
+  -config-name string
+    	The name of your go-iiif config file. (default "config.json")
+  -config-source string
+    	A valid Go Cloud bucket URI where your go-iiif config file is located.
+  -csv-source string
+    	 (default "A valid Go Cloud bucket URI where your CSV tileseed files are located.")
+  -endpoint string
+    	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
+  -format string
+    	A valid IIIF format parameter (default "jpg")
+  -instructions string
+    	Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.
+  -instructions-name string
+    	The name of your go-iiif instructions file. (default "instructions.json")
+  -instructions-source string
+    	A valid Go Cloud bucket URI where your go-iiif instructions file is located.
+  -logfile string
+    	Write logging information to this file
+  -loglevel string
+    	The amount of logging information to include, valid options are: debug, info, status, warning, error, fatal (default "info")
+  -mode string
+    	Valid modes are: cli, csv, fsnotify, lambda. (default "cli")
+  -noextension
+    	Remove any extension from destination folder name.
+  -processes int
+    	The number of concurrent processes to use when tiling images (default 4)
+  -quality string
+    	A valid IIIF quality parameter - if "default" then the code will try to determine which format you've set as the default (default "default")
+  -refresh
+    	Refresh a tile even if already exists (default false)
+  -report
+    	Store a process report (JSON) for each URI in the cache tree.
+  -report-name string
+    	The filename for process reports. Default is 'process.json' as in '${URI}-process.json'. (default "process.json")
+  -report-source string
+    	A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.
+  -scale-factors string
+    	A comma-separated list of scale factors to seed tiles with (default "4")
+  -synchronous
+    	Run tools synchronously.
+  -verbose
+    	Write logging to STDOUT in addition to any other log targets that may have been defined
+```
+
+This tool wraps the functionality of the `iiif-process` and `iiif-tile-seed` tools in to a single operation to be performed on one or more URIs.
+
+Processing and tile-seeding operations happen asynchronously by default but can be made to happen sequentially with the `-synchronous` flag.
 
 ### iiif-server
 
