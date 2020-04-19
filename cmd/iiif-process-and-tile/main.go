@@ -67,9 +67,22 @@ func main() {
 		log.Fatalf("Failed to create new process tool, %v", err)
 	}
 
-	err = pr_tool.RunWithFlagSet(ctx, fs)
+	ts_tool, err := tools.NewTileSeedTool()
+
+	if err != nil {
+		log.Fatalf("Failed to create new process tool, %v", err)
+	}
+
+	runner, err := tools.NewToolRunner(pr_tool, ts_tool)
+
+	if err != nil {
+		log.Fatalf("Failed to create new combined tool, %v", err)
+	}
+	
+	err = runner.RunWithFlagSet(ctx, fs)
 
 	if err != nil {
 		log.Fatalf("Failed to run process tool, %v", err)
 	}
+	
 }
