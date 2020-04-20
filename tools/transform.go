@@ -337,7 +337,7 @@ func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) er
 			u, err := iiifuri.NewURI(str_uri)
 
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			to_transform = append(to_transform, u)

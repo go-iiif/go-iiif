@@ -365,7 +365,7 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 			u, err := t.URIFunc(str_uri)
 
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			to_process = append(to_process, u)

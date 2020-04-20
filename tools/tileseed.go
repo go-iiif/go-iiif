@@ -410,13 +410,13 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 			u, err := t.uriFunc(id)
 
 			if err != nil {
-				logger.Fatal(err)
+				return err
 			}
 
 			seed, err := SeedFromURI(u, noextension)
 
 			if err != nil {
-				logger.Fatal(err)
+				return err
 			}
 
 			tile_func(seed, wg)
