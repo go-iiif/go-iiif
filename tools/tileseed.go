@@ -186,6 +186,12 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 
 func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
+
 	cfg, err := flags.StringVar(fs, "config")
 
 	if err != nil {
@@ -405,7 +411,7 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 		wg := new(sync.WaitGroup)
 
-		for _, id := range fs.Args() {
+		for _, id := range paths {
 
 			u, err := t.uriFunc(id)
 
@@ -434,7 +440,7 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 		wg := new(sync.WaitGroup)
 
-		for _, path := range flag.Args() {
+		for _, path := range paths {
 
 			fh, err := csv_bucket.NewReader(ctx, path, nil)
 

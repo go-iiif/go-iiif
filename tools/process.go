@@ -194,6 +194,12 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
+		
 	iiif_config, err := flags.StringVar(fs, "config")
 
 	if err != nil {
@@ -360,7 +366,7 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 
 		to_process := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range fs.Args() {
+		for _, str_uri := range paths {
 
 			u, err := t.URIFunc(str_uri)
 

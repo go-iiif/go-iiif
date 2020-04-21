@@ -94,6 +94,12 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 
 func (t *IIIFServerTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
+
 	cfg, err := flags.StringVar(fs, "config")
 
 	if err != nil {

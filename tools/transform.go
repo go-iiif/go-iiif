@@ -190,6 +190,12 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
+
 	cfg, err := flags.StringVar(fs, "config")
 
 	if err != nil {
@@ -332,7 +338,7 @@ func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) er
 
 		to_transform := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range fs.Args() {
+		for _, str_uri := range paths {
 
 			u, err := iiifuri.NewURI(str_uri)
 

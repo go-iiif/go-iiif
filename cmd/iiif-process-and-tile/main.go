@@ -104,7 +104,8 @@ func main() {
 
 	// run tools
 
-	err = runner.RunWithFlagSet(ctx, fs)
+	paths := fs.Args()
+	err = runner.RunWithFlagSetAndPaths(ctx, fs, paths...)
 
 	if err != nil {
 		log.Fatalf("Failed to run process tool, %v", err)

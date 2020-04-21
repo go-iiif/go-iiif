@@ -27,4 +27,5 @@ func main() {
 type Tool interface {
 	Run(context.Context) error
 	RunWithFlagSet(context.Context, *flag.FlagSet) error
+	RunWithFlagSetAndPaths(context.Context, *flag.FlagSet, ...string) error	
 }
