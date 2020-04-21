@@ -42,6 +42,7 @@ type IdSecretURI struct {
 	secret_o string
 	label    string
 	format   string
+	prefix     string
 }
 
 func NewIdSecretURIFromDSN(dsn_raw string) (URI, error) {
@@ -108,6 +109,7 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 	secret_o := q.Get("secret_o")
 	label := q.Get("label")
 	format := q.Get("format")
+	prefix := q.Get("prefix")
 
 	rnd_opts := random.DefaultOptions()
 	rnd_opts.AlphaNumeric = true
@@ -141,6 +143,7 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 		secret_o: secret_o,
 		label:    label,
 		format:   format,
+		prefix:     prefix,
 	}
 
 	return &id_u, nil
@@ -154,7 +157,11 @@ func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 
 	str_id := strconv.FormatInt(u.id, 10)
 
-	root := id2Path(u.id)
+	prefix := id2Path(u.id)
+
+	if u.prefix != "" {
+		prefix = u.prefix
+	}
 
 	secret := u.secret
 	format := u.format
@@ -180,7 +187,7 @@ func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 	}
 
 	fname := fmt.Sprintf("%s_%s_%s.%s", str_id, secret, label, format)
-	uri := filepath.Join(root, fname)
+	uri := filepath.Join(prefix, fname)
 
 	return uri, nil
 }

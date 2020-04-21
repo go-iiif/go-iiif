@@ -55,6 +55,8 @@ github.com/aaronland/go-roster v0.0.1/go.mod h1:AcovpxlG1XxJxX2Fjqlm63fEIBhCjEIB
 github.com/aaronland/go-string v0.1.0/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
 github.com/aaronland/go-string v0.1.1 h1:btdr18owWCBN14ojKx3p+PBCKfm9qIggYEguPLUb2wE=
 github.com/aaronland/go-string v0.1.1/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
+github.com/aaronland/go-string v0.1.2 h1:RSr/mQNbLgF37H0RV+nF7j2kILRRFkCmr8Jwq4lw92k=
+github.com/aaronland/go-string v0.1.2/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
 github.com/aaronland/gocloud-blob-bucket v0.0.2 h1:8GBEDa6AuGoV+5VIn3VqQfO4TbEunL8XKu0aRPf9Fn8=
 github.com/aaronland/gocloud-blob-bucket v0.0.2/go.mod h1:4ljwXsHZzCwgs8Jp/P1brEZ09Uj1CmjBXhivUvr+tWo=
 github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7 h1:IAPakbB8XIYLWMATOpgH9Nbz7nsR2aRHHXoMHxduXSc=
@@ -125,6 +127,8 @@ github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeME
 github.com/go-iiif/go-iiif v1.3.5 h1:Acy5QK0cQAM48xFZIv23F+Vo6O2lxoHvfib1eOeZt6U=
 github.com/go-iiif/go-iiif-uri v0.3.0 h1:C8nJjKuVmsrY9QqtvyuO1iVqO5kdBSezePkJDpAtflM=
 github.com/go-iiif/go-iiif-uri v0.3.0/go.mod h1:XEriqBaHmCaDOjIepc1PXvb94HVCJLdkK27HFp2sAXQ=
+github.com/go-iiif/go-iiif-uri v0.4.0 h1:v3Ix66qdYRQxEFF6SDfdYjFZ8gY5zmLCCmpgATru5y0=
+github.com/go-iiif/go-iiif-uri v0.4.0/go.mod h1:836JPNlAwc5wnWXlhyp1R6JJgE7kvvGSuuHo5C+9Bao=
 github.com/go-ini/ini v1.25.4/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
 github.com/go-ini/ini v1.42.0 h1:TWr1wGj35+UiWHlBA8er89seFXxzwFn11spilrrj+38=
 github.com/go-ini/ini v1.42.0/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
