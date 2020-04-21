@@ -1,7 +1,7 @@
 package source
 
 import (
-	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
 	"github.com/jtacoma/uritemplates"
 	"io/ioutil"
 	_ "log"

@@ -3,11 +3,11 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
-	iiiflevel "github.com/go-iiif/go-iiif/v2/level"
-	iiifprofile "github.com/go-iiif/go-iiif/v2/profile"
-	iiifservice "github.com/go-iiif/go-iiif/v2/service"
+	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v3/driver"
+	iiiflevel "github.com/go-iiif/go-iiif/v3/level"
+	iiifprofile "github.com/go-iiif/go-iiif/v3/profile"
+	iiifservice "github.com/go-iiif/go-iiif/v3/service"
 	gohttp "net/http"
 )
 

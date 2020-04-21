@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/aaronland/go-image-resize"
 	"github.com/buckket/go-blurhash"
-	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
-	iiifimage "github.com/go-iiif/go-iiif/v2/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifimage "github.com/go-iiif/go-iiif/v3/image"
 	_ "log"
 )
 
