@@ -3,30 +3,65 @@ package tools
 import (
 	"context"
 	"flag"
+	"errors"
 )
 
 type ToolRunner struct {
 	Tool
 	tools    []Tool
 	throttle chan bool
+	on_complete ToolRunnerOnCompleteFunc
+}
+
+type ToolRunnerOnCompleteFunc func(context.Context, string) error
+
+type ToolRunnerOptions struct {
+	Tools []Tool
+	Throttle chan bool
+	OnCompleteFunc ToolRunnerOnCompleteFunc
+}
+
+func NewToolRunnerThrottle() (chan bool, error) {
+
+	throttle := make(chan bool)
+	return throttle, nil
 }
 
 func NewToolRunner(tools ...Tool) (Tool, error) {
 
-	t := &ToolRunner{
-		tools: tools,
+	opts := &ToolRunnerOptions{
+		Tools: tools,
 	}
 
-	return t, nil
+	return NewToolRunnerWithOptions(opts)
 }
 
 func NewSynchronousToolRunner(tools ...Tool) (Tool, error) {
 
-	throttle := make(chan bool)
+	throttle, err := NewToolRunnerThrottle()
 
+	if err != nil {
+		return nil, err
+	}
+	
+	opts := &ToolRunnerOptions{
+		Tools: tools,
+		Throttle: throttle,
+	}
+
+	return NewToolRunnerWithOptions(opts)
+}
+
+func NewToolRunnerWithOptions(opts *ToolRunnerOptions) (Tool, error) {
+
+	if len(opts.Tools) == 0 {
+		return nil, errors.New("No tools to run!")
+	}
+	
 	t := &ToolRunner{
-		tools:    tools,
-		throttle: throttle,
+		tools: opts.Tools,
+		throttle: opts.Throttle,
+		on_complete: opts.OnCompleteFunc,
 	}
 
 	return t, nil
