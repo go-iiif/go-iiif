@@ -3,7 +3,7 @@ package uri
 import (
 	"errors"
 	"fmt"
-	"log"
+	_ "log"
 	"net/url"
 	"regexp"
 )
@@ -35,7 +35,6 @@ func NewURI(str_uri string) (URI, error) {
 	}
 
 	file_uri := NewFileURIString(str_uri)
-	log.Println(str_uri, file_uri)
 
 	return NewURIWithDriver(file_uri)
 }

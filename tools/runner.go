@@ -2,22 +2,23 @@ package tools
 
 import (
 	"context"
-	"flag"
 	"errors"
+	"flag"
+	_ "log"
 )
 
 type ToolRunner struct {
 	Tool
-	tools    []Tool
-	throttle chan bool
+	tools       []Tool
+	throttle    chan bool
 	on_complete ToolRunnerOnCompleteFunc
 }
 
 type ToolRunnerOnCompleteFunc func(context.Context, string) error
 
 type ToolRunnerOptions struct {
-	Tools []Tool
-	Throttle chan bool
+	Tools          []Tool
+	Throttle       chan bool
 	OnCompleteFunc ToolRunnerOnCompleteFunc
 }
 
@@ -43,9 +44,9 @@ func NewSynchronousToolRunner(tools ...Tool) (Tool, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	opts := &ToolRunnerOptions{
-		Tools: tools,
+		Tools:    tools,
 		Throttle: throttle,
 	}
 
@@ -57,10 +58,10 @@ func NewToolRunnerWithOptions(opts *ToolRunnerOptions) (Tool, error) {
 	if len(opts.Tools) == 0 {
 		return nil, errors.New("No tools to run!")
 	}
-	
+
 	t := &ToolRunner{
-		tools: opts.Tools,
-		throttle: opts.Throttle,
+		tools:       opts.Tools,
+		throttle:    opts.Throttle,
 		on_complete: opts.OnCompleteFunc,
 	}
 
@@ -69,7 +70,7 @@ func NewToolRunnerWithOptions(opts *ToolRunnerOptions) (Tool, error) {
 
 func (t *ToolRunner) Run(ctx context.Context) error {
 
-	fs := flag.NewFlagSet("combined", flag.ExitOnError)	
+	fs := flag.NewFlagSet("combined", flag.ExitOnError)
 	return t.RunWithFlagSet(ctx, fs)
 }
 
@@ -84,60 +85,79 @@ func (t *ToolRunner) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSe
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	done_ch := make(chan bool)
-	err_ch := make(chan error)
+	for _, path := range paths {
 
-	if t.throttle != nil {
-		go func() {
-			t.throttle <- true
-		}()
-	}
-
-	for _, tl := range t.tools {
-
-		go func(ctx context.Context, tl Tool, fs *flag.FlagSet) {
-
-			if t.throttle != nil {
-
-				<-t.throttle
-
-				defer func() {
-					t.throttle <- true
-				}()
-
-			}
-
-			defer func() {
-				done_ch <- true
-			}()
-
-			select {
-			case <-ctx.Done():
-				return
-			default:
-				// pass
-			}
-
-			err := tl.RunWithFlagSetAndPaths(ctx, fs, paths...)
-
-			if err != nil {
-				err_ch <- err
-			}
-
-		}(ctx, tl, fs)
-
-	}
-
-	remaining := len(t.tools)
-
-	for remaining > 0 {
 		select {
 		case <-ctx.Done():
 			return nil
-		case <-done_ch:
-			remaining -= 1
-		case err := <-err_ch:
-			return err
+		default:
+			// pass
+		}
+
+		done_ch := make(chan bool)
+		err_ch := make(chan error)
+
+		if t.throttle != nil {
+			go func() {
+				t.throttle <- true
+			}()
+		}
+
+		for _, tl := range t.tools {
+
+			go func(ctx context.Context, tl Tool, fs *flag.FlagSet) {
+
+				if t.throttle != nil {
+
+					<-t.throttle
+
+					defer func() {
+						t.throttle <- true
+					}()
+
+				}
+
+				defer func() {
+					done_ch <- true
+				}()
+
+				select {
+				case <-ctx.Done():
+					return
+				default:
+					// pass
+				}
+
+				err := tl.RunWithFlagSetAndPaths(ctx, fs, path)
+
+				if err != nil {
+					err_ch <- err
+				}
+
+			}(ctx, tl, fs)
+
+		}
+
+		remaining := len(t.tools)
+
+		for remaining > 0 {
+			select {
+			case <-ctx.Done():
+				return nil
+			case <-done_ch:
+				remaining -= 1
+			case err := <-err_ch:
+				return err
+			}
+		}
+
+		if t.on_complete != nil {
+
+			err := t.on_complete(ctx, path)
+
+			if err != nil {
+				return err
+			}
 		}
 	}
 

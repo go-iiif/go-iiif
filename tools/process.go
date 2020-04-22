@@ -199,7 +199,7 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 }
 
 func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
-		
+
 	iiif_config, err := flags.StringVar(fs, "config")
 
 	if err != nil {

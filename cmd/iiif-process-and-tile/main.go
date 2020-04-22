@@ -90,19 +90,34 @@ func main() {
 
 	// create tool runner
 
-	var runner tools.Tool
+	opts := &tools.ToolRunnerOptions{
+		Tools: []tools.Tool{
+			pr_tool,
+			ts_tool,
+		},
+	}
 
 	if sync {
-		runner, err = tools.NewSynchronousToolRunner(pr_tool, ts_tool)
-	} else {
-		runner, err = tools.NewToolRunner(pr_tool, ts_tool)
+
+		throttle, err := tools.NewToolRunnerThrottle()
+
+		if err != nil {
+			log.Fatalf("Failed to create new tool runner throttle, %v", err)
+		}
+
+		opts.Throttle = throttle
 	}
+
+	opts.OnCompleteFunc = func(ctx context.Context, path string) error {
+		log.Printf("Finished processing %s\n", path)
+		return nil
+	}
+
+	runner, err := tools.NewToolRunnerWithOptions(opts)
 
 	if err != nil {
 		log.Fatalf("Failed to create new tool runner, %v", err)
 	}
-
-	// run tools
 
 	paths := fs.Args()
 	err = runner.RunWithFlagSetAndPaths(ctx, fs, paths...)

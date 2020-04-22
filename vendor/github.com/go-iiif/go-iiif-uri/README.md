@@ -110,7 +110,7 @@ Valid parameters for the `idsecret://` URI scheme are:
 
 | Name | Type | Required |
 | --- | --- | --- |
-| id | int64 | yes |
+| id | string (parsed as uint64) | yes |
 | label | string | yes |
 | format | string | yes |
 | original | string | no |
