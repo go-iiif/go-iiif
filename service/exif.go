@@ -3,8 +3,8 @@ package service
 import (
 	"bytes"
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
-	iiifimage "github.com/go-iiif/go-iiif/v2/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifimage "github.com/go-iiif/go-iiif/v3/image"
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/rwcarlsen/goexif/mknote"
 	_ "log"
@@ -18,6 +18,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	exif.RegisterParsers(mknote.All...)
 }
 
 func initExifService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
@@ -69,8 +71,6 @@ func NewExifService(cfg iiifconfig.ExifConfig, image iiifimage.Image) (Service, 
 		// from image.Body() (20200419/thisisaaronland)
 		
 		br := bytes.NewReader(image.Body())
-
-		exif.RegisterParsers(mknote.All...)
 
 		x, err := exif.Decode(br)
 
