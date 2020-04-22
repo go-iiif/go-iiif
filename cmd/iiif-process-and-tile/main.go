@@ -2,14 +2,14 @@ package main
 
 import (
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/v2/native"
+	_ "github.com/go-iiif/go-iiif/v3/native"
 	_ "gocloud.dev/blob/fileblob"
 )
 
 import (
 	"context"
 	"flag"
-	"github.com/go-iiif/go-iiif/v2/tools"
+	"github.com/go-iiif/go-iiif/v3/tools"
 	"github.com/sfomuseum/go-flags"
 	"log"
 )
@@ -104,7 +104,8 @@ func main() {
 
 	// run tools
 
-	err = runner.RunWithFlagSet(ctx, fs)
+	paths := fs.Args()
+	err = runner.RunWithFlagSetAndPaths(ctx, fs, paths...)
 
 	if err != nil {
 		log.Fatalf("Failed to run process tool, %v", err)

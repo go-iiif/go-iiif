@@ -13,10 +13,10 @@ import (
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifcache "github.com/go-iiif/go-iiif/v2/cache"
-	"github.com/go-iiif/go-iiif/v2/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
-	"github.com/go-iiif/go-iiif/v2/process"
+	iiifcache "github.com/go-iiif/go-iiif/v3/cache"
+	"github.com/go-iiif/go-iiif/v3/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v3/driver"
+	"github.com/go-iiif/go-iiif/v3/process"
 	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"log"
@@ -194,6 +194,12 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
+		
 	iiif_config, err := flags.StringVar(fs, "config")
 
 	if err != nil {
@@ -360,12 +366,12 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 
 		to_process := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range fs.Args() {
+		for _, str_uri := range paths {
 
 			u, err := t.URIFunc(str_uri)
 
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			to_process = append(to_process, u)

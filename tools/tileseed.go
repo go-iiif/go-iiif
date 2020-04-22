@@ -9,8 +9,8 @@ import (
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
-	iiiftile "github.com/go-iiif/go-iiif/v2/tile"
+	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiiftile "github.com/go-iiif/go-iiif/v3/tile"
 	"github.com/sfomuseum/go-flags"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
@@ -185,6 +185,12 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 }
 
 func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
+
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
 	cfg, err := flags.StringVar(fs, "config")
 
@@ -405,18 +411,18 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 		wg := new(sync.WaitGroup)
 
-		for _, id := range fs.Args() {
+		for _, id := range paths {
 
 			u, err := t.uriFunc(id)
 
 			if err != nil {
-				logger.Fatal(err)
+				return err
 			}
 
 			seed, err := SeedFromURI(u, noextension)
 
 			if err != nil {
-				logger.Fatal(err)
+				return err
 			}
 
 			tile_func(seed, wg)
@@ -434,7 +440,7 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 		wg := new(sync.WaitGroup)
 
-		for _, path := range flag.Args() {
+		for _, path := range paths {
 
 			fh, err := csv_bucket.NewReader(ctx, path, nil)
 

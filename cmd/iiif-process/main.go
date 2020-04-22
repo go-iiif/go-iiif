@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/v2/native"
-	"github.com/go-iiif/go-iiif/v2/tools"
+	_ "github.com/go-iiif/go-iiif/v3/native"
+	"github.com/go-iiif/go-iiif/v3/tools"
 	_ "gocloud.dev/blob/fileblob"
 	"log"
 )

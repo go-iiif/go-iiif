@@ -34,11 +34,17 @@ func NewSynchronousToolRunner(tools ...Tool) (Tool, error) {
 
 func (t *ToolRunner) Run(ctx context.Context) error {
 
-	fs := flag.NewFlagSet("combined", flag.ExitOnError)
+	fs := flag.NewFlagSet("combined", flag.ExitOnError)	
 	return t.RunWithFlagSet(ctx, fs)
 }
 
 func (t *ToolRunner) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
+
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *ToolRunner) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -77,7 +83,7 @@ func (t *ToolRunner) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error
 				// pass
 			}
 
-			err := tl.RunWithFlagSet(ctx, fs)
+			err := tl.RunWithFlagSetAndPaths(ctx, fs, paths...)
 
 			if err != nil {
 				err_ch <- err

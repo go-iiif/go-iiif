@@ -8,11 +8,11 @@ import (
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v2/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v2/level"
-	iiifsource "github.com/go-iiif/go-iiif/v2/source"
+	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v3/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v3/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v3/level"
+	iiifsource "github.com/go-iiif/go-iiif/v3/source"
 	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"io/ioutil"
@@ -190,6 +190,12 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
+
 	cfg, err := flags.StringVar(fs, "config")
 
 	if err != nil {
@@ -332,12 +338,12 @@ func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) er
 
 		to_transform := make([]iiifuri.URI, 0)
 
-		for _, str_uri := range fs.Args() {
+		for _, str_uri := range paths {
 
 			u, err := iiifuri.NewURI(str_uri)
 
 			if err != nil {
-				log.Fatal(err)
+				return err
 			}
 
 			to_transform = append(to_transform, u)

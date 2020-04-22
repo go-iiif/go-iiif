@@ -5,13 +5,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	iiifcache "github.com/go-iiif/go-iiif/v2/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v2/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v2/driver"
-	iiifhttp "github.com/go-iiif/go-iiif/v2/http"
-	iiiflevel "github.com/go-iiif/go-iiif/v2/level"
-	iiifserver "github.com/go-iiif/go-iiif/v2/server"
-	iiifsource "github.com/go-iiif/go-iiif/v2/source"
+	iiifcache "github.com/go-iiif/go-iiif/v3/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v3/driver"
+	iiifhttp "github.com/go-iiif/go-iiif/v3/http"
+	iiiflevel "github.com/go-iiif/go-iiif/v3/level"
+	iiifserver "github.com/go-iiif/go-iiif/v3/server"
+	iiifsource "github.com/go-iiif/go-iiif/v3/source"
 	"github.com/gorilla/mux"
 	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
@@ -93,6 +93,12 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 }
 
 func (t *IIIFServerTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
+
+	paths := fs.Args()
+	return t.RunWithFlagSetAndPaths(ctx, fs, paths...)
+}
+
+func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
 	cfg, err := flags.StringVar(fs, "config")
 

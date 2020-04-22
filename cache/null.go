@@ -2,7 +2,7 @@ package cache
 
 import (
 	"errors"
-	"github.com/go-iiif/go-iiif/v2/config"
+	"github.com/go-iiif/go-iiif/v3/config"
 )
 
 type NullCache struct {
