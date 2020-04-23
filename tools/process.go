@@ -93,11 +93,15 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 
 				root := filepath.Dir(target)
 
-				ext := filepath.Ext(target)
-				fname := filepath.Base(target)
-				fname = strings.TrimRight(fname, ext)
+				/*
+					ext := filepath.Ext(target)
+					fname := filepath.Base(target)
+					fname = strings.TrimRight(fname, ext)
 
-				report_name := fmt.Sprintf("%s-%s", fname, opts.ReportName)
+					report_name := fmt.Sprintf("%s-%s", fname, opts.ReportName)
+				*/
+
+				report_name := opts.ReportName
 
 				key := filepath.Join(root, report_name)
 				wg.Add(1)
