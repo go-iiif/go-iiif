@@ -13,10 +13,10 @@ import (
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifcache "github.com/go-iiif/go-iiif/v3/cache"
-	"github.com/go-iiif/go-iiif/v3/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v3/driver"
-	"github.com/go-iiif/go-iiif/v3/process"
+	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
+	"github.com/go-iiif/go-iiif/v4/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
+	"github.com/go-iiif/go-iiif/v4/process"
 	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"log"
@@ -53,7 +53,7 @@ type ProcessOptions struct {
 	Processor    process.Processor
 	Instructions process.IIIFInstructionSet
 	Report       bool
-	ReportName   string
+	ReportTemplate   string
 	ReportBucket *blob.Bucket
 }
 
@@ -93,16 +93,10 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 
 				root := filepath.Dir(target)
 
-				/*
-					ext := filepath.Ext(target)
-					fname := filepath.Base(target)
-					fname = strings.TrimRight(fname, ext)
-
-					report_name := fmt.Sprintf("%s-%s", fname, opts.ReportName)
-				*/
-
-				report_name := opts.ReportName
-
+				report_name, err := process.DeriveReportNameFromURI(ctx, uri, opts.ReportTemplate)
+				
+				if err == nil {
+					
 				key := filepath.Join(root, report_name)
 				wg.Add(1)
 
@@ -115,6 +109,7 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 						log.Printf("Unable to write process report %s, %s", key, err)
 					}
 				}()
+				}
 			}
 		}
 
@@ -171,7 +166,7 @@ func AppendCommonProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 func AppendProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 
 	fs.Bool("report", false, "Store a process report (JSON) for each URI in the cache tree.")
-	fs.String("report-name", "process.json", "The filename for process reports. Default is 'process.json' as in '${URI}-process.json'.")
+	fs.String("report-template", process.REPORTNAME_TEMPLATE, "A valid URI template for generating process report filenames.")
 	fs.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
 
 	return nil
@@ -252,7 +247,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		return err
 	}
 
-	report_name, err := flags.StringVar(fs, "report-name")
+	report_template, err := flags.StringVar(fs, "report-template")
 
 	if err != nil {
 		return err
@@ -360,7 +355,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		Driver:       driver,
 		Instructions: instructions_set,
 		Report:       report,
-		ReportName:   report_name,
+		ReportTemplate:   report_template,
 		ReportBucket: report_bucket,
 	}
 

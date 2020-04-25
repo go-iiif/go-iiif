@@ -6,8 +6,8 @@ package service
 import (
 	"context"
 	"github.com/aaronland/go-roster"
-	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
-	iiifimage "github.com/go-iiif/go-iiif/v3/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
+	iiifimage "github.com/go-iiif/go-iiif/v4/image"
 	"net/url"
 )
 

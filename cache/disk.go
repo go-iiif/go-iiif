@@ -2,7 +2,7 @@ package cache
 
 import (
 	"fmt"
-	"github.com/go-iiif/go-iiif/v3/config"
+	"github.com/go-iiif/go-iiif/v4/config"
 	_ "log"
 )
 

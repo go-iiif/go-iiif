@@ -1,7 +1,7 @@
 package cache
 
 import (
-	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	"strings"
 )
 

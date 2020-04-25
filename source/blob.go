@@ -2,7 +2,7 @@ package source
 
 import (
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	"gocloud.dev/blob"
 	_ "log"
 )

@@ -3,11 +3,11 @@ package native
 import (
 	"bytes"
 	_ "fmt"
-	iiifcache "github.com/go-iiif/go-iiif/v3/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v3/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v3/image"
-	iiifsource "github.com/go-iiif/go-iiif/v3/source"
+	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v4/image"
+	iiifsource "github.com/go-iiif/go-iiif/v4/source"
 	"image"
 	_ "log"
 )

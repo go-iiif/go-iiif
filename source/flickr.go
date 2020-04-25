@@ -3,8 +3,8 @@ package source
 import (
 	"encoding/json"
 	"errors"
-	iiifcache "github.com/go-iiif/go-iiif/v3/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v3/config"
+	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	"io/ioutil"
 	"log"
 	"net/http"
