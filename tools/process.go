@@ -87,11 +87,18 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 				log.Printf("Unable to generate target URL for report %s", err)
 			} else {
 
-				root := filepath.Dir(target)
-
 				report_name, err := process.DeriveReportNameFromURI(ctx, uri, opts.ReportTemplate)
 
 				if err == nil {
+
+					var root string
+
+					switch uri.(type) {
+					case *iiifuri.IdSecretURI:
+						root = filepath.Dir(target)
+					default:
+						root = target
+					}
 
 					key := filepath.Join(root, report_name)
 					wg.Add(1)
