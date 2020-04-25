@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"fmt"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -16,7 +15,6 @@ import (
 	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 )
 
@@ -196,12 +194,6 @@ func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) er
 
 func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	cfg, err := flags.StringVar(fs, "config")
-
-	if err != nil {
-		return err
-	}
-
 	config_name, err := flags.StringVar(fs, "config-name")
 
 	if err != nil {
@@ -260,20 +252,6 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 
 	if err != nil {
 		return err
-	}
-
-	if cfg != "" {
-
-		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
-
-		abs_config, err := filepath.Abs(cfg)
-
-		if err != nil {
-			return err
-		}
-
-		config_name = filepath.Base(abs_config)
-		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
 	if config_source == "" {

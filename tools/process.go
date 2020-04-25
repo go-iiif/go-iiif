@@ -1,14 +1,10 @@
 package tools
 
-// ./bin/iiif-process -config config.json -instructions instructions.json -uri avocado.png
-// {"avocado.png":{"b":"avocado.png/full/!2048,1536/0/color.jpg","d":"avocado.png/-1,-1,320,320/full/0/dither.jpg","o":"avocado.png/full/full/-1/color.jpg"}}
-
 import (
 	"context"
 	"encoding/json"
 	"errors"
 	"flag"
-	"fmt"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
@@ -48,13 +44,13 @@ func NewProcessToolWithURIFunc(uri_func URIFunc) (Tool, error) {
 type ProcessResultsReport map[string]interface{}
 
 type ProcessOptions struct {
-	Config       *config.Config
-	Driver       iiifdriver.Driver
-	Processor    process.Processor
-	Instructions process.IIIFInstructionSet
-	Report       bool
-	ReportTemplate   string
-	ReportBucket *blob.Bucket
+	Config         *config.Config
+	Driver         iiifdriver.Driver
+	Processor      process.Processor
+	Instructions   process.IIIFInstructionSet
+	Report         bool
+	ReportTemplate string
+	ReportBucket   *blob.Bucket
 }
 
 func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI) error {
@@ -94,21 +90,24 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 				root := filepath.Dir(target)
 
 				report_name, err := process.DeriveReportNameFromURI(ctx, uri, opts.ReportTemplate)
-				
+
 				if err == nil {
-					
-				key := filepath.Join(root, report_name)
-				wg.Add(1)
 
-				go func() {
+					key := filepath.Join(root, report_name)
+					wg.Add(1)
 
-					defer wg.Done()
-					err := report_processing(ctx, opts, key, rsp)
+					go func() {
 
-					if err != nil {
-						log.Printf("Unable to write process report %s, %s", key, err)
-					}
-				}()
+						defer wg.Done()
+						err := report_processing(ctx, opts, key, rsp)
+
+						if err != nil {
+							log.Printf("Unable to write process report %s, %s", key, err)
+						}
+					}()
+
+				} else {
+					log.Printf("Unable to generate report name %s", err)
 				}
 			}
 		}
@@ -199,18 +198,6 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 
 func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	iiif_config, err := flags.StringVar(fs, "config")
-
-	if err != nil {
-		return err
-	}
-
-	instructions, err := flags.StringVar(fs, "instructions")
-
-	if err != nil {
-		return err
-	}
-
 	config_source, err := flags.StringVar(fs, "config-source")
 
 	if err != nil {
@@ -257,34 +244,6 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 
 	if err != nil {
 		return err
-	}
-
-	if iiif_config != "" {
-
-		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
-
-		abs_config, err := filepath.Abs(iiif_config)
-
-		if err != nil {
-			return err
-		}
-
-		config_name = filepath.Base(abs_config)
-		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
-	}
-
-	if instructions != "" {
-
-		log.Println("-instructions flag is deprecated. Please use -instructions-source and -instructions-name (setting them now).")
-
-		abs_instructions, err := filepath.Abs(instructions)
-
-		if err != nil {
-			return err
-		}
-
-		instructions_name = filepath.Base(abs_instructions)
-		instructions_source = fmt.Sprintf("file://%s", filepath.Dir(abs_instructions))
 	}
 
 	if config_source == "" {
@@ -350,13 +309,13 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	}
 
 	process_opts := &ProcessOptions{
-		Config:       cfg,
-		Processor:    pr,
-		Driver:       driver,
-		Instructions: instructions_set,
-		Report:       report,
-		ReportTemplate:   report_template,
-		ReportBucket: report_bucket,
+		Config:         cfg,
+		Processor:      pr,
+		Driver:         driver,
+		Instructions:   instructions_set,
+		Report:         report,
+		ReportTemplate: report_template,
+		ReportBucket:   report_bucket,
 	}
 
 	switch mode {

@@ -10,10 +10,11 @@ import (
 	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
+	iiiftools "github.com/go-iiif/go-iiif/v4/tools"
+	"github.com/sfomuseum/go-flags"
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
 	"log"
-	"path/filepath"
 	"sort"
 )
 
@@ -40,35 +41,36 @@ func Sorted(h map[string]FeatureDetails) []string {
 
 func main() {
 
-	var cfg = flag.String("config", "", "Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.")
-	var config_url = flag.String("config-url", "", "")
-	var config_name = flag.String("config-name", "config.json", "")
-
-	flag.Parse()
-
 	ctx := context.Background()
 
-	if *cfg != "" {
-
-		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
-
-		abs_config, err := filepath.Abs(*cfg)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		*config_name = filepath.Base(abs_config)
-		*config_url = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
-	}
-
-	config_bucket, err := blob.OpenBucket(ctx, *config_url)
+	fs := flag.NewFlagSet("dump", flag.ExitOnError)
+	err := iiiftools.AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to append config flags, %v", err)
 	}
 
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, *config_name)
+	flags.Parse(fs)
+
+	config_source, err := flags.StringVar(fs, "config-source")
+
+	if err != nil {
+		log.Fatalf("Failed to parse -config-source flag, %v", err)
+	}
+
+	config_name, err := flags.StringVar(fs, "config-name")
+
+	if err != nil {
+		log.Fatalf("Failed to parse -config-name flag, %v", err)
+	}
+
+	config_bucket, err := blob.OpenBucket(ctx, config_source)
+
+	if err != nil {
+		log.Fatalf("Failed to open config bucket, %v", err)
+	}
+
+	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
 		log.Fatal(err)

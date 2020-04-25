@@ -100,12 +100,6 @@ func (t *IIIFServerTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) e
 
 func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	cfg, err := flags.StringVar(fs, "config")
-
-	if err != nil {
-		return err
-	}
-
 	config_source, err := flags.StringVar(fs, "config-source")
 
 	if err != nil {
@@ -146,20 +140,6 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 
 	if err != nil {
 		return err
-	}
-
-	if cfg != "" {
-
-		log.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
-
-		abs_config, err := filepath.Abs(cfg)
-
-		if err != nil {
-			return err
-		}
-
-		config_name = filepath.Base(abs_config)
-		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
 	if config_source == "" {

@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"fmt"
 	aws_events "github.com/aws/aws-lambda-go/events"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
@@ -16,7 +15,6 @@ import (
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"gocloud.dev/blob"
 	"io"
-	golog "log"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -192,12 +190,6 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	cfg, err := flags.StringVar(fs, "config")
-
-	if err != nil {
-		return err
-	}
-
 	config_source, err := flags.StringVar(fs, "config-source")
 
 	if err != nil {
@@ -280,20 +272,6 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 
 	if err != nil {
 		return err
-	}
-
-	if cfg != "" {
-
-		golog.Println("-config flag is deprecated. Please use -config-source and -config-name (setting them now).")
-
-		abs_config, err := filepath.Abs(cfg)
-
-		if err != nil {
-			return err
-		}
-
-		config_name = filepath.Base(abs_config)
-		config_source = fmt.Sprintf("file://%s", filepath.Dir(abs_config))
 	}
 
 	if config_source == "" {

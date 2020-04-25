@@ -136,8 +136,6 @@ cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
 ```
 This allows for configuration files, and others, to be stored and retrieved from [any "bucket" source that is supported by the Go Cloud package](https://gocloud.dev/howto/blob/#services), notably remote storage services like AWS S3.
 
-In most of the command-line tools it is still possible to the use the old `-config {PATH}` flag and it will be converted to the newer syntax automatically but the `-config` flag is now officially deprecated.
-
 The `source` and `caching` layers have also been updated accordingly but support for the older `Disk`, `S3` and `Memory` sources has been updated to use the `Go Cloud` packages so there is no need to update any existing `go-iiif` configuration files.
 
 ## URIs
@@ -302,14 +300,10 @@ For a complete example of how this all works, and how it can be used to stitch t
 ```
 $> ./bin/iiif-process -h
 Usage of ./bin/iiif-process:
-  -config string
-    	Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.
   -config-name string
     	The name of your go-iiif config file. (default "config.json")
   -config-source string
     	A valid Go Cloud bucket URI where your go-iiif config file is located.
-  -instructions string
-    	Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.
   -instructions-name string
     	The name of your go-iiif instructions file. (default "instructions.json")
   -instructions-source string
@@ -415,8 +409,6 @@ As of this writing there is no explicit response type for image beyond `map[stri
 ```
 $> go ./bin/iiif-process-and-tile -h
 Usage of ./bin/iiif-process-and-tile:
-  -config string
-    	Path to a valid go-iiif config file. DEPRECATED - please use -config_source and -config name.
   -config-name string
     	The name of your go-iiif config file. (default "config.json")
   -config-source string
@@ -427,8 +419,6 @@ Usage of ./bin/iiif-process-and-tile:
     	The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image (default "http://localhost:8080")
   -format string
     	A valid IIIF format parameter (default "jpg")
-  -instructions string
-    	Path to a valid go-iiif processing instructions file. DEPRECATED - please use -instructions-source and -instructions-name.
   -instructions-name string
     	The name of your go-iiif instructions file. (default "instructions.json")
   -instructions-source string
@@ -470,8 +460,6 @@ Processing and tile-seeding operations happen asynchronously by default but can 
 ```
 $> ./bin/iiif-server -h
 Usage of ./bin/iiif-server:
-  -config string
-    	Path to a valid go-iiif config file. DEPRECATED - please use -config-url and -config name.
   -config-name string
     	The name of your go-iiif config file. (default "config.json")
   -config-source string
@@ -599,8 +587,6 @@ _Note: This endpoint is only available from the machine the server is running on
 ```
 $> ./bin/iiif-tile-seed -h
 Usage of ./bin/iiif-tile-seed:
-  -config string
-    	Path to a valid go-iiif config file. DEPRECATED - please use -config-source and -config name.
   -config-name string
     	The name of your go-iiif config file. (default "config.json")
   -config-source string
