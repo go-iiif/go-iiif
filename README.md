@@ -311,11 +311,11 @@ Usage of ./bin/iiif-process:
   -mode string
     	Valid modes are: cli, fsnotify, lambda. (default "cli")
   -report
-    	Store a process report (JSON) for each URI in the cache tree.
-  -report-name string
-    	The filename for process reports. Default is 'process.json' as in '${URI}/process.json'. (default "process.json")
+    	Store a process report (JSON) for each URI in the cache tree.	
   -report-source string
     	A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.
+  -report-template string
+    	A valid URI template for generating process report filenames. (default "process_{sha256_origin}.json")
 ```
 
 Perform a series of IIIF image processing tasks, defined in a JSON-based "instructions" file, on one or more (IIIF) URIs. For example:
@@ -404,6 +404,74 @@ type IIIFInstructions struct {
 
 As of this writing there is no explicit response type for image beyond `map[string]interface{}`. There probably could be but it's still early days.
 
+#### "report" files
+
+"Report" files are JSON files that contain the list of files created, their dimensions and the output of any (IIIF) services that have been configured.
+
+For example, if you ran the following `iiif-process` command:
+
+```
+$> go run -mod vendor cmd/iiif-process/main.go \
+   -config-source file:///usr/local/go-iiif/docs \
+   -instructions-source file:///usr/local/go-iiif/docs \
+   -report test.jpg
+```
+
+The default `-report-template` URI template is `process_{sha256_origin}.json` so the resultant process report would be created at `test.jpg/process_0d407ee6406a1216f2366674a1a9ff71361d5bef47021f8eb8b51f95e319dd56.json`.
+
+_`0d407ee6406a1216f2366674a1a9ff71361d5bef47021f8eb8b51f95e319dd56.json == hex(sha256("test.jpg"))`_.
+
+As of this writing there is only one optional suffix (`{sha256_origin}`) but in the future the hope is to make these customizable. The output of the report will look something like this, depending on which services are enabled or not:
+
+```
+{
+  "blurhash": ":JK_E@_4?bM}?vM|.8WB~pt6RjWCRjf6jtWBx^WBNGoLRjoeWAj]ogWBj?j[ofayayofxvaeWBoeWBofRjofozfPj@a{f6j[f6j[kEaxj[a{WBt7WBj[t8j?aeayj[ayayj[",
+  "dimensions": {
+    "b": [
+      1152,
+      1536
+    ],
+    "d": [
+      320,
+      320
+    ],
+    "o": [
+      2995,
+      3993
+    ]
+  },
+  "imagehash": {
+    "average": "a:fffdf1f1e1818181",
+    "difference": "d:0141050103031303"
+  },
+  "origin": "test.jpg",
+  "origin_fingerprint": "572e4ee59493efcdc4356ba3e142b19661ff60fa",
+  "origin_uri": "file:///test.jpg",
+  "palette": [
+    {
+      "name": "#87837f",
+      "hex": "#87837f",
+      "reference": "vibrant"
+    },
+    {
+      "name": "#c7c4bf",
+      "hex": "#c7c4bf",
+      "reference": "vibrant"
+    },
+    {
+      "name": "#483c2c",
+      "hex": "#483c2c",
+      "reference": "vibrant"
+    }
+  ],
+  "uris": {
+    "b": "file:///test.jpg/full/!2048,1536/0/color.jpg",
+    "d": "file:///test.jpg/-1,-1,320,320/full/0/dither.jpg",
+    "o": "file:///test.jpg/full/full/-1/color.jpg"
+  }
+}
+```
+
 ### iiif-process-and-tile
 
 ```
@@ -439,10 +507,10 @@ Usage of ./bin/iiif-process-and-tile:
     	Refresh a tile even if already exists (default false)
   -report
     	Store a process report (JSON) for each URI in the cache tree.
-  -report-name string
-    	The filename for process reports. Default is 'process.json' as in '${URI}-process.json'. (default "process.json")
   -report-source string
     	A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.
+  -report-template string
+    	A valid URI template for generating process report filenames. (default "process_{sha256_origin}.json")
   -scale-factors string
     	A comma-separated list of scale factors to seed tiles with (default "4")
   -synchronous
