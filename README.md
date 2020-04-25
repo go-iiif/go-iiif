@@ -419,9 +419,9 @@ $> go run -mod vendor cmd/iiif-process/main.go \
 
 The default `-report-template` URI template is `process_{sha256_origin}.json` so the resultant process report would be created at `test.jpg/process_0d407ee6406a1216f2366674a1a9ff71361d5bef47021f8eb8b51f95e319dd56.json`.
 
-_`0d407ee6406a1216f2366674a1a9ff71361d5bef47021f8eb8b51f95e319dd56.json == hex(sha256("test.jpg"))`_.
+As in: `hex(sha256("test.jpg")) == 0d407ee6406a1216f2366674a1a9ff71361d5bef47021f8eb8b51f95e319dd56.json`.
 
-As of this writing there is only one optional suffix (`{sha256_origin}`) but in the future the hope is to make these customizable. The output of the report will look something like this, depending on which services are enabled or not:
+Currently, there is only one optional suffix (`{sha256_origin}`) defined but in the future the hope is to make these customizable. The output of the report will look something like this, depending on which services are enabled or not:
 
 ```
 {
