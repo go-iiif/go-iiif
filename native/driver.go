@@ -48,6 +48,31 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		return nil, err
 	}
 
+	// ROTATION STUFF GOES HERE
+	// "github.com/aaronland/go-image-rotate"
+
+	/*
+
+	_, err = r.Seek(0, 0)
+
+	if err != nil {
+		return nil, "", err
+	}
+
+	o, err := rotate.GetImageOrientation(ctx, r)
+
+	if err != nil {
+		return nil, "", err
+	}
+
+	new_im, err := rotate.RotateImageWithOrientation(ctx, im, o)
+
+	if err != nil {
+		return nil, "", err
+	}
+
+	*/
+	
 	im := NativeImage{
 		config:    config,
 		source:    src,
