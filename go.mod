@@ -6,7 +6,7 @@ require (
 	github.com/aaronland/go-cloud-s3blob v0.1.0
 	github.com/aaronland/go-colours v0.1.1
 	github.com/aaronland/go-image-resize v0.0.0-20200215211032-65f2cf14b638
-	github.com/aaronland/go-image-rotate v0.0.0-20200215202359-83b36a9e5522
+	github.com/aaronland/go-image-rotate v0.0.1
 	github.com/aaronland/go-roster v0.0.1
 	github.com/anthonynsimon/bild v0.11.1
 	github.com/aws/aws-lambda-go v1.16.0

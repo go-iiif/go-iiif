@@ -50,9 +50,6 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		return nil, err
 	}
 
-	// ROTATION STUFF GOES HERE
-	// "github.com/aaronland/go-image-rotate"
-
 	if fmt == "jpeg" {
 
 		ctx := context.Background()		

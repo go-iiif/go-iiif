@@ -2,9 +2,9 @@ package transform
 
 import (
 	"context"
-	"net/url"
 	"github.com/aaronland/go-roster"
 	"image"
+	"net/url"
 )
 
 type InitializeTransformationFunc func(context.Context, string) (Transformation, error)
@@ -18,7 +18,7 @@ var transformations roster.Roster
 func ensureRoster() error {
 
 	if transformations == nil {
-		
+
 		r, err := roster.NewDefaultRoster()
 
 		if err != nil {

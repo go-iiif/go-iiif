@@ -25,7 +25,7 @@ func (tr *MultiTransformation) Transform(ctx context.Context, im image.Image) (i
 	var err error
 
 	for _, t := range tr.transforms {
-		
+
 		im, err = t.Transform(ctx, im)
 
 		if err != nil {
