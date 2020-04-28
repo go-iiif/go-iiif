@@ -2,12 +2,14 @@ package native
 
 import (
 	"bytes"
+	"context"
 	_ "fmt"
+	"github.com/aaronland/go-image-rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiifsource "github.com/go-iiif/go-iiif/v4/source"
+	iiifsource "github.com/go-iiif/go-iiif/v4/source"	
 	"image"
 	_ "log"
 )
@@ -51,27 +53,25 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	// ROTATION STUFF GOES HERE
 	// "github.com/aaronland/go-image-rotate"
 
-	/*
+	if fmt == "jpeg" {
 
-	_, err = r.Seek(0, 0)
+		ctx := context.Background()		
+		br := bytes.NewReader(body)
+		
+		o, err := rotate.GetImageOrientation(ctx, br)
 
-	if err != nil {
-		return nil, "", err
+		if err != nil {
+			return nil, err
+		}
+		
+		new_img, err := rotate.RotateImageWithOrientation(ctx, img, o)
+
+		if err != nil {
+			return nil, err
+		}
+
+		img = new_img
 	}
-
-	o, err := rotate.GetImageOrientation(ctx, r)
-
-	if err != nil {
-		return nil, "", err
-	}
-
-	new_im, err := rotate.RotateImageWithOrientation(ctx, im, o)
-
-	if err != nil {
-		return nil, "", err
-	}
-
-	*/
 	
 	im := NativeImage{
 		config:    config,
