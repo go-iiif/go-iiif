@@ -30,6 +30,10 @@ func GetImageOrientation(ctx context.Context, r io.Reader) (string, error) {
 
 	o, err := x.Get(exif.Orientation)
 
+	if exif.IsTagNotPresentError(err) == true {
+		return "0", nil
+	}
+
 	if err != nil {
 		return "", err
 	}

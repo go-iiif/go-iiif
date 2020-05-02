@@ -11,7 +11,7 @@ github.com/aaronland/go-colours/grid
 github.com/aaronland/go-colours/palette
 # github.com/aaronland/go-image-resize v0.0.0-20200215211032-65f2cf14b638
 github.com/aaronland/go-image-resize
-# github.com/aaronland/go-image-rotate v0.0.1
+# github.com/aaronland/go-image-rotate v0.0.2
 github.com/aaronland/go-image-rotate
 github.com/aaronland/go-image-rotate/imaging
 # github.com/aaronland/go-image-transform v0.0.0-20200216021135-f5c5cf8fc134

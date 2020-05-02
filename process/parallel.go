@@ -47,6 +47,8 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 			return
 		}
 
+		// PLEASE PUT THIS IN A FUNCTION SOMEWHERE
+		
 		hash := sha1.Sum(im.Body())
 		fingerprint := hex.EncodeToString(hash[:])
 

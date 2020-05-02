@@ -53,6 +53,8 @@ github.com/aaronland/go-image-rotate v0.0.0-20200215202359-83b36a9e5522 h1:qjBY7
 github.com/aaronland/go-image-rotate v0.0.0-20200215202359-83b36a9e5522/go.mod h1:qvssvd/PgtQJCU5NM22JaoTQxfHZETbIN9gyzVWSkNQ=
 github.com/aaronland/go-image-rotate v0.0.1 h1:XsMpUci5r6BNOVOHCSnW1Yf+J6WMXoHaU6purZ6mxXM=
 github.com/aaronland/go-image-rotate v0.0.1/go.mod h1:xprHv+FzZcDYHXXk92sGLVimTd90V4FSIXQIrY0OhTc=
+github.com/aaronland/go-image-rotate v0.0.2 h1:kWwBkZc18iFx1Nl/kIt895dZO9TdFcKpkcfzOBm4ZZc=
+github.com/aaronland/go-image-rotate v0.0.2/go.mod h1:xprHv+FzZcDYHXXk92sGLVimTd90V4FSIXQIrY0OhTc=
 github.com/aaronland/go-image-tools v0.1.3/go.mod h1:KPCUeAHhGQOjEecfYcOaTHOf8bgaNlPz+xWxlDMrLUA=
 github.com/aaronland/go-image-transform v0.0.0-20200215193528-9bb7b64c2728 h1:fnHeeLZ1pQPQrUYLBzjkJh3UODtRwOwhuWNyf4MJwC8=
 github.com/aaronland/go-image-transform v0.0.0-20200215193528-9bb7b64c2728/go.mod h1:VVvOHA0CFnb4+eTXTA4D5XEd36tFWUUR10ArmtpoYkM=
