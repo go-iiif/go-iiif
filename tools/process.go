@@ -13,7 +13,8 @@ import (
 	"github.com/go-iiif/go-iiif/v4/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
 	"github.com/go-iiif/go-iiif/v4/process"
-	"github.com/sfomuseum/go-flags"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/lookup"	
 	"gocloud.dev/blob"
 	"log"
 	"net/url"
@@ -186,9 +187,9 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	flags.Parse(fs)
+	flagset.Parse(fs)
 
-	err = flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
 
 	if err != nil {
 		return err
@@ -205,49 +206,49 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 
 func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_source, err := flags.StringVar(fs, "config-source")
+	config_source, err := lookup.StringVar(fs, "config-source")
 
 	if err != nil {
 		return err
 	}
 
-	config_name, err := flags.StringVar(fs, "config-name")
+	config_name, err := lookup.StringVar(fs, "config-name")
 
 	if err != nil {
 		return err
 	}
 
-	instructions_source, err := flags.StringVar(fs, "instructions-source")
+	instructions_source, err := lookup.StringVar(fs, "instructions-source")
 
 	if err != nil {
 		return err
 	}
 
-	instructions_name, err := flags.StringVar(fs, "instructions-name")
+	instructions_name, err := lookup.StringVar(fs, "instructions-name")
 
 	if err != nil {
 		return err
 	}
 
-	report, err := flags.BoolVar(fs, "report")
+	report, err := lookup.BoolVar(fs, "report")
 
 	if err != nil {
 		return err
 	}
 
-	report_source, err := flags.StringVar(fs, "report-source")
+	report_source, err := lookup.StringVar(fs, "report-source")
 
 	if err != nil {
 		return err
 	}
 
-	report_template, err := flags.StringVar(fs, "report-template")
+	report_template, err := lookup.StringVar(fs, "report-template")
 
 	if err != nil {
 		return err
 	}
 
-	mode, err := flags.StringVar(fs, "mode")
+	mode, err := lookup.StringVar(fs, "mode")
 
 	if err != nil {
 		return err

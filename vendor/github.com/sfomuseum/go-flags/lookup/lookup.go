@@ -1,4 +1,4 @@
-package flags
+package lookup
 
 import (
 	"errors"
@@ -39,6 +39,17 @@ func IntVar(fl *flag.FlagSet, k string) (int, error) {
 	}
 
 	return i.(int), nil
+}
+
+func Int64Var(fl *flag.FlagSet, k string) (int64, error) {
+
+	i, err := Lookup(fl, k)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return i.(int64), nil
 }
 
 func Float64Var(fl *flag.FlagSet, k string) (float64, error) {

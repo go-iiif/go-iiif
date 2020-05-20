@@ -13,7 +13,8 @@ import (
 	iiifserver "github.com/go-iiif/go-iiif/v4/server"
 	iiifsource "github.com/go-iiif/go-iiif/v4/source"
 	"github.com/gorilla/mux"
-	"github.com/sfomuseum/go-flags"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/lookup"	
 	"gocloud.dev/blob"
 	"log"
 	"net/url"
@@ -81,9 +82,9 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	flags.Parse(fs)
+	flagset.Parse(fs)
 
-	err = flags.SetFlagsFromEnvVars(fs, "IIIF_SERVER")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_SERVER")
 
 	if err != nil {
 		return err
@@ -100,43 +101,43 @@ func (t *IIIFServerTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) e
 
 func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_source, err := flags.StringVar(fs, "config-source")
+	config_source, err := lookup.StringVar(fs, "config-source")
 
 	if err != nil {
 		return err
 	}
 
-	config_name, err := flags.StringVar(fs, "config-name")
+	config_name, err := lookup.StringVar(fs, "config-name")
 
 	if err != nil {
 		return err
 	}
 
-	proto, err := flags.StringVar(fs, "protocol")
+	proto, err := lookup.StringVar(fs, "protocol")
 
 	if err != nil {
 		return err
 	}
 
-	host, err := flags.StringVar(fs, "host")
+	host, err := lookup.StringVar(fs, "host")
 
 	if err != nil {
 		return err
 	}
 
-	port, err := flags.IntVar(fs, "port")
+	port, err := lookup.IntVar(fs, "port")
 
 	if err != nil {
 		return err
 	}
 
-	example, err := flags.BoolVar(fs, "example")
+	example, err := lookup.BoolVar(fs, "example")
 
 	if err != nil {
 		return err
 	}
 
-	example_root, err := flags.StringVar(fs, "example-root")
+	example_root, err := lookup.StringVar(fs, "example-root")
 
 	if err != nil {
 		return err

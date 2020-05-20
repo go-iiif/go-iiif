@@ -11,7 +11,8 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
 	iiiftools "github.com/go-iiif/go-iiif/v4/tools"
-	"github.com/sfomuseum/go-flags"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/lookup"	
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
 	"log"
@@ -50,15 +51,15 @@ func main() {
 		log.Fatalf("Failed to append config flags, %v", err)
 	}
 
-	flags.Parse(fs)
+	flagset.Parse(fs)
 
-	config_source, err := flags.StringVar(fs, "config-source")
+	config_source, err := lookup.StringVar(fs, "config-source")
 
 	if err != nil {
 		log.Fatalf("Failed to parse -config-source flag, %v", err)
 	}
 
-	config_name, err := flags.StringVar(fs, "config-name")
+	config_name, err := lookup.StringVar(fs, "config-name")
 
 	if err != nil {
 		log.Fatalf("Failed to parse -config-name flag, %v", err)

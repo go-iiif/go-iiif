@@ -10,7 +10,8 @@ import (
 	"context"
 	"flag"
 	"github.com/go-iiif/go-iiif/v4/tools"
-	"github.com/sfomuseum/go-flags"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/lookup"	
 	"log"
 )
 
@@ -58,17 +59,17 @@ func main() {
 
 	// parse flags
 
-	flags.Parse(fs)
+	flagset.Parse(fs)
 
-	err = flags.SetFlagsFromEnvVars(fs, "IIIF_PROCESS_AND_TILE")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_PROCESS_AND_TILE")
 
 	if err != nil {
 		log.Fatalf("Failed to set flags from environment, %v", err)
 	}
 
-	// retrieve custom flags
+	// retrieve custom lookup
 
-	sync, err := flags.BoolVar(fs, "synchronous")
+	sync, err := lookup.BoolVar(fs, "synchronous")
 
 	if err != nil {
 		log.Fatalf("Failed to parse -synchronous flag, %v", err)

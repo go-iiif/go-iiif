@@ -12,7 +12,8 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/v4/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
 	iiifsource "github.com/go-iiif/go-iiif/v4/source"
-	"github.com/sfomuseum/go-flags"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/lookup"	
 	"gocloud.dev/blob"
 	"io/ioutil"
 	"path/filepath"
@@ -175,9 +176,9 @@ func (t *TransformTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	flags.Parse(fs)
+	flagset.Parse(fs)
 
-	err = flags.SetFlagsFromEnvVars(fs, "IIIF_TRANSFORM")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_TRANSFORM")
 
 	if err != nil {
 		return err
@@ -194,61 +195,61 @@ func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) er
 
 func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_name, err := flags.StringVar(fs, "config-name")
+	config_name, err := lookup.StringVar(fs, "config-name")
 
 	if err != nil {
 		return err
 	}
 
-	config_source, err := flags.StringVar(fs, "config-source")
+	config_source, err := lookup.StringVar(fs, "config-source")
 
 	if err != nil {
 		return err
 	}
 
-	region, err := flags.StringVar(fs, "region")
+	region, err := lookup.StringVar(fs, "region")
 
 	if err != nil {
 		return err
 	}
 
-	size, err := flags.StringVar(fs, "size")
+	size, err := lookup.StringVar(fs, "size")
 
 	if err != nil {
 		return err
 	}
 
-	rotation, err := flags.StringVar(fs, "rotation")
+	rotation, err := lookup.StringVar(fs, "rotation")
 
 	if err != nil {
 		return err
 	}
 
-	quality, err := flags.StringVar(fs, "quality")
+	quality, err := lookup.StringVar(fs, "quality")
 
 	if err != nil {
 		return err
 	}
 
-	format, err := flags.StringVar(fs, "format")
+	format, err := lookup.StringVar(fs, "format")
 
 	if err != nil {
 		return err
 	}
 
-	source_path, err := flags.StringVar(fs, "source")
+	source_path, err := lookup.StringVar(fs, "source")
 
 	if err != nil {
 		return err
 	}
 
-	target_path, err := flags.StringVar(fs, "target")
+	target_path, err := lookup.StringVar(fs, "target")
 
 	if err != nil {
 		return err
 	}
 
-	mode, err := flags.StringVar(fs, "mode")
+	mode, err := lookup.StringVar(fs, "mode")
 
 	if err != nil {
 		return err

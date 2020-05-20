@@ -10,7 +10,8 @@ import (
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiiftile "github.com/go-iiif/go-iiif/v4/tile"
-	"github.com/sfomuseum/go-flags"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/lookup"	
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"gocloud.dev/blob"
@@ -171,9 +172,9 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 		return err
 	}
 
-	flags.Parse(fs)
+	flagset.Parse(fs)
 
-	err = flags.SetFlagsFromEnvVars(fs, "IIIF_TILESEED")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_TILESEED")
 
 	if err != nil {
 		return err
@@ -190,85 +191,85 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_source, err := flags.StringVar(fs, "config-source")
+	config_source, err := lookup.StringVar(fs, "config-source")
 
 	if err != nil {
 		return err
 	}
 
-	config_name, err := flags.StringVar(fs, "config-name")
+	config_name, err := lookup.StringVar(fs, "config-name")
 
 	if err != nil {
 		return err
 	}
 
-	csv_source, err := flags.StringVar(fs, "csv-source")
+	csv_source, err := lookup.StringVar(fs, "csv-source")
 
 	if err != nil {
 		return err
 	}
 
-	scale_factors, err := flags.StringVar(fs, "scale-factors")
+	scale_factors, err := lookup.StringVar(fs, "scale-factors")
 
 	if err != nil {
 		return err
 	}
 
-	quality, err := flags.StringVar(fs, "quality")
+	quality, err := lookup.StringVar(fs, "quality")
 
 	if err != nil {
 		return err
 	}
 
-	format, err := flags.StringVar(fs, "format")
+	format, err := lookup.StringVar(fs, "format")
 
 	if err != nil {
 		return err
 	}
 
-	logfile, err := flags.StringVar(fs, "logfile")
+	logfile, err := lookup.StringVar(fs, "logfile")
 
 	if err != nil {
 		return err
 	}
 
-	loglevel, err := flags.StringVar(fs, "loglevel")
+	loglevel, err := lookup.StringVar(fs, "loglevel")
 
 	if err != nil {
 		return err
 	}
 
-	processes, err := flags.IntVar(fs, "processes")
+	processes, err := lookup.IntVar(fs, "processes")
 
 	if err != nil {
 		return err
 	}
 
-	mode, err := flags.StringVar(fs, "mode")
+	mode, err := lookup.StringVar(fs, "mode")
 
 	if err != nil {
 		return err
 	}
 
-	noextension, err := flags.BoolVar(fs, "noextension")
+	noextension, err := lookup.BoolVar(fs, "noextension")
 
 	if err != nil {
 		return err
 	}
 
-	refresh, err := flags.BoolVar(fs, "refresh")
+	refresh, err := lookup.BoolVar(fs, "refresh")
 
 	if err != nil {
 		return err
 	}
 
-	endpoint, err := flags.StringVar(fs, "endpoint")
+	endpoint, err := lookup.StringVar(fs, "endpoint")
 
 	if err != nil {
 		return err
 	}
 
-	verbose, err := flags.BoolVar(fs, "verbose")
+	verbose, err := lookup.BoolVar(fs, "verbose")
 
 	if err != nil {
 		return err

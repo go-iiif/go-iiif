@@ -16,12 +16,12 @@ github.com/aaronland/go-image-rotate
 github.com/aaronland/go-image-rotate/imaging
 # github.com/aaronland/go-image-transform v0.0.0-20200216021135-f5c5cf8fc134
 github.com/aaronland/go-image-transform
-# github.com/aaronland/go-roster v0.0.1
+# github.com/aaronland/go-roster v0.0.2
 github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 github.com/aaronland/go-string/dsn
 github.com/aaronland/go-string/random
-# github.com/anthonynsimon/bild v0.11.1
+# github.com/anthonynsimon/bild v0.12.0
 github.com/anthonynsimon/bild/adjust
 github.com/anthonynsimon/bild/blend
 github.com/anthonynsimon/bild/blur
@@ -40,7 +40,7 @@ github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.30.9
+# github.com/aws/aws-sdk-go v1.31.1
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
 github.com/aws/aws-sdk-go/aws/awserr
@@ -94,7 +94,7 @@ github.com/corona10/goimagehash/etcs
 github.com/corona10/goimagehash/transforms
 # github.com/fogleman/gg v1.3.0
 github.com/fogleman/gg
-# github.com/fogleman/primitive v0.0.0-20190214200932-673f57e7b1b5
+# github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
 github.com/fogleman/primitive/primitive
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
@@ -158,8 +158,9 @@ github.com/patrickmn/go-cache
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/mknote
 github.com/rwcarlsen/goexif/tiff
-# github.com/sfomuseum/go-flags v0.0.4
-github.com/sfomuseum/go-flags
+# github.com/sfomuseum/go-flags v0.2.1
+github.com/sfomuseum/go-flags/flagset
+github.com/sfomuseum/go-flags/lookup
 # github.com/whosonfirst/algnhsa v0.1.0
 github.com/whosonfirst/algnhsa
 # github.com/whosonfirst/go-sanitize v0.1.0
@@ -205,7 +206,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/image v0.0.0-20200119044424-58c23975cae1
+# golang.org/x/image v0.0.0-20200430140353-33d19683fad8
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
 golang.org/x/image/draw
