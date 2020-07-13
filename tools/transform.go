@@ -178,7 +178,7 @@ func (t *TransformTool) Run(ctx context.Context) error {
 
 	flagset.Parse(fs)
 
-	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_TRANSFORM")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF")
 
 	if err != nil {
 		return err

@@ -189,7 +189,7 @@ func (t *ProcessTool) Run(ctx context.Context) error {
 
 	flagset.Parse(fs)
 
-	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_PROCESS")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF")
 
 	if err != nil {
 		return err

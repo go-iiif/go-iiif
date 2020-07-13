@@ -84,7 +84,7 @@ func (t *IIIFServerTool) Run(ctx context.Context) error {
 
 	flagset.Parse(fs)
 
-	err = flagset.SetFlagsFromEnvVars(fs, "IIIF_SERVER")
+	err = flagset.SetFlagsFromEnvVars(fs, "IIIF")
 
 	if err != nil {
 		return err
