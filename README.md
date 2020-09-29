@@ -22,16 +22,6 @@ Version 2.0.0 and higher of the `go-iiif` package introduces three backwards inc
 
 All three changes are discussed in detail below.
 
-## Setup
-
-You will need to have both `Go` (specifically version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
-
-```
-$> make cli-tools
-```
-
-All of this package's dependencies are bundled with the code in the `vendor` directory.
-
 ## Drivers
 
 `go-iiif` was first written with the [libvips](https://github.com/jcupitt/libvips) library and [bimg](https://github.com/h2non/bimg/) Go wrapper for image processing. `libvips` is pretty great but it introduces non-trivial build and setup requirements. As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. This allows `go-iiif` to run on any platform supported by Go without the need for external dependencies.
@@ -247,6 +237,20 @@ go func(u iiifuri.URI, label Label, i IIIFInstructions) {
 `go-iiif` was designed to expose all of its functionality outside of the included tools although that hasn't been documented yet. The source code for the [iiif-tile-seed](cmd/iiif-tile-seed.go), [iiif-transform](cmd/iiif-transform.go) and [iiif-process](cmd/iiif-process.go) tools is a good place to start poking around if you're curious.
 
 ## Tools
+
+You will need to have both `Go` (specifically version [1.12](https://golang.org/dl/) or higher) and the `make` programs installed on your computer. Assuming you do just type:
+
+```
+$> make cli-tools
+go build -mod vendor -o bin/iiif-server cmd/iiif-server/main.go
+go build -mod vendor -o bin/iiif-tile-seed cmd/iiif-tile-seed/main.go
+go build -mod vendor -o bin/iiif-transform cmd/iiif-transform/main.go
+go build -mod vendor -o bin/iiif-process cmd/iiif-process/main.go
+go build -mod vendor -o bin/iiif-process-and-tile cmd/iiif-process-and-tile/main.go
+go build -mod vendor -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
+```
+
+All of this package's dependencies are bundled with the code in the `vendor` directory.
 
 As of version 2 all of the logic, including defining and parsing command line arguments, for any `go-iiif` tool that performs image processing has been moved in to the `tools` package. This change allows non-core image processing packages (like [go-iiif-vips](https://github.com/go-iiif/go-iiif-vips)) to more easily re-use functionality defined in the core `go-iiif` package. For example:
 
