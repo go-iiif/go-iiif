@@ -103,8 +103,9 @@ func main() {
 
 			/*
 
-						what the following code suggests is that the go-iiif-uri.URI
-			interface needs to be updated to return query parameters
+				what the following code suggests is that the go-iiif-uri.URI
+				interface needs to be updated to return query parameters
+				(20200929/thisisaaronland)
 
 			*/
 
