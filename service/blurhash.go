@@ -62,7 +62,7 @@ func NewBlurHashService(cfg iiifconfig.BlurHashConfig, image iiifimage.Image) (S
 		return nil, err
 	}
 
-	hash, err := blurhash.Encode(cfg.X, cfg.Y, &im)
+	hash, err := blurhash.Encode(cfg.X, cfg.Y, im)
 
 	if err != nil {
 		return nil, err

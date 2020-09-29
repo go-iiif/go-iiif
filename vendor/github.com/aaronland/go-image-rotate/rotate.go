@@ -2,6 +2,7 @@ package rotate
 
 import (
 	"context"
+	"errors"
 	"github.com/aaronland/go-image-rotate/imaging"
 	"image"
 )
@@ -25,6 +26,22 @@ func RotateImageWithOrientation(ctx context.Context, im image.Image, orientation
 		im = imaging.Rotate90(imaging.FlipV(im))
 	case "8":
 		im = imaging.Rotate90(im)
+	}
+
+	return im, nil
+}
+
+func RotateImageWithDegrees(ctx context.Context, im image.Image, degrees float32) (image.Image, error) {
+
+	switch degrees {
+	case 90.0:
+		im = imaging.Rotate90(im)
+	case 180.0:
+		im = imaging.Rotate180(im)
+	case 270.0:
+		im = imaging.Rotate270(im)
+	default:
+		return nil, errors.New("Unsupported value")
 	}
 
 	return im, nil
