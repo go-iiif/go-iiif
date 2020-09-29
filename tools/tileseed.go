@@ -11,7 +11,7 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiiftile "github.com/go-iiif/go-iiif/v4/tile"
 	"github.com/sfomuseum/go-flags/flagset"
-	"github.com/sfomuseum/go-flags/lookup"	
+	"github.com/sfomuseum/go-flags/lookup"
 	"github.com/whosonfirst/go-whosonfirst-csv"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"gocloud.dev/blob"

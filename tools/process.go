@@ -14,7 +14,7 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
 	"github.com/go-iiif/go-iiif/v4/process"
 	"github.com/sfomuseum/go-flags/flagset"
-	"github.com/sfomuseum/go-flags/lookup"	
+	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
 	"log"
 	"net/url"

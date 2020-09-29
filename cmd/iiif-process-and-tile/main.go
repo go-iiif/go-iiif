@@ -9,10 +9,14 @@ import (
 import (
 	"context"
 	"flag"
+	"fmt"
+	"github.com/go-iiif/go-iiif-uri"
 	"github.com/go-iiif/go-iiif/v4/tools"
 	"github.com/sfomuseum/go-flags/flagset"
-	"github.com/sfomuseum/go-flags/lookup"	
+	"github.com/sfomuseum/go-flags/lookup"
 	"log"
+	"net/url"
+	"path/filepath"
 )
 
 func main() {
@@ -57,6 +61,8 @@ func main() {
 
 	fs.Bool("synchronous", false, "Run tools synchronously.")
 
+	fs.String("tiles-prefix", "", "A relative URL to use a prefix when storing tiles.")
+
 	// parse flags
 
 	flagset.Parse(fs)
@@ -75,6 +81,12 @@ func main() {
 		log.Fatalf("Failed to parse -synchronous flag, %v", err)
 	}
 
+	tiles_prefix, err := lookup.StringVar(fs, "tiles-prefix")
+
+	if err != nil {
+		log.Fatalf("Failed to parse -tiles-prefix flag, %v", err)
+	}
+
 	// create tools
 
 	pr_tool, err := tools.NewProcessTool()
@@ -83,10 +95,67 @@ func main() {
 		log.Fatalf("Failed to create new process tool, %v", err)
 	}
 
-	ts_tool, err := tools.NewTileSeedTool()
+	var ts_tool tools.Tool
 
-	if err != nil {
-		log.Fatalf("Failed to create new process tool, %v", err)
+	if tiles_prefix != "" {
+
+		ts_uri_func := func(raw_uri string) (uri.URI, error) {
+
+			/*
+
+						what the following code suggests is that the go-iiif-uri.URI
+			interface needs to be updated to return query parameters
+
+			*/
+
+			u, err := uri.NewURI(raw_uri)
+
+			if err != nil {
+				return nil, err
+			}
+
+			u2, err := url.Parse(raw_uri)
+
+			if err != nil {
+				return nil, err
+			}
+
+			q := u2.Query()
+
+			target, err := u.Target(&q)
+
+			if err != nil {
+				return nil, err
+			}
+
+			origin := u.Origin()
+
+			root := filepath.Dir(target)
+			path := filepath.Join(root, "tiles")
+
+			file_uri := fmt.Sprintf("%s?target=%s", origin, path)
+			file_uri = uri.NewFileURIString(file_uri)
+
+			return uri.NewFileURI(file_uri)
+		}
+
+		t, err := tools.NewTileSeedToolWithURIFunc(ts_uri_func)
+
+		if err != nil {
+			log.Fatalf("Failed to create new process tool, %v", err)
+		}
+
+		ts_tool = t
+
+	} else {
+
+		t, err := tools.NewTileSeedTool()
+
+		if err != nil {
+			log.Fatalf("Failed to create new process tool, %v", err)
+		}
+
+		ts_tool = t
 	}
 
 	// create tool runner

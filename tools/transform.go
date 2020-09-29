@@ -13,7 +13,7 @@ import (
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
 	iiifsource "github.com/go-iiif/go-iiif/v4/source"
 	"github.com/sfomuseum/go-flags/flagset"
-	"github.com/sfomuseum/go-flags/lookup"	
+	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
 	"io/ioutil"
 	"path/filepath"

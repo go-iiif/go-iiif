@@ -9,7 +9,7 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiifsource "github.com/go-iiif/go-iiif/v4/source"	
+	iiifsource "github.com/go-iiif/go-iiif/v4/source"
 	"image"
 	_ "log"
 )
@@ -52,15 +52,15 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 
 	if fmt == "jpeg" {
 
-		ctx := context.Background()		
+		ctx := context.Background()
 		br := bytes.NewReader(body)
-		
+
 		o, err := rotate.GetImageOrientation(ctx, br)
 
 		if err != nil {
 			return nil, err
 		}
-		
+
 		new_img, err := rotate.RotateImageWithOrientation(ctx, img, o)
 
 		if err != nil {
@@ -69,7 +69,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 
 		img = new_img
 	}
-	
+
 	im := NativeImage{
 		config:    config,
 		source:    src,
