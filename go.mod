@@ -16,7 +16,7 @@ require (
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/go-iiif/go-iiif-uri v0.4.2
+	github.com/go-iiif/go-iiif-uri v0.4.3
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/jtacoma/uritemplates v1.0.0

@@ -99,7 +99,7 @@ github.com/fogleman/gg
 github.com/fogleman/primitive/primitive
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
-# github.com/go-iiif/go-iiif-uri v0.4.2
+# github.com/go-iiif/go-iiif-uri v0.4.3
 github.com/go-iiif/go-iiif-uri
 # github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0
 github.com/golang/freetype/raster

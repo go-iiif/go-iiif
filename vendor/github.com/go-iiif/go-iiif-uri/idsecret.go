@@ -37,7 +37,7 @@ func (dr *IdSecretURIDriver) NewURI(str_uri string) (URI, error) {
 type IdSecretURI struct {
 	URI
 	origin   string
-	id       uint64
+	id       string
 	secret   string
 	secret_o string
 	label    string
@@ -99,10 +99,13 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 		return nil, errors.New("Missing id")
 	}
 
-	id, err := strconv.ParseUint(str_id, 10, 64)
+	if q.Get("ensure-int") != "" {
 
-	if err != nil {
-		return nil, err
+		_, err := strconv.ParseUint(str_id, 10, 64)
+
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	secret := q.Get("secret")
@@ -138,7 +141,7 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 
 	id_u := IdSecretURI{
 		origin:   origin,
-		id:       id,
+		id:       str_id,
 		secret:   secret,
 		secret_o: secret_o,
 		label:    label,
@@ -155,7 +158,7 @@ func (u *IdSecretURI) Driver() string {
 
 func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 
-	str_id := strconv.FormatUint(u.id, 10)
+	str_id := u.id // strconv.FormatUint(u.id, 10)
 
 	prefix := id2Path(u.id)
 
@@ -199,7 +202,7 @@ func (u *IdSecretURI) Origin() string {
 func (u *IdSecretURI) String() string {
 
 	q := url.Values{}
-	q.Set("id", strconv.FormatUint(u.id, 10))
+	q.Set("id", u.id) // strconv.FormatUint(u.id, 10))
 	q.Set("secret", u.secret)
 	q.Set("secret_o", u.secret_o)
 
@@ -207,10 +210,10 @@ func (u *IdSecretURI) String() string {
 	return NewIdSecretURIString(raw_uri)
 }
 
-func id2Path(id uint64) string {
+func id2Path(id string) string {
 
 	parts := []string{""}
-	input := strconv.FormatUint(id, 10)
+	input := id // strconv.FormatUint(id, 10)
 
 	for len(input) > 3 {
 

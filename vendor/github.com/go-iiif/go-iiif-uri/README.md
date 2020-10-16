@@ -110,13 +110,14 @@ Valid parameters for the `idsecret://` URI scheme are:
 
 | Name | Type | Required |
 | --- | --- | --- |
-| id | string (parsed as uint64) | yes |
+| id | string  | yes |
 | label | string | yes |
 | format | string | yes |
 | original | string | no |
 | secret | string | no |
 | secret_o | string | no |
 | prefix | string | no |
+| ensure-int | bool | no |
 
 If either the `secret` or `secret_o` parameters are absent they will be auto-generated.
 
