@@ -1,7 +1,6 @@
-[![Build Status](https://travis-ci.org/corona10/goimagehash.svg?branch=master)](https://travis-ci.org/corona10/goimagehash)
+![GitHub Action](https://github.com/corona10/goimagehash/workflows/goimagehash%20workflow/badge.svg)
 [![GoDoc](https://godoc.org/github.com/corona10/goimagehash?status.svg)](https://godoc.org/github.com/corona10/goimagehash)
 [![Go Report Card](https://goreportcard.com/badge/github.com/corona10/goimagehash)](https://goreportcard.com/report/github.com/corona10/goimagehash)
-[![Coverage Status](https://coveralls.io/repos/github/corona10/goimagehash/badge.svg)](https://coveralls.io/github/corona10/goimagehash)
 
 # goimagehash
 > Inspired by [imagehash](https://github.com/JohannesBuchner/imagehash)
@@ -57,12 +56,18 @@ func main() {
 ```
 
 ## Release Note
+### v1.0.3
+- Add workflow for GithubAction
+- Fix typo on the GoDoc for LoadImageHash
+
+### v1.0.2
+- go.mod is now used for install goimagehash
 
 ### v1.0.1
 - Perception/ExtPerception hash creation times are reduced
 
 ### v1.0.0
-**IMPORTANT** 
+**IMPORTANT**
 goimagehash v1.0.0 does not have compatible with the before version for future features
 
 - More flexible extended hash APIs are provided ([ExtAverageHash](https://godoc.org/github.com/corona10/goimagehash#ExtAverageHash), [ExtPerceptionHash](https://godoc.org/github.com/corona10/goimagehash#ExtPerceptionHash), [ExtDifferenceHash](https://godoc.org/github.com/corona10/goimagehash#ExtDifferenceHash))

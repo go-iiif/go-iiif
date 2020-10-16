@@ -10,9 +10,9 @@ require (
 	github.com/aaronland/go-roster v0.0.2
 	github.com/anthonynsimon/bild v0.13.0
 	github.com/aws/aws-lambda-go v1.19.1
-	github.com/aws/aws-sdk-go v1.34.34
+	github.com/aws/aws-sdk-go v1.35.9
 	github.com/buckket/go-blurhash v1.1.0
-	github.com/corona10/goimagehash v1.0.2
+	github.com/corona10/goimagehash v1.0.3
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
 	github.com/fsnotify/fsnotify v1.4.9
