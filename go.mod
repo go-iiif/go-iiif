@@ -5,12 +5,12 @@ go 1.12
 require (
 	github.com/aaronland/go-cloud-s3blob v0.1.0
 	github.com/aaronland/go-colours v0.1.1
-	github.com/aaronland/go-image-resize v0.0.0-20200215211032-65f2cf14b638
-	github.com/aaronland/go-image-rotate v0.0.3
+	github.com/aaronland/go-image-resize v0.0.0-20201125043310-09c78e618864
+	github.com/aaronland/go-image-rotate v0.0.4
 	github.com/aaronland/go-roster v0.0.2
 	github.com/anthonynsimon/bild v0.13.0
-	github.com/aws/aws-lambda-go v1.19.1
-	github.com/aws/aws-sdk-go v1.35.9
+	github.com/aws/aws-lambda-go v1.20.0
+	github.com/aws/aws-sdk-go v1.35.35
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.0.3
 	github.com/fogleman/gg v1.3.0 // indirect

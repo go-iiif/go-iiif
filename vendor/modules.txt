@@ -9,12 +9,12 @@ github.com/aaronland/go-colours
 github.com/aaronland/go-colours/extruder
 github.com/aaronland/go-colours/grid
 github.com/aaronland/go-colours/palette
-# github.com/aaronland/go-image-resize v0.0.0-20200215211032-65f2cf14b638
+# github.com/aaronland/go-image-resize v0.0.0-20201125043310-09c78e618864
 github.com/aaronland/go-image-resize
-# github.com/aaronland/go-image-rotate v0.0.3
+# github.com/aaronland/go-image-rotate v0.0.4
 github.com/aaronland/go-image-rotate
 github.com/aaronland/go-image-rotate/imaging
-# github.com/aaronland/go-image-transform v0.0.0-20200216021135-f5c5cf8fc134
+# github.com/aaronland/go-image-transform v0.0.0-20201125043008-ea524ffbd26f
 github.com/aaronland/go-image-transform
 # github.com/aaronland/go-roster v0.0.2
 github.com/aaronland/go-roster
@@ -34,13 +34,13 @@ github.com/anthonynsimon/bild/parallel
 github.com/anthonynsimon/bild/segment
 github.com/anthonynsimon/bild/transform
 github.com/anthonynsimon/bild/util
-# github.com/aws/aws-lambda-go v1.19.1
+# github.com/aws/aws-lambda-go v1.20.0
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go v1.35.9
+# github.com/aws/aws-sdk-go v1.35.35
 github.com/aws/aws-sdk-go/aws
 github.com/aws/aws-sdk-go/aws/arn
 github.com/aws/aws-sdk-go/aws/awserr
@@ -222,17 +222,17 @@ golang.org/x/image/tiff/lzw
 golang.org/x/image/vp8
 golang.org/x/image/vp8l
 golang.org/x/image/webp
-# golang.org/x/net v0.0.0-20200602114024-627f9648deb9
+# golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
 golang.org/x/net/http2/hpack
 golang.org/x/net/idna
 golang.org/x/net/internal/timeseries
 golang.org/x/net/trace
-# golang.org/x/sys v0.0.0-20200602225109-6fdc65e7d980
+# golang.org/x/sys v0.0.0-20200930185726-fdedc70b468f
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
-# golang.org/x/text v0.3.2
+# golang.org/x/text v0.3.3
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi

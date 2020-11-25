@@ -3,6 +3,8 @@ github.com/aaronland/go-image-tools v0.1.3 h1:+PAgz4gU0Vmo28NgDHK8AjDbwO6CfNiTen
 github.com/aaronland/go-image-tools v0.1.3/go.mod h1:KPCUeAHhGQOjEecfYcOaTHOf8bgaNlPz+xWxlDMrLUA=
 github.com/aaronland/go-roster v0.0.1 h1:r1l4n1HfWvEtOXZvhfXX0Won9Xf6QJsigdUdzOtuy/M=
 github.com/aaronland/go-roster v0.0.1/go.mod h1:AcovpxlG1XxJxX2Fjqlm63fEIBhCjEIBV4lP87FZDmI=
+github.com/aaronland/go-roster v0.0.2 h1:2Fu7v4VQLRLRL/Zgr6R9S5JxsW75Ab/K88QtMVX532s=
+github.com/aaronland/go-roster v0.0.2/go.mod h1:AcovpxlG1XxJxX2Fjqlm63fEIBhCjEIBV4lP87FZDmI=
 github.com/facebookgo/atomicfile v0.0.0-20151019000000-2de1f203e7d5e386a6833233882782932729f27e h1:bYAD+4OJX4+LUrmLhpNFiicL4B0mnswQe5QaI6rxJ4A=
 github.com/facebookgo/atomicfile v0.0.0-20151019000000-2de1f203e7d5e386a6833233882782932729f27e/go.mod h1:JpoxHjuQauoxiFMl1ie8Xc/7TfLuMZ5eOCONd1sUBHg=
 github.com/iand/salience v0.0.0-20170827000000-dfa33044e20159970855823c3553164f405d8dd3/go.mod h1:5VjozFkGLcIORGjQM8LVZSd84b4wW/7rGWuGSDCWj5M=

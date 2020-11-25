@@ -31,7 +31,7 @@ func RotateImageWithOrientation(ctx context.Context, im image.Image, orientation
 	return im, nil
 }
 
-func RotateImageWithDegrees(ctx context.Context, im image.Image, degrees float32) (image.Image, error) {
+func RotateImageWithDegrees(ctx context.Context, im image.Image, degrees float64) (image.Image, error) {
 
 	switch degrees {
 	case 90.0:
