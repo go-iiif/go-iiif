@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
+	"github.com/aaronland/go-http-ping"
 	"gocloud.dev/blob"
 	"log"
 	"net/url"
@@ -214,7 +215,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return err
 	}
 
-	ping_handler, err := iiifhttp.PingHandler()
+	ping_handler, err := ping.PingHandler()
 
 	if err != nil {
 		return err

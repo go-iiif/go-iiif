@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/aaronland/go-cloud-s3blob v0.1.0
 	github.com/aaronland/go-colours v0.1.1
+	github.com/aaronland/go-http-ping v1.0.0
 	github.com/aaronland/go-image-resize v0.0.0-20201125043310-09c78e618864
 	github.com/aaronland/go-image-rotate v0.0.4
 	github.com/aaronland/go-roster v0.0.2

@@ -134,6 +134,8 @@ github.com/aaronland/go-cloud-s3blob v0.1.0 h1:4/tXihMCrszVmswvuvKSfHY+VvfWkp9I3
 github.com/aaronland/go-cloud-s3blob v0.1.0/go.mod h1:WAv8p20qbjrl8TSN4HkL9qy+Agt8ds0aY8OGd/j4OCY=
 github.com/aaronland/go-colours v0.1.1 h1:wBLEx+wNqGM3w6kwlsvE6Y9sYyONeInNX4I5jNvQbcs=
 github.com/aaronland/go-colours v0.1.1/go.mod h1:dEmUq7Kb5dg3VxlauVTayEXhZ9BPcnBx7BAYkLAMPQc=
+github.com/aaronland/go-http-ping v1.0.0 h1:ayR9n9YNnuGOhkaZhcy5Z/qSUOo0NUCu6gJ428omyXs=
+github.com/aaronland/go-http-ping v1.0.0/go.mod h1:zU9CSFLh2XzPlrFgoyCysNED+DoLRioCKaa2Kl+O6DA=
 github.com/aaronland/go-image-cli v0.0.0-20200215210826-37fdffc63da5/go.mod h1:h+6rzbhBHVZ4i3OFC4pJNPHnMb7yvHDOEhjoU2lLgws=
 github.com/aaronland/go-image-decode v0.0.0-20200215193808-094468d44f17/go.mod h1:dOMo+O8DdvO05WCjW7Z1Yj2F9nmTncwIgij2rFMVSUQ=
 github.com/aaronland/go-image-decode v0.0.1/go.mod h1:dOMo+O8DdvO05WCjW7Z1Yj2F9nmTncwIgij2rFMVSUQ=
