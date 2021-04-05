@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/sfomuseum/go-flags/multi"
 )
 
 func Lookup(fl *flag.FlagSet, k string) (interface{}, error) {
@@ -19,6 +20,17 @@ func Lookup(fl *flag.FlagSet, k string) (interface{}, error) {
 	return v.Value.(flag.Getter).Get(), nil
 }
 
+func MultiStringVar(fl *flag.FlagSet, k string) ([]string, error) {
+
+	i, err := Lookup(fl, k)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return i.(multi.MultiString), nil
+}
+
 func StringVar(fl *flag.FlagSet, k string) (string, error) {
 
 	i, err := Lookup(fl, k)
@@ -30,6 +42,17 @@ func StringVar(fl *flag.FlagSet, k string) (string, error) {
 	return i.(string), nil
 }
 
+func MultiIntVar(fl *flag.FlagSet, k string) ([]int, error) {
+
+	i, err := Lookup(fl, k)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return i.(multi.MultiInt), nil
+}
+
 func IntVar(fl *flag.FlagSet, k string) (int, error) {
 
 	i, err := Lookup(fl, k)
@@ -39,6 +62,17 @@ func IntVar(fl *flag.FlagSet, k string) (int, error) {
 	}
 
 	return i.(int), nil
+}
+
+func MultiInt64Var(fl *flag.FlagSet, k string) ([]int64, error) {
+
+	i, err := Lookup(fl, k)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return i.(multi.MultiInt64), nil
 }
 
 func Int64Var(fl *flag.FlagSet, k string) (int64, error) {
