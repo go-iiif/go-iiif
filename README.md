@@ -476,6 +476,16 @@ Currently, there is only one optional suffix (`{sha256_origin}`) defined but in 
 }
 ```
 
+#### "lambda" mode
+
+If you are running this tool in Lambda mode you will need to map environment variables to their command line flag equivalents. This is handled automatically so long as the environment variables you set follows these conventions:
+
+* The name of a flag is upper-cased
+* Any instances of `-` are replaced by `_`
+* The final environment variable is prefixed by `IIIF_`
+
+For example the command line flag `-mode` becomes the AWS Lambda environment variable `IIIF_MODE`.
+
 ### iiif-process-and-tile
 
 ```
@@ -527,6 +537,16 @@ This tool wraps the functionality of the `iiif-process` and `iiif-tile-seed` too
 
 Processing and tile-seeding operations happen asynchronously by default but can be made to happen sequentially with the `-synchronous` flag.
 
+#### "lambda" mode
+
+If you are running this tool in Lambda mode you will need to map environment variables to their command line flag equivalents. This is handled automatically so long as the environment variables you set follows these conventions:
+
+* The name of a flag is upper-cased
+* Any instances of `-` are replaced by `_`
+* The final environment variable is prefixed by `IIIF_PROCESS_AND_TILE_`
+
+For example the command line flag `-mode` becomes the AWS Lambda environment variable `IIIF_PROCESS_AND_TILE_MODE`.
+
 ### iiif-server
 
 ```
@@ -559,6 +579,16 @@ curl -s localhost:8080/184512_5f7f47e5b3c66207_x.jpg/full/full/270/default.png
 ```
 
 `iiif-server` is a HTTP server that supports version 2.1 of the [IIIF Image API](http://iiif.io/api/image/2.1/).
+
+#### "lambda" mode
+
+If you are running this tool in Lambda mode you will need to map environment variables to their command line flag equivalents. This is handled automatically so long as the environment variables you set follows these conventions:
+
+* The name of a flag is upper-cased
+* Any instances of `-` are replaced by `_`
+* The final environment variable is prefixed by `IIIF_`
+
+For example the command line flag `-mode` becomes the AWS Lambda environment variable `IIIF_MODE`.
 
 #### Endpoints
 
@@ -728,6 +758,16 @@ source_id,alternate_id
 While all columns are required if `alternate_id` is empty the code will simply default to using `source_id` for all operations.
 
 _Important: The use of alternate IDs is not fully supported by `iiif-server` yet. Which is to say to the logic for how to convert a source identifier to an alternate identifier is still outside the scope of `go-iiif` so unless you have pre-rendered all of your tiles or other derivatives (in which case the check for cached derivatives at the top of the imgae handler will be triggered) then the server won't know where to write new alternate files._
+
+#### "lambda" mode
+
+If you are running this tool in Lambda mode you will need to map environment variables to their command line flag equivalents. This is handled automatically so long as the environment variables you set follows these conventions:
+
+* The name of a flag is upper-cased
+* Any instances of `-` are replaced by `_`
+* The final environment variable is prefixed by `IIIF_`
+
+For example the command line flag `-mode` becomes the AWS Lambda environment variable `IIIF_MODE`.
 
 ## Config files
 
