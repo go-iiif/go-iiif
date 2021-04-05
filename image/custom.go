@@ -2,6 +2,7 @@ package image
 
 import (
 	"errors"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -24,79 +25,80 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 
 	for _, q := range strings.Split(t.Quality, ",") {
 
+		log.Println("CUSTOM", q)
 		if q == "dither" {
-			
+
 			err := DitherImage(im)
-			
+
 			if err != nil {
 				return err
 			}
 
-		} else if q == "sharpen" {
-			
+		} else if q == "sharpen" || strings.HasPrefix(q, "sharpen:"){
+
 			err := SharpenImage(im)
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 		} else if strings.HasPrefix(q, "primitive:") {
 
 			/*
 
-			    "features": {
-				"append": {
-				    "quality": {
-					"primitive": { "primitive": "dither", "required": false, "supported": true, "match": "^primitive:\\d,\\d+,\\d+$" }
-				    }
-				}
-			    },
+				    "features": {
+					"append": {
+					    "quality": {
+						"primitive": { "primitive": "dither", "required": false, "supported": true, "match": "^primitive:\\d,\\d+,\\d+$" }
+					    }
+					}
+				    },
 
-		*/
-			
+			*/
+
 			fi, err := t.FormatInstructions(im)
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			parts := strings.Split(t.Quality, ":")
 			parts = strings.Split(parts[1], ",")
-			
+
 			mode, err := strconv.Atoi(parts[0])
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			iters, err := strconv.Atoi(parts[1])
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			max_iters := 40 // FIX ME... config.Primitive.MaxIterations
-			
+
 			if max_iters > 0 && iters > max_iters {
 				return errors.New("Invalid primitive iterations")
 			}
-			
+
 			alpha, err := strconv.Atoi(parts[2])
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			if alpha > 255 {
 				return errors.New("Invalid primitive alpha")
 			}
-			
+
 			animated := false
-			
+
 			if fi.Format == "gif" {
 				animated = true
 			}
-			
+
 			opts := PrimitiveOptions{
 				Alpha:      alpha,
 				Mode:       mode,
@@ -104,20 +106,20 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 				Size:       0,
 				Animated:   animated,
 			}
-			
+
 			err = PrimitiveImage(im, opts)
-			
+
 			if err != nil {
 				return err
 			}
-			
+
 			/*
-			if fi.Format == "gif" {
-				im.isgif = true
-			}
+				if fi.Format == "gif" {
+					im.isgif = true
+				}
 			*/
 		}
-		
+
 	}
 
 	return nil
