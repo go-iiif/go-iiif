@@ -1042,7 +1042,7 @@ Fetch sources images from any supported [Go Cloud storage service](https://goclo
 
 Some notes about the `Blob` source:
 
-* Under the hood the [github.com/aaronland/gocloud-blob-bucket](https://github.com/aaronland/gocloud-blob-bucket) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
+* Under the hood the [github.com/aaronland/go-cloud-s3blob](https://github.com/aaronland/go-cloud-s3blob) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
 
 ```
 	"images": {
@@ -1142,7 +1142,7 @@ Cache sources images to any supported [Go Cloud storage service](https://gocloud
 
 Some notes about the `Blob` cache:
 
-* Under the hood the [github.com/aaronland/gocloud-blob-bucket](https://github.com/aaronland/gocloud-blob-bucket) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
+* Under the hood the [github.com/aaronland/go-cloud-s3blob](https://github.com/aaronland/go-cloud-s3blob) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
 
 ```
 	"images": {
@@ -1219,7 +1219,7 @@ Cache derivation images to any supported [Go Cloud storage service](https://gocl
 
 Some notes about the `Blob` cache:
 
-* Under the hood the [github.com/aaronland/gocloud-blob-bucket](https://github.com/aaronland/gocloud-blob-bucket) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
+* Under the hood the [github.com/aaronland/go-cloud-s3blob](https://github.com/aaronland/go-cloud-s3blob) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
 
 ```
 	"derivatives": {
