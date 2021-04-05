@@ -229,7 +229,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/ping", ping_handler)
+	router.Handle("/ping", ping_handler)
 	router.HandleFunc("/debug/vars", expvar_handler)
 
 	// https://github.com/go-iiif/go-iiif/issues/4

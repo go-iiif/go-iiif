@@ -12,6 +12,7 @@ import (
 	"image/png"
 )
 
+// Convert a go-iiif/image.Image instance to a Go language image.Image instance.
 func IIIFImageToGolangImage(im Image) (image.Image, error) {
 
 	var goimg image.Image
@@ -56,6 +57,7 @@ func IIIFImageToGolangImage(im Image) (image.Image, error) {
 	return goimg, nil
 }
 
+// Assign a Go language image.Image instance to a go-iiif/image.Image instance.
 func GolangImageToIIIFImage(goimg image.Image, im Image) error {
 
 	body, err := GolangImageToBytes(goimg, im.ContentType())
@@ -67,6 +69,7 @@ func GolangImageToIIIFImage(goimg image.Image, im Image) error {
 	return im.Update(body)
 }
 
+// Encode a Go language image.Image instance to a byte array.
 func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) {
 
 	var out *bytes.Buffer
