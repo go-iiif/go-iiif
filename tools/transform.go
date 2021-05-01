@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"flag"
-	aws_events "github.com/aws/aws-lambda-go/events"
+	"io/ioutil"
+	"path/filepath"
+
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
@@ -15,8 +17,6 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
-	"io/ioutil"
-	"path/filepath"
 )
 
 type TransformTool struct {
@@ -336,7 +336,7 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 
 	case "lambda":
 
-		handler := func(ctx context.Context, ev aws_events.S3Event) error {
+		handler := func(ctx context.Context, ev Event) error {
 
 			to_transform := make([]iiifuri.URI, 0)
 
