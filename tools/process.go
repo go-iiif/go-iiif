@@ -5,7 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	aws_events "github.com/aws/aws-lambda-go/events"
+	"log"
+	"net/url"
+	"path/filepath"
+	"strings"
+	"sync"
+
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -16,11 +21,6 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
-	"log"
-	"net/url"
-	"path/filepath"
-	"strings"
-	"sync"
 )
 
 type ProcessTool struct {
@@ -433,7 +433,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 
 	case "lambda":
 
-		handler := func(ctx context.Context, ev aws_events.S3Event) error {
+		handler := func(ctx context.Context, ev Event) error {
 
 			to_process := make([]iiifuri.URI, 0)
 
