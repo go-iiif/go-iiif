@@ -1,6 +1,7 @@
 package session
 
 import (
+	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"os/user"
@@ -8,12 +9,28 @@ import (
 	"strings"
 )
 
-func NewConfigWithCredentials(str_creds string, region string) (*aws.Config, error) {
+func NewConfigWithCredentialsAndRegion(str_creds string, region string) (*aws.Config, error) {
+
+	cfg, err := NewConfigWithCredentials(str_creds)
+
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.WithRegion(region)
+	return cfg, nil
+}
+
+func NewConfigWithCredentials(str_creds string) (*aws.Config, error) {
 
 	cfg := aws.NewConfig()
-	cfg.WithRegion(region)
 
-	if strings.HasPrefix(str_creds, "env:") {
+	if strings.HasPrefix(str_creds, "anon:") {
+
+		creds := credentials.AnonymousCredentials
+		cfg.WithCredentials(creds)
+
+	} else if strings.HasPrefix(str_creds, "env:") {
 
 		creds := credentials.NewEnvCredentials()
 		cfg.WithCredentials(creds)
@@ -21,6 +38,21 @@ func NewConfigWithCredentials(str_creds string, region string) (*aws.Config, err
 	} else if strings.HasPrefix(str_creds, "iam:") {
 
 		// assume an IAM role suffient for doing whatever
+
+	} else if strings.HasPrefix(str_creds, "static:") {
+
+		details := strings.Split(str_creds, ":")
+
+		if len(details) != 4 {
+			return nil, fmt.Errorf("Expected (4) components for 'static:' credentials URI but got %d", len(details))
+		}
+
+		id := details[1]
+		key := details[2]
+		secret := details[3]
+
+		creds := credentials.NewStaticCredentials(id, key, secret)
+		cfg.WithCredentials(creds)
 
 	} else if str_creds != "" {
 

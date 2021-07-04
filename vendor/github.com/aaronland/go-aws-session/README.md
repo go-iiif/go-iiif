@@ -27,10 +27,12 @@ The following properties are required in DSN strings:
 
 Credentials for AWS sessions are defined as string labels. They are:
 
-* `env:` – read credentials from AWS defined environment variables.
-* `iam:` – assume AWS IAM credentials).
-* `{AWS_PROFILE_NAME}`.
-* `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`.
+| Label | Description |
+| --- | --- |
+| `env:` | Read credentials from AWS defined environment variables. |
+| `iam:` | Assume AWS IAM credentials are in effect. |
+| `{AWS_PROFILE_NAME}` | This this profile from the default AWS credentials location. |
+| `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}` | This this profile from a user-defined AWS credentials location. |
 
 For example:
 

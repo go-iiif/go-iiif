@@ -8,10 +8,12 @@ import (
 func ValidCredentials() []string {
 
 	valid := []string{
+		"anon:",
 		"env:",
 		"iam:",
 		"{PROFILE}",
 		"{PATH}:{PROFILE}",
+		"static:{ID}:{KEY}:{SECRET}",
 	}
 
 	return valid
