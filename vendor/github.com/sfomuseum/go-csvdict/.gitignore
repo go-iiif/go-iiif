@@ -1,0 +1,6 @@
+*~
+pkg
+src
+bin/index
+bin/index-csv
+bin/pip-server
