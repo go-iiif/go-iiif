@@ -167,6 +167,8 @@ github.com/patrickmn/go-cache
 github.com/rwcarlsen/goexif/exif
 github.com/rwcarlsen/goexif/mknote
 github.com/rwcarlsen/goexif/tiff
+# github.com/sfomuseum/go-csvdict v0.0.1
+github.com/sfomuseum/go-csvdict
 # github.com/sfomuseum/go-flags v0.8.2
 github.com/sfomuseum/go-flags/flagset
 github.com/sfomuseum/go-flags/lookup
@@ -180,8 +182,6 @@ github.com/whosonfirst/go-whosonfirst-aws/config
 github.com/whosonfirst/go-whosonfirst-aws/s3
 github.com/whosonfirst/go-whosonfirst-aws/session
 github.com/whosonfirst/go-whosonfirst-aws/util
-# github.com/whosonfirst/go-whosonfirst-csv v0.1.0
-github.com/whosonfirst/go-whosonfirst-csv
 # github.com/whosonfirst/go-whosonfirst-log v0.1.0
 github.com/whosonfirst/go-whosonfirst-log
 # github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0

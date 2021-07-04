@@ -24,11 +24,12 @@ require (
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
 	github.com/muesli/smartcrop v0.3.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/sfomuseum/go-csvdict v0.0.1
 	github.com/sfomuseum/go-flags v0.8.2
 	github.com/whosonfirst/algnhsa v0.1.0
 	github.com/whosonfirst/go-sanitize v0.1.0
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.4
-	github.com/whosonfirst/go-whosonfirst-csv v0.1.0
+	github.com/whosonfirst/go-whosonfirst-csv v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
 	gocloud.dev v0.23.0

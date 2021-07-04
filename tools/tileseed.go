@@ -12,7 +12,7 @@ import (
 	iiiftile "github.com/go-iiif/go-iiif/v4/tile"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
-	"github.com/whosonfirst/go-whosonfirst-csv"
+	"github.com/sfomuseum/go-csvdict"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"gocloud.dev/blob"
 	"io"
@@ -429,7 +429,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 
 			defer fh.Close()
 
-			reader, err := csv.NewDictReader(fh)
+			reader, err := csvdict.NewReader(fh)
 
 			if err != nil {
 				return err
