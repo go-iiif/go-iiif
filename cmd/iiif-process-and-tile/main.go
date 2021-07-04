@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/aaronland/go-cloud-s3blob"
+	_ "github.com/aaronland/gocloud-blob-s3"
 	_ "github.com/go-iiif/go-iiif/v4/native"
 	_ "gocloud.dev/blob/fileblob"
 )

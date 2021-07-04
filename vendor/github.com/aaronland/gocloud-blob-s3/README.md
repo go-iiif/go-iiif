@@ -1,4 +1,4 @@
-# go-cloud-s3blob
+# gocloud-blob-s3
 
 This is thing wrapper around the default `go-cloud` S3 blob opener to check for a `credentials` parameter (in blob URIs) and use it to assign AWS S3 session credentials.
 
@@ -8,7 +8,7 @@ This is thing wrapper around the default `go-cloud` S3 blob opener to check for 
 import (
 	"context"
 	"gocloud.dev/blob"
-	_ "github.com/aaronland/go-cloud-s3blob"
+	_ "github.com/aaronland/gocloud-blob-s3"
 )
 
 func main() {

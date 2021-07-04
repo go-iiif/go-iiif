@@ -6,7 +6,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	_ "github.com/aaronland/go-cloud-s3blob"
+	_ "github.com/aaronland/gocloud-blob-s3"
 	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"

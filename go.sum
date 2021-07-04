@@ -105,6 +105,8 @@ github.com/aaronland/go-roster v0.0.2/go.mod h1:AcovpxlG1XxJxX2Fjqlm63fEIBhCjEIB
 github.com/aaronland/go-string v0.1.1/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
 github.com/aaronland/go-string v0.1.2 h1:RSr/mQNbLgF37H0RV+nF7j2kILRRFkCmr8Jwq4lw92k=
 github.com/aaronland/go-string v0.1.2/go.mod h1:2aMIWdTqk63jZsaLLy+p9dsB1MDRqx4sHYoLtkwyYUo=
+github.com/aaronland/gocloud-blob-s3 v0.1.0 h1:pytPBr+ypLDZYqTjoVbdf4cPmlEYQ03LW8NkjsynruM=
+github.com/aaronland/gocloud-blob-s3 v0.1.0/go.mod h1:lp5o6UdndyGn0M+oIZEG98eip+T71vL+U8P8WQUe0UE=
 github.com/akrylysov/algnhsa v0.0.0-20190319020909-05b3d192e9a7/go.mod h1:HhzjNA0EjUWcwHTUMwqrpeAdIF3gRmpH0HpWx1hYJSc=
 github.com/anthonynsimon/bild v0.13.0 h1:mN3tMaNds1wBWi1BrJq0ipDBhpkooYfu7ZFSMhXt1C8=
 github.com/anthonynsimon/bild v0.13.0/go.mod h1:tpzzp0aYkAsMi1zmfhimaDyX1xjn2OUc1AJZK/TF0AE=

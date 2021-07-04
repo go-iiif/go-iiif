@@ -3,13 +3,13 @@ module github.com/go-iiif/go-iiif/v4
 go 1.13
 
 require (
-	github.com/aaronland/go-cloud-s3blob v0.2.1
 	github.com/aaronland/go-colours v0.1.1
 	github.com/aaronland/go-http-ping v1.0.0
 	github.com/aaronland/go-http-server v0.0.7
 	github.com/aaronland/go-image-resize v0.0.0-20201125043310-09c78e618864
 	github.com/aaronland/go-image-rotate v0.0.4
 	github.com/aaronland/go-roster v0.0.2
+	github.com/aaronland/gocloud-blob-s3 v0.1.0
 	github.com/anthonynsimon/bild v0.13.0
 	github.com/aws/aws-lambda-go v1.24.0
 	github.com/aws/aws-sdk-go v1.39.0

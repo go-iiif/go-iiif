@@ -2,8 +2,6 @@
 github.com/RobCherry/vibrant
 # github.com/aaronland/go-aws-session v0.0.6
 github.com/aaronland/go-aws-session
-# github.com/aaronland/go-cloud-s3blob v0.2.1
-github.com/aaronland/go-cloud-s3blob
 # github.com/aaronland/go-colours v0.1.1
 github.com/aaronland/go-colours
 github.com/aaronland/go-colours/extruder
@@ -25,6 +23,8 @@ github.com/aaronland/go-roster
 # github.com/aaronland/go-string v0.1.2
 github.com/aaronland/go-string/dsn
 github.com/aaronland/go-string/random
+# github.com/aaronland/gocloud-blob-s3 v0.1.0
+github.com/aaronland/gocloud-blob-s3
 # github.com/anthonynsimon/bild v0.13.0
 github.com/anthonynsimon/bild/adjust
 github.com/anthonynsimon/bild/blend
