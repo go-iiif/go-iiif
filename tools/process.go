@@ -176,7 +176,7 @@ func AppendProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 	fs.String("report-template", process.REPORTNAME_TEMPLATE, "A valid URI template for generating process report filenames.")
 	fs.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
 
-	fs.String("uri-func", "", "A valid go-iiif/go-iiif-uri URIFunc URI.")
+	fs.String("iiif-uri", "", "A custom go-iiif/go-iiif-uri URI whose path element will be replaced with each file being processed.")
 	return nil
 }
 
@@ -265,31 +265,35 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 
 	// START OF custom URI func (for reprocessing)
 
-	uri_func_uri, err := lookup.StringVar(fs, "uri-func")
+	iiif_uri, err := lookup.StringVar(fs, "iiif-uri")
 
 	if err != nil {
-		return fmt.Errorf("Invalid -uri-func flag, %w", err)
+		return fmt.Errorf("Invalid -iiif-uri flag, %w", err)
 	}
 
-	_, err = url.Parse(uri_func_uri)
-
-	if err != nil {
-		return fmt.Errorf("Failed to parse -uri-func flag, %w", err)
-	}
-
-	t.URIFunc = func(raw_uri string) (iiifuri.URI, error) {
-
-		u, err := url.Parse(uri_func_uri)
-
+	if iiif_uri != "" {
+		
+		_, err = url.Parse(iiif_uri)
+		
 		if err != nil {
-			return nil, err
+			return fmt.Errorf("Failed to parse -iiif-uri flag, %w", err)
 		}
+		
+		t.URIFunc = func(raw_uri string) (iiifuri.URI, error) {
+			
+			u, err := url.Parse(iiif_uri)
 
-		u.Path = raw_uri
+			if err != nil {
+				return nil, err
+			}
+			
+			u.Path = raw_uri
 
-		return iiifuri.NewURI(u.String())
+			log.Println("DEBUG", u.String())
+			return iiifuri.NewIdSecretURI(u.String())
+		}
 	}
-
+	
 	// END OF custom URI func (for reprocessing)
 
 	config_bucket, err := blob.OpenBucket(ctx, config_source)

@@ -3,7 +3,7 @@ package uri
 import (
 	"errors"
 	"fmt"
-	_ "log"
+	"log"
 	"net/url"
 	"regexp"
 )
@@ -20,16 +20,19 @@ func NewURI(str_uri string) (URI, error) {
 	u, err := NewURIWithDriver(str_uri)
 
 	if err == nil {
+		log.Println("SAD 1")
 		return u, nil
 	}
 
 	re, re_err := regexp.Compile(`^\w+\:\/\/`)
 
 	if re_err != nil {
+		log.Println("SAD 2")		
 		return nil, re_err
 	}
 
 	if re.MatchString(str_uri) {
+		log.Println("SAD 3", str_uri)		
 		msg := fmt.Sprintf("Invalid or unsupported URI string: %s", err)
 		return nil, errors.New(msg)
 	}
