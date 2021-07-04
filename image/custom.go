@@ -2,7 +2,8 @@ package image
 
 import (
 	"errors"
-	"log"
+	"fmt"
+	_ "log"
 	"strconv"
 	"strings"
 )
@@ -25,7 +26,6 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 
 	for _, q := range strings.Split(t.Quality, ",") {
 
-		log.Println("CUSTOM", q)
 		if q == "dither" {
 
 			err := DitherImage(im)
@@ -34,12 +34,55 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 				return err
 			}
 
-		} else if q == "sharpen" || strings.HasPrefix(q, "sharpen:"){
+		} else if q == "crispen" || strings.HasPrefix(q, "crispen:") {
 
-			err := SharpenImage(im)
+			/*
+
+				    "features": {
+					"append": {
+					    "quality": {
+						"crispen": { "syntax": "crispen", "required": false, "supported": true, "match": "^crispen(?:\\:(\\d+\\.\\d+),(\\d+\\.\\d+),(\\d+\\.\\d+))?$" }
+					    }
+					}
+				    }
+
+			*/
+
+			opts := DefaultCrispenImageOptions()
+
+			parts := strings.Split(q, ":")
+
+			if len(parts) == 2 {
+
+				str_opts := strings.Split(parts[1], ",")
+
+				r, err := strconv.ParseFloat(str_opts[0], 64)
+
+				if err != nil {
+					return fmt.Errorf("Invalid radius parameter, %w", err)
+				}
+
+				a, err := strconv.ParseFloat(str_opts[1], 64)
+
+				if err != nil {
+					return fmt.Errorf("Invalid amount parameter, %w", err)
+				}
+
+				m, err := strconv.ParseFloat(str_opts[2], 64)
+
+				if err != nil {
+					return fmt.Errorf("Invalid median parameter, %w", err)
+				}
+
+				opts.Radius = r
+				opts.Amount = a
+				opts.Median = m
+			}
+
+			err := CrispenImage(im, opts)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to crispen image, %w", err)
 			}
 
 		} else if strings.HasPrefix(q, "primitive:") {

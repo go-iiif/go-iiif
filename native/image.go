@@ -23,7 +23,6 @@ import (
 	"image/jpeg"
 	"image/png"
 	_ "log"
-	_ "math"
 )
 
 type NativeImage struct {

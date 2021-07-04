@@ -1,6 +1,6 @@
 module github.com/go-iiif/go-iiif/v4
 
-go 1.12
+go 1.13
 
 require (
 	github.com/aaronland/go-cloud-s3blob v0.2.1
