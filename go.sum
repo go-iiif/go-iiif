@@ -173,6 +173,8 @@ github.com/go-gl/glfw/v3.3/glfw v0.0.0-20191125211704-12ad95a8df72/go.mod h1:tQ2
 github.com/go-gl/glfw/v3.3/glfw v0.0.0-20200222043503-6f7a984d4dc4/go.mod h1:tQ2UAYgL5IevRw8kRxooKSPJfGvJ9fJQFa0TUsXzTg8=
 github.com/go-iiif/go-iiif-uri v0.4.3 h1:5WkBlRdun+myIS85CjWxUiesq8Aqfjd5MD1Ppc7pvK4=
 github.com/go-iiif/go-iiif-uri v0.4.3/go.mod h1:836JPNlAwc5wnWXlhyp1R6JJgE7kvvGSuuHo5C+9Bao=
+github.com/go-iiif/go-iiif-uri v0.5.0 h1:pbC4/5XWtWlDpRS3+SFHAY92q+4qHdjkkRYhCUFlFng=
+github.com/go-iiif/go-iiif-uri v0.5.0/go.mod h1:HTMWOeX90Z01txYGnhOYaeIx3aw+DhHfvrXlpI5UlbM=
 github.com/go-ini/ini v1.25.4/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
 github.com/go-ini/ini v1.42.0/go.mod h1:ByCAeIL28uOIIG0E3PJtZPDL8WnHpFKFOtgjp+3Ies8=
 github.com/go-playground/assert/v2 v2.0.1/go.mod h1:VDjEfimB/XKnb+ZQfWdccd7VUvScMdVu0Titje2rxJ4=

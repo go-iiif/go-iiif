@@ -109,7 +109,7 @@ func main() {
 
 			*/
 
-			u, err := uri.NewURI(raw_uri)
+			u, err := uri.NewURI(ctx, raw_uri)
 
 			if err != nil {
 				return nil, err
@@ -134,10 +134,9 @@ func main() {
 			root := filepath.Dir(target)
 			path := filepath.Join(root, "tiles")
 
-			file_uri := fmt.Sprintf("%s?target=%s", origin, path)
-			file_uri = uri.NewFileURIString(file_uri)
+			file_uri := fmt.Sprintf("%s://%s?target=%s", uri.FILE_SCHEME, origin, path)
 
-			return uri.NewFileURI(file_uri)
+			return uri.NewFileURI(ctx, file_uri)
 		}
 
 		t, err := tools.NewTileSeedToolWithURIFunc(ts_uri_func)

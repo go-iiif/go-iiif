@@ -76,6 +76,8 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 	}()
 
+	ctx := context.Background()
+
 	for label, i := range instruction_set {
 
 		i = EnsureInstructions(i)
@@ -88,7 +90,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 			var process_uri iiifuri.URI
 
-			switch u.Driver() {
+			switch u.Scheme() {
 			case "idsecret":
 
 				str_label := fmt.Sprintf("%s", label)
@@ -111,10 +113,9 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 				origin := u.Origin()
 
-				rw_str := fmt.Sprintf("%s?target=%s", origin, target_str)
-				rw_str = iiifuri.NewRewriteURIString(rw_str)
+				rw_str := fmt.Sprintf("%s://%s?target=%s", iiifuri.IDSECRET_SCHEME, origin, target_str)
 
-				rw_uri, err := iiifuri.NewURI(rw_str)
+				rw_uri, err := iiifuri.NewURI(ctx, rw_str)
 
 				if err != nil {
 					msg := fmt.Sprintf("failed to generate rewrite URL %s (%s) : %s", u, label, err)

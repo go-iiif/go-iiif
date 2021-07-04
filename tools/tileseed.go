@@ -45,7 +45,8 @@ type TileSeedTool struct {
 
 func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
 
-	u, err := iiifuri.NewURI(str_uri)
+	ctx := context.Background()
+	u, err := iiifuri.NewURI(ctx, str_uri)
 
 	if err != nil {
 		return nil, err

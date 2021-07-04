@@ -321,11 +321,12 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 
 	case "cli":
 
+		ctx := context.Background()
 		to_transform := make([]iiifuri.URI, 0)
 
 		for _, str_uri := range paths {
 
-			u, err := iiifuri.NewURI(str_uri)
+			u, err := iiifuri.NewURI(ctx, str_uri)
 
 			if err != nil {
 				return err
@@ -354,7 +355,7 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 
 				s3_fname := filepath.Base(s3_key)
 
-				u, err := iiifuri.NewURI(s3_fname)
+				u, err := iiifuri.NewURI(ctx, s3_fname)
 
 				if err != nil {
 					return err

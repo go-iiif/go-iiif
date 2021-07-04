@@ -1,9 +1,9 @@
 package uri
 
 import (
+	"context"
 	"errors"
 	"fmt"
-	"github.com/aaronland/go-string/dsn"
 	"github.com/aaronland/go-string/random"
 	_ "log"
 	"net/url"
@@ -12,27 +12,7 @@ import (
 	"strings"
 )
 
-const IdSecretDriverName string = "idsecret"
-
-func init() {
-	dr := NewIdSecretURIDriver()
-	RegisterDriver(IdSecretDriverName, dr)
-}
-
-type IdSecretURIDriver struct {
-	Driver
-}
-
-func NewIdSecretURIDriver() Driver {
-
-	dr := IdSecretURIDriver{}
-	return &dr
-}
-
-func (dr *IdSecretURIDriver) NewURI(str_uri string) (URI, error) {
-
-	return NewIdSecretURI(str_uri)
-}
+const IDSECRET_SCHEME string = "idsecret"
 
 type IdSecretURI struct {
 	URI
@@ -45,39 +25,12 @@ type IdSecretURI struct {
 	prefix   string
 }
 
-func NewIdSecretURIFromDSN(dsn_raw string) (URI, error) {
-
-	dsn_map, err := dsn.StringToDSNWithKeys(dsn_raw, "id", "uri")
-
-	if err != nil {
-		return nil, err
-	}
-
-	origin := dsn_map["id"]
-	id := dsn_map["uri"]
-
-	q := url.Values{}
-	q.Set("id", id)
-
-	secret, ok := dsn_map["secret"]
-
-	if ok {
-		q.Set("secret", secret)
-	}
-
-	secret_o, ok := dsn_map["secret_o"]
-
-	if ok {
-		q.Set("secret_o", secret_o)
-	}
-
-	raw_uri := fmt.Sprintf("%s?%s", origin, q.Encode())
-	str_uri := NewIdSecretURIString(raw_uri)
-
-	return NewIdSecretURI(str_uri)
+func init() {
+	ctx := context.Background()
+	RegisterURI(ctx, IDSECRET_SCHEME, NewIdSecretURI)
 }
 
-func NewIdSecretURI(str_uri string) (URI, error) {
+func NewIdSecretURI(ctx context.Context, str_uri string) (URI, error) {
 
 	u, err := url.Parse(str_uri)
 
@@ -152,15 +105,11 @@ func NewIdSecretURI(str_uri string) (URI, error) {
 	return &id_u, nil
 }
 
-func (u *IdSecretURI) Driver() string {
-	return IdSecretDriverName
-}
-
 func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 
 	str_id := u.id // strconv.FormatUint(u.id, 10)
 
-	prefix := id2Path(u.id)
+	prefix := Id2Path(u.id)
 
 	if u.prefix != "" {
 		prefix = u.prefix
@@ -207,10 +156,15 @@ func (u *IdSecretURI) String() string {
 	q.Set("secret_o", u.secret_o)
 
 	raw_uri := fmt.Sprintf("%s?%s", u.origin, q.Encode())
-	return NewIdSecretURIString(raw_uri)
+
+	return fmt.Sprintf("%s:///%s", u.Scheme(), raw_uri)
 }
 
-func id2Path(id string) string {
+func (u *IdSecretURI) Scheme() string {
+	return IDSECRET_SCHEME
+}
+
+func Id2Path(id string) string {
 
 	parts := []string{""}
 	input := id // strconv.FormatUint(id, 10)
@@ -227,8 +181,4 @@ func id2Path(id string) string {
 	}
 
 	return filepath.Join(parts...)
-}
-
-func NewIdSecretURIString(raw_uri string) string {
-	return fmt.Sprintf("%s:///%s", IdSecretDriverName, raw_uri)
 }

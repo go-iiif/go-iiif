@@ -1,6 +1,8 @@
 package process
 
 import (
+	"context"
+	"fmt"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
@@ -33,7 +35,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 
 	// I do not love this...
 
-	switch u.Driver() {
+	switch u.Scheme() {
 
 	case "rewrite":
 		// pass
@@ -45,8 +47,10 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 			return nil, nil, err
 		}
 
-		str_uri := iiifuri.NewFileURIString(tr_uri)
-		new_uri, err := iiifuri.NewURI(str_uri)
+		ctx := context.Background()
+
+		str_uri := fmt.Sprintf("%s://%s", iiifuri.FILE_SCHEME, tr_uri)
+		new_uri, err := iiifuri.NewURI(ctx, str_uri)
 
 		if err != nil {
 			return nil, nil, err
@@ -79,8 +83,10 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	str_uri := iiifuri.NewFileURIString(target)
-	new_uri, err := iiifuri.NewURI(str_uri)
+	ctx := context.Background()
+
+	str_uri := fmt.Sprintf("%s://%s", iiifuri.FILE_SCHEME, target)
+	new_uri, err := iiifuri.NewURI(ctx, str_uri)
 
 	if err != nil {
 		return nil, nil, err

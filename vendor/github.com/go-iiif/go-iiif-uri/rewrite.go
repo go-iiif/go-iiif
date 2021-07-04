@@ -1,17 +1,14 @@
 package uri
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
 	"strings"
 )
 
-const RewriteDriverName string = "rewrite"
-
-type RewriteURIDriver struct {
-	Driver
-}
+const REWRITE_SCHEME string = "rewrite"
 
 type RewriteURI struct {
 	URI
@@ -20,21 +17,11 @@ type RewriteURI struct {
 }
 
 func init() {
-	dr := NewRewriteURIDriver()
-	RegisterDriver(RewriteDriverName, dr)
+	ctx := context.Background()
+	RegisterURI(ctx, REWRITE_SCHEME, NewRewriteURI)
 }
 
-func NewRewriteURIDriver() Driver {
-
-	dr := RewriteURIDriver{}
-	return &dr
-}
-
-func (dr *RewriteURIDriver) NewURI(str_uri string) (URI, error) {
-	return NewRewriteURI(str_uri)
-}
-
-func NewRewriteURI(str_uri string) (URI, error) {
+func NewRewriteURI(ctx context.Context, str_uri string) (URI, error) {
 
 	u, err := url.Parse(str_uri)
 
@@ -68,10 +55,6 @@ func NewRewriteURI(str_uri string) (URI, error) {
 	return &rw, nil
 }
 
-func (u *RewriteURI) Driver() string {
-	return RewriteDriverName
-}
-
 func (u *RewriteURI) Origin() string {
 	return u.origin
 }
@@ -86,9 +69,9 @@ func (u *RewriteURI) String() string {
 	q.Set("target", u.target)
 
 	raw_uri := fmt.Sprintf("%s?%s", u.origin, q.Encode())
-	return NewRewriteURIString(raw_uri)
+	return fmt.Sprintf("rewrite:///%s", raw_uri)
 }
 
-func NewRewriteURIString(raw_uri string) string {
-	return fmt.Sprintf("%s:///%s", RewriteDriverName, raw_uri)
+func (u *RewriteURI) Scheme() string {
+	return REWRITE_SCHEME
 }

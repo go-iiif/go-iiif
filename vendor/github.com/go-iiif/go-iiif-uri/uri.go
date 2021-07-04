@@ -1,40 +1,95 @@
 package uri
 
 import (
-	"errors"
+	"context"
 	"fmt"
+	"github.com/aaronland/go-roster"
 	_ "log"
 	"net/url"
-	"regexp"
+	"sort"
+	"strings"
 )
 
 type URI interface {
-	Driver() string
+	Scheme() string
 	String() string
 	Origin() string
 	Target(*url.Values) (string, error)
 }
 
-func NewURI(str_uri string) (URI, error) {
+type URIInitializeFunc func(ctx context.Context, uri string) (URI, error)
 
-	u, err := NewURIWithDriver(str_uri)
+var uri_roster roster.Roster
 
-	if err == nil {
-		return u, nil
+func ensureSpatialRoster() error {
+
+	if uri_roster == nil {
+
+		r, err := roster.NewDefaultRoster()
+
+		if err != nil {
+			return err
+		}
+
+		uri_roster = r
 	}
 
-	re, re_err := regexp.Compile(`^\w+\:\/\/`)
+	return nil
+}
 
-	if re_err != nil {
-		return nil, re_err
+func RegisterURI(ctx context.Context, scheme string, f URIInitializeFunc) error {
+
+	err := ensureSpatialRoster()
+
+	if err != nil {
+		return err
 	}
 
-	if re.MatchString(str_uri) {
-		msg := fmt.Sprintf("Invalid or unsupported URI string: %s", err)
-		return nil, errors.New(msg)
+	return uri_roster.Register(ctx, scheme, f)
+}
+
+func Schemes() []string {
+
+	ctx := context.Background()
+	schemes := []string{}
+
+	err := ensureSpatialRoster()
+
+	if err != nil {
+		return schemes
 	}
 
-	file_uri := NewFileURIString(str_uri)
+	for _, dr := range uri_roster.Drivers(ctx) {
+		scheme := fmt.Sprintf("%s://", strings.ToLower(dr))
+		schemes = append(schemes, scheme)
+	}
 
-	return NewURIWithDriver(file_uri)
+	sort.Strings(schemes)
+	return schemes
+}
+
+func NewURI(ctx context.Context, uri string) (URI, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	scheme := u.Scheme
+
+	if scheme == "" {
+		scheme = "file"
+		u.Scheme = scheme
+		uri = u.String()
+	}
+
+	i, err := uri_roster.Driver(ctx, scheme)
+
+	if err != nil {
+		return nil, err
+	}
+
+	f := i.(URIInitializeFunc)
+	return f(ctx, uri)
 }

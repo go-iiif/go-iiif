@@ -2,15 +2,11 @@
 
 Go package for working with URIs in the `go-iiif` package (and friends).
 
-## Install
+## Documentation
 
-You will need to have both `Go` (specifically [version 1.12](https://golang.org/dl/) or higher because we're using [Go modules](https://github.com/golang/go/wiki/Modules)) and the `make` programs installed on your computer. Assuming you do just type:
+[![Go Reference](https://pkg.go.dev/badge/github.com/go-iiif/go-iiif-uri.svg)](https://pkg.go.dev/github.com/go-iiif/go-iiif-uri)
 
-```
-$> make tools
-```
-
-All of this package's dependencies are bundled with the code in the `vendor` directory.
+Documentation is incomplete.
 
 ## Why does this package exist?
 
@@ -28,47 +24,10 @@ Support for different [go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URIs
 
 ```
 type URI interface {
-	Driver() string
+	Scheme() string     
 	String() string
 	Origin() string
 	Target(*url.Values) (string, error)
-}
-```
-
-## Drivers
-
-Drivers are expected to "register" themselves through the `driver.RegisterDriver` method at runtime. For example:
-
-```
-package custom
-
-import (
-	"github.com/go-iiif/go-iiif-uri/driver"
-)
-
-func init() {
-
-	dr, err := NewCustomURIDriver()
-
-	if err != nil {
-		panic(err)
-	}
-
-	driver.RegisterDriver("custom", dr)
-}
-```
-
-And then in your code you might do something like this:
-
-```
-import (
-	"github.com/go-iiif-uri"
-	_ "github.com/go-iiif-custom"
-)
-
-func main() {
-
-     u, _ := uri.NewURI("custom:///kitten.jpg")
 }
 ```
 
@@ -146,7 +105,7 @@ go func(u iiifuri.URI, label Label, i IIIFInstructions) {
 
 	var process_uri iiifuri.URI
 
-	switch u.Driver() {
+	switch u.Scheme() {
 	case "idsecret":
 
 		str_label := fmt.Sprintf("%s", label)
