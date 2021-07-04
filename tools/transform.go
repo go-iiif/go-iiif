@@ -1,5 +1,11 @@
 package tools
 
+/*
+
+> go run -mod vendor cmd/iiif-transform/main.go -config-name config.json.example -config-source file:///usr/local/code/go-iiif/docs/ -region -1,-1,320,320 -quality sharpen -source file:///usr/local/code/go-iiif/example/images -target file:///usr/local/code/go-iiif/example/cache spanking-cat.jpg
+
+*/
+
 import (
 	"context"
 	"errors"

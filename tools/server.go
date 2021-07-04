@@ -5,12 +5,13 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/aaronland/go-http-ping"
+	"github.com/aaronland/go-http-server"
 	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
 	iiifhttp "github.com/go-iiif/go-iiif/v4/http"
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
-	iiifserver "github.com/go-iiif/go-iiif/v4/server"
 	iiifsource "github.com/go-iiif/go-iiif/v4/source"
 	"github.com/gorilla/mux"
 	"github.com/sfomuseum/go-flags/flagset"
@@ -64,9 +65,11 @@ func AppendCommonServerToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 
 func AppendServerToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 
-	fs.String("protocol", "http", "The protocol for wof-staticd server to listen on. Valid protocols are: http, lambda.")
-	fs.String("host", "localhost", "Bind the server to this host")
-	fs.Int("port", 8080, "Bind the server to this port")
+	fs.String("protocol", "", "The protocol for iiif-server server to listen on. Valid protocols are: http, lambda. THIS FLAG IS DEPRECATED: Please use -server-uri instead.")
+	fs.String("host", "", "Bind the server to this host. THIS FLAG IS DEPRECATED: Please use -server-uri instead.")
+	fs.Int("port", 0, "Bind the server to this port. THIS FLAG IS DEPRECATED: Please use -server-uri instead.")
+
+	fs.String("server-uri", "http://localhost:8080", "A valid aaronland/go-http-server URI")
 
 	fs.Bool("example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
 	fs.String("example-root", "example", "An explicit path to a folder containing example assets")
@@ -126,6 +129,12 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 	}
 
 	port, err := lookup.IntVar(fs, "port")
+
+	if err != nil {
+		return err
+	}
+
+	server_uri, err := lookup.StringVar(fs, "server-uri")
 
 	if err != nil {
 		return err
@@ -214,7 +223,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return err
 	}
 
-	ping_handler, err := iiifhttp.PingHandler()
+	ping_handler, err := ping.PingHandler()
 
 	if err != nil {
 		return err
@@ -228,7 +237,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/ping", ping_handler)
+	router.Handle("/ping", ping_handler)
 	router.HandleFunc("/debug/vars", expvar_handler)
 
 	// https://github.com/go-iiif/go-iiif/issues/4
@@ -259,15 +268,14 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		router.HandleFunc("/example/{ignore:.*}", example_handler)
 	}
 
-	address := fmt.Sprintf("http://%s:%d", host, port)
-
-	u, err := url.Parse(address)
-
-	if err != nil {
-		return err
+	if proto != "" && host != "" && port != 0 {
+		u := url.URL{}
+		u.Scheme = proto
+		u.Host = fmt.Sprintf("%s:%d", host, port)
+		server_uri = u.String()
 	}
 
-	s, err := iiifserver.NewServer(proto, u)
+	s, err := server.NewServer(ctx, server_uri)
 
 	if err != nil {
 		return err
@@ -275,7 +283,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 
 	log.Printf("Listening on %s\n", s.Address())
 
-	err = s.ListenAndServe(router)
+	err = s.ListenAndServe(ctx, router)
 
 	if err != nil {
 		return err

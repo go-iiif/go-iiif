@@ -115,6 +115,8 @@ func (t *Transformation) ToURI(id string) (string, error) {
 		t.Quality,
 	}
 
+	// SOMETHING SOMETHING SOMETHING QUALITY HERE...
+
 	for i, v := range nodes {
 
 		// https://github.com/mrap/stringutil/blob/master/urlencode.go

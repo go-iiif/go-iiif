@@ -4,6 +4,16 @@ import (
 	"context"
 	"errors"
 	"flag"
+	aws_lambda "github.com/aws/aws-lambda-go/lambda"
+	"github.com/fsnotify/fsnotify"
+	iiifuri "github.com/go-iiif/go-iiif-uri"
+	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
+	iiiftile "github.com/go-iiif/go-iiif/v4/tile"
+	"github.com/sfomuseum/go-csvdict"
+	"github.com/sfomuseum/go-flags/flagset"
+	"github.com/sfomuseum/go-flags/lookup"
+	"github.com/whosonfirst/go-whosonfirst-log"
+	"gocloud.dev/blob"
 	"io"
 	"net/url"
 	"os"
@@ -13,17 +23,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-
-	aws_lambda "github.com/aws/aws-lambda-go/lambda"
-	"github.com/fsnotify/fsnotify"
-	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiiftile "github.com/go-iiif/go-iiif/v4/tile"
-	"github.com/sfomuseum/go-flags/flagset"
-	"github.com/sfomuseum/go-flags/lookup"
-	csv "github.com/whosonfirst/go-whosonfirst-csv"
-	log "github.com/whosonfirst/go-whosonfirst-log"
-	"gocloud.dev/blob"
 )
 
 type Seed struct {
@@ -429,7 +428,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 
 			defer fh.Close()
 
-			reader, err := csv.NewDictReader(fh)
+			reader, err := csvdict.NewReader(fh)
 
 			if err != nil {
 				return err

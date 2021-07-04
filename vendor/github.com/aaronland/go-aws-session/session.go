@@ -18,7 +18,7 @@ func NewSessionWithDSN(dsn_str string) (*aws_session.Session, error) {
 
 func NewSessionWithCredentials(str_creds string, region string) (*aws_session.Session, error) {
 
-	cfg, err := NewConfigWithCredentials(str_creds, region)
+	cfg, err := NewConfigWithCredentialsAndRegion(str_creds, region)
 
 	if err != nil {
 		return nil, err
