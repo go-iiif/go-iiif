@@ -6,6 +6,7 @@ require (
 	github.com/aaronland/go-cloud-s3blob v0.2.1
 	github.com/aaronland/go-colours v0.1.1
 	github.com/aaronland/go-http-ping v1.0.0
+	github.com/aaronland/go-http-server v0.0.7
 	github.com/aaronland/go-image-resize v0.0.0-20201125043310-09c78e618864
 	github.com/aaronland/go-image-rotate v0.0.4
 	github.com/aaronland/go-roster v0.0.2
@@ -29,7 +30,6 @@ require (
 	github.com/whosonfirst/algnhsa v0.1.0
 	github.com/whosonfirst/go-sanitize v0.1.0
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.4
-	github.com/whosonfirst/go-whosonfirst-csv v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
 	gocloud.dev v0.23.0
