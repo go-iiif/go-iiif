@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"strings"
 	"sync"
-
+	"fmt"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -176,6 +176,7 @@ func AppendProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 	fs.String("report-template", process.REPORTNAME_TEMPLATE, "A valid URI template for generating process report filenames.")
 	fs.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
 
+	fs.String("uri-func", "", "A valid go-iiif/go-iiif-uri URIFunc URI.")
 	return nil
 }
 
@@ -262,6 +263,21 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		return errors.New("Required -instructions-source flag is empty.")
 	}
 
+	// START OF custom URI func (for reprocessing)
+
+	uri_func_uri, err := lookup.StringVar(fs, "uri-func")
+
+	if err != nil {
+	 	return fmt.Errorf("Invalid -uri-func flag, %w", err)
+	}
+
+	t.URIFunc = func(raw_uri string) (iiifuri.URI, error) {
+		log.Println("REPLACE WITH", uri_func_uri)
+		return iiifuri.NewURI(raw_uri)
+	}
+	
+	// END OF custom URI func (for reprocessing)	
+	
 	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
