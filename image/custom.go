@@ -24,7 +24,12 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 	// the rest of the code does need to know about it...
 	// (20160922/thisisaaronland)
 
-	for _, q := range strings.Split(t.Quality, ",") {
+	// This (splitting on ';' doesn't work yet because it fails on the
+	// earlier pattern matching for the quality parameter. For example:
+	// 2021/07/04 10:35:49 Invalid IIIF 2.1 feature property quality crisp:2.0,1.0,0.025;dither
+	// https://github.com/go-iiif/go-iiif/issues/89
+
+	for _, q := range strings.Split(t.Quality, ";") {
 
 		if q == "dither" {
 
@@ -34,27 +39,31 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 				return err
 			}
 
-		} else if q == "crispen" || strings.HasPrefix(q, "crispen:") {
+		} else if q == "crisp" || strings.HasPrefix(q, "crisp:") {
 
 			/*
 
 				    "features": {
 					"append": {
 					    "quality": {
-						"crispen": { "syntax": "crispen", "required": false, "supported": true, "match": "^crispen(?:\\:(\\d+\\.\\d+),(\\d+\\.\\d+),(\\d+\\.\\d+))?$" }
+						"crisp": { "syntax": "crisp", "required": false, "supported": true, "match": "^crisp(?:\\:(\\d+\\.\\d+),(\\d+\\.\\d+),(\\d+\\.\\d+))?$" }
 					    }
 					}
 				    }
 
 			*/
 
-			opts := DefaultCrispenImageOptions()
+			opts := DefaultCrispImageOptions()
 
 			parts := strings.Split(q, ":")
 
 			if len(parts) == 2 {
 
 				str_opts := strings.Split(parts[1], ",")
+
+				if len(str_opts) != 3 {
+					return fmt.Errorf("Invalid crisp parameters '%s'", parts[1])
+				}
 
 				r, err := strconv.ParseFloat(str_opts[0], 64)
 
@@ -79,7 +88,7 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 				opts.Median = m
 			}
 
-			err := CrispenImage(im, opts)
+			err := CrispImage(im, opts)
 
 			if err != nil {
 				return fmt.Errorf("Failed to crispen image, %w", err)

@@ -1337,6 +1337,26 @@ _As of this writing the `noAutoRotate` feature does not work in combination with
 
 `go-iiif` supports the following non-standard IIIF `quality` features:
 
+#### "Crisp"-ing
+
+```
+	"append": {
+	    "quality": {
+			"crisp": { "syntax": "crisp", "required": false, "supported": true, "match": "^crisp(?:\\:(\\d+\\.\\d+),(\\d+\\.\\d+),(\\d+\\.\\d+))?$"
+	    }
+	}
+```
+
+`crisp` will apply an "UnsharpMask" filter followed by a "Median" filter on an image using the [bild/effect](https://github.com/anthonynsimon/bild/#effect) package.
+
+The `crisp` filter takes three positional parameters:
+
+| Position | Name | Default |
+| --- | --- | --- |
+| 1 | Unsharp Mask Radius | 2.0 |
+| 2 | Unsharp Mask Amount | 0.5 |
+| 3 | Mediam Radius | 0.025 |
+
 #### Dithering
 
 ```

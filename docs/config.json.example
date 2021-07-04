@@ -37,7 +37,7 @@
 	"append": {
 	    "quality": {
 		"dither": { "syntax": "dither", "required": false, "supported": true, "match": "^dither$" },
-		"crispen": { "syntax": "crispen", "required": false, "supported": true, "match": "^crispen(?:\\:(\\d+\\.\\d+),(\\d+\\.\\d+),(\\d+\\.\\d+))?$" }		
+		"crisp": { "syntax": "crisp", "required": false, "supported": true, "match": "^crisp(?:\\:(\\d+\\.\\d+),(\\d+\\.\\d+),(\\d+\\.\\d+))?$" }		
 	    }
 	}
     },

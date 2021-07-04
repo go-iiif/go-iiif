@@ -5,15 +5,15 @@ import (
 	_ "log"
 )
 
-type CrispenImageOptions struct {
+type CrispImageOptions struct {
 	Radius float64
 	Amount float64
 	Median float64
 }
 
-func DefaultCrispenImageOptions() *CrispenImageOptions {
+func DefaultCrispImageOptions() *CrispImageOptions {
 
-	opts := &CrispenImageOptions{
+	opts := &CrispImageOptions{
 		Radius: 2.0,
 		Amount: 0.5,
 		Median: 0.025,
@@ -22,7 +22,7 @@ func DefaultCrispenImageOptions() *CrispenImageOptions {
 	return opts
 }
 
-func CrispenImage(im Image, opts *CrispenImageOptions) error {
+func CrispImage(im Image, opts *CrispImageOptions) error {
 
 	new_im, err := IIIFImageToGolangImage(im)
 
