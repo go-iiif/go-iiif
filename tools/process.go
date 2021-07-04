@@ -5,11 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"log"
-	"net/url"
-	"path/filepath"
-	"strings"
-	"sync"
 	"fmt"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
@@ -21,6 +16,11 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
+	"log"
+	"net/url"
+	"path/filepath"
+	"strings"
+	"sync"
 )
 
 type ProcessTool struct {
@@ -268,16 +268,30 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	uri_func_uri, err := lookup.StringVar(fs, "uri-func")
 
 	if err != nil {
-	 	return fmt.Errorf("Invalid -uri-func flag, %w", err)
+		return fmt.Errorf("Invalid -uri-func flag, %w", err)
+	}
+
+	_, err = url.Parse(uri_func_uri)
+
+	if err != nil {
+		return fmt.Errorf("Failed to parse -uri-func flag, %w", err)
 	}
 
 	t.URIFunc = func(raw_uri string) (iiifuri.URI, error) {
-		log.Println("REPLACE WITH", uri_func_uri)
-		return iiifuri.NewURI(raw_uri)
+
+		u, err := url.Parse(uri_func_uri)
+
+		if err != nil {
+			return nil, err
+		}
+
+		u.Path = raw_uri
+
+		return iiifuri.NewURI(u.String())
 	}
-	
-	// END OF custom URI func (for reprocessing)	
-	
+
+	// END OF custom URI func (for reprocessing)
+
 	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
