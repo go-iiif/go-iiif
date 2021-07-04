@@ -1357,6 +1357,16 @@ The `crisp` filter takes three positional parameters:
 | 2 | Unsharp Mask Amount | 0.5 |
 | 3 | Mediam Radius | 0.025 |
 
+For example, this:
+
+```
+http://localhost:8080/spanking-cat.jpg/-1,-1,320,320/full/0/crisp:10.0,2.0,0.05.png
+```
+
+Would produce the following image:
+
+![spanking cat](misc/go-iiif-crisp.png)
+
 #### Dithering
 
 ```
