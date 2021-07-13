@@ -79,8 +79,14 @@ func NewURI(ctx context.Context, uri string) (URI, error) {
 	scheme := u.Scheme
 
 	if scheme == "" {
+
 		scheme = "file"
 		u.Scheme = scheme
+
+		if !strings.HasPrefix(u.Path, "/") {
+			u.Path = fmt.Sprintf("/%s", u.Path)
+		}
+
 		uri = u.String()
 	}
 
