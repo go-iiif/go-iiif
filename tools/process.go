@@ -5,11 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"log"
-	"net/url"
-	"path/filepath"
-	"strings"
-	"sync"
+	"fmt"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -20,6 +16,11 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
+	"log"
+	"net/url"
+	"path/filepath"
+	"strings"
+	"sync"
 )
 
 type ProcessTool struct {
@@ -208,31 +209,31 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	config_source, err := lookup.StringVar(fs, "config-source")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to lookup -config-source flag, %w", err)
 	}
 
 	config_name, err := lookup.StringVar(fs, "config-name")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to lookup -config-name flag, %w", err)
 	}
 
 	instructions_source, err := lookup.StringVar(fs, "instructions-source")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to lookup -instructions-source flag, %w", err)
 	}
 
 	instructions_name, err := lookup.StringVar(fs, "instructions-name")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to lookup -instructions-name flag, %w", err)
 	}
 
 	report, err := lookup.BoolVar(fs, "report")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to lookup -report flag, %w", err)
 	}
 
 	report_source, err := lookup.StringVar(fs, "report-source")
@@ -264,7 +265,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to open config bucket, %w", err)
 	}
 
 	defer config_bucket.Close()
@@ -272,13 +273,13 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new config from bucket, %w", err)
 	}
 
 	instructions_bucket, err := blob.OpenBucket(ctx, instructions_source)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to open instructions bucket, %w", err)
 	}
 
 	defer instructions_bucket.Close()
@@ -290,7 +291,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		b, err := blob.OpenBucket(ctx, report_source)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to open report bucket, %w", err)
 		}
 
 		report_bucket = b
@@ -300,19 +301,19 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, instructions_name)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to read instructions from bucket, %w", err)
 	}
 
 	driver, err := iiifdriver.NewDriverFromConfig(cfg)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new driver from config, %w", err)
 	}
 
 	pr, err := process.NewIIIFProcessor(cfg, driver)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new IIIF processor, %w", err)
 	}
 
 	process_opts := &ProcessOptions{
@@ -336,7 +337,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 			u, err := t.URIFunc(str_uri)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("URI Func for '%s' failed: %w", str_uri, err)
 			}
 
 			to_process = append(to_process, u)
@@ -345,7 +346,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		err = ProcessMany(ctx, process_opts, to_process...)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to process many, %w", err)
 		}
 
 	case "fsnotify":

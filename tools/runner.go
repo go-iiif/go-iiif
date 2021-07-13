@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"fmt"
 	_ "log"
 )
 
@@ -131,7 +132,7 @@ func (t *ToolRunner) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSe
 				err := tl.RunWithFlagSetAndPaths(ctx, fs, path)
 
 				if err != nil {
-					err_ch <- err
+					err_ch <- fmt.Errorf("Failed to run tool '%T': %w", tl, err)
 				}
 
 			}(ctx, tl, fs)
@@ -156,7 +157,7 @@ func (t *ToolRunner) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSe
 			err := t.on_complete(ctx, path)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("OnComplete function for '%s' failed, %w", path, err)
 			}
 		}
 	}
