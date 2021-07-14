@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
@@ -42,8 +41,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		im, err := driver.NewImageFromConfig(cfg, origin)
 
 		if err != nil {
-			msg := fmt.Sprintf("failed to load image (%s) for processing profile.services : %s", u, err)
-			err_ch <- errors.New(msg)
+			err_ch <- fmt.Errorf("Failed to load image (%s) for processing profile.services : %w", u, err)
 			return
 		}
 
@@ -64,8 +62,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 			service, err := iiifservice.NewService(ctx, service_uri, cfg, im)
 
 			if err != nil {
-				msg := fmt.Sprintf("failed to create service for %s : %v", service_name, err)
-				err_ch <- errors.New(msg)
+				err_ch <- fmt.Errorf("Failed to create service for %s : %w", service_name, err)
 				return
 			}
 
@@ -106,20 +103,18 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				target_str, err := u.Target(opts)
 
 				if err != nil {
-					msg := fmt.Sprintf("failed to derive target %s (%s) : %s", u, label, err)
-					err_ch <- errors.New(msg)
+					err_ch <- fmt.Errorf("Failed to derive target %s (%s) : %w", u, label, err)
 					return
 				}
 
 				origin := u.Origin()
 
-				rw_str := fmt.Sprintf("%s://%s?target=%s", iiifuri.IDSECRET_SCHEME, origin, target_str)
+				rw_str := fmt.Sprintf("%s:///%s?target=%s", iiifuri.IDSECRET_SCHEME, origin, target_str)
 
 				rw_uri, err := iiifuri.NewURI(ctx, rw_str)
 
 				if err != nil {
-					msg := fmt.Sprintf("failed to generate rewrite URL %s (%s) : %s", u, label, err)
-					err_ch <- errors.New(msg)
+					err_ch <- fmt.Errorf("Failed to generate rewrite URL %s (%s) : %w", u, label, err)
 					return
 				}
 
@@ -132,16 +127,14 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 			new_uri, im, err := pr.ProcessURIWithInstructions(process_uri, label, i)
 
 			if err != nil {
-				msg := fmt.Sprintf("failed to process %s (%s) : %s", u.String(), label, err)
-				err_ch <- errors.New(msg)
+				err_ch <- fmt.Errorf("Failed to process %s (%s) : %w", u.String(), label, err)
 				return
 			}
 
 			dims, err := im.Dimensions()
 
 			if err != nil {
-				msg := fmt.Sprintf("failed to process %s (%s) : %s", u, label, err)
-				err_ch <- errors.New(msg)
+				err_ch <- fmt.Errorf("Failed to process %s (%s) : %w", u, label, err)
 				return
 			}
 
