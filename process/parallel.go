@@ -109,7 +109,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 				origin := u.Origin()
 
-				rw_str := fmt.Sprintf("%s:///%s?target=%s", iiifuri.IDSECRET_SCHEME, origin, target_str)
+				rw_str := fmt.Sprintf("%s:///%s?target=%s", iiifuri.REWRITE_SCHEME, origin, target_str)
 
 				rw_uri, err := iiifuri.NewURI(ctx, rw_str)
 
