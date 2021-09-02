@@ -1,6 +1,6 @@
 module github.com/go-iiif/go-iiif/v4
 
-go 1.13
+go 1.16
 
 require (
 	github.com/aaronland/go-colours v0.1.1
@@ -9,15 +9,15 @@ require (
 	github.com/aaronland/go-image-resize v0.0.0-20201125043310-09c78e618864
 	github.com/aaronland/go-image-rotate v0.0.4
 	github.com/aaronland/go-roster v0.0.2
-	github.com/aaronland/gocloud-blob-s3 v0.1.0
+	github.com/aaronland/gocloud-blob-s3 v0.1.3
 	github.com/anthonynsimon/bild v0.13.0
-	github.com/aws/aws-lambda-go v1.24.0
-	github.com/aws/aws-sdk-go v1.39.0
+	github.com/aws/aws-lambda-go v1.26.0
+	github.com/aws/aws-sdk-go v1.40.36
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.0.3
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
-	github.com/fsnotify/fsnotify v1.4.9
+	github.com/fsnotify/fsnotify v1.5.1
 	github.com/go-iiif/go-iiif-uri v0.5.1
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/gorilla/mux v1.8.0
@@ -32,6 +32,6 @@ require (
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.4
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0
-	gocloud.dev v0.23.0
+	gocloud.dev v0.24.0
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d
 )
