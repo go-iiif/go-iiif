@@ -14,7 +14,7 @@ import (
 	iiifsource "github.com/go-iiif/go-iiif/v4/source"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
-	"github.com/whosonfirst/go-whosonfirst-mimetypes"
+	"github.com/aaronland/go-mimetypes"
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
