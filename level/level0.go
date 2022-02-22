@@ -1,5 +1,8 @@
 package level
 
+// https://iiif.io/api/image/1.1/compliance/#level0
+// https://github.com/glenrobson/glenrobson.github.io/blob/master/iiif/welsh_book/page001/info.json
+
 import (
 	_ "fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
@@ -7,32 +10,58 @@ import (
 	_ "log"
 )
 
+type Level0Profile struct {
+	Formats   []string `json:"formats"`
+	Qualities []string `json:"qualities"`
+}
+
+type Level0Tile struct {
+	Width        int   `json:"width"`
+	Height       int   `json:"height"`
+	ScaleFactors []int `json:"scaleFactors"`
+}
+
+type Level0Size struct {
+	Width  int `json:"width"`
+	Height int `json:"height"`
+}
+
+// compliance iiifcompliance.Compliance
+
 type Level0 struct {
-	Level      `json:"-"`
-	Formats    []string `json:"formats"`
-	Qualities  []string `json:"qualities"`
-	Supports   []string `json:"supports"`
-	compliance iiifcompliance.Compliance
+	Level    `json:"-"`
+	Profile  []*Level0Profile `json:"profile"`
+	Tiles    []*Level0Tile    `json:"tiles"`
+	Sizes    []*Level0Size    `json:"sizes"`
+	Protocol string           `json:"protocol"`
+	Context  string           `json:"@context"`
+	Id       string           `json:"@id"`
+	Width    int              `json:"width"`
+	Height   int              `json:"height"`
 }
 
 func NewLevel0(config *iiifconfig.Config, endpoint string) (*Level0, error) {
 
-	compliance, err := iiifcompliance.NewLevel2Compliance(config)
+	compliance, err := iiifcompliance.NewLevel0Compliance(config)
 
 	if err != nil {
 		return nil, err
 	}
 
+	p := &Level0Profile{
+		Formats:   compliance.Formats(),
+		Qualities: compliance.Qualities(),
+	}
+
 	l := Level0{
-		Formats:    compliance.Formats(),
-		Qualities:  compliance.Qualities(),
-		Supports:   compliance.Supports(),
-		compliance: compliance,
+		Protocol: "http://iiif.io/api/image",
+		Profile:  []*Level0Profile{p},
+		// compliance: compliance,
 	}
 
 	return &l, nil
 }
 
 func (l *Level0) Compliance() iiifcompliance.Compliance {
-	return l.compliance
+	return nil // return l.compliance
 }

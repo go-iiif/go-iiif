@@ -16,35 +16,12 @@ import (
 
 var level0_spec = `{
     "image": {
-    	     "region": {
-	     	       "full":         { "syntax": "full",        "required": true, "supported": true, "match": "^full$" },
-		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^-?\\d+\\,-?\\d+\\,\\d+\\,\\d+$" },
-
-	     		"regionByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?$" },			
-		       "regionSquare": { "syntax": "square",      "required": false, "supported": true, "match": "^square$" }
-	     },
-	     "size": {
-	     		"full":              { "syntax": "full",  "required": true, "supported": true, "match": "^full$" },
-	     		"max":               { "syntax": "max",   "required": false, "supported": true, "match": "^max$" },
-	     		"sizeByW":           { "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
-	     		"sizeByH":           { "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
-			"sizeByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },
-	     		"sizeByConfinedWh":  { "syntax": "!w,h",  "required": true, "supported": true, "match": "^\\!\\d+\\,\\d+$" },
-	     		"sizeByDistortedWh": { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" },
-	     		"sizeByWh":          { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" }
-	     },
-	     "rotation": {
-	     		"none":              { "syntax": "0",          "required": true, "supported": true, "match": "^0$" },
-	     		"rotationBy90s":     { "syntax": "90,180,270", "required": true, "supported": true, "match": "^(?:90|180|270)$" },
-	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "^\\d+\\.\\d+$" },			
-	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" },
-	     		"noAutoRotate":      { "syntax": "-1",         "required": false, "supported": true, "match": "^\\-1$" }
-	     },
+ 	     "region": {},
+	     "size": {},
+	     "rotation": {},
 	     "quality": {
 	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": false },
-	     		"color":   { "syntax": "color",   "required": false, "supported": true, "match": "^colou?r$", "default": true },
-	     		"gray":    { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$", "default": false },			
-	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$", "default": false }
+	     		"color":   { "syntax": "color",   "required": true, "supported": true, "match": "^colou?r$", "default": true },
              },
 	     "format": {
 	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
@@ -110,98 +87,7 @@ func NewLevel0ComplianceSpecWithConfig(config *iiifconfig.Config) (*Level0Compli
 		return nil, err
 	}
 
-	feature_block := func(block string) (map[string]ComplianceDetails, error) {
-
-		var possible map[string]ComplianceDetails
-
-		if block == "region" {
-			possible = spec.Image.Region
-		} else if block == "size" {
-			possible = spec.Image.Size
-		} else if block == "rotation" {
-			possible = spec.Image.Rotation
-		} else if block == "quality" {
-			possible = spec.Image.Quality
-		} else if block == "format" {
-			possible = spec.Image.Format
-		} else {
-			message := fmt.Sprintf("Unknown block %s", block)
-			return nil, errors.New(message)
-		}
-
-		return possible, nil
-	}
-
-	toggle_features := func(stuff iiifconfig.FeaturesToggle, toggle bool) error {
-
-		for block, features := range stuff {
-
-			possible, err := feature_block(block)
-
-			if err != nil {
-				return err
-			}
-
-			for _, f := range features {
-
-				details, ok := possible[f]
-
-				if !ok {
-					message := fmt.Sprintf("Undefined feature %s for block (%s)", f, block)
-					return errors.New(message)
-				}
-
-				details.Supported = toggle
-				possible[f] = details
-			}
-		}
-
-		return nil
-	}
-
-	append_features := func(stuff iiifconfig.FeaturesAppend) error {
-
-		for block, features := range stuff {
-
-			possible, err := feature_block(block)
-
-			if err != nil {
-				return err
-			}
-
-			for name, details := range features {
-
-				possible[name] = ComplianceDetails{
-					Syntax:    details.Syntax,
-					Required:  details.Required,
-					Supported: details.Supported,
-					Match:     details.Match,
-				}
-			}
-		}
-
-		return nil
-	}
-
-	err = append_features(config.Features.Append)
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = toggle_features(config.Features.Enable, true)
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = toggle_features(config.Features.Disable, false)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return spec, err
+	return spec, nil
 }
 
 func (c *Level0Compliance) IsValidImageRegion(region string) (bool, error) {

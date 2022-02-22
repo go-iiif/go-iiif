@@ -205,7 +205,8 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		count += len(crops)
 	}
 
-	level, err := iiiflevel.NewLevelFromConfig(ts.config, ts.Endpoint)
+	// level, err := iiiflevel.NewLevelFromConfig(ts.config, ts.Endpoint)
+	level, err := iiiflevel.NewLevel0(ts.config, ts.Endpoint)
 
 	if err != nil {
 		return count, err
