@@ -9,7 +9,6 @@ very much related but somehow seem like they should be in separate namespaces. I
 */
 
 import (
-	"errors"
 	"fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
@@ -24,23 +23,12 @@ func NewLevelFromConfig(config *iiifconfig.Config, endpoint string) (Level, erro
 
 	compliance := config.Level.Compliance
 
-	if compliance == "0" {
-
-		message := fmt.Sprintf("Unsupported compliance level '%s'", compliance)
-		return nil, errors.New(message)
-
-	} else if compliance == "1" {
-
-		message := fmt.Sprintf("Unsupported compliance level '%s'", compliance)
-		return nil, errors.New(message)
-	} else if compliance == "2" {
-
+	switch compliance {
+	case "0":
+		return NewLevel0(config, endpoint)
+	case "2":
 		return NewLevel2(config, endpoint)
-
-	} else {
-
-		message := fmt.Sprintf("Invalid compliance level '%s'", compliance)
-		return nil, errors.New(message)
-
+	default:
+		return nil, fmt.Errorf("Invalid compliance level '%s'", compliance)
 	}
 }
