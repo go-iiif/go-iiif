@@ -12,8 +12,8 @@ require (
 	github.com/aaronland/go-roster v0.0.2
 	github.com/aaronland/gocloud-blob-s3 v0.1.3
 	github.com/anthonynsimon/bild v0.13.0
-	github.com/aws/aws-lambda-go v1.27.1
-	github.com/aws/aws-sdk-go v1.42.28
+	github.com/aws/aws-lambda-go v1.28.0
+	github.com/aws/aws-sdk-go v1.43.4
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.0.3
 	github.com/fogleman/gg v1.3.0 // indirect
