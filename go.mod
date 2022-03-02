@@ -13,7 +13,7 @@ require (
 	github.com/aaronland/gocloud-blob-s3 v0.1.3
 	github.com/anthonynsimon/bild v0.13.0
 	github.com/aws/aws-lambda-go v1.28.0
-	github.com/aws/aws-sdk-go v1.43.4
+	github.com/aws/aws-sdk-go v1.43.10
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.0.3
 	github.com/fogleman/gg v1.3.0 // indirect
@@ -33,5 +33,5 @@ require (
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.4
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	gocloud.dev v0.24.0
-	golang.org/x/image v0.0.0-20211028202545-6944b10bf410
+	golang.org/x/image v0.0.0-20220302094943-723b81ca9867
 )
