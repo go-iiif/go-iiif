@@ -65,14 +65,9 @@ var level2_spec = `{
     }
 }`
 
-type Level2ComplianceSpec struct {
-	Image ImageCompliance `json:"image"`
-	HTTP  HTTPCompliance  `json:"http"`
-}
-
 type Level2Compliance struct {
 	Compliance
-	spec *Level2ComplianceSpec
+	spec *ComplianceSpec
 }
 
 func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
@@ -90,9 +85,9 @@ func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 	return &compliance, nil
 }
 
-func NewLevel2ComplianceSpec() (*Level2ComplianceSpec, error) {
+func NewLevel2ComplianceSpec() (*ComplianceSpec, error) {
 
-	spec := Level2ComplianceSpec{}
+	spec := ComplianceSpec{}
 	err := json.Unmarshal([]byte(level2_spec), &spec)
 
 	if err != nil {
@@ -102,7 +97,7 @@ func NewLevel2ComplianceSpec() (*Level2ComplianceSpec, error) {
 	return &spec, nil
 }
 
-func NewLevel2ComplianceSpecWithConfig(config *iiifconfig.Config) (*Level2ComplianceSpec, error) {
+func NewLevel2ComplianceSpecWithConfig(config *iiifconfig.Config) (*ComplianceSpec, error) {
 
 	spec, err := NewLevel2ComplianceSpec()
 
@@ -337,7 +332,7 @@ func (c *Level2Compliance) properties(sect map[string]ComplianceDetails) []strin
 	return properties
 }
 
-func (c *Level2Compliance) Spec() *Level2ComplianceSpec {
+func (c *Level2Compliance) Spec() *ComplianceSpec {
 
 	return c.spec
 }

@@ -9,28 +9,16 @@ import (
 	"regexp"
 )
 
-// http://iiif.io/api/image/2.1/
-// http://iiif.io/api/image/2.1/compliance/
-
-// 		       "regionByPct":  { "syntax": "pct:x,y,w,h", "required": true, "supported": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
-
 var level0_spec = `{
     "image": {
  	     "region": {},
 	     "size": {},
 	     "rotation": {},
 	     "quality": {
-	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": false },
-	     		"color":   { "syntax": "color",   "required": true, "supported": true, "match": "^colou?r$", "default": true },
+	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": true }
              },
 	     "format": {
 	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
-       	     	       "png": { "syntax": "png",  "required": true, "supported": true, "match": "^png$" },
-       	     	       "tif": { "syntax": "tif",  "required": false, "supported": false, "match": "^tiff?$" },
-      	     	       "gif": { "syntax": "gif",  "required": false, "supported": false, "match": "^gif$" },
-       	     	       "pdf": { "syntax": "pdf",  "required": false, "supported": false, "match": "^pdf$" },
-      	     	       "jp2": { "syntax": "jp2",  "required": false, "supported": false, "match": "^jp2$" },
-       	     	       "webp": { "syntax": "webp", "required": false, "supported": false, "match": "^webp$" }
 	     }	     
     },
     "http": {
@@ -42,14 +30,9 @@ var level0_spec = `{
     }
 }`
 
-type Level0ComplianceSpec struct {
-	Image ImageCompliance `json:"image"`
-	HTTP  HTTPCompliance  `json:"http"`
-}
-
 type Level0Compliance struct {
 	Compliance
-	spec *Level0ComplianceSpec
+	spec *ComplianceSpec
 }
 
 func NewLevel0Compliance(config *iiifconfig.Config) (*Level0Compliance, error) {
@@ -67,9 +50,9 @@ func NewLevel0Compliance(config *iiifconfig.Config) (*Level0Compliance, error) {
 	return &compliance, nil
 }
 
-func NewLevel0ComplianceSpec() (*Level0ComplianceSpec, error) {
+func NewLevel0ComplianceSpec() (*ComplianceSpec, error) {
 
-	spec := Level0ComplianceSpec{}
+	spec := ComplianceSpec{}
 	err := json.Unmarshal([]byte(level0_spec), &spec)
 
 	if err != nil {
@@ -79,7 +62,7 @@ func NewLevel0ComplianceSpec() (*Level0ComplianceSpec, error) {
 	return &spec, nil
 }
 
-func NewLevel0ComplianceSpecWithConfig(config *iiifconfig.Config) (*Level0ComplianceSpec, error) {
+func NewLevel0ComplianceSpecWithConfig(config *iiifconfig.Config) (*ComplianceSpec, error) {
 
 	spec, err := NewLevel0ComplianceSpec()
 
@@ -223,7 +206,7 @@ func (c *Level0Compliance) properties(sect map[string]ComplianceDetails) []strin
 	return properties
 }
 
-func (c *Level0Compliance) Spec() *Level0ComplianceSpec {
+func (c *Level0Compliance) Spec() *ComplianceSpec {
 
 	return c.spec
 }

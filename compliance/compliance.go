@@ -17,6 +17,11 @@ type ComplianceDetails struct {
 	Default   bool   `json:"default,omitempty"`
 }
 
+type ComplianceSpec struct {
+	Image ImageCompliance `json:"image"`
+	HTTP  HTTPCompliance  `json:"http"`
+}
+
 type HTTPComplianceDetails struct {
 	Name      string `json:"name"`
 	Required  bool   `json:"required"`
@@ -50,5 +55,5 @@ type Compliance interface {
 	IsValidImageRotation(string) (bool, error)
 	IsValidImageQuality(string) (bool, error)
 	IsValidImageFormat(string) (bool, error)
-	Spec() *Level2ComplianceSpec
+	Spec() *ComplianceSpec
 }

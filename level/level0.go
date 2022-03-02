@@ -29,15 +29,16 @@ type Level0Size struct {
 // compliance iiifcompliance.Compliance
 
 type Level0 struct {
-	Level    `json:"-"`
-	Profile  []*Level0Profile `json:"profile"`
-	Tiles    []*Level0Tile    `json:"tiles"`
-	Sizes    []*Level0Size    `json:"sizes"`
-	Protocol string           `json:"protocol"`
-	Context  string           `json:"@context"`
-	Id       string           `json:"@id"`
-	Width    int              `json:"width"`
-	Height   int              `json:"height"`
+	Level      `json:"-"`
+	Profile    []*Level0Profile `json:"profile"`
+	Tiles      []*Level0Tile    `json:"tiles"`
+	Sizes      []*Level0Size    `json:"sizes"`
+	Protocol   string           `json:"protocol"`
+	Context    string           `json:"@context"`
+	Id         string           `json:"@id"`
+	Width      int              `json:"width"`
+	Height     int              `json:"height"`
+	compliance iiifcompliance.Compliance
 }
 
 func NewLevel0(config *iiifconfig.Config, endpoint string) (*Level0, error) {
@@ -54,14 +55,14 @@ func NewLevel0(config *iiifconfig.Config, endpoint string) (*Level0, error) {
 	}
 
 	l := Level0{
-		Protocol: "http://iiif.io/api/image",
-		Profile:  []*Level0Profile{p},
-		// compliance: compliance,
+		Protocol:   "http://iiif.io/api/image",
+		Profile:    []*Level0Profile{p},
+		compliance: compliance,
 	}
 
 	return &l, nil
 }
 
 func (l *Level0) Compliance() iiifcompliance.Compliance {
-	return nil // return l.compliance
+	return l.compliance
 }
