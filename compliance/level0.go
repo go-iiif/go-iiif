@@ -1,6 +1,7 @@
 package compliance
 
 import (
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,26 +10,8 @@ import (
 	"regexp"
 )
 
-var level0_spec = `{
-    "image": {
- 	     "region": {},
-	     "size": {},
-	     "rotation": {},
-	     "quality": {
-	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": true }
-             },
-	     "format": {
-	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" }
-	     }	     
-    },
-    "http": {
-            "baseUriRedirect":     { "name": "base URI redirects",    "required": true,  "supported": true },
-	    "cors":                { "name": "CORS",                  "required": true,  "supported": true },
-	    "jsonldMediaType":     { "name": "json-ld media type",    "required": true,  "supported": true },
-	    "profileLinkHeader":   { "name": "profile link header",   "required": false, "supported": false },
-	    "canonicalLinkHeader": { "name": "canonical link header", "required": false, "supported": false }
-    }
-}`
+//go:embed level0.json
+var level0_spec []byte
 
 type Level0Compliance struct {
 	Compliance
@@ -53,7 +36,7 @@ func NewLevel0Compliance(config *iiifconfig.Config) (*Level0Compliance, error) {
 func NewLevel0ComplianceSpec() (*ComplianceSpec, error) {
 
 	spec := ComplianceSpec{}
-	err := json.Unmarshal([]byte(level0_spec), &spec)
+	err := json.Unmarshal(level0_spec, &spec)
 
 	if err != nil {
 		return nil, err

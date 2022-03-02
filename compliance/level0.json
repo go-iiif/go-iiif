@@ -1,0 +1,30 @@
+{
+    "image": {
+ 	     "region": {
+	     	       "full":         { "syntax": "full",        "required": true, "supported": true, "match": "^full$" },
+		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^-?\\d+\\,-?\\d+\\,\\d+\\,\\d+$" }
+		},
+	     "size": {
+	     		"full":              { "syntax": "full",  "required": true, "supported": true, "match": "^full$" },
+	     		"sizeByW":           { "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
+	     		"sizeByH":           { "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
+	     		"sizeByWh":          { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" }
+		},
+	     "rotation": {
+	     		"none":              { "syntax": "0",          "required": true, "supported": true, "match": "^0$" }
+		},
+	     "quality": {
+	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": true }
+             },
+	     "format": {
+	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" }
+	     }	     
+    },
+    "http": {
+            "baseUriRedirect":     { "name": "base URI redirects",    "required": true,  "supported": true },
+	    "cors":                { "name": "CORS",                  "required": true,  "supported": true },
+	    "jsonldMediaType":     { "name": "json-ld media type",    "required": true,  "supported": true },
+	    "profileLinkHeader":   { "name": "profile link header",   "required": false, "supported": false },
+	    "canonicalLinkHeader": { "name": "canonical link header", "required": false, "supported": false }
+    }
+}
