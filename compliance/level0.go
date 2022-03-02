@@ -18,7 +18,7 @@ var level0_spec = `{
 	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": true }
              },
 	     "format": {
-	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
+	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" }
 	     }	     
     },
     "http": {

@@ -4,7 +4,7 @@ package level
 // https://github.com/glenrobson/glenrobson.github.io/blob/master/iiif/welsh_book/page001/info.json
 
 import (
-	_ "fmt"
+	"fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	_ "log"
@@ -46,7 +46,7 @@ func NewLevel0(config *iiifconfig.Config, endpoint string) (*Level0, error) {
 	compliance, err := iiifcompliance.NewLevel0Compliance(config)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create new level 0 compliance, %w", err)
 	}
 
 	p := &Level0Profile{
