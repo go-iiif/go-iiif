@@ -2,7 +2,6 @@ package tools
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
@@ -277,7 +276,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	}
 
 	if config_source == "" {
-		return errors.New("Required -config-source flag is empty.")
+		return fmt.Errorf("Required -config-source flag is empty.")
 	}
 
 	config_bucket, err := blob.OpenBucket(ctx, config_source)
@@ -411,7 +410,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		csv_bucket, err := blob.OpenBucket(ctx, csv_source)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to open bucket from CSV source, %w", err)
 		}
 
 		wg := new(sync.WaitGroup)
@@ -421,7 +420,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 			fh, err := csv_bucket.NewReader(ctx, path, nil)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to open reader from %s, %w", path, err)
 			}
 
 			defer fh.Close()
@@ -429,7 +428,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 			reader, err := csvdict.NewReader(fh)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to open CSV reader, %w", err)
 			}
 
 			counter := 0
@@ -480,11 +479,11 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		u, err := url.Parse(images_source)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to parse images source, %w", err)
 		}
 
 		if u.Scheme != "file" {
-			return errors.New("Invalid image source for -mode fsnotify")
+			return fmt.Errorf("Invalid image source for -mode fsnotify")
 		}
 
 		root := u.Path
@@ -493,7 +492,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		watcher, err := fsnotify.NewWatcher()
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to create fsnotify watcher, %w", err)
 		}
 
 		defer watcher.Close()
@@ -554,7 +553,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		err = watcher.Add(root)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to add '%s' to fsnotify watcher, %w", root, err)
 		}
 
 		<-done
@@ -584,7 +583,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 				seed, err := SeedFromURI(u, noextension)
 
 				if err != nil {
-					return err
+					return fmt.Errorf("Failed to seed tiles from %s, %w", u, err)
 				}
 
 				tile_func(seed, wg)
@@ -597,7 +596,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		aws_lambda.Start(handler)
 
 	default:
-		return errors.New("Invalid -mode")
+		return fmt.Errorf("Invalid -mode")
 	}
 
 	return nil
