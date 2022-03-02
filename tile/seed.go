@@ -36,32 +36,34 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create tileseed driver from config, %w", err)
 	}
 
-	level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
+	// level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
+
+	level, err := iiiflevel.NewLevel0(config, endpoint)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create level0 instance, %w", err)
 	}
 
 	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive image cache from config, %w", err)
 	}
 
 	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive derivatives cache from config, %w", err)
 	}
 
 	compliance := level.Compliance()
 	_, err = compliance.DefaultQuality()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to ensure default quality for compliance, %w", err)
 	}
 
 	procs := runtime.NumCPU()
@@ -90,7 +92,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 	image, err := ts.driver.NewImageFromConfigWithCache(ts.config, ts.images_cache, src_id)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create image for %s, %w", src_id, err)
 	}
 
 	// https://github.com/go-iiif/go-iiif/issues/25
