@@ -1,7 +1,6 @@
-package transformation
+package image
 
 import (
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"	
 	"github.com/anthonynsimon/bild/effect"
 	_ "log"
 )
@@ -23,9 +22,9 @@ func DefaultCrispImageOptions() *CrispImageOptions {
 	return opts
 }
 
-func CrispImage(im iiifimage.Image, opts *CrispImageOptions) error {
+func CrispImage(im Image, opts *CrispImageOptions) error {
 
-	new_im, err := iiifimage.IIIFImageToGolangImage(im)
+	new_im, err := IIIFImageToGolangImage(im)
 
 	if err != nil {
 		return err
@@ -34,5 +33,5 @@ func CrispImage(im iiifimage.Image, opts *CrispImageOptions) error {
 	new_im = effect.UnsharpMask(new_im, opts.Radius, opts.Amount)
 	new_im = effect.Median(new_im, opts.Median)
 
-	return iiifimage.GolangImageToIIIFImage(new_im, im)
+	return GolangImageToIIIFImage(new_im, im)
 }

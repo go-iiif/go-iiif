@@ -12,14 +12,14 @@ import (
 	"fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	// iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	_ "log"
 )
 
 type Level interface {
 	Compliance() iiifcompliance.Compliance
-	Profile(string, iiifimage.Image) (*iiifprofile.Profile, error)
+	Profile(string) (*iiifprofile.Profile, error)
 }
 
 func NewLevelFromConfig(config *iiifconfig.Config, endpoint string) (Level, error) {

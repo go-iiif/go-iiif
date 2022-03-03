@@ -9,7 +9,6 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
-	iiiftransformation "github.com/go-iiif/go-iiif/v5/transformation"	
 	"github.com/tidwall/pretty"
 	"log"
 	"math"
@@ -152,7 +151,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 			wg.Add(1)
 
-			go func(throttle chan bool, im iiifimage.Image, tr *iiiftransformation.Transformation, wg *sync.WaitGroup) {
+			go func(throttle chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
 
 				defer func() {
 					wg.Done()
@@ -211,11 +210,13 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, fmt.Errorf("Failed to create new level 0, %w", err)
 	}
 
-	profile, err := level.Profile(ts.Endpoint, image)
+	profile, err := level.Profile(ts.Endpoint)
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to create new profile for level, %w", err)
 	}
+
+	// FIX ME: ASSIGN IMAGE PROPERTIES HERE...
 
 	body, err := json.Marshal(profile)
 
@@ -231,7 +232,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 	return count, nil
 }
 
-func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiiftransformation.Transformation, error) {
+func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transformation, error) {
 
 	dims, err := im.Dimensions()
 
@@ -255,7 +256,9 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiiftransformation
 
 	format := ts.Format
 
-	crops := make([]*iiiftransformation.Transformation, 0)
+	compliance := ts.level.Compliance()
+
+	crops := make([]*iiifimage.Transformation, 0)
 
 	// what follows was copied from
 	// https://github.com/cmoa/iiif_s3/blob/master/lib/iiif_s3/builder.rb#L165-L199
@@ -326,7 +329,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiiftransformation
 			quality := quality
 			format := format
 
-			transformation, err := iiiftransformation.NewTransformation(ts.level, region, size, rotation, quality, format)
+			transformation, err := iiifimage.NewTransformation(compliance, region, size, rotation, quality, format)
 
 			if err != nil {
 				return nil, fmt.Errorf("Failed to create new transformation, %w", err)

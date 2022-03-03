@@ -7,7 +7,6 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
-	iiiftransformation "github.com/go-iiif/go-iiif/v5/transformation"	
 	_ "log"
 	gohttp "net/http"
 	"sync/atomic"
@@ -51,7 +50,9 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 			return
 		}
 
-		transformation, err := iiiftransformation.NewTransformation(level, params.Region, params.Size, params.Rotation, params.Quality, params.Format)
+		compliance := level.Compliance()
+
+		transformation, err := iiifimage.NewTransformation(compliance, params.Region, params.Size, params.Rotation, params.Quality, params.Format)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusBadRequest)

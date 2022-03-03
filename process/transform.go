@@ -27,7 +27,9 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	transformation, err := iiifimage.NewTransformation(level, i.Region, i.Size, i.Rotation, i.Quality, i.Format)
+	compliance := level.Compliance()
+
+	transformation, err := iiifimage.NewTransformation(compliance, i.Region, i.Size, i.Rotation, i.Quality, i.Format)
 
 	if err != nil {
 		return nil, nil, err

@@ -6,7 +6,6 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
-	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	gohttp "net/http"
 )
@@ -47,12 +46,14 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 			return
 		}
 
-		profile, err := iiifprofile.NewProfile(endpoint, image, level)
+		profile, err := level.Profile(endpoint)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
 			return
 		}
+
+		// FIX ME : APPEND IMAGE PROPERTIES HERE
 
 		for _, service_name := range config.Profile.Services.Enable {
 

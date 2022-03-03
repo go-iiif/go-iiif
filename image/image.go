@@ -10,13 +10,12 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	iiiftransformation "github.com/go-iiif/go-iiif/v5/transformation"	
 )
 
 type Image interface {
 	Identifier() string
 	Rename(string) error
-	Transform(*iiiftransformation.Transformation) error // http://iiif.io/api/image/2.1/#order-of-implementation
+	Transform(*Transformation) error // http://iiif.io/api/image/2.1/#order-of-implementation
 	Update([]byte) error
 	Body() []byte
 	Format() string

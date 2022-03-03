@@ -303,7 +303,9 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 		return err
 	}
 
-	transformation, err := iiifimage.NewTransformation(level, region, size, rotation, quality, format)
+	compliance := level.Compliance()
+
+	transformation, err := iiifimage.NewTransformation(compliance, region, size, rotation, quality, format)
 
 	if err != nil {
 		return err

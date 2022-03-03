@@ -13,7 +13,6 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
-	iiifimage "github.com/go-iiif/go-iiif/v5/transformation"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
 	"golang.org/x/image/bmp"
@@ -100,7 +99,7 @@ func (im *NativeImage) Dimensions() (iiifimage.Dimensions, error) {
 	return dims, nil
 }
 
-func (im *NativeImage) Transform(t *iiiftransformation.Transformation) error {
+func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 	if t.Region != "full" {
 

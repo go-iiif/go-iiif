@@ -1,4 +1,4 @@
-package transformation
+package image
 
 // "primitive": { "syntax": "primitive:mode,iterations,alpha", "required": false, "supported": true, "match": "^primitive\:[0-4]\,\d+,\d+$" }
 // mode: 0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect
@@ -14,7 +14,6 @@ import (
 	"math"
 	"runtime"
 	_ "time"
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"	
 )
 
 type PrimitiveOptions struct {
@@ -25,7 +24,7 @@ type PrimitiveOptions struct {
 	Animated   bool
 }
 
-func PrimitiveImage(im iiifimage.Image, opts PrimitiveOptions) error {
+func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 
 	dims, err := im.Dimensions()
 
@@ -33,7 +32,7 @@ func PrimitiveImage(im iiifimage.Image, opts PrimitiveOptions) error {
 		return err
 	}
 
-	goimg, err := iiifimage.IIIFImageToGolangImage(im)
+	goimg, err := IIIFImageToGolangImage(im)
 
 	if err != nil {
 		return err
@@ -116,7 +115,7 @@ func PrimitiveImage(im iiifimage.Image, opts PrimitiveOptions) error {
 
 	} else {
 		goimg := model.Context.Image()
-		return iiifimage.GolangImageToIIIFImage(goimg, im)
+		return GolangImageToIIIFImage(goimg, im)
 	}
 
 }
