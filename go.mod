@@ -28,6 +28,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/sfomuseum/go-csvdict v1.0.0
 	github.com/sfomuseum/go-flags v0.8.2
+	github.com/tidwall/pretty v1.2.0
 	github.com/whosonfirst/algnhsa v0.1.0
 	github.com/whosonfirst/go-sanitize v0.1.0
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.4

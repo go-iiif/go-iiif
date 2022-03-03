@@ -1,8 +1,9 @@
-package image
+package transformation
 
 import (
 	"errors"
 	"fmt"
+	iiifimage "github.com/go-iiif/go-iiif/v4/image"
 	_ "log"
 	"strconv"
 	"strings"
@@ -11,7 +12,7 @@ import (
 // see this? it's a iiifimage.Image not a (Go) image.Image
 
 // Apply non-standard transformations to a go-iiif/image.Image instance.
-func ApplyCustomTransformations(t *Transformation, im Image) error {
+func ApplyCustomTransformations(t *Transformation, im iiifimage.Image) error {
 
 	// None of what follows is part of the IIIF spec so it's not clear
 	// to me yet how to make this in to a sane interface. For the time

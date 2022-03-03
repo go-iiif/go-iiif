@@ -263,6 +263,9 @@ github.com/sfomuseum/go-csvdict
 github.com/sfomuseum/go-flags/flagset
 github.com/sfomuseum/go-flags/lookup
 github.com/sfomuseum/go-flags/multi
+# github.com/tidwall/pretty v1.2.0
+## explicit
+github.com/tidwall/pretty
 # github.com/whosonfirst/algnhsa v0.1.0
 ## explicit
 github.com/whosonfirst/algnhsa

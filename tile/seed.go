@@ -2,7 +2,6 @@ package tile
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
@@ -11,6 +10,7 @@ import (
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
 	iiifprofile "github.com/go-iiif/go-iiif/v4/profile"
 	iiifsource "github.com/go-iiif/go-iiif/v4/source"
+	"github.com/tidwall/pretty"
 	"log"
 	"math"
 	"runtime"
@@ -119,14 +119,14 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		err = image.Rename(alt_id)
 
 		if err != nil {
-			return count, err
+			return count, fmt.Errorf("Failed to rename (%s as %s), %w", src_id, alt_id, err)
 		}
 	}
 
 	source, err := iiifsource.NewMemorySource(image.Body())
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create image from memory, %w", err)
 	}
 
 	throttle := make(chan bool, ts.procs)
@@ -172,8 +172,6 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					}
 				}
 
-				// tmp, _ := iiifimage.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
-
 				tmp, err := ts.driver.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
 
 				if err != nil {
@@ -207,24 +205,25 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		count += len(crops)
 	}
 
-	// level, err := iiiflevel.NewLevelFromConfig(ts.config, ts.Endpoint)
 	level, err := iiiflevel.NewLevel0(ts.config, ts.Endpoint)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create new level 0, %w", err)
 	}
 
-	profile, err := iiifprofile.NewProfile(ts.Endpoint, image, level)
+	profile, err := level.Profile(ts.Endpoint, image)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create new profile for level, %w", err)
 	}
 
 	body, err := json.Marshal(profile)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to marshal profile, %w", err)
 	}
+
+	body = pretty.Pretty(body)
 
 	uri := fmt.Sprintf("%s/info.json", alt_id)
 	ts.derivatives_cache.Set(uri, body)
@@ -237,15 +236,14 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	dims, err := im.Dimensions()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive dimensions for image, %w", err)
 	}
 
 	w := dims.Width()
 	h := dims.Height()
 
 	if sf*ts.Width >= w && sf*ts.Height >= h {
-		msg := fmt.Sprintf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.Width, sf*ts.Height)
-		return nil, errors.New(msg)
+		return nil, fmt.Errorf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.Width, sf*ts.Height)
 	}
 
 	quality := ts.Quality
@@ -331,7 +329,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			transformation, err := iiifimage.NewTransformation(ts.level, region, size, rotation, quality, format)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to create new transformation, %w", err)
 			}
 
 			crops = append(crops, transformation)

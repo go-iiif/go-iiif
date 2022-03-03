@@ -1,10 +1,11 @@
-package image
+package transformation
 
 // https://iiif.io/api/image/2.1/#image-request-parameters
 
 import (
 	"errors"
 	"fmt"
+	iiifimage "github.com/go-iiif/go-iiif/v4/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
 	_ "log"
 	"math"
@@ -103,6 +104,10 @@ func NewTransformation(level iiiflevel.Level, region string, size string, rotati
 	}
 
 	return &t, nil
+}
+
+func (t *Transformation) Tranform(im iiifimage.Image) error {
+	return nil
 }
 
 func (t *Transformation) ToURI(id string) (string, error) {

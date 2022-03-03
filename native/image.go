@@ -12,6 +12,7 @@ import (
 	"github.com/anthonynsimon/bild/transform"
 	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
 	iiifimage "github.com/go-iiif/go-iiif/v4/image"
+	iiifimage "github.com/go-iiif/go-iiif/v4/transformation"	
 	iiifsource "github.com/go-iiif/go-iiif/v4/source"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
@@ -99,7 +100,7 @@ func (im *NativeImage) Dimensions() (iiifimage.Dimensions, error) {
 	return dims, nil
 }
 
-func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
+func (im *NativeImage) Transform(t *iiiftransformation.Transformation) error {
 
 	if t.Region != "full" {
 
