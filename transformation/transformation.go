@@ -5,8 +5,8 @@ package transformation
 import (
 	"errors"
 	"fmt"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	_ "log"
 	"math"
 	"net/url"

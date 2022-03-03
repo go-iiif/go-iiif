@@ -2,7 +2,7 @@ package main
 
 import (
 	_ "github.com/aaronland/gocloud-blob-s3"
-	_ "github.com/go-iiif/go-iiif/v4/native"
+	_ "github.com/go-iiif/go-iiif/v5/native"
 	_ "gocloud.dev/blob/fileblob"
 )
 
@@ -11,7 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-iiif/go-iiif-uri"
-	"github.com/go-iiif/go-iiif/v4/tools"
+	"github.com/go-iiif/go-iiif/v5/tools"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"log"

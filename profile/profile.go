@@ -2,7 +2,7 @@ package profile
 
 import (
 	_ "fmt"
-	iiifservice "github.com/go-iiif/go-iiif/v4/service"
+	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 )
 
 type Profile struct {

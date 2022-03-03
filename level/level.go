@@ -10,9 +10,9 @@ very much related but somehow seem like they should be in separate namespaces. I
 
 import (
 	"fmt"
-	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifprofile "github.com/go-iiif/go-iiif/v4/profile"
+	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	_ "log"
 )
 

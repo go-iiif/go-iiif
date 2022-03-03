@@ -1,4 +1,4 @@
-module github.com/go-iiif/go-iiif/v4
+module github.com/go-iiif/go-iiif/v5
 
 go 1.16
 

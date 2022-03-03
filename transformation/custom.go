@@ -3,7 +3,7 @@ package transformation
 import (
 	"errors"
 	"fmt"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	_ "log"
 	"strconv"
 	"strings"

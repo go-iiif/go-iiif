@@ -5,11 +5,11 @@ package level
 
 import (
 	"fmt"
-	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiifprofile "github.com/go-iiif/go-iiif/v4/profile"
-	iiifservice "github.com/go-iiif/go-iiif/v4/service"
+	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
+	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	_ "log"
 )
 

@@ -32,9 +32,9 @@ Support for alternative image processing libraries, like `libvips` is supported 
 
 ```
 import (
-	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifsource "github.com/go-iiif/go-iiif/v4/source"
+	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifsource "github.com/go-iiif/go-iiif/v5/source"
 )
 
 type Driver interface {
@@ -52,7 +52,7 @@ Drivers are expected to "register" themselves through the `driver.RegisterDriver
 package native
 
 import (
-	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
+	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 )
 
 func init() {
@@ -73,9 +73,9 @@ And then in your code you might do something like this:
 import (
 	"context"
 	"github.com/aaronland/gocloud-blob-bucket"	
-	_ "github.com/go-iiif/go-iiif/v4/native"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"	
+	_ "github.com/go-iiif/go-iiif/v5/native"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"	
 )
 
 ctx := context.Background()
@@ -107,7 +107,7 @@ The value of the `graphics.source` property should match the name that driver us
 
 The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` object and to invoke the relevant `NewImageFrom...` method as needed. It is assumed that the driver package in question will also implement it's own implementation of the `go-iiif` `image.Image` interface. For working examples you should consult either of the following packages:
 
-* https://github.com/go-iiif/go-iiif/v4/tree/master/native
+* https://github.com/go-iiif/go-iiif/v5/tree/master/native
 * https://github.com/go-iiif/go-iiif-vips
 
 ## Buckets
@@ -260,7 +260,7 @@ package main
 import (
 	"context"
 	_ "github.com/go-iiif/go-iiif-vips"
-	"github.com/go-iiif/go-iiif/v4/tools"
+	"github.com/go-iiif/go-iiif/v5/tools"
 )
 
 func main() {
@@ -277,7 +277,7 @@ package main
 import (
 	"context"
 	_ "github.com/go-iiif/go-iiif-vips"
-	"github.com/go-iiif/go-iiif/v4/tools"
+	"github.com/go-iiif/go-iiif/v5/tools"
 	"flag"
 	"github.com/sfomuseum/go-flags"	
 )
@@ -1553,9 +1553,9 @@ package example	// for example "github.com/example/go-iiif-example"
 
 import (
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"	
-	iiifservice "github.com/go-iiif/go-iiif/v4/service"	
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"	
+	iiifservice "github.com/go-iiif/go-iiif/v5/service"	
 )
 
 func init() {
@@ -1598,8 +1598,8 @@ import (
 import (
 	"context"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/v4/native"
-	"github.com/go-iiif/go-iiif/v4/tools"
+	_ "github.com/go-iiif/go-iiif/v5/native"
+	"github.com/go-iiif/go-iiif/v5/tools"
 	_ "gocloud.dev/blob/fileblob"
 	"log"
 )
