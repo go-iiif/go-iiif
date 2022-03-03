@@ -32,19 +32,19 @@ type Level0Size struct {
 // compliance iiifcompliance.Compliance
 
 type Level0 struct {
-	Level      `json:"-"`
-	Profile    []*Level0Profile `json:"profile"`
-	Tiles      []*Level0Tile    `json:"tiles"`
-	Sizes      []*Level0Size    `json:"sizes"`
-	Protocol   string           `json:"protocol"`
-	Context    string           `json:"@context"`
-	Id         string           `json:"@id"`
-	Width      int              `json:"width"`
-	Height     int              `json:"height"`
+	Level `json:"-"`
+	// Profile    []*Level0Profile `json:"profile"`
+	Tiles      []*Level0Tile `json:"tiles"`
+	Sizes      []*Level0Size `json:"sizes"`
+	Protocol   string        `json:"protocol"`
+	Context    string        `json:"@context"`
+	Id         string        `json:"@id"`
+	Width      int           `json:"width"`
+	Height     int           `json:"height"`
 	compliance iiifcompliance.Compliance
 }
 
-func NewLevel0(config *iiifconfig.Config, endpoint string) (*Level0, error) {
+func NewLevel0(config *iiifconfig.Config, endpoint string) (Level, error) {
 
 	compliance, err := iiifcompliance.NewLevel0Compliance(config)
 
@@ -52,14 +52,16 @@ func NewLevel0(config *iiifconfig.Config, endpoint string) (*Level0, error) {
 		return nil, fmt.Errorf("Failed to create new level 0 compliance, %w", err)
 	}
 
-	p := &Level0Profile{
-		Formats:   compliance.Formats(),
-		Qualities: compliance.Qualities(),
-	}
+	/*
+		p := &Level0Profile{
+			Formats:   compliance.Formats(),
+			Qualities: compliance.Qualities(),
+		}
+	*/
 
 	l := Level0{
-		Protocol:   "http://iiif.io/api/image",
-		Profile:    []*Level0Profile{p},
+		Protocol: "http://iiif.io/api/image",
+		// Profile:    []*Level0Profile{p},
 		compliance: compliance,
 	}
 
@@ -70,7 +72,7 @@ func (l *Level0) Compliance() iiifcompliance.Compliance {
 	return l.compliance
 }
 
-func (l *Level0) Profile(endpoint string, image iiifimage.Image) iiifprofile.Profile {
+func (l *Level0) Profile(endpoint string, image iiifimage.Image) (*iiifprofile.Profile, error) {
 
 	dims, err := image.Dimensions()
 
@@ -87,7 +89,7 @@ func (l *Level0) Profile(endpoint string, image iiifimage.Image) iiifprofile.Pro
 		Height:   dims.Height(),
 		Profile: []interface{}{
 			"http://iiif.io/api/image/2/level0.json",
-			level,
+			l,
 		},
 		Services: []iiifservice.Service{},
 	}

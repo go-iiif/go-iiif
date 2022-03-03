@@ -1,9 +1,12 @@
 package level
 
 import (
-	_ "fmt"
+	"fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
+	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	_ "log"
 )
 
@@ -37,7 +40,7 @@ func (l *Level2) Compliance() iiifcompliance.Compliance {
 	return l.compliance
 }
 
-func (l *Level2) Profile(endpoint string, image iiifimage.Image) iiifprofile.Profile {
+func (l *Level2) Profile(endpoint string, image iiifimage.Image) (*iiifprofile.Profile, error) {
 
 	dims, err := image.Dimensions()
 
@@ -54,7 +57,7 @@ func (l *Level2) Profile(endpoint string, image iiifimage.Image) iiifprofile.Pro
 		Height:   dims.Height(),
 		Profile: []interface{}{
 			"http://iiif.io/api/image/2/level2.json",
-			level,
+			l,
 		},
 		Services: []iiifservice.Service{},
 	}
