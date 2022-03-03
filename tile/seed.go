@@ -8,8 +8,8 @@ import (
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
-	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
+	iiiftransformation "github.com/go-iiif/go-iiif/v5/transformation"	
 	"github.com/tidwall/pretty"
 	"log"
 	"math"
@@ -152,7 +152,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 			wg.Add(1)
 
-			go func(throttle chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
+			go func(throttle chan bool, im iiifimage.Image, tr *iiiftransformation.Transformation, wg *sync.WaitGroup) {
 
 				defer func() {
 					wg.Done()
@@ -231,7 +231,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 	return count, nil
 }
 
-func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transformation, error) {
+func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiiftransformation.Transformation, error) {
 
 	dims, err := im.Dimensions()
 
@@ -255,7 +255,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 	format := ts.Format
 
-	crops := make([]*iiifimage.Transformation, 0)
+	crops := make([]*iiiftransformation.Transformation, 0)
 
 	// what follows was copied from
 	// https://github.com/cmoa/iiif_s3/blob/master/lib/iiif_s3/builder.rb#L165-L199
@@ -326,7 +326,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			quality := quality
 			format := format
 
-			transformation, err := iiifimage.NewTransformation(ts.level, region, size, rotation, quality, format)
+			transformation, err := iiiftransformation.NewTransformation(ts.level, region, size, rotation, quality, format)
 
 			if err != nil {
 				return nil, fmt.Errorf("Failed to create new transformation, %w", err)

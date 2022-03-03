@@ -160,7 +160,7 @@ func (t *Transformation) HasTransformation() bool {
 	return false
 }
 
-func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error) {
+func (t *Transformation) RegionInstructions(im iiifimage.Image) (*RegionInstruction, error) {
 
 	dims, err := im.Dimensions()
 
@@ -339,7 +339,7 @@ func (t *Transformation) RegionInstructions(im Image) (*RegionInstruction, error
 
 }
 
-func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
+func (t *Transformation) SizeInstructions(im iiifimage.Image) (*SizeInstruction, error) {
 
 	var width int
 	var height int
@@ -370,7 +370,7 @@ func (t *Transformation) SizeInstructions(im Image) (*SizeInstruction, error) {
 	return t.SizeInstructionsWithDimensions(im, width, height)
 }
 
-func (t *Transformation) SizeInstructionsWithDimensions(im Image, width int, height int) (*SizeInstruction, error) {
+func (t *Transformation) SizeInstructionsWithDimensions(im iiifimage.Image, width int, height int) (*SizeInstruction, error) {
 
 	sizeError := "IIIF 2.1 `size` argument is not recognized: %#v"
 
@@ -492,7 +492,7 @@ func (t *Transformation) SizeInstructionsWithDimensions(im Image, width int, hei
 
 }
 
-func (t *Transformation) RotationInstructions(im Image) (*RotationInstruction, error) {
+func (t *Transformation) RotationInstructions(im iiifimage.Image) (*RotationInstruction, error) {
 
 	rotationError := "IIIF 2.1 `rotation` argument is not recognized: %#v"
 
@@ -521,7 +521,7 @@ func (t *Transformation) RotationInstructions(im Image) (*RotationInstruction, e
 	return &instruction, nil
 }
 
-func (t *Transformation) FormatInstructions(im Image) (*FormatInstruction, error) {
+func (t *Transformation) FormatInstructions(im iiifimage.Image) (*FormatInstruction, error) {
 
 	fmt := ""
 
