@@ -4,9 +4,6 @@ import (
 	_ "fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
-	iiifservice "github.com/go-iiif/go-iiif/v5/service"
-	_ "log"
 )
 
 type Level2 struct {
@@ -45,19 +42,6 @@ func (l *Level2) Compliance() iiifcompliance.Compliance {
 	return l.compliance
 }
 
-func (l *Level2) Profile() (*iiifprofile.Profile, error) {
-
-	p := iiifprofile.Profile{
-		Context:  "http://iiif.io/api/image/2/context.json",
-		Id:       "",
-		Type:     "iiif:Image",
-		Protocol: "http://iiif.io/api/image",
-		Profile: []interface{}{
-			"http://iiif.io/api/image/2/level2.json",
-			l,
-		},
-		Services: []iiifservice.Service{},
-	}
-
-	return &p, nil
+func (l *Level2) Profile() string {
+	return "http://iiif.io/api/image/2/level2.json"
 }

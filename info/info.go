@@ -4,7 +4,6 @@ import (
 	"fmt"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
-	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	"path/filepath"
 )
 
@@ -24,23 +23,17 @@ type Tile struct {
 }
 
 type Info struct {
-	Height   int                    `json:"height"`
-	Width    int                    `json:"width"`
-	Context  string                 `json:"@context"`
-	Id       string                 `json:"@id"`
-	Protocol string                 `json:"protocol"`
-	Profiles []*iiifprofile.Profile `json:"profile"`
-	Tiles    []*Tile                `json:"tiles"`
-	Sizes    []*Size                `json:"sizes"`
+	Height   int           `json:"height"`
+	Width    int           `json:"width"`
+	Context  string        `json:"@context"`
+	Id       string        `json:"@id"`
+	Protocol string        `json:"protocol"`
+	Profile  []interface{} `json:"profile"`
+	Tiles    []*Tile       `json:"tiles"`
+	Sizes    []*Size       `json:"sizes"`
 }
 
 func New(l iiiflevel.Level, im iiifimage.Image) (*Info, error) {
-
-	pr, err := l.Profile()
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to create new profile for level, %w", err)
-	}
 
 	dims, err := im.Dimensions()
 
@@ -52,9 +45,12 @@ func New(l iiiflevel.Level, im iiifimage.Image) (*Info, error) {
 		Context:  IMAGE_V2_CONTEXT,
 		Protocol: IMAGE_PROTOCOL,
 		Id:       filepath.Join(l.Endpoint(), im.Identifier()),
-		Profiles: []*iiifprofile.Profile{pr},
-		Height:   dims.Height(),
-		Width:    dims.Width(),
+		Profile: []interface{}{
+			l.Profile(),
+			l,
+		},
+		Height: dims.Height(),
+		Width:  dims.Width(),
 	}
 
 	return i, nil

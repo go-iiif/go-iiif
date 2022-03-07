@@ -7,38 +7,14 @@ import (
 	"fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
-	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	_ "log"
 )
 
-type Level0Profile struct {
-	Formats   []string `json:"formats"`
-	Qualities []string `json:"qualities"`
-}
-
-type Level0Tile struct {
-	Width        int   `json:"width"`
-	Height       int   `json:"height"`
-	ScaleFactors []int `json:"scaleFactors"`
-}
-
-type Level0Size struct {
-	Width  int `json:"width"`
-	Height int `json:"height"`
-}
-
-// compliance iiifcompliance.Compliance
-
 type Level0 struct {
 	Level      `json:"-"`
-	Tiles      []*Level0Tile `json:"tiles"`
-	Sizes      []*Level0Size `json:"sizes"`
-	Protocol   string        `json:"protocol"`
-	Context    string        `json:"@context"`
-	Id         string        `json:"@id"`
-	Width      int           `json:"width"`
-	Height     int           `json:"height"`
+	Formats    []string `json:"formats"`
+	Qualities  []string `json:"qualities"`
+	Supports   []string `json:"supports"`
 	compliance iiifcompliance.Compliance
 	endpoint   string
 }
@@ -52,7 +28,9 @@ func NewLevel0(config *iiifconfig.Config, endpoint string) (Level, error) {
 	}
 
 	l := Level0{
-		Protocol:   "http://iiif.io/api/image",
+		Formats:    compliance.Formats(),
+		Qualities:  compliance.Qualities(),
+		Supports:   compliance.Supports(),
 		compliance: compliance,
 		endpoint:   endpoint,
 	}
@@ -68,19 +46,6 @@ func (l *Level0) Endpoint() string {
 	return l.endpoint
 }
 
-func (l *Level0) Profile() (*iiifprofile.Profile, error) {
-
-	p := iiifprofile.Profile{
-		Context:  "http://iiif.io/api/image/2/context.json",
-		Id:       "",
-		Type:     "iiif:Image",
-		Protocol: "http://iiif.io/api/image",
-		Profile: []interface{}{
-			"http://iiif.io/api/image/2/level0.json",
-			// l,
-		},
-		Services: []iiifservice.Service{},
-	}
-
-	return &p, nil
+func (l *Level0) Profile() string {
+	return "http://iiif.io/api/image/2/level0.json"
 }

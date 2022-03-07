@@ -1,26 +1,16 @@
 package level
 
-/*
-
-Things I am not sure about include the relationship of level/*.go and compliance/*.go which are
-very much related but somehow seem like they should be in separate namespaces. I'm not sure...
-(20160912/thisisaaronland)
-
-*/
-
 import (
 	"fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	// iiifimage "github.com/go-iiif/go-iiif/v5/image"
-	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	_ "log"
 )
 
 type Level interface {
 	Compliance() iiifcompliance.Compliance
 	Endpoint() string
-	Profile() (*iiifprofile.Profile, error)
+	Profile() string
 }
 
 func NewLevelFromConfig(config *iiifconfig.Config, endpoint string) (Level, error) {
