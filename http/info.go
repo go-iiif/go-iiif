@@ -1,13 +1,12 @@
 package http
 
 import (
-	"encoding/json"
-	_ "fmt"
+	"fmt"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
-	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
-	// iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	iiifinfo "github.com/go-iiif/go-iiif/v5/info"
+	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
+	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	gohttp "net/http"
 )
 
@@ -15,7 +14,7 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 	fn := func(w gohttp.ResponseWriter, r *gohttp.Request) {
 
-		// ctx := r.Context()
+		ctx := r.Context()
 
 		parser, err := NewIIIFQueryParser(r)
 
@@ -47,15 +46,20 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 			return
 		}
 
-		info, err := iiifinfo.New(level, image)
+		info, err := iiifinfo.New(iiifinfo.IMAGE_V2_CONTEXT, level, image)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
 			return
 		}
 
-		/*
-			for _, service_name := range config.Profile.Services.Enable {
+		count_services := len(config.Profile.Services.Enable)
+
+		if count_services > 0 {
+
+			services := make([]iiifservice.Service, count_services)
+
+			for idx, service_name := range config.Profile.Services.Enable {
 
 				service_uri := fmt.Sprintf("%s://", service_name)
 				service, err := iiifservice.NewService(ctx, service_uri, config, image)
@@ -65,11 +69,13 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 					return
 				}
 
-				profile.AddService(service)
+				services[idx] = service
 			}
-		*/
 
-		b, err := json.Marshal(info)
+			info.Services = services
+		}
+
+		b, err := iiifinfo.MarshalJSON(info)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)

@@ -1,7 +1,6 @@
 package tile
 
 import (
-	"encoding/json"
 	"fmt"
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
@@ -10,7 +9,6 @@ import (
 	iiifinfo "github.com/go-iiif/go-iiif/v5/info"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
-	"github.com/tidwall/pretty"
 	"log"
 	"math"
 	"runtime"
@@ -211,19 +209,25 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, fmt.Errorf("Failed to create new level 0, %w", err)
 	}
 
-	info, err := iiifinfo.New(level, image)
+	info, err := iiifinfo.New(iiifinfo.IMAGE_V2_CONTEXT, level, image)
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to create new info.json file, %w", err)
 	}
 
-	body, err := json.Marshal(info)
+	info.Tiles = []*iiifinfo.Tile{
+		&iiifinfo.Tile{
+			Width:        ts.Width,
+			Height:       ts.Height,
+			ScaleFactors: scales,
+		},
+	}
+
+	body, err := iiifinfo.MarshalJSON(info)
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to marshal info, %w", err)
 	}
-
-	body = pretty.Pretty(body)
 
 	uri := fmt.Sprintf("%s/info.json", alt_id)
 	ts.derivatives_cache.Set(uri, body)
