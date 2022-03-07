@@ -43,6 +43,7 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 		}
 
 		endpoint := EndpointFromRequest(r)
+
 		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
 		if err != nil {

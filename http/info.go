@@ -2,11 +2,12 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
+	_ "fmt"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
-	iiifservice "github.com/go-iiif/go-iiif/v5/service"
+	// iiifservice "github.com/go-iiif/go-iiif/v5/service"
+	iiifinfo "github.com/go-iiif/go-iiif/v5/info"
 	gohttp "net/http"
 )
 
@@ -14,7 +15,7 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 	fn := func(w gohttp.ResponseWriter, r *gohttp.Request) {
 
-		ctx := r.Context()
+		// ctx := r.Context()
 
 		parser, err := NewIIIFQueryParser(r)
 
@@ -46,34 +47,29 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 			return
 		}
 
-		profile, err := level.Profile()
+		info, err := iiifinfo.New(level, image)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
 			return
 		}
 
-		err = profile.AddImage(endpoint, image)
+		/*
+			for _, service_name := range config.Profile.Services.Enable {
 
-		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
-			return
-		}
+				service_uri := fmt.Sprintf("%s://", service_name)
+				service, err := iiifservice.NewService(ctx, service_uri, config, image)
 
-		for _, service_name := range config.Profile.Services.Enable {
+				if err != nil {
+					gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+					return
+				}
 
-			service_uri := fmt.Sprintf("%s://", service_name)
-			service, err := iiifservice.NewService(ctx, service_uri, config, image)
-
-			if err != nil {
-				gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
-				return
+				profile.AddService(service)
 			}
+		*/
 
-			profile.AddService(service)
-		}
-
-		b, err := json.Marshal(profile)
+		b, err := json.Marshal(info)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)

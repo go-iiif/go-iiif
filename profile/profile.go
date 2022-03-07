@@ -1,10 +1,8 @@
 package profile
 
 import (
-	"fmt"
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	_ "fmt"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
-	"path/filepath"
 )
 
 type Profile struct {
@@ -18,21 +16,6 @@ type Profile struct {
 	Sizes    []string              `json:"sizes,omitempty"`
 	Tiles    []string              `json:"tiles,omitempty"`
 	Services []iiifservice.Service `json:"service,omitempty"`
-}
-
-func (p *Profile) AddImage(endpoint string, im iiifimage.Image) error {
-
-	dims, err := im.Dimensions()
-
-	if err != nil {
-		return fmt.Errorf("Failed to derive dimensions for image, %w", err)
-	}
-
-	p.Id = filepath.Join(endpoint, im.Identifier())
-	p.Height = dims.Height()
-	p.Width = dims.Width()
-
-	return nil
 }
 
 func (p *Profile) AddService(s iiifservice.Service) {

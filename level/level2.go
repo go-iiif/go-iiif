@@ -15,6 +15,7 @@ type Level2 struct {
 	Qualities  []string `json:"qualities"`
 	Supports   []string `json:"supports"`
 	compliance iiifcompliance.Compliance
+	endpoint   string
 }
 
 func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
@@ -30,9 +31,14 @@ func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
 		Qualities:  compliance.Qualities(),
 		Supports:   compliance.Supports(),
 		compliance: compliance,
+		endpoint:   endpoint,
 	}
 
 	return &l, nil
+}
+
+func (l *Level2) Endpoint() string {
+	return l.endpoint
 }
 
 func (l *Level2) Compliance() iiifcompliance.Compliance {

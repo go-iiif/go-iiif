@@ -19,6 +19,7 @@ import (
 
 type Level interface {
 	Compliance() iiifcompliance.Compliance
+	Endpoint() string
 	Profile() (*iiifprofile.Profile, error)
 }
 

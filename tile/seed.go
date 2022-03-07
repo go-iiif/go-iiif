@@ -7,6 +7,7 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiifinfo "github.com/go-iiif/go-iiif/v5/info"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
 	"github.com/tidwall/pretty"
@@ -210,22 +211,16 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, fmt.Errorf("Failed to create new level 0, %w", err)
 	}
 
-	profile, err := level.Profile()
+	info, err := iiifinfo.New(level, image)
 
 	if err != nil {
-		return count, fmt.Errorf("Failed to create new profile for level, %w", err)
+		return count, fmt.Errorf("Failed to create new info.json file, %w", err)
 	}
 
-	err = profile.AddImage(ts.Endpoint, image)
+	body, err := json.Marshal(info)
 
 	if err != nil {
-		return count, fmt.Errorf("Failed to add image to profile, %w", err)
-	}
-
-	body, err := json.Marshal(profile)
-
-	if err != nil {
-		return count, fmt.Errorf("Failed to marshal profile, %w", err)
+		return count, fmt.Errorf("Failed to marshal info, %w", err)
 	}
 
 	body = pretty.Pretty(body)

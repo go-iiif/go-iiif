@@ -40,6 +40,7 @@ type Level0 struct {
 	Width      int           `json:"width"`
 	Height     int           `json:"height"`
 	compliance iiifcompliance.Compliance
+	endpoint   string
 }
 
 func NewLevel0(config *iiifconfig.Config, endpoint string) (Level, error) {
@@ -53,6 +54,7 @@ func NewLevel0(config *iiifconfig.Config, endpoint string) (Level, error) {
 	l := Level0{
 		Protocol:   "http://iiif.io/api/image",
 		compliance: compliance,
+		endpoint:   endpoint,
 	}
 
 	return &l, nil
@@ -60,6 +62,10 @@ func NewLevel0(config *iiifconfig.Config, endpoint string) (Level, error) {
 
 func (l *Level0) Compliance() iiifcompliance.Compliance {
 	return l.compliance
+}
+
+func (l *Level0) Endpoint() string {
+	return l.endpoint
 }
 
 func (l *Level0) Profile() (*iiifprofile.Profile, error) {
@@ -71,7 +77,7 @@ func (l *Level0) Profile() (*iiifprofile.Profile, error) {
 		Protocol: "http://iiif.io/api/image",
 		Profile: []interface{}{
 			"http://iiif.io/api/image/2/level0.json",
-			l,
+			// l,
 		},
 		Services: []iiifservice.Service{},
 	}
