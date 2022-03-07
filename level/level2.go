@@ -4,7 +4,6 @@ import (
 	_ "fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	// iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	_ "log"
@@ -40,23 +39,13 @@ func (l *Level2) Compliance() iiifcompliance.Compliance {
 	return l.compliance
 }
 
-func (l *Level2) Profile(endpoint string) (*iiifprofile.Profile, error) {
-
-	/*
-		dims, err := image.Dimensions()
-
-		if err != nil {
-			return nil, fmt.Errorf("Failed to derive dimensions for image, %w", err)
-		}
-	*/
+func (l *Level2) Profile() (*iiifprofile.Profile, error) {
 
 	p := iiifprofile.Profile{
 		Context:  "http://iiif.io/api/image/2/context.json",
-		Id:       endpoint, // fmt.Sprintf("%s/%s", endpoint, image.Identifier()),
+		Id:       "",
 		Type:     "iiif:Image",
 		Protocol: "http://iiif.io/api/image",
-		// Width:    dims.Width(),
-		// Height:   dims.Height(),
 		Profile: []interface{}{
 			"http://iiif.io/api/image/2/level2.json",
 			l,

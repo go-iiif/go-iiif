@@ -7,7 +7,6 @@ import (
 	"fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	// iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiifprofile "github.com/go-iiif/go-iiif/v5/profile"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
 	_ "log"
@@ -32,8 +31,7 @@ type Level0Size struct {
 // compliance iiifcompliance.Compliance
 
 type Level0 struct {
-	Level `json:"-"`
-	// Profile    []*Level0Profile `json:"profile"`
+	Level      `json:"-"`
 	Tiles      []*Level0Tile `json:"tiles"`
 	Sizes      []*Level0Size `json:"sizes"`
 	Protocol   string        `json:"protocol"`
@@ -52,16 +50,8 @@ func NewLevel0(config *iiifconfig.Config, endpoint string) (Level, error) {
 		return nil, fmt.Errorf("Failed to create new level 0 compliance, %w", err)
 	}
 
-	/*
-		p := &Level0Profile{
-			Formats:   compliance.Formats(),
-			Qualities: compliance.Qualities(),
-		}
-	*/
-
 	l := Level0{
-		Protocol: "http://iiif.io/api/image",
-		// Profile:    []*Level0Profile{p},
+		Protocol:   "http://iiif.io/api/image",
 		compliance: compliance,
 	}
 
@@ -72,23 +62,13 @@ func (l *Level0) Compliance() iiifcompliance.Compliance {
 	return l.compliance
 }
 
-func (l *Level0) Profile(endpoint string) (*iiifprofile.Profile, error) {
-
-	/*
-		dims, err := image.Dimensions()
-
-		if err != nil {
-			return nil, fmt.Errorf("Failed to derive dimensions for image, %w", err)
-		}
-	*/
+func (l *Level0) Profile() (*iiifprofile.Profile, error) {
 
 	p := iiifprofile.Profile{
 		Context:  "http://iiif.io/api/image/2/context.json",
-		Id:       endpoint, // fmt.Sprintf("%s/%s", endpoint, image.Identifier()),
+		Id:       "",
 		Type:     "iiif:Image",
 		Protocol: "http://iiif.io/api/image",
-		// Width:    dims.Width(),
-		// Height:   dims.Height(),
 		Profile: []interface{}{
 			"http://iiif.io/api/image/2/level0.json",
 			l,

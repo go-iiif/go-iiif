@@ -19,7 +19,7 @@ import (
 
 type Level interface {
 	Compliance() iiifcompliance.Compliance
-	Profile(string) (*iiifprofile.Profile, error)
+	Profile() (*iiifprofile.Profile, error)
 }
 
 func NewLevelFromConfig(config *iiifconfig.Config, endpoint string) (Level, error) {

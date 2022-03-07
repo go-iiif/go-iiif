@@ -46,14 +46,19 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 			return
 		}
 
-		profile, err := level.Profile(endpoint)
+		profile, err := level.Profile()
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
 			return
 		}
 
-		// FIX ME : APPEND IMAGE PROPERTIES HERE
+		err = profile.AddImage(endpoint, image)
+
+		if err != nil {
+			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			return
+		}
 
 		for _, service_name := range config.Profile.Services.Enable {
 

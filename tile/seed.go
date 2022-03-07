@@ -210,13 +210,17 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, fmt.Errorf("Failed to create new level 0, %w", err)
 	}
 
-	profile, err := level.Profile(ts.Endpoint)
+	profile, err := level.Profile()
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to create new profile for level, %w", err)
 	}
 
-	// FIX ME: ASSIGN IMAGE PROPERTIES HERE...
+	err = profile.AddImage(ts.Endpoint, image)
+
+	if err != nil {
+		return count, fmt.Errorf("Failed to add image to profile, %w", err)
+	}
 
 	body, err := json.Marshal(profile)
 
