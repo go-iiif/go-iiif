@@ -16,7 +16,11 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 Version 5.0.0 and higher of the `go-iiif` package introduces three backwards incompatible changes from previous versions. They are:
 
-* The `profile` package and types have been removed.
+* The `tile/seed.go` package and `cmd/iiif-tile-seed` tool assume IIIF Level 0 profiles rather than Level 2 to account for [issue #92](https://github.com/go-iiif/go-iiif/issues/92).
+
+* The `profile` package and types have been removed. The code to generate `info.json` files has been moved in to the `info` package.
+
+* The interface for the `level` package has been changed. Specifically the `Profile` method has been changed to return a URI string and there is a new `Endpoint` method.
 
 Version 2.0.0 and higher of the `go-iiif` package introduces three backwards incompatible changes from previous versions. They are:
 
