@@ -16,7 +16,7 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 Version 5.0.0 and higher of the `go-iiif` package introduces three backwards incompatible changes from previous versions. They are:
 
-* ...
+* The `profile` package and types have been removed.
 
 Version 2.0.0 and higher of the `go-iiif` package introduces three backwards incompatible changes from previous versions. They are:
 
