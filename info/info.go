@@ -6,7 +6,7 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
-	"path/filepath"
+	"strings"
 )
 
 // The URI for the IIIF Image API protocol.
@@ -64,10 +64,14 @@ func New(iiif_context string, l iiiflevel.Level, im iiifimage.Image) (*Info, err
 		return nil, fmt.Errorf("Failed to derive dimensions for image, %w", err)
 	}
 
+	endpoint := strings.TrimRight(l.Endpoint(), "/")
+	identifier := strings.TrimLeft(im.Identifier(), "/")
+	id := fmt.Sprintf("%s/%s", endpoint, identifier)
+
 	i := &Info{
 		Context:  iiif_context,
 		Protocol: IMAGE_PROTOCOL,
-		Id:       filepath.Join(l.Endpoint(), im.Identifier()),
+		Id:       id,
 		Profile: []interface{}{
 			l.Profile(),
 			l,
