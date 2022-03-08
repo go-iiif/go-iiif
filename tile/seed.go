@@ -37,8 +37,6 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 		return nil, fmt.Errorf("Failed to create tileseed driver from config, %w", err)
 	}
 
-	// level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
-
 	level, err := iiiflevel.NewLevel0(config, endpoint)
 
 	if err != nil {
