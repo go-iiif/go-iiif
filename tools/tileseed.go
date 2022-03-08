@@ -2,13 +2,13 @@ package tools
 
 import (
 	"context"
-	"errors"
 	"flag"
+	"fmt"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiiftile "github.com/go-iiif/go-iiif/v4/tile"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiiftile "github.com/go-iiif/go-iiif/v5/tile"
 	"github.com/sfomuseum/go-csvdict"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
@@ -49,7 +49,7 @@ func SeedFromString(str_uri string, no_extension bool) (*Seed, error) {
 	u, err := iiifuri.NewURI(ctx, str_uri)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive seed from URI %s, %v", str_uri, err)
 	}
 
 	return SeedFromURI(u, no_extension)
@@ -169,7 +169,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	fs, err := TileSeedToolFlagSet(ctx)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create tileseed tool flagset, %w", err)
 	}
 
 	flagset.Parse(fs)
@@ -177,7 +177,7 @@ func (t *TileSeedTool) Run(ctx context.Context) error {
 	err = flagset.SetFlagsFromEnvVars(fs, "IIIF")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to assign tileseed tool flags from environment variables, %w", err)
 	}
 
 	return t.RunWithFlagSet(ctx, fs)
@@ -194,67 +194,67 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	config_source, err := lookup.StringVar(fs, "config-source")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine config-source flag, %w", err)
 	}
 
 	config_name, err := lookup.StringVar(fs, "config-name")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine config-name flag, %w", err)
 	}
 
 	csv_source, err := lookup.StringVar(fs, "csv-source")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine csv-source flag, %w", err)
 	}
 
 	scale_factors, err := lookup.StringVar(fs, "scale-factors")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine scale-factors flag, %w", err)
 	}
 
 	quality, err := lookup.StringVar(fs, "quality")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine quality flag, %w", err)
 	}
 
 	format, err := lookup.StringVar(fs, "format")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine format flag, %w", err)
 	}
 
 	logfile, err := lookup.StringVar(fs, "logfile")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine logfile flag, %w", err)
 	}
 
 	loglevel, err := lookup.StringVar(fs, "loglevel")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine loglevel flag, %w", err)
 	}
 
 	processes, err := lookup.IntVar(fs, "processes")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine processes flag, %w", err)
 	}
 
 	mode, err := lookup.StringVar(fs, "mode")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine mode flag, %w", err)
 	}
 
 	noextension, err := lookup.BoolVar(fs, "noextension")
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to determine noextension flag, %w", err)
 	}
 
 	refresh, err := lookup.BoolVar(fs, "refresh")
@@ -276,29 +276,25 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	}
 
 	if config_source == "" {
-		return errors.New("Required -config-source flag is empty.")
+		return fmt.Errorf("Required -config-source flag is empty.")
 	}
 
 	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to open bucket for config source, %w", err)
 	}
 
 	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
-		return err
-	}
-
-	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new config from bucket, %w", err)
 	}
 
 	ts, err := iiiftile.NewTileSeed(config, 256, 256, endpoint, quality, format)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create tileseed(er), %w", err)
 	}
 
 	writers := make([]io.Writer, 0)
@@ -312,7 +308,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		fh, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to open logfile, %w", err)
 		}
 
 		writers = append(writers, fh)
@@ -331,7 +327,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		scale, err := strconv.Atoi(s)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to parse scale factor, %w", err)
 		}
 
 		scales = append(scales, scale)
@@ -395,13 +391,13 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 			u, err := t.uriFunc(id)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to derive URI from path '%s', %w", id, err)
 			}
 
 			seed, err := SeedFromURI(u, noextension)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to derive seed from URI '%s', %w", u, err)
 			}
 
 			tile_func(seed, wg)
@@ -414,7 +410,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		csv_bucket, err := blob.OpenBucket(ctx, csv_source)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to open bucket from CSV source, %w", err)
 		}
 
 		wg := new(sync.WaitGroup)
@@ -424,7 +420,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 			fh, err := csv_bucket.NewReader(ctx, path, nil)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to open reader from %s, %w", path, err)
 			}
 
 			defer fh.Close()
@@ -432,7 +428,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 			reader, err := csvdict.NewReader(fh)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to open CSV reader, %w", err)
 			}
 
 			counter := 0
@@ -483,11 +479,11 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		u, err := url.Parse(images_source)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to parse images source, %w", err)
 		}
 
 		if u.Scheme != "file" {
-			return errors.New("Invalid image source for -mode fsnotify")
+			return fmt.Errorf("Invalid image source for -mode fsnotify")
 		}
 
 		root := u.Path
@@ -496,7 +492,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		watcher, err := fsnotify.NewWatcher()
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to create fsnotify watcher, %w", err)
 		}
 
 		defer watcher.Close()
@@ -557,7 +553,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		err = watcher.Add(root)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to add '%s' to fsnotify watcher, %w", root, err)
 		}
 
 		<-done
@@ -587,7 +583,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 				seed, err := SeedFromURI(u, noextension)
 
 				if err != nil {
-					return err
+					return fmt.Errorf("Failed to seed tiles from %s, %w", u, err)
 				}
 
 				tile_func(seed, wg)
@@ -600,7 +596,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		aws_lambda.Start(handler)
 
 	default:
-		return errors.New("Invalid -mode")
+		return fmt.Errorf("Invalid -mode")
 	}
 
 	return nil

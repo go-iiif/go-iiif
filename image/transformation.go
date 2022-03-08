@@ -5,7 +5,7 @@ package image
 import (
 	"errors"
 	"fmt"
-	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
+	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	_ "log"
 	"math"
 	"net/url"
@@ -39,44 +39,44 @@ type FormatInstruction struct {
 }
 
 type Transformation struct {
-	level    iiiflevel.Level
-	Region   string
-	Size     string
-	Rotation string
-	Quality  string
-	Format   string
+	compliance iiifcompliance.Compliance
+	Region     string
+	Size       string
+	Rotation   string
+	Quality    string
+	Format     string
 }
 
-func NewTransformation(level iiiflevel.Level, region string, size string, rotation string, quality string, format string) (*Transformation, error) {
+func NewTransformation(compliance iiifcompliance.Compliance, region string, size string, rotation string, quality string, format string) (*Transformation, error) {
 
 	var ok bool
 	var err error
 
-	ok, err = level.Compliance().IsValidImageRegion(region)
+	ok, err = compliance.IsValidImageRegion(region)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.Compliance().IsValidImageSize(size)
+	ok, err = compliance.IsValidImageSize(size)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.Compliance().IsValidImageRotation(rotation)
+	ok, err = compliance.IsValidImageRotation(rotation)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.Compliance().IsValidImageQuality(quality)
+	ok, err = compliance.IsValidImageQuality(quality)
 
 	if !ok {
 		return nil, err
 	}
 
-	ok, err = level.Compliance().IsValidImageFormat(format)
+	ok, err = compliance.IsValidImageFormat(format)
 
 	if !ok {
 		return nil, err
@@ -86,7 +86,7 @@ func NewTransformation(level iiiflevel.Level, region string, size string, rotati
 
 	if quality == "default" {
 
-		quality, err = level.Compliance().DefaultQuality()
+		quality, err = compliance.DefaultQuality()
 
 		if err != nil {
 			return nil, err
@@ -94,15 +94,19 @@ func NewTransformation(level iiiflevel.Level, region string, size string, rotati
 	}
 
 	t := Transformation{
-		level:    level,
-		Region:   region,
-		Size:     size,
-		Rotation: rotation,
-		Quality:  quality,
-		Format:   format,
+		compliance: compliance,
+		Region:     region,
+		Size:       size,
+		Rotation:   rotation,
+		Quality:    quality,
+		Format:     format,
 	}
 
 	return &t, nil
+}
+
+func (t *Transformation) Tranform(im Image) error {
+	return nil
 }
 
 func (t *Transformation) ToURI(id string) (string, error) {
@@ -520,8 +524,7 @@ func (t *Transformation) FormatInstructions(im Image) (*FormatInstruction, error
 
 	fmt := ""
 
-	compliance := t.level.Compliance()
-	spec := compliance.Spec()
+	spec := t.compliance.Spec()
 
 	for name, details := range spec.Image.Format {
 

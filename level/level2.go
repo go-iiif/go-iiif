@@ -2,9 +2,8 @@ package level
 
 import (
 	_ "fmt"
-	iiifcompliance "github.com/go-iiif/go-iiif/v4/compliance"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	_ "log"
+	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 )
 
 type Level2 struct {
@@ -13,6 +12,7 @@ type Level2 struct {
 	Qualities  []string `json:"qualities"`
 	Supports   []string `json:"supports"`
 	compliance iiifcompliance.Compliance
+	endpoint   string
 }
 
 func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
@@ -28,11 +28,20 @@ func NewLevel2(config *iiifconfig.Config, endpoint string) (*Level2, error) {
 		Qualities:  compliance.Qualities(),
 		Supports:   compliance.Supports(),
 		compliance: compliance,
+		endpoint:   endpoint,
 	}
 
 	return &l, nil
 }
 
+func (l *Level2) Endpoint() string {
+	return l.endpoint
+}
+
 func (l *Level2) Compliance() iiifcompliance.Compliance {
 	return l.compliance
+}
+
+func (l *Level2) Profile() string {
+	return "http://iiif.io/api/image/2/level2.json"
 }

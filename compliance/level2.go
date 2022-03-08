@@ -1,10 +1,11 @@
 package compliance
 
 import (
+	_ "embed"
 	"encoding/json"
 	"errors"
 	"fmt"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	_ "log"
 	"regexp"
 )
@@ -12,67 +13,12 @@ import (
 // http://iiif.io/api/image/2.1/
 // http://iiif.io/api/image/2.1/compliance/
 
-// 		       "regionByPct":  { "syntax": "pct:x,y,w,h", "required": true, "supported": true, "match": "^pct\\:\\d+\\,\\d+\\,\\d+\\,\\d+$" },
-
-var level2_spec = `{
-    "image": {
-    	     "region": {
-	     	       "full":         { "syntax": "full",        "required": true, "supported": true, "match": "^full$" },
-		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^-?\\d+\\,-?\\d+\\,\\d+\\,\\d+$" },
-
-	     		"regionByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?$" },			
-		       "regionSquare": { "syntax": "square",      "required": false, "supported": true, "match": "^square$" }
-	     },
-	     "size": {
-	     		"full":              { "syntax": "full",  "required": true, "supported": true, "match": "^full$" },
-	     		"max":               { "syntax": "max",   "required": false, "supported": true, "match": "^max$" },
-	     		"sizeByW":           { "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
-	     		"sizeByH":           { "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
-			"sizeByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },
-	     		"sizeByConfinedWh":  { "syntax": "!w,h",  "required": true, "supported": true, "match": "^\\!\\d+\\,\\d+$" },
-	     		"sizeByDistortedWh": { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" },
-	     		"sizeByWh":          { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" }
-	     },
-	     "rotation": {
-	     		"none":              { "syntax": "0",          "required": true, "supported": true, "match": "^0$" },
-	     		"rotationBy90s":     { "syntax": "90,180,270", "required": true, "supported": true, "match": "^(?:90|180|270)$" },
-	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "^\\d+\\.\\d+$" },			
-	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" },
-	     		"noAutoRotate":      { "syntax": "-1",         "required": false, "supported": true, "match": "^\\-1$" }
-	     },
-	     "quality": {
-	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": false },
-	     		"color":   { "syntax": "color",   "required": false, "supported": true, "match": "^colou?r$", "default": true },
-	     		"gray":    { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$", "default": false },			
-	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$", "default": false }
-             },
-	     "format": {
-	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
-       	     	       "png": { "syntax": "png",  "required": true, "supported": true, "match": "^png$" },
-       	     	       "tif": { "syntax": "tif",  "required": false, "supported": false, "match": "^tiff?$" },
-      	     	       "gif": { "syntax": "gif",  "required": false, "supported": false, "match": "^gif$" },
-       	     	       "pdf": { "syntax": "pdf",  "required": false, "supported": false, "match": "^pdf$" },
-      	     	       "jp2": { "syntax": "jp2",  "required": false, "supported": false, "match": "^jp2$" },
-       	     	       "webp": { "syntax": "webp", "required": false, "supported": false, "match": "^webp$" }
-	     }	     
-    },
-    "http": {
-            "baseUriRedirect":     { "name": "base URI redirects",    "required": true,  "supported": true },
-	    "cors":                { "name": "CORS",                  "required": true,  "supported": true },
-	    "jsonldMediaType":     { "name": "json-ld media type",    "required": true,  "supported": true },
-	    "profileLinkHeader":   { "name": "profile link header",   "required": false, "supported": false },
-	    "canonicalLinkHeader": { "name": "canonical link header", "required": false, "supported": false }
-    }
-}`
-
-type Level2ComplianceSpec struct {
-	Image ImageCompliance `json:"image"`
-	HTTP  HTTPCompliance  `json:"http"`
-}
+//go:embed level2.json
+var level2_spec []byte
 
 type Level2Compliance struct {
 	Compliance
-	spec *Level2ComplianceSpec
+	spec *ComplianceSpec
 }
 
 func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
@@ -90,10 +36,10 @@ func NewLevel2Compliance(config *iiifconfig.Config) (*Level2Compliance, error) {
 	return &compliance, nil
 }
 
-func NewLevel2ComplianceSpec() (*Level2ComplianceSpec, error) {
+func NewLevel2ComplianceSpec() (*ComplianceSpec, error) {
 
-	spec := Level2ComplianceSpec{}
-	err := json.Unmarshal([]byte(level2_spec), &spec)
+	spec := ComplianceSpec{}
+	err := json.Unmarshal(level2_spec, &spec)
 
 	if err != nil {
 		return nil, err
@@ -102,7 +48,7 @@ func NewLevel2ComplianceSpec() (*Level2ComplianceSpec, error) {
 	return &spec, nil
 }
 
-func NewLevel2ComplianceSpecWithConfig(config *iiifconfig.Config) (*Level2ComplianceSpec, error) {
+func NewLevel2ComplianceSpecWithConfig(config *iiifconfig.Config) (*ComplianceSpec, error) {
 
 	spec, err := NewLevel2ComplianceSpec()
 
@@ -337,7 +283,7 @@ func (c *Level2Compliance) properties(sect map[string]ComplianceDetails) []strin
 	return properties
 }
 
-func (c *Level2Compliance) Spec() *Level2ComplianceSpec {
+func (c *Level2Compliance) Spec() *ComplianceSpec {
 
 	return c.spec
 }

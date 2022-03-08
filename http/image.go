@@ -1,12 +1,12 @@
 package http
 
 import (
-	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
-	iiifsource "github.com/go-iiif/go-iiif/v4/source"
+	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
+	iiifsource "github.com/go-iiif/go-iiif/v5/source"
 	_ "log"
 	gohttp "net/http"
 	"sync/atomic"
@@ -43,6 +43,7 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 		}
 
 		endpoint := EndpointFromRequest(r)
+
 		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
 		if err != nil {
@@ -50,7 +51,9 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 			return
 		}
 
-		transformation, err := iiifimage.NewTransformation(level, params.Region, params.Size, params.Rotation, params.Quality, params.Format)
+		compliance := level.Compliance()
+
+		transformation, err := iiifimage.NewTransformation(compliance, params.Region, params.Size, params.Rotation, params.Quality, params.Format)
 
 		if err != nil {
 			gohttp.Error(w, err.Error(), gohttp.StatusBadRequest)

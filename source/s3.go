@@ -3,7 +3,7 @@ package source
 import (
 	"fmt"
 	_ "github.com/aaronland/gocloud-blob-s3"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	_ "log"
 )
 

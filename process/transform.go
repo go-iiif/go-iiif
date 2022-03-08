@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
+	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	_ "log"
 )
 
@@ -27,7 +27,9 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, err
 	}
 
-	transformation, err := iiifimage.NewTransformation(level, i.Region, i.Size, i.Rotation, i.Quality, i.Format)
+	compliance := level.Compliance()
+
+	transformation, err := iiifimage.NewTransformation(compliance, i.Region, i.Size, i.Rotation, i.Quality, i.Format)
 
 	if err != nil {
 		return nil, nil, err

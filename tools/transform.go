@@ -15,11 +15,11 @@ import (
 
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
-	iiifsource "github.com/go-iiif/go-iiif/v4/source"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
+	iiifsource "github.com/go-iiif/go-iiif/v5/source"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
@@ -303,7 +303,9 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 		return err
 	}
 
-	transformation, err := iiifimage.NewTransformation(level, region, size, rotation, quality, format)
+	compliance := level.Compliance()
+
+	transformation, err := iiifimage.NewTransformation(compliance, region, size, rotation, quality, format)
 
 	if err != nil {
 		return err

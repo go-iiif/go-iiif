@@ -42,10 +42,10 @@
 	}
     },
     "images": {
-	"source": { "name": "Disk", "path": "example/images" },
+	"source": { "name": "Disk", "path": "example/images?metadata=skip" },
 	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
     },
     "derivatives": {
-	"cache": { "name": "Disk", "path": "example/cache" }
+	"cache": { "name": "Disk", "path": "example/cache?metadata=skip" }
     }
 }

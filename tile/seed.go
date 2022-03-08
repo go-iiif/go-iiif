@@ -1,16 +1,14 @@
 package tile
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
-	iiifcache "github.com/go-iiif/go-iiif/v4/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v4/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v4/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v4/level"
-	iiifprofile "github.com/go-iiif/go-iiif/v4/profile"
-	iiifsource "github.com/go-iiif/go-iiif/v4/source"
+	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiifinfo "github.com/go-iiif/go-iiif/v5/info"
+	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
+	iiifsource "github.com/go-iiif/go-iiif/v5/source"
 	"log"
 	"math"
 	"runtime"
@@ -36,32 +34,32 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create tileseed driver from config, %w", err)
 	}
 
-	level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
+	level, err := iiiflevel.NewLevel0(config, endpoint)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create level0 instance, %w", err)
 	}
 
 	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive image cache from config, %w", err)
 	}
 
 	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive derivatives cache from config, %w", err)
 	}
 
 	compliance := level.Compliance()
 	_, err = compliance.DefaultQuality()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to ensure default quality for compliance, %w", err)
 	}
 
 	procs := runtime.NumCPU()
@@ -90,7 +88,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 	image, err := ts.driver.NewImageFromConfigWithCache(ts.config, ts.images_cache, src_id)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create image for %s, %w", src_id, err)
 	}
 
 	// https://github.com/go-iiif/go-iiif/issues/25
@@ -117,14 +115,14 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		err = image.Rename(alt_id)
 
 		if err != nil {
-			return count, err
+			return count, fmt.Errorf("Failed to rename (%s as %s), %w", src_id, alt_id, err)
 		}
 	}
 
 	source, err := iiifsource.NewMemorySource(image.Body())
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create image from memory, %w", err)
 	}
 
 	throttle := make(chan bool, ts.procs)
@@ -170,8 +168,6 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					}
 				}
 
-				// tmp, _ := iiifimage.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
-
 				tmp, err := ts.driver.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
 
 				if err != nil {
@@ -205,22 +201,30 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		count += len(crops)
 	}
 
-	level, err := iiiflevel.NewLevelFromConfig(ts.config, ts.Endpoint)
+	level, err := iiiflevel.NewLevel0(ts.config, ts.Endpoint)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create new level 0, %w", err)
 	}
 
-	profile, err := iiifprofile.NewProfile(ts.Endpoint, image, level)
+	info, err := iiifinfo.New(iiifinfo.IMAGE_V2_CONTEXT, level, image)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to create new info.json file, %w", err)
 	}
 
-	body, err := json.Marshal(profile)
+	info.Tiles = []*iiifinfo.Tile{
+		&iiifinfo.Tile{
+			Width:        ts.Width,
+			Height:       ts.Height,
+			ScaleFactors: scales,
+		},
+	}
+
+	body, err := iiifinfo.MarshalJSON(info)
 
 	if err != nil {
-		return count, err
+		return count, fmt.Errorf("Failed to marshal info, %w", err)
 	}
 
 	uri := fmt.Sprintf("%s/info.json", alt_id)
@@ -234,15 +238,14 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	dims, err := im.Dimensions()
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive dimensions for image, %w", err)
 	}
 
 	w := dims.Width()
 	h := dims.Height()
 
 	if sf*ts.Width >= w && sf*ts.Height >= h {
-		msg := fmt.Sprintf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.Width, sf*ts.Height)
-		return nil, errors.New(msg)
+		return nil, fmt.Errorf("E_EXCESSIVE_SCALEFACTOR %d (%d,%d) (%d,%d)", sf, w, h, sf*ts.Width, sf*ts.Height)
 	}
 
 	quality := ts.Quality
@@ -253,6 +256,8 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	}
 
 	format := ts.Format
+
+	compliance := ts.level.Compliance()
 
 	crops := make([]*iiifimage.Transformation, 0)
 
@@ -325,10 +330,10 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			quality := quality
 			format := format
 
-			transformation, err := iiifimage.NewTransformation(ts.level, region, size, rotation, quality, format)
+			transformation, err := iiifimage.NewTransformation(compliance, region, size, rotation, quality, format)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to create new transformation, %w", err)
 			}
 
 			crops = append(crops, transformation)

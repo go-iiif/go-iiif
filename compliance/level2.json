@@ -1,0 +1,50 @@
+{
+    "image": {
+    	     "region": {
+	     	       "full":         { "syntax": "full",        "required": true, "supported": true, "match": "^full$" },
+		       "regionByPx":   { "syntax": "x,y,w,h",     "required": true, "supported": true, "match": "^-?\\d+\\,-?\\d+\\,\\d+\\,\\d+$" },
+
+	     		"regionByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?\\,\\d+(\\.\\d+)?$" },			
+		       "regionSquare": { "syntax": "square",      "required": false, "supported": true, "match": "^square$" }
+	     },
+	     "size": {
+	     		"full":              { "syntax": "full",  "required": true, "supported": true, "match": "^full$" },
+	     		"max":               { "syntax": "max",   "required": false, "supported": true, "match": "^max$" },
+	     		"sizeByW":           { "syntax": "w,",    "required": true, "supported": true, "match": "^\\d+\\,$" },			
+	     		"sizeByH":           { "syntax": ",h",    "required": true, "supported": true, "match": "^\\,\\d+$" },
+			"sizeByPct":         { "syntax": "pct:n", "required": true, "supported": true, "match": "^pct\\:\\d+(\\.\\d+)?$" },
+	     		"sizeByConfinedWh":  { "syntax": "!w,h",  "required": true, "supported": true, "match": "^\\!\\d+\\,\\d+$" },
+	     		"sizeByDistortedWh": { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" },
+	     		"sizeByWh":          { "syntax": "w,h",   "required": true, "supported": true, "match": "^\\d+\\,\\d+$" }
+	     },
+	     "rotation": {
+	     		"none":              { "syntax": "0",          "required": true, "supported": true, "match": "^0$" },
+	     		"rotationBy90s":     { "syntax": "90,180,270", "required": true, "supported": true, "match": "^(?:90|180|270)$" },
+	     		"rotationArbitrary": { "syntax": "",           "required": false, "supported": true, "match": "^\\d+\\.\\d+$" },			
+	     		"mirroring":         { "syntax": "!n",         "required": true, "supported": true, "match": "^\\!\\d+$" },
+	     		"noAutoRotate":      { "syntax": "-1",         "required": false, "supported": true, "match": "^\\-1$" }
+	     },
+	     "quality": {
+	     		"default": { "syntax": "default", "required": true, "supported": true, "match": "^default$", "default": false },
+	     		"color":   { "syntax": "color",   "required": false, "supported": true, "match": "^colou?r$", "default": true },
+	     		"gray":    { "syntax": "gray",    "required": false, "supported": false, "match": "gr(?:e|a)y$", "default": false },			
+	     		"bitonal": { "syntax": "bitonal", "required": true, "supported": true, "match": "^bitonal$", "default": false }
+             },
+	     "format": {
+	     	       "jpg": { "syntax": "jpg",  "required": true, "supported": true, "match": "^jpe?g$" },
+       	     	       "png": { "syntax": "png",  "required": true, "supported": true, "match": "^png$" },
+       	     	       "tif": { "syntax": "tif",  "required": false, "supported": false, "match": "^tiff?$" },
+      	     	       "gif": { "syntax": "gif",  "required": false, "supported": false, "match": "^gif$" },
+       	     	       "pdf": { "syntax": "pdf",  "required": false, "supported": false, "match": "^pdf$" },
+      	     	       "jp2": { "syntax": "jp2",  "required": false, "supported": false, "match": "^jp2$" },
+       	     	       "webp": { "syntax": "webp", "required": false, "supported": false, "match": "^webp$" }
+	     }	     
+    },
+    "http": {
+            "baseUriRedirect":     { "name": "base URI redirects",    "required": true,  "supported": true },
+	    "cors":                { "name": "CORS",                  "required": true,  "supported": true },
+	    "jsonldMediaType":     { "name": "json-ld media type",    "required": true,  "supported": true },
+	    "profileLinkHeader":   { "name": "profile link header",   "required": false, "supported": false },
+	    "canonicalLinkHeader": { "name": "canonical link header", "required": false, "supported": false }
+    }
+}

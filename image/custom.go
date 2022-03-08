@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-// see this? it's a iiifimage.Image not a (Go) image.Image
+// see this? it's a Image not a (Go) image.Image
 
 // Apply non-standard transformations to a go-iiif/image.Image instance.
 func ApplyCustomTransformations(t *Transformation, im Image) error {

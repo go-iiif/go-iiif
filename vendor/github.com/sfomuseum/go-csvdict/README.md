@@ -6,8 +6,6 @@ Go package to implement a "dict reader" style CSV parser (on top of the default 
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/sfomuseum/go-csvdict.svg)](https://pkg.go.dev/github.com/sfomuseum/go-csvdict)
 
-Documentation is incomplete at this time.
-
 ## Example
 
 ### Reading files

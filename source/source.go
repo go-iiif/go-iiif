@@ -2,7 +2,7 @@ package source
 
 import (
 	"errors"
-	iiifconfig "github.com/go-iiif/go-iiif/v4/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	"strings"
 )
 
