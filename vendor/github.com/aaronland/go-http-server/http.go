@@ -22,8 +22,10 @@ import (
 func init() {
 	ctx := context.Background()
 	RegisterServer(ctx, "http", NewHTTPServer)
+	RegisterServer(ctx, "https", NewHTTPServer)	
 }
 
+// HTTPServer implements the `Server` interface for a basic `net/http` server.
 type HTTPServer struct {
 	Server
 	url         *url.URL
@@ -32,6 +34,19 @@ type HTTPServer struct {
 	key         string
 }
 
+// NewHTTPServer returns a new `HTTPServer` instance configured by 'uri' which is
+// expected to be defined in the form of:
+//
+//	{SCHEME}://{ADDRESS}:{PORT}?{PARAMETERS}
+//
+// Where {SCHEME} is either 'http' or 'https'; {ADDRESS} and {PORT} are the address
+// and port to listen for requests on. Valid parameters are:
+// * `tls_cert={CERTIFICATE}` The path for a TLS certificate to use; required if {SCHEME} is 'https'.
+// * `tls_key={KEY}` The path for a TLS key to use; required if {SCHEME} is 'https'
+// * `read_timeout={SECONDS}` A custom setting for HTTP read timeouts. Default is 2 seconds.
+// * `write_timeout={SECONDS}` A custom setting for HTTP write timeouts. Default is 10 seconds.
+// * `idle_timeout={SECONDS}` A custom setting for HTTP idle timeouts. Default is 15 seconds.
+// * `header_timeout={SECONDS}` A custom setting for HTTP header timeouts. Default is 2 seconds.
 func NewHTTPServer(ctx context.Context, uri string) (Server, error) {
 
 	u, err := url.Parse(uri)
@@ -138,6 +153,7 @@ func NewHTTPServer(ctx context.Context, uri string) (Server, error) {
 	return &server, nil
 }
 
+// Address returns the fully-qualified URI where the server instance can be contacted.
 func (s *HTTPServer) Address() string {
 
 	u, _ := url.Parse(s.url.String())
@@ -146,6 +162,7 @@ func (s *HTTPServer) Address() string {
 	return u.String()
 }
 
+// ListenAndServe starts the server and listens for requests using 'mux' for routing.
 func (s *HTTPServer) ListenAndServe(ctx context.Context, mux http.Handler) error {
 
 	idleConnsClosed := make(chan struct{})

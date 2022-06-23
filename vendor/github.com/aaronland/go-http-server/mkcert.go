@@ -21,6 +21,14 @@ func init() {
 	RegisterServer(ctx, "mkcert", NewMkCertServer)
 }
 
+// NewMkCertServer returns a new `HTTPServer` instance configured using 'uri'
+// in the form of:
+//
+//	mkcert://?{PARAMETERS}
+//
+// Valid parameters are:
+// * `root={PATH}` An optional path to specify where `mkcert` certificates and keys should be created. If missing
+//   the operating system's temporary directory will be used.
 func NewMkCertServer(ctx context.Context, uri string) (Server, error) {
 
 	u, err := url.Parse(uri)
@@ -81,6 +89,7 @@ func NewMkCertServer(ctx context.Context, uri string) (Server, error) {
 	return NewServer(ctx, https_uri)
 }
 
+// mkCert creates a new TLS certificate and key using the `mkcert` binary stored in 'root'.
 func mkCert(u *url.URL, root string) (string, string, error) {
 
 	err := mkCertInstall()
@@ -116,6 +125,7 @@ func mkCert(u *url.URL, root string) (string, string, error) {
 	return cert_path, key_path, nil
 }
 
+// mkCertInstall ensures that the `mkcert` binary is present and can be executed.
 func mkCertInstall() error {
 
 	// unfortunately there is no way from the CLI tool to check whether

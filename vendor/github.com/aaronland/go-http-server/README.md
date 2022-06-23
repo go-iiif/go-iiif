@@ -1,5 +1,13 @@
 # go-http-server
 
+Go package to provide interfaces and implementation for HTTP servers.
+
+It is mostly a syntactic wrapper around existing HTTP server implementation with a common interface configured using a URI-based syntax.
+
+## Documentation
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/aaronland/go-http-server.svg)](https://pkg.go.dev/github.com/aaronland/go-http-server)
+
 ## Example
 
 _Error hanldling has been removed for the sake of brevity._
@@ -90,19 +98,6 @@ func (s *HTTPServer) ListenAndServe(ctx context.Context, mux *http.ServeMux) err
 }
 ```
 
-## Interfaces
-
-### Server
-
-```
-type Server interface {
-	ListenAndServe(context.Context, *http.ServeMux) error
-	Address() string
-}
-
-type ServerInitializeFunc func(context.Context, string) (Server, error)
-```
-
 ## Server schemes
 
 The following schemes/implementations are included by default with this package.
@@ -129,4 +124,5 @@ A standard, plain-vanilla, HTTPS/TLS server. You must provide TLS certificate an
 
 ## See also
 
+* https://github.com/akrylysov/algnhsa
 * https://github.com/FiloSottile/mkcert
