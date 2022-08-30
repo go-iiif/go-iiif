@@ -19,7 +19,7 @@ type Record struct {
 	SNS            aws_events.SNSEntity
 }
 
-//Event incoming event
+// Event incoming event
 type Event struct {
 	Records []Record
 }

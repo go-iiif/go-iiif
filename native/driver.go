@@ -3,13 +3,14 @@ package native
 import (
 	"bytes"
 	"context"
-	_ "fmt"
+	"fmt"
 	"github.com/aaronland/go-image-rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
+	"github.com/rwcarlsen/goexif/exif"
 	"image"
 	_ "log"
 )
@@ -39,35 +40,38 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	body, err := src.Read(id)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to read body for '%s', %w", id, err)
 	}
 
 	buf := bytes.NewBuffer(body)
 
-	img, fmt, err := image.Decode(buf)
+	img, img_fmt, err := image.Decode(buf)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if fmt == "jpeg" {
+	if img_fmt == "jpeg" {
 
 		ctx := context.Background()
 		br := bytes.NewReader(body)
 
 		o, err := rotate.GetImageOrientation(ctx, br)
 
-		if err != nil {
-			return nil, err
+		if err != nil && !exif.IsCriticalError(err) {
+			return nil, fmt.Errorf("Failed to derive image orientation for '%s', %w", id, err)
 		}
 
-		new_img, err := rotate.RotateImageWithOrientation(ctx, img, o)
+		if o != "0" {
 
-		if err != nil {
-			return nil, err
+			new_img, err := rotate.RotateImageWithOrientation(ctx, img, o)
+
+			if err != nil {
+				return nil, fmt.Errorf("Failed to rotate image with orientation '%s' for '%s', %w", o, id, err)
+			}
+
+			img = new_img
 		}
-
-		img = new_img
 	}
 
 	im := NativeImage{
@@ -76,7 +80,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		source_id: id,
 		id:        id,
 		img:       img,
-		format:    fmt,
+		format:    img_fmt,
 	}
 
 	return &im, nil
@@ -93,13 +97,13 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 		source, err := iiifsource.NewMemorySource(body)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to derive memory source for '%s', %w", id, err)
 		}
 
 		image, err = dr.NewImageFromConfigWithSource(config, source, id)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to derive image from source for '%s', %w", id, err)
 		}
 
 	} else {
@@ -107,7 +111,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 		image, err = dr.NewImageFromConfig(config, id)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to derive image from config for '%s', %w", id, err)
 		}
 
 		go func() {
