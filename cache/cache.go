@@ -1,8 +1,10 @@
+// package cache provides functions for saving IIIF files to supported locations, including disk, memory, blob, and Amazon S3.
 package cache
 
 import (
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	"strings"
+
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 )
 
 type Cache interface {
