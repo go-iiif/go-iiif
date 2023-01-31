@@ -99,7 +99,7 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 	size := len(data)
 
 	if size > mc.maxsize {
-		return errors.New("Key is too big!")
+		return errors.New("key is too big")
 	}
 
 	if size+mc.size > mc.maxsize {
