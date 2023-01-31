@@ -6,6 +6,7 @@ import (
 	_ "log"
 )
 
+// NewDiskCache returns a NewBlobCacheFromURI for a local files system location.
 func NewDiskCache(cfg config.CacheConfig) (Cache, error) {
 
 	root := cfg.Path

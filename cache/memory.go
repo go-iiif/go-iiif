@@ -2,13 +2,15 @@ package cache
 
 import (
 	"errors"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	gocache "github.com/patrickmn/go-cache"
 	_ "log"
 	"sync"
 	"time"
+
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	gocache "github.com/patrickmn/go-cache"
 )
 
+// A MemoryCache represents a cache location in memory.
 type MemoryCache struct {
 	Cache
 	provider      *gocache.Cache
@@ -20,6 +22,7 @@ type MemoryCache struct {
 	eviction_lock *sync.Mutex
 }
 
+// NewMemoryCache returns a pointer to a MemoryCache
 func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 
 	ttl := cfg.TTL
@@ -61,6 +64,7 @@ func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 	return &mc, nil
 }
 
+// Exists returns a bool set to true if the configured memory location exists.
 func (mc *MemoryCache) Exists(key string) bool {
 
 	_, ok := mc.provider.Get(key)
@@ -68,6 +72,7 @@ func (mc *MemoryCache) Exists(key string) bool {
 	return ok
 }
 
+// Get reads data from a memory location.
 func (mc *MemoryCache) Get(key string) ([]byte, error) {
 
 	data, ok := mc.provider.Get(key)
@@ -79,6 +84,7 @@ func (mc *MemoryCache) Get(key string) ([]byte, error) {
 	return data.([]byte), nil
 }
 
+// Set writes data to a memory location.
 func (mc *MemoryCache) Set(key string, data []byte) error {
 
 	mc.lock.Lock()
@@ -93,7 +99,7 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 	size := len(data)
 
 	if size > mc.maxsize {
-		return errors.New("Key is too big!")
+		return errors.New("key is too big")
 	}
 
 	if size+mc.size > mc.maxsize {
@@ -119,6 +125,7 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 	return nil
 }
 
+// Unset deletes data from a memory location.
 func (mc *MemoryCache) Unset(key string) error {
 
 	mc.provider.Delete(key)
