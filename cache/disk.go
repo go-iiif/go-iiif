@@ -6,6 +6,7 @@ import (
 	"github.com/go-iiif/go-iiif/v5/config"
 )
 
+// NewDiskCache returns a NewBlobCacheFromURI for a local files system location.
 func NewDiskCache(cfg config.CacheConfig) (Cache, error) {
 
 	root := cfg.Path

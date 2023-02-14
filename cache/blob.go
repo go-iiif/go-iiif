@@ -14,6 +14,7 @@ import (
 	"gocloud.dev/blob"
 )
 
+// A BlobCache is a Cache that includes attributes specific to a blob such as the bucket_uri and acl configuration.
 type BlobCache struct {
 	Cache
 	bucket_uri string
@@ -22,6 +23,7 @@ type BlobCache struct {
 	acl        string
 }
 
+// NewBlobCache returns a NewBlobCacheFromURI.
 func NewBlobCache(config iiifconfig.CacheConfig) (Cache, error) {
 
 	uri := config.Path
@@ -29,6 +31,7 @@ func NewBlobCache(config iiifconfig.CacheConfig) (Cache, error) {
 	return NewBlobCacheFromURI(uri)
 }
 
+// NewBlobCacheFromURI returns a BlobCache using the GoCloud package.
 func NewBlobCacheFromURI(uri string) (Cache, error) {
 
 	ctx := context.Background()
@@ -69,6 +72,7 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 	return bc, nil
 }
 
+// Exists returns a bool set to true if the configured bucket exists.
 func (bc *BlobCache) Exists(uri string) bool {
 
 	ctx := context.Background()
@@ -82,6 +86,7 @@ func (bc *BlobCache) Exists(uri string) bool {
 	return exists
 }
 
+// Get reads data from a BlobCache location.
 func (bc *BlobCache) Get(uri string) ([]byte, error) {
 
 	ctx := context.Background()
@@ -97,6 +102,7 @@ func (bc *BlobCache) Get(uri string) ([]byte, error) {
 	return ioutil.ReadAll(fh)
 }
 
+// Set writes data to a BlobCache location.
 func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	ctx := context.Background()
@@ -147,6 +153,7 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	return nil
 }
 
+// Unset deletes data from a BlobCache location.
 func (bc *BlobCache) Unset(uri string) error {
 	ctx := context.Background()
 	return bc.bucket.Delete(ctx, uri)

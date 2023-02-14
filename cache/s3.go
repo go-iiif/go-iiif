@@ -7,6 +7,7 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 )
 
+// NewS3Cache returns a NewBlobCacheFromURI with a constructed blob uri.
 func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	bucket := cfg.Path
