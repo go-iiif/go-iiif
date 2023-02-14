@@ -1,7 +1,6 @@
 package level
 
 import (
-	_ "fmt"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 )

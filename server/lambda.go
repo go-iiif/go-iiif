@@ -1,10 +1,11 @@
 package server
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/whosonfirst/algnhsa"
 	_ "log"
 	"net/url"
+
+	"github.com/gorilla/mux"
+	"github.com/whosonfirst/algnhsa"
 )
 
 type LambdaServer struct {

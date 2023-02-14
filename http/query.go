@@ -3,11 +3,12 @@ package http
 import (
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/whosonfirst/go-sanitize"
 	gohttp "net/http"
 	gourl "net/url"
 	"strings"
+
+	"github.com/gorilla/mux"
+	"github.com/whosonfirst/go-sanitize"
 )
 
 type IIIFParameters struct {

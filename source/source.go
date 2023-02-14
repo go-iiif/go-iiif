@@ -2,8 +2,9 @@ package source
 
 import (
 	"errors"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	"strings"
+
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 )
 
 type Source interface {

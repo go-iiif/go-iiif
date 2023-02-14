@@ -3,11 +3,12 @@ package process
 import (
 	"context"
 	"encoding/json"
-	"gocloud.dev/blob"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"gocloud.dev/blob"
 )
 
 type IIIFInstructionSet map[Label]IIIFInstructions

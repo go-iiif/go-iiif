@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"image"
+	_ "log"
+
 	"github.com/aaronland/go-image-rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
@@ -11,8 +14,6 @@ import (
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
 	"github.com/rwcarlsen/goexif/exif"
-	"image"
-	_ "log"
 )
 
 func init() {

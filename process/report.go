@@ -4,9 +4,10 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	"strings"
+
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	"github.com/jtacoma/uritemplates"
-	"strings"
 )
 
 const REPORTNAME_TEMPLATE string = "process_{sha256_origin}.json"

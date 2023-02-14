@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
+	_ "log"
+
 	"github.com/aaronland/go-image-resize"
 	"github.com/buckket/go-blurhash"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
-	_ "log"
 )
 
 func init() {

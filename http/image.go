@@ -1,16 +1,17 @@
 package http
 
 import (
+	_ "log"
+	gohttp "net/http"
+	"sync/atomic"
+	"time"
+
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
-	_ "log"
-	gohttp "net/http"
-	"sync/atomic"
-	"time"
 )
 
 func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache) (gohttp.HandlerFunc, error) {

@@ -3,13 +3,13 @@ package process
 import (
 	"context"
 	"fmt"
+
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
-	_ "log"
 )
 
 func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {

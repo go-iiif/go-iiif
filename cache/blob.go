@@ -3,14 +3,15 @@ package cache
 import (
 	"context"
 	"errors"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	"gocloud.dev/blob"
 	"io/ioutil"
 	_ "log"
 	"net/url"
 	"strings"
+
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	"gocloud.dev/blob"
 )
 
 type BlobCache struct {

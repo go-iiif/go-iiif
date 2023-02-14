@@ -5,6 +5,11 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
+	"net/url"
+	"os"
+	"path/filepath"
+
 	"github.com/aaronland/go-http-ping"
 	"github.com/aaronland/go-http-server"
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
@@ -17,10 +22,6 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
-	"log"
-	"net/url"
-	"os"
-	"path/filepath"
 )
 
 type IIIFServerTool struct {

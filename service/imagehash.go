@@ -2,10 +2,11 @@ package service
 
 import (
 	"context"
+	_ "log"
+
 	"github.com/corona10/goimagehash"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
-	_ "log"
 )
 
 func init() {

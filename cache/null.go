@@ -2,6 +2,7 @@ package cache
 
 import (
 	"errors"
+
 	"github.com/go-iiif/go-iiif/v5/config"
 )
 

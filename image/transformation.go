@@ -5,13 +5,14 @@ package image
 import (
 	"errors"
 	"fmt"
-	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	_ "log"
 	"math"
 	"net/url"
 	"regexp"
 	"strconv"
 	"strings"
+
+	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 )
 
 type RegionInstruction struct {

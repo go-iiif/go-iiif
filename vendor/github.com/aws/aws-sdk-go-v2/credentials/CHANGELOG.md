@@ -1,3 +1,121 @@
+# v1.13.3 (2022-11-22)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.2 (2022-11-17)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.1 (2022-11-16)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.0 (2022-11-11)
+
+* **Announcement**: When using the SSOTokenProvider, a previous implementation incorrectly compensated for invalid SSOTokenProvider configurations in the shared profile. This has been fixed via PR #1903 and tracked in issue #1846
+* **Feature**: Adds token refresh support (via SSOTokenProvider) when using the SSOCredentialProvider
+
+# v1.12.24 (2022-11-10)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.23 (2022-10-24)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.22 (2022-10-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.21 (2022-09-30)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.20 (2022-09-20)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.19 (2022-09-14)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.18 (2022-09-02)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.17 (2022-08-31)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.16 (2022-08-30)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.15 (2022-08-29)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.14 (2022-08-15)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.13 (2022-08-11)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.12 (2022-08-09)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.11 (2022-08-08)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.10 (2022-08-01)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.9 (2022-07-11)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.8 (2022-07-05)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.7 (2022-06-29)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.6 (2022-06-16)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.5 (2022-06-07)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.4 (2022-05-26)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.3 (2022-05-25)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.2 (2022-05-17)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.1 (2022-05-16)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.0 (2022-04-25)
+
+* **Feature**: Adds Duration and Policy options that can be used when creating stscreds.WebIdentityRoleProvider credentials provider.
+* **Dependency Update**: Updated to the latest SDK module versions
+
 # v1.11.2 (2022-03-30)
 
 * **Dependency Update**: Updated to the latest SDK module versions

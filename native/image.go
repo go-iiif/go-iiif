@@ -6,6 +6,12 @@ import (
 	"bufio"
 	"bytes"
 	"errors"
+	"image"
+	"image/gif"
+	"image/jpeg"
+	"image/png"
+	_ "log"
+
 	"github.com/aaronland/go-mimetypes"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
@@ -18,11 +24,6 @@ import (
 	"golang.org/x/image/bmp"
 	"golang.org/x/image/tiff"
 	_ "golang.org/x/image/webp"
-	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
-	_ "log"
 )
 
 type NativeImage struct {

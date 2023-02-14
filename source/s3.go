@@ -2,9 +2,9 @@ package source
 
 import (
 	"fmt"
+
 	_ "github.com/aaronland/gocloud-blob-s3"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	_ "log"
 )
 
 func NewS3Source(cfg *iiifconfig.Config) (Source, error) {

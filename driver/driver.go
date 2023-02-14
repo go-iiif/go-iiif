@@ -3,13 +3,14 @@ package driver
 import (
 	"errors"
 	"fmt"
+	"sort"
+	"strings"
+	"sync"
+
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
-	"sort"
-	"strings"
-	"sync"
 )
 
 var (

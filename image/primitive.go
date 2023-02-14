@@ -5,7 +5,6 @@ package image
 
 import (
 	"bytes"
-	"github.com/fogleman/primitive/primitive"
 	goimage "image"
 	"image/color/palette"
 	"image/draw"
@@ -14,6 +13,8 @@ import (
 	"math"
 	"runtime"
 	_ "time"
+
+	"github.com/fogleman/primitive/primitive"
 )
 
 type PrimitiveOptions struct {

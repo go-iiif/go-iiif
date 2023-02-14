@@ -2,9 +2,10 @@ package source
 
 import (
 	"context"
+	_ "log"
+
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	"gocloud.dev/blob"
-	_ "log"
 )
 
 type BlobSource struct {

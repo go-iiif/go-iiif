@@ -6,6 +6,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
+	"net/url"
+	"path/filepath"
+	"strings"
+	"sync"
+
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -16,11 +22,6 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
-	"log"
-	"net/url"
-	"path/filepath"
-	"strings"
-	"sync"
 )
 
 type ProcessTool struct {

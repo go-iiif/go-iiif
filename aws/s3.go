@@ -4,10 +4,11 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"github.com/whosonfirst/go-whosonfirst-aws/s3"
 	"io"
 	"io/ioutil"
 	"strings"
+
+	"github.com/whosonfirst/go-whosonfirst-aws/s3"
 )
 
 func S3ConfigWrapper(cfg *s3.S3Config) *s3.S3Config {

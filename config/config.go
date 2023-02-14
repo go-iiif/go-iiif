@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"gocloud.dev/blob"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"gocloud.dev/blob"
 )
 
 type Config struct {

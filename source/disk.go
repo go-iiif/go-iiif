@@ -2,8 +2,9 @@ package source
 
 import (
 	"fmt"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	_ "log"
+
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 )
 
 func NewDiskSource(config *iiifconfig.Config) (Source, error) {

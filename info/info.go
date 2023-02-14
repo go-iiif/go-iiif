@@ -3,10 +3,11 @@ package info
 
 import (
 	"fmt"
+	"strings"
+
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
-	"strings"
 )
 
 // The URI for the IIIF Image API protocol.

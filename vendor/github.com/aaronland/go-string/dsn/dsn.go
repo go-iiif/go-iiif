@@ -1,3 +1,4 @@
+// package dsn provides methods for working with data source name (DSN) strings.
 package dsn
 
 import (
@@ -7,8 +8,10 @@ import (
 	"strings"
 )
 
+// DSN represents a data source name (DSN) style string.
 type DSN map[string]string
 
+// Keys returns the list of key names contained in 'dsn'.
 func (dsn DSN) Keys() []string {
 
 	keys := make([]string, 0)
@@ -21,6 +24,7 @@ func (dsn DSN) Keys() []string {
 	return keys
 }
 
+// String returns a string representation of 'dsn'.
 func (dsn DSN) String() string {
 
 	pairs := make([]string, 0)
@@ -34,6 +38,7 @@ func (dsn DSN) String() string {
 	return strings.Join(pairs, " ")
 }
 
+// StringToDSN parses 'str_dsn` in to a `DSN` instance.
 func StringToDSN(str_dsn string) (DSN, error) {
 
 	str_dsn = strings.Trim(str_dsn, " ")
@@ -68,6 +73,8 @@ func StringToDSN(str_dsn string) (DSN, error) {
 	return dsn, nil
 }
 
+// StringToDSNWithKeys parse 'str_dsn' in to a `DSN` instance ensuring that the instance contains
+// keys matching 'keys'.
 func StringToDSNWithKeys(str_dsn string, keys ...string) (DSN, error) {
 
 	dsn, err := StringToDSN(str_dsn)

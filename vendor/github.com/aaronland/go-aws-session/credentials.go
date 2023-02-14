@@ -5,15 +5,29 @@ import (
 	"strings"
 )
 
+const AnonymousCredentialsString string = "anon:"
+
+const EnvironmentCredentialsString string = "env:"
+
+const IAMCredentialsString string = "iam:"
+
+const ProfileCredentialsTemplate string = "{profile}"
+
+const ProfileFromPathCredentialsTemplate string = "{path}:{profile}"
+
+const StaticCredentialsTemplate string = "static:{id}:{key}:{secret}"
+
+const StaticCredentialsPrefix string = "static:"
+
 func ValidCredentials() []string {
 
 	valid := []string{
-		"anon:",
-		"env:",
-		"iam:",
-		"{PROFILE}",
-		"{PATH}:{PROFILE}",
-		"static:{ID}:{KEY}:{SECRET}",
+		AnonymousCredentialsString,
+		EnvironmentCredentialsString,
+		IAMCredentialsString,
+		ProfileCredentialsTemplate,
+		ProfileFromPathCredentialsTemplate,
+		StaticCredentialsTemplate,
 	}
 
 	return valid

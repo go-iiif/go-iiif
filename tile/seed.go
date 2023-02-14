@@ -2,6 +2,11 @@ package tile
 
 import (
 	"fmt"
+	"log"
+	"math"
+	"runtime"
+	"sync"
+
 	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
@@ -9,10 +14,6 @@ import (
 	iiifinfo "github.com/go-iiif/go-iiif/v5/info"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifsource "github.com/go-iiif/go-iiif/v5/source"
-	"log"
-	"math"
-	"runtime"
-	"sync"
 )
 
 type TileSeed struct {

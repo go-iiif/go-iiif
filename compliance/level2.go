@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	_ "log"
 	"regexp"
+
+	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 )
 
 // http://iiif.io/api/image/2.1/

@@ -2,7 +2,6 @@ package image
 
 import (
 	"github.com/anthonynsimon/bild/effect"
-	_ "log"
 )
 
 type CrispImageOptions struct {

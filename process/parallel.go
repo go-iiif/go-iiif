@@ -5,13 +5,14 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
+	"log"
+	"net/url"
+	"sync"
+
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
-	"log"
-	"net/url"
-	"sync"
 )
 
 func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdriver.Driver, pr Processor, instruction_set IIIFInstructionSet, u iiifuri.URI) (map[string]interface{}, error) {

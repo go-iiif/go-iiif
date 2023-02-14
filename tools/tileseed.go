@@ -4,6 +4,16 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
+	"net/url"
+	"os"
+	"path/filepath"
+	"runtime"
+	"strconv"
+	"strings"
+	"sync"
+	"time"
+
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -14,15 +24,6 @@ import (
 	"github.com/sfomuseum/go-flags/lookup"
 	"github.com/whosonfirst/go-whosonfirst-log"
 	"gocloud.dev/blob"
-	"io"
-	"net/url"
-	"os"
-	"path/filepath"
-	"runtime"
-	"strconv"
-	"strings"
-	"sync"
-	"time"
 )
 
 type Seed struct {

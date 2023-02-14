@@ -29,6 +29,7 @@ Credentials for AWS sessions are defined as string labels. They are:
 
 | Label | Description |
 | --- | --- |
+| `anon:` | Empty or anonymous credentials. |
 | `env:` | Read credentials from AWS defined environment variables. |
 | `iam:` | Assume AWS IAM credentials are in effect. |
 | `{AWS_PROFILE_NAME}` | This this profile from the default AWS credentials location. |

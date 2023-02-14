@@ -2,12 +2,13 @@ package http
 
 import (
 	"fmt"
+	gohttp "net/http"
+
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
 	iiifinfo "github.com/go-iiif/go-iiif/v5/info"
 	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
 	iiifservice "github.com/go-iiif/go-iiif/v5/service"
-	gohttp "net/http"
 )
 
 func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.HandlerFunc, error) {

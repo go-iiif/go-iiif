@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 )
 

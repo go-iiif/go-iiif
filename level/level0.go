@@ -5,9 +5,9 @@ package level
 
 import (
 	"fmt"
+
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	_ "log"
 )
 
 type Level0 struct {

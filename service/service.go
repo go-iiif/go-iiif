@@ -5,10 +5,11 @@ package service
 
 import (
 	"context"
+	"net/url"
+
 	"github.com/aaronland/go-roster"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	iiifimage "github.com/go-iiif/go-iiif/v5/image"
-	"net/url"
 )
 
 var service_roster roster.Roster

@@ -1,12 +1,11 @@
 package source
 
 import (
+	"io/ioutil"
+	"net/http"
+
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
 	"github.com/jtacoma/uritemplates"
-	"io/ioutil"
-	_ "log"
-	"net/http"
-	_ "time"
 )
 
 type URISource struct {
