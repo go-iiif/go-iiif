@@ -1,3 +1,4 @@
+// package config provides types and functions related to the various ways of configuring go-iiif
 package config
 
 import (
@@ -12,6 +13,7 @@ import (
 	"gocloud.dev/blob"
 )
 
+// A Config represents the various types of configurations that can be set for a go-iiif program
 type Config struct {
 	Level       LevelConfig       `json:"level"`
 	Profile     ProfileConfig     `json:"profile"`
@@ -56,6 +58,7 @@ type LevelConfig struct {
 	Compliance string `json:"compliance"`
 }
 
+// A FeaturesConfig represents the configuration of Features
 type FeaturesConfig struct {
 	Enable  FeaturesToggle `json:"enable"`
 	Disable FeaturesToggle `json:"disable"`
@@ -66,6 +69,7 @@ type FeaturesToggle map[string][]string
 
 type FeaturesAppend map[string]map[string]FeaturesDetails
 
+// A FeatureDetails represents the details of a FeaturesConfig
 type FeaturesDetails struct {
 	Syntax    string `json:"syntax"`
 	Required  bool   `json:"required"`
@@ -73,19 +77,23 @@ type FeaturesDetails struct {
 	Match     string `json:"match,omitempty"`
 }
 
+// An ImagesConfig represents the configuration for Images
 type ImagesConfig struct {
 	Source SourceConfig `json:"source"`
 	Cache  CacheConfig  `json:"cache"`
 }
 
+// A DerivativesConfig represents the configuration for Derivatives
 type DerivativesConfig struct {
 	Cache CacheConfig `json:"cache"`
 }
 
+// A GraphicsConfig represents the configuration for Graphics
 type GraphicsConfig struct {
 	Source SourceConfig `json:"source"`
 }
 
+// A SourceConfig represents the configuration for a Source
 type SourceConfig struct {
 	Name        string `json:"name"`
 	Path        string `json:"path,omitempty"`
@@ -96,15 +104,18 @@ type SourceConfig struct {
 	Count       int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
 }
 
+// A FlickrConfig represents the configuration for Flickr
 type FlickrConfig struct {
 	ApiKey    string `json:"apikey"`
 	ApiSecret string `json:"apisecret,omitempty"`
 }
 
+// A PrimitiveConfig represents the configuration for a Primitive
 type PrimitiveConfig struct {
 	MaxIterations int `json:"max_iterations"`
 }
 
+// A CacheConfig represents the configuration for a Cache
 type CacheConfig struct {
 	Name        string `json:"name"`
 	Path        string `json:"path,omitempty"`
@@ -115,6 +126,7 @@ type CacheConfig struct {
 	Credentials string `json:"credentials,omitempty"`
 }
 
+// NewConfigFromFlag returns a config set by a command line flag
 func NewConfigFromFlag(flag string) (*Config, error) {
 
 	if strings.HasPrefix(flag, "env:") {
@@ -123,7 +135,7 @@ func NewConfigFromFlag(flag string) (*Config, error) {
 		env = strings.Trim(env, " ")
 
 		if env == "" {
-			return nil, errors.New("Invalid environment variable")
+			return nil, errors.New("invalid environment variable")
 		}
 
 		return NewConfigFromEnv(env)
@@ -136,6 +148,7 @@ func NewConfigFromFlag(flag string) (*Config, error) {
 	return NewConfigFromFile(flag)
 }
 
+// NewConfigFromFile returns a config set from the contents of a config file
 func NewConfigFromFile(file string) (*Config, error) {
 
 	body, err := ioutil.ReadFile(file)
@@ -147,6 +160,7 @@ func NewConfigFromFile(file string) (*Config, error) {
 	return NewConfigFromBytes(body)
 }
 
+// NewConfigFromReader returns a config set from a reader
 func NewConfigFromReader(fh io.Reader) (*Config, error) {
 
 	body, err := ioutil.ReadAll(fh)
@@ -158,6 +172,7 @@ func NewConfigFromReader(fh io.Reader) (*Config, error) {
 	return NewConfigFromBytes(body)
 }
 
+// NewConfigFromBucket returns a config set from a file stored on a bucket
 func NewConfigFromBucket(ctx context.Context, bucket *blob.Bucket, fname string) (*Config, error) {
 
 	fh, err := bucket.NewReader(ctx, fname, nil)
@@ -171,17 +186,19 @@ func NewConfigFromBucket(ctx context.Context, bucket *blob.Bucket, fname string)
 	return NewConfigFromReader(fh)
 }
 
+// NewConfigFromEnv returns a config set by the environment
 func NewConfigFromEnv(name string) (*Config, error) {
 
 	env, ok := os.LookupEnv(name)
 
 	if !ok {
-		return nil, errors.New("Missing environment variable by that name")
+		return nil, errors.New("missing environment variable by that name")
 	}
 
 	return NewConfigFromBytes([]byte(env))
 }
 
+// NewConfigFromBytes returns a config set by bytes
 func NewConfigFromBytes(body []byte) (*Config, error) {
 
 	c := Config{}
