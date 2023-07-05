@@ -442,12 +442,12 @@ golang.org/x/xerrors/internal
 ## explicit; go 1.19
 google.golang.org/api/googleapi
 google.golang.org/api/internal/third_party/uritemplates
-# google.golang.org/genproto v0.0.0-20221201204527-e3fa12d562f3
+# google.golang.org/genproto v0.0.0-20230110181048-76db0878b65f
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/code
 google.golang.org/genproto/googleapis/rpc/errdetails
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.51.0
+# google.golang.org/grpc v1.53.0
 ## explicit; go 1.17
 google.golang.org/grpc
 google.golang.org/grpc/attributes
