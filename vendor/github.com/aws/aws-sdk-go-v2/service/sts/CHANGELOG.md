@@ -1,3 +1,152 @@
+# v1.25.4 (2023-11-20)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.25.3 (2023-11-17)
+
+* **Documentation**: API updates for the AWS Security Token Service
+
+# v1.25.2 (2023-11-15)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.25.1 (2023-11-09)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.25.0 (2023-11-01)
+
+* **Feature**: Adds support for configured endpoints via environment variables and the AWS shared configuration file.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.24.0 (2023-10-31)
+
+* **Feature**: **BREAKING CHANGE**: Bump minimum go version to 1.19 per the revised [go version support policy](https://aws.amazon.com/blogs/developer/aws-sdk-for-go-aligns-with-go-release-policy-on-supported-runtimes/).
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.23.2 (2023-10-12)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.23.1 (2023-10-06)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.23.0 (2023-10-02)
+
+* **Feature**: STS API updates for assumeRole
+
+# v1.22.0 (2023-09-18)
+
+* **Announcement**: [BREAKFIX] Change in MaxResults datatype from value to pointer type in cognito-sync service.
+* **Feature**: Adds several endpoint ruleset changes across all models: smaller rulesets, removed non-unique regional endpoints, fixes FIPS and DualStack endpoints, and make region not required in SDK::Endpoint. Additional breakfix to cognito-sync field.
+
+# v1.21.5 (2023-08-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.21.4 (2023-08-18)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.21.3 (2023-08-17)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.21.2 (2023-08-07)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.21.1 (2023-08-01)
+
+* No change notes available for this release.
+
+# v1.21.0 (2023-07-31)
+
+* **Feature**: Adds support for smithy-modeled endpoint resolution. A new rules-based endpoint resolution will be added to the SDK which will supercede and deprecate existing endpoint resolution. Specifically, EndpointResolver will be deprecated while BaseEndpoint and EndpointResolverV2 will take its place. For more information, please see the Endpoints section in our Developer Guide.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.20.1 (2023-07-28)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.20.0 (2023-07-25)
+
+* **Feature**: API updates for the AWS Security Token Service
+
+# v1.19.3 (2023-07-13)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.19.2 (2023-06-15)
+
+* No change notes available for this release.
+
+# v1.19.1 (2023-06-13)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.19.0 (2023-05-08)
+
+* **Feature**: Documentation updates for AWS Security Token Service.
+
+# v1.18.11 (2023-05-04)
+
+* No change notes available for this release.
+
+# v1.18.10 (2023-04-24)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.18.9 (2023-04-10)
+
+* No change notes available for this release.
+
+# v1.18.8 (2023-04-07)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.18.7 (2023-03-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.18.6 (2023-03-10)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.18.5 (2023-02-22)
+
+* **Bug Fix**: Prevent nil pointer dereference when retrieving error codes.
+
+# v1.18.4 (2023-02-20)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.18.3 (2023-02-03)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+* **Dependency Update**: Upgrade smithy to 1.27.2 and correct empty query list serialization.
+
+# v1.18.2 (2023-01-25)
+
+* **Documentation**: Doc only change to update wording in a key topic
+
+# v1.18.1 (2023-01-23)
+
+* No change notes available for this release.
+
+# v1.18.0 (2023-01-05)
+
+* **Feature**: Add `ErrorCodeOverride` field to all error structs (aws/smithy-go#401).
+
+# v1.17.7 (2022-12-15)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.17.6 (2022-12-02)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
 # v1.17.5 (2022-11-22)
 
 * No change notes available for this release.

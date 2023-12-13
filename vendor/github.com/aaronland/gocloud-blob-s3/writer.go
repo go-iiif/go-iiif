@@ -3,6 +3,7 @@ package s3blob
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"gocloud.dev/blob"
@@ -18,11 +19,10 @@ func NewWriterWithACL(ctx context.Context, bucket *blob.Bucket, path string, acl
 		req := &s3manager.UploadInput{}
 		ok := asFunc(&req)
 
-		if !ok {
-			return fmt.Errorf("invalid S3 type")
+		if ok {
+			req.ACL = aws.String(acl)
 		}
 
-		req.ACL = aws.String(acl)
 		return nil
 	}
 

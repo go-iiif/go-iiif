@@ -102,6 +102,10 @@ func (s *HTTPServer) ListenAndServe(ctx context.Context, mux *http.ServeMux) err
 
 The following schemes/implementations are included by default with this package.
 
+### functionurl://
+
+An AWS Lambda Function URL compatible HTTP server.
+
 ### http://{HOST}
 
 A standard, plain-vanilla, HTTP server.
@@ -112,7 +116,7 @@ This is an alias to the `tls://` scheme.
 
 ### lambda://
 
-An AWS-compatible HTTP server.
+An AWS Lambda function + API Gateway compatible HTTP server.
 
 ### mkcert://{HOST}
 

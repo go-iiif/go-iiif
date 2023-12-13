@@ -2,9 +2,10 @@ package resize
 
 import (
 	"context"
-	nfnt_resize "github.com/nfnt/resize"
 	"image"
 	"math"
+
+	nfnt_resize "github.com/nfnt/resize"	
 )
 
 func ResizeImageMax(ctx context.Context, im image.Image, max int) (image.Image, error) {

@@ -1,3 +1,104 @@
+# v1.14.5 (2023-11-20)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.14.4 (2023-11-15)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.14.3 (2023-11-09)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.14.2 (2023-11-02)
+
+* No change notes available for this release.
+
+# v1.14.1 (2023-11-01)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.14.0 (2023-10-31)
+
+* **Feature**: **BREAKING CHANGE**: Bump minimum go version to 1.19 per the revised [go version support policy](https://aws.amazon.com/blogs/developer/aws-sdk-for-go-aligns-with-go-release-policy-on-supported-runtimes/).
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.13 (2023-10-12)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.12 (2023-10-06)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.11 (2023-08-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.10 (2023-08-18)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.9 (2023-08-17)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.8 (2023-08-07)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.7 (2023-07-31)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.6 (2023-07-28)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.5 (2023-07-13)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.4 (2023-06-13)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.3 (2023-04-24)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.2 (2023-04-07)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.1 (2023-03-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.13.0 (2023-03-14)
+
+* **Feature**: Add flag to disable IMDSv1 fallback
+
+# v1.12.24 (2023-03-10)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.23 (2023-02-20)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.22 (2023-02-03)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.21 (2022-12-15)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.12.20 (2022-12-02)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
 # v1.12.19 (2022-10-24)
 
 * **Bug Fix**: Fixes an issue that prevented logging of the API request or responses when the respective log modes were enabled.

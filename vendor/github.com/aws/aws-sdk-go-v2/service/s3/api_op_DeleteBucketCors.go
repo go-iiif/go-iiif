@@ -4,6 +4,7 @@ package s3
 
 import (
 	"context"
+	"fmt"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	s3cust "github.com/aws/aws-sdk-go-v2/service/s3/internal/customizations"
@@ -14,16 +15,10 @@ import (
 // Deletes the cors configuration information set for the bucket. To use this
 // operation, you must have permission to perform the s3:PutBucketCORS action. The
 // bucket owner has this permission by default and can grant this permission to
-// others. For information about cors, see Enabling Cross-Origin Resource Sharing
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html) in the Amazon S3
-// User Guide. Related Resources:
-//
-// * PutBucketCors
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html)
-//
-// *
-// RESTOPTIONSobject
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/RESTOPTIONSobject.html)
+// others. For information about cors , see Enabling Cross-Origin Resource Sharing (https://docs.aws.amazon.com/AmazonS3/latest/dev/cors.html)
+// in the Amazon S3 User Guide. Related Resources
+//   - PutBucketCors (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketCors.html)
+//   - RESTOPTIONSobject (https://docs.aws.amazon.com/AmazonS3/latest/API/RESTOPTIONSobject.html)
 func (c *Client) DeleteBucketCors(ctx context.Context, params *DeleteBucketCorsInput, optFns ...func(*Options)) (*DeleteBucketCorsOutput, error) {
 	if params == nil {
 		params = &DeleteBucketCorsInput{}
@@ -54,6 +49,11 @@ type DeleteBucketCorsInput struct {
 	noSmithyDocumentSerde
 }
 
+func (in *DeleteBucketCorsInput) bindEndpointParams(p *EndpointParameters) {
+	p.Bucket = in.Bucket
+
+}
+
 type DeleteBucketCorsOutput struct {
 	// Metadata pertaining to the operation's result.
 	ResultMetadata middleware.Metadata
@@ -62,12 +62,22 @@ type DeleteBucketCorsOutput struct {
 }
 
 func (c *Client) addOperationDeleteBucketCorsMiddlewares(stack *middleware.Stack, options Options) (err error) {
+	if err := stack.Serialize.Add(&setOperationInputMiddleware{}, middleware.After); err != nil {
+		return err
+	}
 	err = stack.Serialize.Add(&awsRestxml_serializeOpDeleteBucketCors{}, middleware.After)
 	if err != nil {
 		return err
 	}
 	err = stack.Deserialize.Add(&awsRestxml_deserializeOpDeleteBucketCors{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err := addProtocolFinalizerMiddlewares(stack, options, "DeleteBucketCors"); err != nil {
+		return fmt.Errorf("add protocol finalizers: %v", err)
+	}
+
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -88,16 +98,13 @@ func (c *Client) addOperationDeleteBucketCorsMiddlewares(stack *middleware.Stack
 	if err = addRetryMiddlewares(stack, options); err != nil {
 		return err
 	}
-	if err = addHTTPSignerV4Middleware(stack, options); err != nil {
-		return err
-	}
 	if err = awsmiddleware.AddRawResponseToMetadata(stack); err != nil {
 		return err
 	}
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -106,7 +113,7 @@ func (c *Client) addOperationDeleteBucketCorsMiddlewares(stack *middleware.Stack
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
-	if err = swapWithCustomHTTPSignerMiddleware(stack, options); err != nil {
+	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
 		return err
 	}
 	if err = addOpDeleteBucketCorsValidationMiddleware(stack); err != nil {
@@ -116,6 +123,9 @@ func (c *Client) addOperationDeleteBucketCorsMiddlewares(stack *middleware.Stack
 		return err
 	}
 	if err = addMetadataRetrieverMiddleware(stack); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addDeleteBucketCorsUpdateEndpoint(stack, options); err != nil {
@@ -133,14 +143,26 @@ func (c *Client) addOperationDeleteBucketCorsMiddlewares(stack *middleware.Stack
 	if err = addRequestResponseLogging(stack, options); err != nil {
 		return err
 	}
+	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSerializeImmutableHostnameBucketMiddleware(stack, options); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (v *DeleteBucketCorsInput) bucket() (string, bool) {
+	if v.Bucket == nil {
+		return "", false
+	}
+	return *v.Bucket, true
 }
 
 func newServiceMetadataMiddleware_opDeleteBucketCors(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
 		Region:        region,
 		ServiceID:     ServiceID,
-		SigningName:   "s3",
 		OperationName: "DeleteBucketCors",
 	}
 }

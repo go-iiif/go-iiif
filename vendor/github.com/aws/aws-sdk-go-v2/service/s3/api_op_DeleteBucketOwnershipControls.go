@@ -4,6 +4,7 @@ package s3
 
 import (
 	"context"
+	"fmt"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	s3cust "github.com/aws/aws-sdk-go-v2/service/s3/internal/customizations"
@@ -13,16 +14,11 @@ import (
 
 // Removes OwnershipControls for an Amazon S3 bucket. To use this operation, you
 // must have the s3:PutBucketOwnershipControls permission. For more information
-// about Amazon S3 permissions, see Specifying Permissions in a Policy
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html).
-// For information about Amazon S3 Object Ownership, see Using Object Ownership
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html).
-// The following operations are related to DeleteBucketOwnershipControls:
-//
-// *
-// GetBucketOwnershipControls
-//
-// * PutBucketOwnershipControls
+// about Amazon S3 permissions, see Specifying Permissions in a Policy (https://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html)
+// . For information about Amazon S3 Object Ownership, see Using Object Ownership (https://docs.aws.amazon.com/AmazonS3/latest/dev/about-object-ownership.html)
+// . The following operations are related to DeleteBucketOwnershipControls :
+//   - GetBucketOwnershipControls
+//   - PutBucketOwnershipControls
 func (c *Client) DeleteBucketOwnershipControls(ctx context.Context, params *DeleteBucketOwnershipControlsInput, optFns ...func(*Options)) (*DeleteBucketOwnershipControlsOutput, error) {
 	if params == nil {
 		params = &DeleteBucketOwnershipControlsInput{}
@@ -53,6 +49,11 @@ type DeleteBucketOwnershipControlsInput struct {
 	noSmithyDocumentSerde
 }
 
+func (in *DeleteBucketOwnershipControlsInput) bindEndpointParams(p *EndpointParameters) {
+	p.Bucket = in.Bucket
+
+}
+
 type DeleteBucketOwnershipControlsOutput struct {
 	// Metadata pertaining to the operation's result.
 	ResultMetadata middleware.Metadata
@@ -61,12 +62,22 @@ type DeleteBucketOwnershipControlsOutput struct {
 }
 
 func (c *Client) addOperationDeleteBucketOwnershipControlsMiddlewares(stack *middleware.Stack, options Options) (err error) {
+	if err := stack.Serialize.Add(&setOperationInputMiddleware{}, middleware.After); err != nil {
+		return err
+	}
 	err = stack.Serialize.Add(&awsRestxml_serializeOpDeleteBucketOwnershipControls{}, middleware.After)
 	if err != nil {
 		return err
 	}
 	err = stack.Deserialize.Add(&awsRestxml_deserializeOpDeleteBucketOwnershipControls{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err := addProtocolFinalizerMiddlewares(stack, options, "DeleteBucketOwnershipControls"); err != nil {
+		return fmt.Errorf("add protocol finalizers: %v", err)
+	}
+
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -87,16 +98,13 @@ func (c *Client) addOperationDeleteBucketOwnershipControlsMiddlewares(stack *mid
 	if err = addRetryMiddlewares(stack, options); err != nil {
 		return err
 	}
-	if err = addHTTPSignerV4Middleware(stack, options); err != nil {
-		return err
-	}
 	if err = awsmiddleware.AddRawResponseToMetadata(stack); err != nil {
 		return err
 	}
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -105,7 +113,7 @@ func (c *Client) addOperationDeleteBucketOwnershipControlsMiddlewares(stack *mid
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
-	if err = swapWithCustomHTTPSignerMiddleware(stack, options); err != nil {
+	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
 		return err
 	}
 	if err = addOpDeleteBucketOwnershipControlsValidationMiddleware(stack); err != nil {
@@ -115,6 +123,9 @@ func (c *Client) addOperationDeleteBucketOwnershipControlsMiddlewares(stack *mid
 		return err
 	}
 	if err = addMetadataRetrieverMiddleware(stack); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addDeleteBucketOwnershipControlsUpdateEndpoint(stack, options); err != nil {
@@ -132,14 +143,26 @@ func (c *Client) addOperationDeleteBucketOwnershipControlsMiddlewares(stack *mid
 	if err = addRequestResponseLogging(stack, options); err != nil {
 		return err
 	}
+	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSerializeImmutableHostnameBucketMiddleware(stack, options); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (v *DeleteBucketOwnershipControlsInput) bucket() (string, bool) {
+	if v.Bucket == nil {
+		return "", false
+	}
+	return *v.Bucket, true
 }
 
 func newServiceMetadataMiddleware_opDeleteBucketOwnershipControls(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
 		Region:        region,
 		ServiceID:     ServiceID,
-		SigningName:   "s3",
 		OperationName: "DeleteBucketOwnershipControls",
 	}
 }

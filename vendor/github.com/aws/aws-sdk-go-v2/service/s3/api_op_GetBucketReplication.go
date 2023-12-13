@@ -4,6 +4,7 @@ package s3
 
 import (
 	"context"
+	"fmt"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	s3cust "github.com/aws/aws-sdk-go-v2/service/s3/internal/customizations"
@@ -15,26 +16,17 @@ import (
 // Returns the replication configuration of a bucket. It can take a while to
 // propagate the put or delete a replication configuration to all Amazon S3
 // systems. Therefore, a get request soon after put or delete can return a wrong
-// result. For information about replication configuration, see Replication
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/replication.html) in the Amazon
-// S3 User Guide. This action requires permissions for the
+// result. For information about replication configuration, see Replication (https://docs.aws.amazon.com/AmazonS3/latest/dev/replication.html)
+// in the Amazon S3 User Guide. This action requires permissions for the
 // s3:GetReplicationConfiguration action. For more information about permissions,
-// see Using Bucket Policies and User Policies
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/using-iam-policies.html). If
-// you include the Filter element in a replication configuration, you must also
-// include the DeleteMarkerReplication and Priority elements. The response also
-// returns those elements. For information about GetBucketReplication errors, see
-// List of replication-related error codes
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ReplicationErrorCodeList)
-// The following operations are related to GetBucketReplication:
-//
-// *
-// PutBucketReplication
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketReplication.html)
-//
-// *
-// DeleteBucketReplication
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketReplication.html)
+// see Using Bucket Policies and User Policies (https://docs.aws.amazon.com/AmazonS3/latest/dev/using-iam-policies.html)
+// . If you include the Filter element in a replication configuration, you must
+// also include the DeleteMarkerReplication and Priority elements. The response
+// also returns those elements. For information about GetBucketReplication errors,
+// see List of replication-related error codes (https://docs.aws.amazon.com/AmazonS3/latest/API/ErrorResponses.html#ReplicationErrorCodeList)
+// The following operations are related to GetBucketReplication :
+//   - PutBucketReplication (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketReplication.html)
+//   - DeleteBucketReplication (https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketReplication.html)
 func (c *Client) GetBucketReplication(ctx context.Context, params *GetBucketReplicationInput, optFns ...func(*Options)) (*GetBucketReplicationOutput, error) {
 	if params == nil {
 		params = &GetBucketReplicationInput{}
@@ -65,6 +57,11 @@ type GetBucketReplicationInput struct {
 	noSmithyDocumentSerde
 }
 
+func (in *GetBucketReplicationInput) bindEndpointParams(p *EndpointParameters) {
+	p.Bucket = in.Bucket
+
+}
+
 type GetBucketReplicationOutput struct {
 
 	// A container for replication rules. You can add up to 1,000 rules. The maximum
@@ -78,12 +75,22 @@ type GetBucketReplicationOutput struct {
 }
 
 func (c *Client) addOperationGetBucketReplicationMiddlewares(stack *middleware.Stack, options Options) (err error) {
+	if err := stack.Serialize.Add(&setOperationInputMiddleware{}, middleware.After); err != nil {
+		return err
+	}
 	err = stack.Serialize.Add(&awsRestxml_serializeOpGetBucketReplication{}, middleware.After)
 	if err != nil {
 		return err
 	}
 	err = stack.Deserialize.Add(&awsRestxml_deserializeOpGetBucketReplication{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err := addProtocolFinalizerMiddlewares(stack, options, "GetBucketReplication"); err != nil {
+		return fmt.Errorf("add protocol finalizers: %v", err)
+	}
+
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -104,16 +111,13 @@ func (c *Client) addOperationGetBucketReplicationMiddlewares(stack *middleware.S
 	if err = addRetryMiddlewares(stack, options); err != nil {
 		return err
 	}
-	if err = addHTTPSignerV4Middleware(stack, options); err != nil {
-		return err
-	}
 	if err = awsmiddleware.AddRawResponseToMetadata(stack); err != nil {
 		return err
 	}
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -122,7 +126,7 @@ func (c *Client) addOperationGetBucketReplicationMiddlewares(stack *middleware.S
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
-	if err = swapWithCustomHTTPSignerMiddleware(stack, options); err != nil {
+	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
 		return err
 	}
 	if err = addOpGetBucketReplicationValidationMiddleware(stack); err != nil {
@@ -132,6 +136,9 @@ func (c *Client) addOperationGetBucketReplicationMiddlewares(stack *middleware.S
 		return err
 	}
 	if err = addMetadataRetrieverMiddleware(stack); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addGetBucketReplicationUpdateEndpoint(stack, options); err != nil {
@@ -149,14 +156,26 @@ func (c *Client) addOperationGetBucketReplicationMiddlewares(stack *middleware.S
 	if err = addRequestResponseLogging(stack, options); err != nil {
 		return err
 	}
+	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSerializeImmutableHostnameBucketMiddleware(stack, options); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (v *GetBucketReplicationInput) bucket() (string, bool) {
+	if v.Bucket == nil {
+		return "", false
+	}
+	return *v.Bucket, true
 }
 
 func newServiceMetadataMiddleware_opGetBucketReplication(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
 		Region:        region,
 		ServiceID:     ServiceID,
-		SigningName:   "s3",
 		OperationName: "GetBucketReplication",
 	}
 }

@@ -4,6 +4,7 @@ package s3
 
 import (
 	"context"
+	"fmt"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	internalChecksum "github.com/aws/aws-sdk-go-v2/service/internal/checksum"
@@ -15,16 +16,11 @@ import (
 
 // Creates or modifies OwnershipControls for an Amazon S3 bucket. To use this
 // operation, you must have the s3:PutBucketOwnershipControls permission. For more
-// information about Amazon S3 permissions, see Specifying permissions in a policy
-// (https://docs.aws.amazon.com/AmazonS3/latest/user-guide/using-with-s3-actions.html).
-// For information about Amazon S3 Object Ownership, see Using object ownership
-// (https://docs.aws.amazon.com/AmazonS3/latest/user-guide/about-object-ownership.html).
-// The following operations are related to PutBucketOwnershipControls:
-//
-// *
-// GetBucketOwnershipControls
-//
-// * DeleteBucketOwnershipControls
+// information about Amazon S3 permissions, see Specifying permissions in a policy (https://docs.aws.amazon.com/AmazonS3/latest/user-guide/using-with-s3-actions.html)
+// . For information about Amazon S3 Object Ownership, see Using object ownership (https://docs.aws.amazon.com/AmazonS3/latest/user-guide/about-object-ownership.html)
+// . The following operations are related to PutBucketOwnershipControls :
+//   - GetBucketOwnershipControls
+//   - DeleteBucketOwnershipControls
 func (c *Client) PutBucketOwnershipControls(ctx context.Context, params *PutBucketOwnershipControlsInput, optFns ...func(*Options)) (*PutBucketOwnershipControlsOutput, error) {
 	if params == nil {
 		params = &PutBucketOwnershipControlsInput{}
@@ -66,6 +62,11 @@ type PutBucketOwnershipControlsInput struct {
 	noSmithyDocumentSerde
 }
 
+func (in *PutBucketOwnershipControlsInput) bindEndpointParams(p *EndpointParameters) {
+	p.Bucket = in.Bucket
+
+}
+
 type PutBucketOwnershipControlsOutput struct {
 	// Metadata pertaining to the operation's result.
 	ResultMetadata middleware.Metadata
@@ -74,12 +75,22 @@ type PutBucketOwnershipControlsOutput struct {
 }
 
 func (c *Client) addOperationPutBucketOwnershipControlsMiddlewares(stack *middleware.Stack, options Options) (err error) {
+	if err := stack.Serialize.Add(&setOperationInputMiddleware{}, middleware.After); err != nil {
+		return err
+	}
 	err = stack.Serialize.Add(&awsRestxml_serializeOpPutBucketOwnershipControls{}, middleware.After)
 	if err != nil {
 		return err
 	}
 	err = stack.Deserialize.Add(&awsRestxml_deserializeOpPutBucketOwnershipControls{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err := addProtocolFinalizerMiddlewares(stack, options, "PutBucketOwnershipControls"); err != nil {
+		return fmt.Errorf("add protocol finalizers: %v", err)
+	}
+
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -100,16 +111,13 @@ func (c *Client) addOperationPutBucketOwnershipControlsMiddlewares(stack *middle
 	if err = addRetryMiddlewares(stack, options); err != nil {
 		return err
 	}
-	if err = addHTTPSignerV4Middleware(stack, options); err != nil {
-		return err
-	}
 	if err = awsmiddleware.AddRawResponseToMetadata(stack); err != nil {
 		return err
 	}
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -118,7 +126,7 @@ func (c *Client) addOperationPutBucketOwnershipControlsMiddlewares(stack *middle
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
-	if err = swapWithCustomHTTPSignerMiddleware(stack, options); err != nil {
+	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
 		return err
 	}
 	if err = addOpPutBucketOwnershipControlsValidationMiddleware(stack); err != nil {
@@ -128,6 +136,9 @@ func (c *Client) addOperationPutBucketOwnershipControlsMiddlewares(stack *middle
 		return err
 	}
 	if err = addMetadataRetrieverMiddleware(stack); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addPutBucketOwnershipControlsInputChecksumMiddlewares(stack, options); err != nil {
@@ -148,14 +159,26 @@ func (c *Client) addOperationPutBucketOwnershipControlsMiddlewares(stack *middle
 	if err = addRequestResponseLogging(stack, options); err != nil {
 		return err
 	}
+	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSerializeImmutableHostnameBucketMiddleware(stack, options); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (v *PutBucketOwnershipControlsInput) bucket() (string, bool) {
+	if v.Bucket == nil {
+		return "", false
+	}
+	return *v.Bucket, true
 }
 
 func newServiceMetadataMiddleware_opPutBucketOwnershipControls(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
 		Region:        region,
 		ServiceID:     ServiceID,
-		SigningName:   "s3",
 		OperationName: "PutBucketOwnershipControls",
 	}
 }
@@ -170,9 +193,9 @@ func addPutBucketOwnershipControlsInputChecksumMiddlewares(stack *middleware.Sta
 	})
 }
 
-// getPutBucketOwnershipControlsBucketMember returns a pointer to string denoting a
-// provided bucket member valueand a boolean indicating if the input has a modeled
-// bucket name,
+// getPutBucketOwnershipControlsBucketMember returns a pointer to string denoting
+// a provided bucket member valueand a boolean indicating if the input has a
+// modeled bucket name,
 func getPutBucketOwnershipControlsBucketMember(input interface{}) (*string, bool) {
 	in := input.(*PutBucketOwnershipControlsInput)
 	if in.Bucket == nil {

@@ -4,6 +4,7 @@ package s3
 
 import (
 	"context"
+	"fmt"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	s3cust "github.com/aws/aws-sdk-go-v2/service/s3/internal/customizations"
@@ -13,15 +14,10 @@ import (
 )
 
 // Returns the logging status of a bucket and the permissions users have to view
-// and modify that status. To use GET, you must be the bucket owner. The following
-// operations are related to GetBucketLogging:
-//
-// * CreateBucket
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html)
-//
-// *
-// PutBucketLogging
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLogging.html)
+// and modify that status. The following operations are related to GetBucketLogging
+// :
+//   - CreateBucket (https://docs.aws.amazon.com/AmazonS3/latest/API/API_CreateBucket.html)
+//   - PutBucketLogging (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketLogging.html)
 func (c *Client) GetBucketLogging(ctx context.Context, params *GetBucketLoggingInput, optFns ...func(*Options)) (*GetBucketLoggingOutput, error) {
 	if params == nil {
 		params = &GetBucketLoggingInput{}
@@ -52,12 +48,16 @@ type GetBucketLoggingInput struct {
 	noSmithyDocumentSerde
 }
 
+func (in *GetBucketLoggingInput) bindEndpointParams(p *EndpointParameters) {
+	p.Bucket = in.Bucket
+
+}
+
 type GetBucketLoggingOutput struct {
 
-	// Describes where logs are stored and the prefix that Amazon S3 assigns to all log
-	// object keys for a bucket. For more information, see PUT Bucket logging
-	// (https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTlogging.html) in
-	// the Amazon S3 API Reference.
+	// Describes where logs are stored and the prefix that Amazon S3 assigns to all
+	// log object keys for a bucket. For more information, see PUT Bucket logging (https://docs.aws.amazon.com/AmazonS3/latest/API/RESTBucketPUTlogging.html)
+	// in the Amazon S3 API Reference.
 	LoggingEnabled *types.LoggingEnabled
 
 	// Metadata pertaining to the operation's result.
@@ -67,12 +67,22 @@ type GetBucketLoggingOutput struct {
 }
 
 func (c *Client) addOperationGetBucketLoggingMiddlewares(stack *middleware.Stack, options Options) (err error) {
+	if err := stack.Serialize.Add(&setOperationInputMiddleware{}, middleware.After); err != nil {
+		return err
+	}
 	err = stack.Serialize.Add(&awsRestxml_serializeOpGetBucketLogging{}, middleware.After)
 	if err != nil {
 		return err
 	}
 	err = stack.Deserialize.Add(&awsRestxml_deserializeOpGetBucketLogging{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err := addProtocolFinalizerMiddlewares(stack, options, "GetBucketLogging"); err != nil {
+		return fmt.Errorf("add protocol finalizers: %v", err)
+	}
+
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -93,16 +103,13 @@ func (c *Client) addOperationGetBucketLoggingMiddlewares(stack *middleware.Stack
 	if err = addRetryMiddlewares(stack, options); err != nil {
 		return err
 	}
-	if err = addHTTPSignerV4Middleware(stack, options); err != nil {
-		return err
-	}
 	if err = awsmiddleware.AddRawResponseToMetadata(stack); err != nil {
 		return err
 	}
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -111,7 +118,7 @@ func (c *Client) addOperationGetBucketLoggingMiddlewares(stack *middleware.Stack
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
-	if err = swapWithCustomHTTPSignerMiddleware(stack, options); err != nil {
+	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
 		return err
 	}
 	if err = addOpGetBucketLoggingValidationMiddleware(stack); err != nil {
@@ -121,6 +128,9 @@ func (c *Client) addOperationGetBucketLoggingMiddlewares(stack *middleware.Stack
 		return err
 	}
 	if err = addMetadataRetrieverMiddleware(stack); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addGetBucketLoggingUpdateEndpoint(stack, options); err != nil {
@@ -138,14 +148,26 @@ func (c *Client) addOperationGetBucketLoggingMiddlewares(stack *middleware.Stack
 	if err = addRequestResponseLogging(stack, options); err != nil {
 		return err
 	}
+	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSerializeImmutableHostnameBucketMiddleware(stack, options); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (v *GetBucketLoggingInput) bucket() (string, bool) {
+	if v.Bucket == nil {
+		return "", false
+	}
+	return *v.Bucket, true
 }
 
 func newServiceMetadataMiddleware_opGetBucketLogging(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
 		Region:        region,
 		ServiceID:     ServiceID,
-		SigningName:   "s3",
 		OperationName: "GetBucketLogging",
 	}
 }

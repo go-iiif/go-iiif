@@ -3,11 +3,12 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-roster"
 	_ "log"
 	"net/http"
 	"net/url"
 	"sort"
+
+	"github.com/aaronland/go-roster"
 )
 
 // type Server is an interface for creating server instances that serve requests using a `http.Handler` router.

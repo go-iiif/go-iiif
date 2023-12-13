@@ -22,7 +22,7 @@ import (
 func init() {
 	ctx := context.Background()
 	RegisterServer(ctx, "http", NewHTTPServer)
-	RegisterServer(ctx, "https", NewHTTPServer)	
+	RegisterServer(ctx, "https", NewHTTPServer)
 }
 
 // HTTPServer implements the `Server` interface for a basic `net/http` server.

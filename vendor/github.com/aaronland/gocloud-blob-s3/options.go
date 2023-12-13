@@ -3,6 +3,7 @@ package s3blob
 import (
 	"context"
 	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"gocloud.dev/blob"

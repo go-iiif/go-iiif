@@ -4,6 +4,7 @@ package s3
 
 import (
 	"context"
+	"fmt"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	s3cust "github.com/aws/aws-sdk-go-v2/service/s3/internal/customizations"
@@ -18,30 +19,15 @@ import (
 // s3:GetMetricsConfiguration action. The bucket owner has this permission by
 // default. The bucket owner can grant this permission to others. For more
 // information about permissions, see Permissions Related to Bucket Subresource
-// Operations
-// (https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources)
-// and Managing Access Permissions to Your Amazon S3 Resources
-// (https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html).
-// For information about CloudWatch request metrics for Amazon S3, see Monitoring
-// Metrics with Amazon CloudWatch
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html).
-// The following operations are related to GetBucketMetricsConfiguration:
-//
-// *
-// PutBucketMetricsConfiguration
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html)
-//
-// *
-// DeleteBucketMetricsConfiguration
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html)
-//
-// *
-// ListBucketMetricsConfigurations
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html)
-//
-// *
-// Monitoring Metrics with Amazon CloudWatch
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html)
+// Operations (https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources)
+// and Managing Access Permissions to Your Amazon S3 Resources (https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html)
+// . For information about CloudWatch request metrics for Amazon S3, see
+// Monitoring Metrics with Amazon CloudWatch (https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html)
+// . The following operations are related to GetBucketMetricsConfiguration :
+//   - PutBucketMetricsConfiguration (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketMetricsConfiguration.html)
+//   - DeleteBucketMetricsConfiguration (https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketMetricsConfiguration.html)
+//   - ListBucketMetricsConfigurations (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketMetricsConfigurations.html)
+//   - Monitoring Metrics with Amazon CloudWatch (https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudwatch-monitoring.html)
 func (c *Client) GetBucketMetricsConfiguration(ctx context.Context, params *GetBucketMetricsConfigurationInput, optFns ...func(*Options)) (*GetBucketMetricsConfigurationOutput, error) {
 	if params == nil {
 		params = &GetBucketMetricsConfigurationInput{}
@@ -64,7 +50,8 @@ type GetBucketMetricsConfigurationInput struct {
 	// This member is required.
 	Bucket *string
 
-	// The ID used to identify the metrics configuration.
+	// The ID used to identify the metrics configuration. The ID has a 64 character
+	// limit and can only contain letters, numbers, periods, dashes, and underscores.
 	//
 	// This member is required.
 	Id *string
@@ -75,6 +62,11 @@ type GetBucketMetricsConfigurationInput struct {
 	ExpectedBucketOwner *string
 
 	noSmithyDocumentSerde
+}
+
+func (in *GetBucketMetricsConfigurationInput) bindEndpointParams(p *EndpointParameters) {
+	p.Bucket = in.Bucket
+
 }
 
 type GetBucketMetricsConfigurationOutput struct {
@@ -89,12 +81,22 @@ type GetBucketMetricsConfigurationOutput struct {
 }
 
 func (c *Client) addOperationGetBucketMetricsConfigurationMiddlewares(stack *middleware.Stack, options Options) (err error) {
+	if err := stack.Serialize.Add(&setOperationInputMiddleware{}, middleware.After); err != nil {
+		return err
+	}
 	err = stack.Serialize.Add(&awsRestxml_serializeOpGetBucketMetricsConfiguration{}, middleware.After)
 	if err != nil {
 		return err
 	}
 	err = stack.Deserialize.Add(&awsRestxml_deserializeOpGetBucketMetricsConfiguration{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err := addProtocolFinalizerMiddlewares(stack, options, "GetBucketMetricsConfiguration"); err != nil {
+		return fmt.Errorf("add protocol finalizers: %v", err)
+	}
+
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -115,16 +117,13 @@ func (c *Client) addOperationGetBucketMetricsConfigurationMiddlewares(stack *mid
 	if err = addRetryMiddlewares(stack, options); err != nil {
 		return err
 	}
-	if err = addHTTPSignerV4Middleware(stack, options); err != nil {
-		return err
-	}
 	if err = awsmiddleware.AddRawResponseToMetadata(stack); err != nil {
 		return err
 	}
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -133,7 +132,7 @@ func (c *Client) addOperationGetBucketMetricsConfigurationMiddlewares(stack *mid
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
-	if err = swapWithCustomHTTPSignerMiddleware(stack, options); err != nil {
+	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
 		return err
 	}
 	if err = addOpGetBucketMetricsConfigurationValidationMiddleware(stack); err != nil {
@@ -143,6 +142,9 @@ func (c *Client) addOperationGetBucketMetricsConfigurationMiddlewares(stack *mid
 		return err
 	}
 	if err = addMetadataRetrieverMiddleware(stack); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addGetBucketMetricsConfigurationUpdateEndpoint(stack, options); err != nil {
@@ -160,14 +162,26 @@ func (c *Client) addOperationGetBucketMetricsConfigurationMiddlewares(stack *mid
 	if err = addRequestResponseLogging(stack, options); err != nil {
 		return err
 	}
+	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSerializeImmutableHostnameBucketMiddleware(stack, options); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (v *GetBucketMetricsConfigurationInput) bucket() (string, bool) {
+	if v.Bucket == nil {
+		return "", false
+	}
+	return *v.Bucket, true
 }
 
 func newServiceMetadataMiddleware_opGetBucketMetricsConfiguration(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
 		Region:        region,
 		ServiceID:     ServiceID,
-		SigningName:   "s3",
 		OperationName: "GetBucketMetricsConfiguration",
 	}
 }

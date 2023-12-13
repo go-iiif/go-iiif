@@ -3,10 +3,11 @@ package resize
 import (
 	"context"
 	"errors"
-	"github.com/aaronland/go-image-transform"
 	"image"
 	"net/url"
 	"strconv"
+
+	"github.com/aaronland/go-image-transform"	
 )
 
 type ResizeTransformation struct {

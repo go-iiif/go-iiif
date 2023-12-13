@@ -4,6 +4,7 @@ package s3
 
 import (
 	"context"
+	"fmt"
 	awsmiddleware "github.com/aws/aws-sdk-go-v2/aws/middleware"
 	"github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	s3cust "github.com/aws/aws-sdk-go-v2/service/s3/internal/customizations"
@@ -17,26 +18,15 @@ import (
 // operation, you must have permissions to perform the s3:GetAnalyticsConfiguration
 // action. The bucket owner has this permission by default. The bucket owner can
 // grant this permission to others. For more information about permissions, see
-// Permissions Related to Bucket Subresource Operations
-// (https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources)
-// and Managing Access Permissions to Your Amazon S3 Resources
-// (https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html)
+// Permissions Related to Bucket Subresource Operations (https://docs.aws.amazon.com/AmazonS3/latest/userguide/using-with-s3-actions.html#using-with-s3-actions-related-to-bucket-subresources)
+// and Managing Access Permissions to Your Amazon S3 Resources (https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-access-control.html)
 // in the Amazon S3 User Guide. For information about Amazon S3 analytics feature,
-// see Amazon S3 Analytics – Storage Class Analysis
-// (https://docs.aws.amazon.com/AmazonS3/latest/dev/analytics-storage-class.html)
-// in the Amazon S3 User Guide. Related Resources
-//
-// *
-// DeleteBucketAnalyticsConfiguration
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html)
-//
-// *
-// ListBucketAnalyticsConfigurations
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html)
-//
-// *
-// PutBucketAnalyticsConfiguration
-// (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html)
+// see Amazon S3 Analytics – Storage Class Analysis (https://docs.aws.amazon.com/AmazonS3/latest/dev/analytics-storage-class.html)
+// in the Amazon S3 User Guide. The following operations are related to
+// GetBucketAnalyticsConfiguration :
+//   - DeleteBucketAnalyticsConfiguration (https://docs.aws.amazon.com/AmazonS3/latest/API/API_DeleteBucketAnalyticsConfiguration.html)
+//   - ListBucketAnalyticsConfigurations (https://docs.aws.amazon.com/AmazonS3/latest/API/API_ListBucketAnalyticsConfigurations.html)
+//   - PutBucketAnalyticsConfiguration (https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutBucketAnalyticsConfiguration.html)
 func (c *Client) GetBucketAnalyticsConfiguration(ctx context.Context, params *GetBucketAnalyticsConfigurationInput, optFns ...func(*Options)) (*GetBucketAnalyticsConfigurationOutput, error) {
 	if params == nil {
 		params = &GetBucketAnalyticsConfigurationInput{}
@@ -72,6 +62,11 @@ type GetBucketAnalyticsConfigurationInput struct {
 	noSmithyDocumentSerde
 }
 
+func (in *GetBucketAnalyticsConfigurationInput) bindEndpointParams(p *EndpointParameters) {
+	p.Bucket = in.Bucket
+
+}
+
 type GetBucketAnalyticsConfigurationOutput struct {
 
 	// The configuration and any analyses for the analytics filter.
@@ -84,12 +79,22 @@ type GetBucketAnalyticsConfigurationOutput struct {
 }
 
 func (c *Client) addOperationGetBucketAnalyticsConfigurationMiddlewares(stack *middleware.Stack, options Options) (err error) {
+	if err := stack.Serialize.Add(&setOperationInputMiddleware{}, middleware.After); err != nil {
+		return err
+	}
 	err = stack.Serialize.Add(&awsRestxml_serializeOpGetBucketAnalyticsConfiguration{}, middleware.After)
 	if err != nil {
 		return err
 	}
 	err = stack.Deserialize.Add(&awsRestxml_deserializeOpGetBucketAnalyticsConfiguration{}, middleware.After)
 	if err != nil {
+		return err
+	}
+	if err := addProtocolFinalizerMiddlewares(stack, options, "GetBucketAnalyticsConfiguration"); err != nil {
+		return fmt.Errorf("add protocol finalizers: %v", err)
+	}
+
+	if err = addlegacyEndpointContextSetter(stack, options); err != nil {
 		return err
 	}
 	if err = addSetLoggerMiddleware(stack, options); err != nil {
@@ -110,16 +115,13 @@ func (c *Client) addOperationGetBucketAnalyticsConfigurationMiddlewares(stack *m
 	if err = addRetryMiddlewares(stack, options); err != nil {
 		return err
 	}
-	if err = addHTTPSignerV4Middleware(stack, options); err != nil {
-		return err
-	}
 	if err = awsmiddleware.AddRawResponseToMetadata(stack); err != nil {
 		return err
 	}
 	if err = awsmiddleware.AddRecordResponseTiming(stack); err != nil {
 		return err
 	}
-	if err = addClientUserAgent(stack); err != nil {
+	if err = addClientUserAgent(stack, options); err != nil {
 		return err
 	}
 	if err = smithyhttp.AddErrorCloseResponseBodyMiddleware(stack); err != nil {
@@ -128,7 +130,7 @@ func (c *Client) addOperationGetBucketAnalyticsConfigurationMiddlewares(stack *m
 	if err = smithyhttp.AddCloseResponseBodyMiddleware(stack); err != nil {
 		return err
 	}
-	if err = swapWithCustomHTTPSignerMiddleware(stack, options); err != nil {
+	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
 		return err
 	}
 	if err = addOpGetBucketAnalyticsConfigurationValidationMiddleware(stack); err != nil {
@@ -138,6 +140,9 @@ func (c *Client) addOperationGetBucketAnalyticsConfigurationMiddlewares(stack *m
 		return err
 	}
 	if err = addMetadataRetrieverMiddleware(stack); err != nil {
+		return err
+	}
+	if err = awsmiddleware.AddRecursionDetection(stack); err != nil {
 		return err
 	}
 	if err = addGetBucketAnalyticsConfigurationUpdateEndpoint(stack, options); err != nil {
@@ -155,14 +160,26 @@ func (c *Client) addOperationGetBucketAnalyticsConfigurationMiddlewares(stack *m
 	if err = addRequestResponseLogging(stack, options); err != nil {
 		return err
 	}
+	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addSerializeImmutableHostnameBucketMiddleware(stack, options); err != nil {
+		return err
+	}
 	return nil
+}
+
+func (v *GetBucketAnalyticsConfigurationInput) bucket() (string, bool) {
+	if v.Bucket == nil {
+		return "", false
+	}
+	return *v.Bucket, true
 }
 
 func newServiceMetadataMiddleware_opGetBucketAnalyticsConfiguration(region string) *awsmiddleware.RegisterServiceMetadata {
 	return &awsmiddleware.RegisterServiceMetadata{
 		Region:        region,
 		ServiceID:     ServiceID,
-		SigningName:   "s3",
 		OperationName: "GetBucketAnalyticsConfiguration",
 	}
 }

@@ -27,8 +27,8 @@ func init() {
 //	mkcert://?{PARAMETERS}
 //
 // Valid parameters are:
-// * `root={PATH}` An optional path to specify where `mkcert` certificates and keys should be created. If missing
-//   the operating system's temporary directory will be used.
+//   - `root={PATH}` An optional path to specify where `mkcert` certificates and keys should be created. If missing
+//     the operating system's temporary directory will be used.
 func NewMkCertServer(ctx context.Context, uri string) (Server, error) {
 
 	u, err := url.Parse(uri)

@@ -19,12 +19,15 @@ const StaticCredentialsTemplate string = "static:{id}:{key}:{secret}"
 
 const StaticCredentialsPrefix string = "static:"
 
+const STSCredentialsPrefix string = "sts:"
+
 func ValidCredentials() []string {
 
 	valid := []string{
 		AnonymousCredentialsString,
 		EnvironmentCredentialsString,
 		IAMCredentialsString,
+		STSCredentialsPrefix,
 		ProfileCredentialsTemplate,
 		ProfileFromPathCredentialsTemplate,
 		StaticCredentialsTemplate,

@@ -3,6 +3,7 @@ package customizations
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
@@ -83,8 +84,8 @@ func (s *SignHTTPRequestMiddleware) HandleFinalize(ctx context.Context, in middl
 	// fetch signer type from context
 	signerVersion := GetSignerVersion(ctx)
 
-	switch signerVersion {
-	case v4a.Version:
+	// SigV4a
+	if strings.EqualFold(signerVersion, v4a.Version) {
 		v4aCredentialProvider, ok := s.credentialsProvider.(v4a.CredentialsProvider)
 		if !ok {
 			return out, metadata, fmt.Errorf("invalid credential-provider provided for sigV4a Signer")
@@ -96,15 +97,14 @@ func (s *SignHTTPRequestMiddleware) HandleFinalize(ctx context.Context, in middl
 			LogSigning:  s.logSigning,
 		})
 		return mw.HandleFinalize(ctx, in, next)
-
-	default:
-		mw := v4.NewSignHTTPRequestMiddleware(v4.SignHTTPRequestMiddlewareOptions{
-			CredentialsProvider: s.credentialsProvider,
-			Signer:              s.v4Signer,
-			LogSigning:          s.logSigning,
-		})
-		return mw.HandleFinalize(ctx, in, next)
 	}
+	// SigV4
+	mw := v4.NewSignHTTPRequestMiddleware(v4.SignHTTPRequestMiddlewareOptions{
+		CredentialsProvider: s.credentialsProvider,
+		Signer:              s.v4Signer,
+		LogSigning:          s.logSigning,
+	})
+	return mw.HandleFinalize(ctx, in, next)
 }
 
 // RegisterSigningMiddleware registers the wrapper signing middleware to the stack. If a signing middleware is already
@@ -175,7 +175,7 @@ func (p *PresignHTTPRequestMiddleware) HandleFinalize(
 	signerVersion := GetSignerVersion(ctx)
 
 	switch signerVersion {
-	case v4a.Version:
+	case "aws.auth#sigv4a":
 		v4aCredentialProvider, ok := p.credentialsProvider.(v4a.CredentialsProvider)
 		if !ok {
 			return out, metadata, fmt.Errorf("invalid credential-provider provided for sigV4a Signer")
@@ -188,13 +188,15 @@ func (p *PresignHTTPRequestMiddleware) HandleFinalize(
 		})
 		return mw.HandleFinalize(ctx, in, next)
 
-	default:
+	case "aws.auth#sigv4":
 		mw := v4.NewPresignHTTPRequestMiddleware(v4.PresignHTTPRequestMiddlewareOptions{
 			CredentialsProvider: p.credentialsProvider,
 			Presigner:           p.v4Signer,
 			LogSigning:          p.logSigning,
 		})
 		return mw.HandleFinalize(ctx, in, next)
+	default:
+		return out, metadata, fmt.Errorf("unsupported signer type \"%s\"", signerVersion)
 	}
 }
 

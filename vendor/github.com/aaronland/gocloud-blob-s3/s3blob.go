@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
+	"strings"
+	"sync"
+
 	"github.com/aaronland/go-aws-session"
 	aws_session "github.com/aws/aws-sdk-go/aws/session"
 	"gocloud.dev/blob"
 	gc_s3blob "gocloud.dev/blob/s3blob"
-	"net/url"
-	"strings"
-	"sync"
 )
 
 const Scheme = "s3blob"
