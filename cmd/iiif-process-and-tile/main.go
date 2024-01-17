@@ -10,13 +10,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"net/url"
+	"path/filepath"
+
 	"github.com/go-iiif/go-iiif-uri"
 	"github.com/go-iiif/go-iiif/v5/tools"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
-	"log"
-	"net/url"
-	"path/filepath"
 )
 
 func main() {

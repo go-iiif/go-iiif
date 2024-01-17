@@ -6,6 +6,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
+	"sort"
+
 	_ "github.com/aaronland/gocloud-blob-s3"
 	iiifcompliance "github.com/go-iiif/go-iiif/v5/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
@@ -15,8 +18,6 @@ import (
 	"github.com/sfomuseum/go-flags/lookup"
 	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
-	"log"
-	"sort"
 )
 
 type FeatureDetails struct {

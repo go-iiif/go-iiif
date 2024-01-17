@@ -10,8 +10,9 @@ import (
 
 import (
 	"context"
-	"github.com/go-iiif/go-iiif/v5/tools"
 	"log"
+
+	"github.com/go-iiif/go-iiif/v5/tools"
 )
 
 func main() {
