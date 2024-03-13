@@ -1,4 +1,4 @@
-FROM golang:1.12-alpine as builder
+FROM golang:1.22-alpine as builder
 
 ADD . /go-iiif
 
@@ -6,7 +6,7 @@ RUN apk update \
     && apk upgrade \
     && apk add make \
     && cd /go-iiif \
-    && make cli-tools
+    && make cli
 
 FROM alpine
 

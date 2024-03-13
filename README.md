@@ -1078,14 +1078,13 @@ _The `Disk` source is still supported but has been replaced by the `Blob` source
 		"cache": { "name": "Memory", "ttl": 60, "limit": 100 }
 	},
 	"flickr": {
-		"apikey": "YOUR-FLICKR-API-KEY"
+		"client_uri": "oauth1://?consumer_key={KEY}&consumer_secret={SECRET}",
 	}
 ```
 
 Fetch source images from Flickr. You will need to provide a valid [Flickr API key](https://www.flickr.com/services/api/). A few caveats:
 
-* The code assumes the original [Flickr (Auth) API](https://www.flickr.com/services/api/misc.overview.html) and not the newer OAuth-flavoured API.
-* Signed API keys are not supported yet so you're limited to public photos.
+* Under the hood the code is using the [aaronland/go-flickr-api](https://github.com/aaronland/go-flickr-api) package which uses a URI-style syntax for defining client instances. Please consult [the `go-flickr-api` documentation](https://github.com/aaronland/go-flickr-api?tab=readme-ov-file#oauth1) for details on how to construct those URIs.
 * The code calls the [flickr.photos.getSizes](https://www.flickr.com/services/api/flickr.photos.getSizes.html) API method and looks for the first of the following photo sizes in this order: `Original, Large 2048, Large 1600, Large`. If none are available then an error is triggered.
 * Photo size lookups are not cached yet.
 
