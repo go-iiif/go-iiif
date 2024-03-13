@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v5/level"
-	iiifservice "github.com/go-iiif/go-iiif/v5/service"
+	iiifimage "github.com/go-iiif/go-iiif/v6/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
+	iiifservice "github.com/go-iiif/go-iiif/v6/service"
 )
 
 // The URI for the IIIF Image API protocol.

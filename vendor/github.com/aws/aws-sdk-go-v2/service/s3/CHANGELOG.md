@@ -1,3 +1,67 @@
+# v1.51.4 (2024-03-07)
+
+* **Bug Fix**: Remove dependency on go-cmp.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.51.3 (2024-03-05)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.51.2 (2024-03-04)
+
+* **Bug Fix**: Update internal/presigned-url dependency for corrected API name.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.51.1 (2024-02-23)
+
+* **Bug Fix**: Move all common, SDK-side middleware stack ops into the service client module to prevent cross-module compatibility issues in the future.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.51.0 (2024-02-22)
+
+* **Feature**: Add middleware stack snapshot tests.
+
+# v1.50.3 (2024-02-21)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.50.2 (2024-02-20)
+
+* **Bug Fix**: When sourcing values for a service's `EndpointParameters`, the lack of a configured region (i.e. `options.Region == ""`) will now translate to a `nil` value for `EndpointParameters.Region` instead of a pointer to the empty string `""`. This will result in a much more explicit error when calling an operation instead of an obscure hostname lookup failure.
+
+# v1.50.1 (2024-02-19)
+
+* **Bug Fix**: Prevent potential panic caused by invalid comparison of credentials.
+
+# v1.50.0 (2024-02-16)
+
+* **Feature**: Add new ClientOptions field to waiter config which allows you to extend the config for operation calls made by waiters.
+
+# v1.49.0 (2024-02-13)
+
+* **Feature**: Bump minimum Go version to 1.20 per our language support policy.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.48.1 (2024-01-24)
+
+* No change notes available for this release.
+
+# v1.48.0 (2024-01-05)
+
+* **Feature**: Support smithy sigv4a trait for codegen.
+
+# v1.47.8 (2024-01-04)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.47.7 (2023-12-20)
+
+* No change notes available for this release.
+
+# v1.47.6 (2023-12-18)
+
+* No change notes available for this release.
+
 # v1.47.5 (2023-12-08)
 
 * **Bug Fix**: Add non-vhostable buckets to request path when using legacy V1 endpoint resolver.

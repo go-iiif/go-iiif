@@ -3,7 +3,7 @@ package cache
 import (
 	"fmt"
 
-	"github.com/go-iiif/go-iiif/v5/config"
+	"github.com/go-iiif/go-iiif/v6/config"
 )
 
 // NewDiskCache returns a NewBlobCacheFromURI for a local files system location.

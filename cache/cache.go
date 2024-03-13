@@ -4,7 +4,7 @@ package cache
 import (
 	"strings"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 // A Cache is a representation of a cache location.
