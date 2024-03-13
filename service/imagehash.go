@@ -5,8 +5,8 @@ import (
 	_ "log"
 
 	"github.com/corona10/goimagehash"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifimage "github.com/go-iiif/go-iiif/v6/image"
 )
 
 func init() {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	_ "log"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 func NewDiskSource(config *iiifconfig.Config) (Source, error) {

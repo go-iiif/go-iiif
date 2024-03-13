@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strings"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 type Source interface {

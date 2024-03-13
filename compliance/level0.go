@@ -8,7 +8,7 @@ import (
 	_ "log"
 	"regexp"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 //go:embed level0.json

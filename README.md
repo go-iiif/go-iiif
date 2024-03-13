@@ -40,9 +40,9 @@ Support for alternative image processing libraries, like `libvips` is supported 
 
 ```
 import (
-	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifsource "github.com/go-iiif/go-iiif/v5/source"
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifsource "github.com/go-iiif/go-iiif/v6/source"
 )
 
 type Driver interface {
@@ -60,7 +60,7 @@ Drivers are expected to "register" themselves through the `driver.RegisterDriver
 package native
 
 import (
-	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
+	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
 )
 
 func init() {
@@ -81,9 +81,9 @@ And then in your code you might do something like this:
 import (
 	"context"
 	"github.com/aaronland/gocloud-blob-bucket"	
-	_ "github.com/go-iiif/go-iiif/v5/native"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"	
+	_ "github.com/go-iiif/go-iiif/v6/native"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"	
 )
 
 ctx := context.Background()
@@ -115,7 +115,7 @@ The value of the `graphics.source` property should match the name that driver us
 
 The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` object and to invoke the relevant `NewImageFrom...` method as needed. It is assumed that the driver package in question will also implement it's own implementation of the `go-iiif` `image.Image` interface. For working examples you should consult either of the following packages:
 
-* https://github.com/go-iiif/go-iiif/v5/tree/master/native
+* https://github.com/go-iiif/go-iiif/v6/tree/master/native
 * https://github.com/go-iiif/go-iiif-vips
 
 ## Buckets
@@ -268,7 +268,7 @@ package main
 import (
 	"context"
 	_ "github.com/go-iiif/go-iiif-vips"
-	"github.com/go-iiif/go-iiif/v5/tools"
+	"github.com/go-iiif/go-iiif/v6/tools"
 )
 
 func main() {
@@ -285,7 +285,7 @@ package main
 import (
 	"context"
 	_ "github.com/go-iiif/go-iiif-vips"
-	"github.com/go-iiif/go-iiif/v5/tools"
+	"github.com/go-iiif/go-iiif/v6/tools"
 	"flag"
 	"github.com/sfomuseum/go-flags"	
 )
@@ -1078,14 +1078,13 @@ _The `Disk` source is still supported but has been replaced by the `Blob` source
 		"cache": { "name": "Memory", "ttl": 60, "limit": 100 }
 	},
 	"flickr": {
-		"apikey": "YOUR-FLICKR-API-KEY"
+		"client_uri": "oauth1://?consumer_key={KEY}&consumer_secret={SECRET}",
 	}
 ```
 
 Fetch source images from Flickr. You will need to provide a valid [Flickr API key](https://www.flickr.com/services/api/). A few caveats:
 
-* The code assumes the original [Flickr (Auth) API](https://www.flickr.com/services/api/misc.overview.html) and not the newer OAuth-flavoured API.
-* Signed API keys are not supported yet so you're limited to public photos.
+* Under the hood the code is using the [aaronland/go-flickr-api](https://github.com/aaronland/go-flickr-api) package which uses a URI-style syntax for defining client instances. Please consult [the `go-flickr-api` documentation](https://github.com/aaronland/go-flickr-api?tab=readme-ov-file#oauth1) for details on how to construct those URIs.
 * The code calls the [flickr.photos.getSizes](https://www.flickr.com/services/api/flickr.photos.getSizes.html) API method and looks for the first of the following photo sizes in this order: `Original, Large 2048, Large 1600, Large`. If none are available then an error is triggered.
 * Photo size lookups are not cached yet.
 
@@ -1561,9 +1560,9 @@ package example	// for example "github.com/example/go-iiif-example"
 
 import (
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"	
-	iiifservice "github.com/go-iiif/go-iiif/v5/service"	
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifimage "github.com/go-iiif/go-iiif/v6/image"	
+	iiifservice "github.com/go-iiif/go-iiif/v6/service"	
 )
 
 func init() {
@@ -1606,8 +1605,8 @@ import (
 import (
 	"context"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/v5/native"
-	"github.com/go-iiif/go-iiif/v5/tools"
+	_ "github.com/go-iiif/go-iiif/v6/native"
+	"github.com/go-iiif/go-iiif/v6/tools"
 	_ "gocloud.dev/blob/fileblob"
 	"log"
 )

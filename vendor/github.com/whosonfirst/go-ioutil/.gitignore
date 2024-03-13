@@ -1,0 +1,11 @@
+*~
+pkg
+src
+!vendor/src
+bin
+!bin/.gitignore
+*.log
+*.json
+.travis.yml
+*.db
+testdata/*.txt

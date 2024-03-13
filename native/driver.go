@@ -8,11 +8,11 @@ import (
 	_ "log"
 
 	"github.com/aaronland/go-image-rotate"
-	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v5/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"
-	iiifsource "github.com/go-iiif/go-iiif/v5/source"
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v6/image"
+	iiifsource "github.com/go-iiif/go-iiif/v6/source"
 	"github.com/rwcarlsen/goexif/exif"
 )
 

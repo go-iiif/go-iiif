@@ -97,8 +97,8 @@ type SourceConfig struct {
 }
 
 type FlickrConfig struct {
-	ApiKey    string `json:"apikey"`
-	ApiSecret string `json:"apisecret,omitempty"`
+	// A valid `aaronland/go-flickr-api.Client` URI.
+	ClientURI string `json:"client_uri"`
 }
 
 type PrimitiveConfig struct {

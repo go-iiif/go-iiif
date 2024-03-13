@@ -11,8 +11,8 @@ import (
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
 	"github.com/aaronland/go-colours/palette"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
-	iiifimage "github.com/go-iiif/go-iiif/v5/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifimage "github.com/go-iiif/go-iiif/v6/image"
 )
 
 func init() {

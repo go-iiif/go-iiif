@@ -1,22 +1,23 @@
 package source
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
-	"io/ioutil"
-	"log"
+	"fmt"
+	"io"
 	"net/http"
 
-	iiifcache "github.com/go-iiif/go-iiif/v5/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	"github.com/aaronland/go-flickr-api/client"
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 type FlickrSource struct {
 	Source
-	apikey    string
-	apisecret string
-	client    *http.Client
-	cache     iiifcache.Cache
+	cache         iiifcache.Cache
+	http_client   *http.Client
+	flickr_client client.Client
 }
 
 type PhotoRsp struct {
@@ -55,16 +56,24 @@ func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 		return nil, err
 	}
 
-	client := &http.Client{}
+	if config.Flickr.ClientURI == "" {
+		return nil, fmt.Errorf("Missing config.Flickr.ClientURI property")
+	}
 
-	apikey := config.Flickr.ApiKey
-	apisecret := config.Flickr.ApiSecret
+	ctx := context.Background()
+
+	flickr_client, err := client.NewClient(ctx, config.Flickr.ClientURI)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create new Flickr client, %w", err)
+	}
+
+	http_client := &http.Client{}
 
 	fs := FlickrSource{
-		apikey:    apikey,
-		apisecret: apisecret,
-		client:    client,
-		cache:     cache,
+		flickr_client: flickr_client,
+		http_client:   http_client,
+		cache:         cache,
 	}
 
 	return &fs, nil
@@ -84,14 +93,14 @@ func (fs *FlickrSource) Read(id string) ([]byte, error) {
 		return nil, err
 	}
 
-	rsp, err := fs.client.Do(req)
+	rsp, err := fs.http_client.Do(req)
 
 	if err != nil {
 		return nil, err
 	}
 
 	defer rsp.Body.Close()
-	body, err := ioutil.ReadAll(rsp.Body)
+	body, err := io.ReadAll(rsp.Body)
 
 	if err != nil {
 		return nil, err
@@ -119,22 +128,20 @@ func (fs *FlickrSource) GetSource(id string) (string, error) {
 
 	values := req.URL.Query()
 	values.Add("photo_id", id)
-	values.Add("api_key", fs.apikey)
-	values.Add("format", "json")
 	values.Add("method", "flickr.photos.getSizes")
 	values.Add("nojsoncallback", "1")
 
-	req.URL.RawQuery = values.Encode()
-	log.Println(req.URL.RawQuery)
+	ctx := context.Background()
 
-	rsp, err := fs.client.Do(req)
+	rsp, err := fs.flickr_client.ExecuteMethod(ctx, &values)
 
 	if err != nil {
 		return "", err
 	}
 
-	defer rsp.Body.Close()
-	body, err := ioutil.ReadAll(rsp.Body)
+	defer rsp.Close()
+
+	body, err := io.ReadAll(rsp)
 
 	if err != nil {
 		return "", err

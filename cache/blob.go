@@ -10,7 +10,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	iiifconfig "github.com/go-iiif/go-iiif/v5/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"
 )
 
