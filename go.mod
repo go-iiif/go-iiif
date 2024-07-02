@@ -34,7 +34,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-aws v0.1.4
 	github.com/whosonfirst/go-whosonfirst-log v0.1.0
 	gocloud.dev v0.37.0
-	golang.org/x/image v0.15.0
+	golang.org/x/image v0.18.0
 )
 
 require (
@@ -85,7 +85,7 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.169.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311173647-c811ad7063a7 // indirect
