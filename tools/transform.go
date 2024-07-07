@@ -13,7 +13,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/aaronland/gocloud-blob/bucket"		
+	"github.com/aaronland/gocloud-blob/bucket"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"

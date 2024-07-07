@@ -4,7 +4,7 @@ import (
 	"context"
 	_ "log"
 
-	"github.com/aaronland/gocloud-blob/bucket"	
+	"github.com/aaronland/gocloud-blob/bucket"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"
 )

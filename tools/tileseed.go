@@ -14,7 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aaronland/gocloud-blob/bucket"		
+	"github.com/aaronland/gocloud-blob/bucket"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"

@@ -75,6 +75,8 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		}
 	}
 
+	// TO DO: GET COLORSPACE HERE
+
 	im := NativeImage{
 		config:    config,
 		source:    src,
