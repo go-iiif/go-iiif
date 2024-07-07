@@ -1,12 +1,15 @@
+// Package rotate provides methods for rotating images.
 package rotate
 
 import (
 	"context"
-	"errors"
-	"github.com/aaronland/go-image-rotate/imaging"
+	"fmt"
 	"image"
+
+	"github.com/aaronland/go-image/imaging"
 )
 
+// RotateImageWithOrientation will rotate 'im' based on EXIF orientation value defined in 'orientation'.
 func RotateImageWithOrientation(ctx context.Context, im image.Image, orientation string) (image.Image, error) {
 
 	switch orientation {
@@ -31,7 +34,12 @@ func RotateImageWithOrientation(ctx context.Context, im image.Image, orientation
 	return im, nil
 }
 
+// RotateImageWithOrientation will rotate 'im' by 'degrees' degrees. Currently only values in units of
+// 90 degrees or 0 are supported.
 func RotateImageWithDegrees(ctx context.Context, im image.Image, degrees float64) (image.Image, error) {
+
+	// See also: https://github.com/anthonynsimon/bild#rotate
+	// The problem is that bild doesn't rotate the "canvas" just the image
 
 	switch degrees {
 	case 90.0:
@@ -41,7 +49,7 @@ func RotateImageWithDegrees(ctx context.Context, im image.Image, degrees float64
 	case 270.0:
 		im = imaging.Rotate270(im)
 	default:
-		return nil, errors.New("Unsupported value")
+		return nil, fmt.Errorf("Unsupported value, %f", degrees)
 	}
 
 	return im, nil

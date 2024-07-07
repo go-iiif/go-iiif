@@ -2,16 +2,19 @@ package rotate
 
 import (
 	"context"
-	"github.com/rwcarlsen/goexif/exif"
-	"github.com/rwcarlsen/goexif/mknote"
+	"fmt"
 	"io"
 	_ "log"
+
+	"github.com/rwcarlsen/goexif/exif"
+	"github.com/rwcarlsen/goexif/mknote"
 )
 
 func init() {
 	exif.RegisterParsers(mknote.All...)
 }
 
+// GetImageOrientation returns the string representation of the image orientation (0-8) in 'r'.
 func GetImageOrientation(ctx context.Context, r io.Reader) (string, error) {
 
 	x, err := exif.Decode(r)
@@ -25,7 +28,7 @@ func GetImageOrientation(ctx context.Context, r io.Reader) (string, error) {
 	}
 
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Failed to decode EXIF data, %w", err)
 	}
 
 	o, err := x.Get(exif.Orientation)
@@ -35,7 +38,7 @@ func GetImageOrientation(ctx context.Context, r io.Reader) (string, error) {
 	}
 
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("Failed to derive Orientation EXIF flag, %w", err)
 	}
 
 	orientation := o.String()

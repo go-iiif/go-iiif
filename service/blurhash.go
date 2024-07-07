@@ -4,7 +4,7 @@ import (
 	"context"
 	_ "log"
 
-	"github.com/aaronland/go-image-resize"
+	"github.com/aaronland/go-image/resize"
 	"github.com/buckket/go-blurhash"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifimage "github.com/go-iiif/go-iiif/v6/image"
@@ -57,7 +57,7 @@ func NewBlurHashService(cfg iiifconfig.BlurHashConfig, image iiifimage.Image) (S
 	}
 
 	ctx := context.Background()
-	im, err = resize.ResizeImageMax(ctx, im, cfg.Size)
+	im, err = resize.ResizeImage(ctx, im, cfg.Size)
 
 	if err != nil {
 		return nil, err

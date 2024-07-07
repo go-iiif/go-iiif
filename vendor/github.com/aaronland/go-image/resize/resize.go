@@ -1,3 +1,4 @@
+// Package resize provides methods for resizing images.
 package resize
 
 import (
@@ -5,10 +6,11 @@ import (
 	"image"
 	"math"
 
-	nfnt_resize "github.com/nfnt/resize"	
+	nfnt_resize "github.com/nfnt/resize"
 )
 
-func ResizeImageMax(ctx context.Context, im image.Image, max int) (image.Image, error) {
+// ResizeImages scaled and resizes 'im' return a new `image.Image` instance whose maximum dimension is 'max'.
+func ResizeImage(ctx context.Context, im image.Image, max int) (image.Image, error) {
 
 	// calculating w,h is probably unnecessary since we're
 	// calling resize.Thumbnail but it will do for now...

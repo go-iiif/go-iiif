@@ -7,7 +7,7 @@ import (
 	"image"
 	_ "log"
 
-	"github.com/aaronland/go-image-rotate"
+	"github.com/aaronland/go-image/rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"

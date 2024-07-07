@@ -1,21 +1,20 @@
 module github.com/go-iiif/go-iiif/v6
 
-go 1.22
+go 1.22.4
 
 require (
 	github.com/aaronland/go-colours v0.1.2
 	github.com/aaronland/go-flickr-api v1.0.5
 	github.com/aaronland/go-http-ping v1.0.0
 	github.com/aaronland/go-http-server v1.4.0
-	github.com/aaronland/go-image-resize v0.0.0-20230504161337-836e646dd52f
-	github.com/aaronland/go-image-rotate v0.0.4
+	github.com/aaronland/go-image v1.2.4
 	github.com/aaronland/go-mimetypes v0.0.2
 	github.com/aaronland/go-roster v1.0.0
-	github.com/aaronland/gocloud-blob v0.0.13
+	github.com/aaronland/gocloud-blob v0.0.17
 	github.com/aaronland/gocloud-blob-s3 v0.2.4
 	github.com/anthonynsimon/bild v0.13.0
 	github.com/aws/aws-lambda-go v1.46.0
-	github.com/aws/aws-sdk-go v1.50.37
+	github.com/aws/aws-sdk-go v1.51.19
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.1.0
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
@@ -41,7 +40,6 @@ require (
 require (
 	github.com/RobCherry/vibrant v0.0.0-20160904011657-0680b8cf1c89 // indirect
 	github.com/aaronland/go-aws-session v0.2.1 // indirect
-	github.com/aaronland/go-image-transform v0.0.0-20201125043008-ea524ffbd26f // indirect
 	github.com/aaronland/go-string v1.0.0 // indirect
 	github.com/akrylysov/algnhsa v1.1.0 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.25.3 // indirect
@@ -84,8 +82,8 @@ require (
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
 	github.com/whosonfirst/go-whosonfirst-mimetypes v0.1.0 // indirect
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.23.0 // indirect
-	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/net v0.25.0 // indirect
+	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/api v0.169.0 // indirect
