@@ -11,6 +11,7 @@ require (
 	github.com/aaronland/go-image-rotate v0.0.4
 	github.com/aaronland/go-mimetypes v0.0.2
 	github.com/aaronland/go-roster v1.0.0
+	github.com/aaronland/gocloud-blob v0.0.13
 	github.com/aaronland/gocloud-blob-s3 v0.2.4
 	github.com/anthonynsimon/bild v0.13.0
 	github.com/aws/aws-lambda-go v1.46.0

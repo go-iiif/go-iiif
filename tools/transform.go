@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
+	"github.com/aaronland/gocloud-blob/bucket"		
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -265,7 +266,7 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, config_source)
+	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return err
@@ -285,13 +286,13 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 
 	// TO DO DEFAULT TO source/target FROM config BUT CHECK FOR OVERRIDE IN *source/target_path ARGS
 
-	source_bucket, err := blob.OpenBucket(ctx, source_path)
+	source_bucket, err := bucket.OpenBucket(ctx, source_path)
 
 	if err != nil {
 		return err
 	}
 
-	target_bucket, err := blob.OpenBucket(ctx, target_path)
+	target_bucket, err := bucket.OpenBucket(ctx, target_path)
 
 	if err != nil {
 		return err

@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/aaronland/gocloud-blob/bucket"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -36,7 +37,7 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 
 	ctx := context.Background()
 
-	b, err := blob.OpenBucket(ctx, uri)
+	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
 		return nil, err

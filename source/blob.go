@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "log"
 
+	"github.com/aaronland/gocloud-blob/bucket"	
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"
 )
@@ -25,7 +26,7 @@ func NewBlobSourceFromURI(uri string) (Source, error) {
 
 	ctx := context.Background()
 
-	b, err := blob.OpenBucket(ctx, uri)
+	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
 		return nil, err

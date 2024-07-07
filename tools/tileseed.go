@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/aaronland/gocloud-blob/bucket"		
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -23,7 +24,6 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	"github.com/whosonfirst/go-whosonfirst-log"
-	"gocloud.dev/blob"
 )
 
 type Seed struct {
@@ -280,7 +280,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return fmt.Errorf("Required -config-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, config_source)
+	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return fmt.Errorf("Failed to open bucket for config source, %w", err)
@@ -408,7 +408,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 
 	case "csv":
 
-		csv_bucket, err := blob.OpenBucket(ctx, csv_source)
+		csv_bucket, err := bucket.OpenBucket(ctx, csv_source)
 
 		if err != nil {
 			return fmt.Errorf("Failed to open bucket from CSV source, %w", err)

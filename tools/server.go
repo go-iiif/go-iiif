@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/aaronland/gocloud-blob/bucket"
 	"github.com/aaronland/go-http-ping"
 	"github.com/aaronland/go-http-server"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
@@ -21,7 +22,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
-	"gocloud.dev/blob"
 )
 
 type IIIFServerTool struct {
@@ -157,7 +157,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return errors.New("Required -config-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, config_source)
+	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return err

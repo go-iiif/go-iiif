@@ -12,6 +12,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aaronland/gocloud-blob/bucket"	
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -263,7 +264,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		return errors.New("Required -instructions-source flag is empty.")
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, config_source)
+	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
 		return fmt.Errorf("Failed to open config bucket, %w", err)
@@ -277,7 +278,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		return fmt.Errorf("Failed to create new config from bucket, %w", err)
 	}
 
-	instructions_bucket, err := blob.OpenBucket(ctx, instructions_source)
+	instructions_bucket, err := bucket.OpenBucket(ctx, instructions_source)
 
 	if err != nil {
 		return fmt.Errorf("Failed to open instructions bucket, %w", err)
@@ -289,7 +290,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 
 	if report_source != "" {
 
-		b, err := blob.OpenBucket(ctx, report_source)
+		b, err := bucket.OpenBucket(ctx, report_source)
 
 		if err != nil {
 			return fmt.Errorf("Failed to open report bucket, %w", err)
