@@ -7,8 +7,8 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
-// NewS3Cache returns a NewBlobCacheFromURI with a constructed blob uri.
-func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
+// NewS3CacheURIFromConfig returns a URI derived from 'cfg'.
+func NewS3CacheURIFromConfig(cfg iiifconfig.CacheConfig) (sintr, error) {
 
 	bucket := cfg.Path
 	prefix := cfg.Prefix
@@ -16,5 +16,23 @@ func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
 	creds := cfg.Credentials
 
 	uri := fmt.Sprintf("s3blob://%s?region=%s&credentials=%s&prefix=%s", bucket, region, creds, prefix)
+	return uri, nil
+}
+
+// NewS3Cache returns a NewBlobCacheFromURI with a constructed blob uri.
+func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
+
+	uri := cfg.URI
+
+	if uri == "" {
+		v, err := NewS3CacheURIFromConfig(cfg)
+
+		if err != nil {
+			return nil, err
+		}
+
+		uri = v
+	}
+
 	return NewBlobCacheFromURI(uri)
 }

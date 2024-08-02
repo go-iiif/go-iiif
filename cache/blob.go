@@ -23,10 +23,35 @@ type BlobCache struct {
 	acl        string
 }
 
-// NewBlobCache returns a NewBlobCacheFromURI.
-func NewBlobCache(config iiifconfig.CacheConfig) (Cache, error) {
+func init() {
+	ctx := context.Background()
+	// To do: The gocloud/blob register thingies trick
+	err := RegisterCache(ctx, "blob", NewCacheFromURI)
 
-	uri := config.Path
+	if err != nil {
+		panic(err)
+	}
+}
+
+// NewBlobCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
+func NewBlobCacheURIFromConfig(config iiifconfig.CacheConfig) (string, error) {
+	return config.Path, nil
+}
+
+// NewBlobCache returns a NewBlobCacheFromURI.
+func NewBlobCache(cfg iiifconfig.CacheConfig) (Cache, error) {
+
+	uri := cfg.URI
+
+	if uri == "" {
+		v, err := NewBlobCacheURIFromConfig(cfg)
+
+		if err != nil {
+			return nil, err
+		}
+
+		uri = v
+	}
 
 	return NewBlobCacheFromURI(uri)
 }

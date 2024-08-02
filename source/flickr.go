@@ -45,12 +45,10 @@ type PhotoSize struct {
 
 func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 
-	cache_config := iiifconfig.CacheConfig{
-		TTL:   3600,
-		Limit: 1,
-	}
+	cache_ctx := context.Background()
+	cache_uri := "memory://?ttl=3600&limit=1"
 
-	cache, err := iiifcache.NewMemoryCache(cache_config)
+	cache, err := cache.NewCache(cache_ctx, cache_uri)
 
 	if err != nil {
 		return nil, err

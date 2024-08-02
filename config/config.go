@@ -95,40 +95,61 @@ type DerivativesConfig struct {
 	Cache CacheConfig `json:"cache"`
 }
 
+// GraphicsConfig 
 type GraphicsConfig struct {
 	Source SourceConfig `json:"source"`
 }
 
 type SourceConfig struct {
+	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.	
+	URI string `json:"uri"`
+	// The name of the source provider. Deprecated; Please use the URI property instead.	
 	Name        string `json:"name"`
+	// Path information for the source provider. Deprecated; Please use the URI property instead.		
 	Path        string `json:"path,omitempty"`
+	// Path information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.
 	Prefix      string `json:"prefix,omitempty"`
+	// Region information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.	
 	Region      string `json:"region,omitempty"`
+	// Credentials information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.	
 	Credentials string `json:"credentials,omitempty"`
 	Tmpdir      string `json:"tmpdir,omitempty"`
 	Count       int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
 }
 
-// FlickrConfig defines confiruation
+// FlickrConfig defines configuration details for interacting with the Flickr photo-sharing service.
 type FlickrConfig struct {
 	// A valid `aaronland/go-flickr-api.Client` URI.
 	ClientURI string `json:"client_uri"`
 }
 
+// PrimitiveConfig defines configuration details for using the `fogleman/primitive` package.
 type PrimitiveConfig struct {
+	// MaxIterations is the maximum number of iterations for perform when generating `fogleman/primitive` images.
 	MaxIterations int `json:"max_iterations"`
 }
 
+// CacheConfig defines configuration details for caching objects.
 type CacheConfig struct {
+	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
+	URI string `json:"uri"`
+	// The name of the caching source. Deprecated; Please use the URI property instead.
 	Name        string `json:"name"`
+	// Path information for the caching source. Deprecated; Please use the URI property instead.	
 	Path        string `json:"path,omitempty"`
+	// Time-to-live information for the memory caching source. Deprecated; Please use the URI property instead.		
 	TTL         int    `json:"ttl,omitempty"`
+	// Cache limit information for the memory caching source. Deprecated; Please use the URI property instead.			
 	Limit       int    `json:"limit,omitempty"`
+	// Path information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.				
 	Prefix      string `json:"prefix,omitempty"`
+	// Region information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.					
 	Region      string `json:"region,omitempty"`
+	// Credentials information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.
 	Credentials string `json:"credentials,omitempty"`
 }
 
+// NewConfigFromFlag is DEPRECATED and will simply hand off to the `NewConfigFromString` method.
 func NewConfigFromFlag(flag string) (*Config, error) {
 	slog.Warn("NewConfigFromFlag has been DEPRECATED. Please use NewConfigFromString instead.")
 	return NewConfigFromString(flag)

@@ -1,7 +1,7 @@
 package source
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -57,7 +57,7 @@ func (us *URISource) Read(id string) ([]byte, error) {
 	}
 
 	defer rsp.Body.Close()
-	body, err := ioutil.ReadAll(rsp.Body)
+	body, err := io.ReadAll(rsp.Body)
 
 	if err != nil {
 		return nil, err

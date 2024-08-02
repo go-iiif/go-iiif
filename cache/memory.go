@@ -2,6 +2,7 @@ package cache
 
 import (
 	"errors"
+	"net/url"
 	"sync"
 	"time"
 
@@ -21,11 +22,81 @@ type MemoryCache struct {
 	eviction_lock *sync.Mutex
 }
 
-// NewMemoryCache returns a pointer to a MemoryCache
+// NewMemoryCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
+func NewMemoryCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
+
+	q := url.Values{}
+
+	if cfg.TTL > 0 {
+		q.Set("ttl", strconv.Itoa(cfg.TTL))
+	}
+
+	if cfg.TTL > 0 {
+		q.Set("limit", strconv.Itoa(cfg.Limit))
+	}
+
+	u := url.URL{}
+	u.Scheme = "mem"
+	q.RawQuery = q.Encode()
+
+	return u.String(), nil
+}
+
+// NewMemoryCache returns a new `MemoryCache` instance derived from 'cfg'.
 func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 
-	ttl := cfg.TTL
-	limit := cfg.Limit
+	uri := cfg.URI
+
+	if uri == "" {
+
+		v, err := NewMemoryCacheURIFromConfig(cfg)
+
+		if err != nil {
+			return nil, err
+		}
+
+		uri = v
+	}
+
+	return NewMemoryCacheFromURI(uri)
+}
+
+// NewMemoryCacheFromURI returns a new `MemoryCache` instance derived from 'uri'
+func NewMemoryCacheFromURI(uri string) (*MemoryCache, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	q := u.Query()
+
+	ttl := 300
+	limit := 100
+
+	if q.Has("ttl") {
+
+		v, err := strconv.Atoi(q.Get("ttl"))
+
+		if err != nil {
+			return nil, fmt.Errorf("Invalid ?ttl= parameter, %w", err)
+		}
+
+		ttl = v
+	}
+
+	if q.Has("limit") {
+
+		v, err := strconv.Atoi(q.Get("limit"))
+
+		if err != nil {
+			return nil, fmt.Errorf("Invalid ?limit= parameter, %w", err)
+		}
+
+		limit = v
+	}
+
 	window := time.Duration(ttl) * time.Second
 
 	gc := gocache.New(window, 30*time.Second)

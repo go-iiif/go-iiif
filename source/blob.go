@@ -14,11 +14,26 @@ type BlobSource struct {
 	bucket *blob.Bucket
 }
 
+func NewBlobSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
+
+	uri := cfg.Source.URI
+
+	if uri == "" {
+		cfg := config.Images
+		uri = cfg.Source.Path
+	}
+	
+	return uri, nil
+}
+
 func NewBlobSource(config *iiifconfig.Config) (Source, error) {
 
-	cfg := config.Images
-	uri := cfg.Source.Path
+	uri, err := NewBlobSourceURIFromConfig(config)
 
+	if err != nil {
+		return nil, err
+	}
+	
 	return NewBlobSourceFromURI(uri)
 }
 
