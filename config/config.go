@@ -152,7 +152,7 @@ func NewConfigFromFlag(flag string) (*Config, error) {
 // NewConfigFromFile returns a new `Config` instance derived from 'file' which is assumed to be a local file on disk.
 func NewConfigFromFile(file string) (*Config, error) {
 
-	body, err := io.ReadFile(file)
+	body, err := os.ReadFile(file)
 
 	if err != nil {
 		return nil, err
@@ -161,8 +161,8 @@ func NewConfigFromFile(file string) (*Config, error) {
 	return NewConfigFromBytes(body)
 }
 
-// NewConfigFromFile returns a new `Config` instance derived from 'r'..
-func NewConfigFromReader(io.Reader) (*Config, error) {
+// NewConfigFromReader returns a new `Config` instance derived from 'r'.
+func NewConfigFromReader(r io.Reader) (*Config, error) {
 
 	body, err := io.ReadAll(r)
 
