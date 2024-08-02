@@ -101,7 +101,7 @@ func TestNewConfigFromEnv(t *testing.T) {
 	}
 }
 
-func TestNewConfigFromFlag(t *testing.T) {
+func TestNewConfigFromString(t *testing.T) {
 
 	path := "../docs/config.json.example"
 
@@ -136,11 +136,12 @@ func TestNewConfigFromFlag(t *testing.T) {
 	flags := []string{
 		fmt.Sprintf("env:%s", env_var),
 		str_config,
+		path,
 	}
 
 	for _, fl := range flags {
 
-		_, err = NewConfigFromFlag(fl)
+		_, err = NewConfigFromString(fl)
 
 		if err != nil {
 			t.Fatalf("Failed to derive config from flag '%s', %v", fl, err)

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -129,10 +130,19 @@ type CacheConfig struct {
 }
 
 func NewConfigFromFlag(flag string) (*Config, error) {
+	slog.Warn("NewConfigFromFlag has been DEPRECATED. Please use NewConfigFromString instead.")
+	return NewConfigFromString(flag)
+}
 
-	if strings.HasPrefix(flag, "env:") {
+// NewConfigFromString returns a new `Config` instance derived from 'str'. If 'str' starts with "env:" then the remainder
+// of the string will be used as the environment variable to derive config data from. If 'str' starts with "{" then the entire
+// string will be used to derive config data from. Otherwise 'str' is assumed to be a local file on disk config configuration
+// data.
+func NewConfigFromString(str string) (*Config, error) {
 
-		env := strings.Replace(flag, "env:", "", 1)
+	if strings.HasPrefix(str, "env:") {
+
+		env := strings.Replace(str, "env:", "", 1)
 		env = strings.Trim(env, " ")
 
 		if env == "" {
@@ -142,11 +152,11 @@ func NewConfigFromFlag(flag string) (*Config, error) {
 		return NewConfigFromEnv(env)
 	}
 
-	if strings.HasPrefix(flag, "{") {
-		return NewConfigFromBytes([]byte(flag))
+	if strings.HasPrefix(str, "{") {
+		return NewConfigFromBytes([]byte(str))
 	}
 
-	return NewConfigFromFile(flag)
+	return NewConfigFromFile(str)
 }
 
 // NewConfigFromFile returns a new `Config` instance derived from 'file' which is assumed to be a local file on disk.
