@@ -7,7 +7,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
+	"net/url"
+	
 	"github.com/aaronland/go-flickr-api/client"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -43,29 +44,57 @@ type PhotoSize struct {
 	Media  string `json:"media"`
 }
 
-func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
-
-	cache_ctx := context.Background()
-	cache_uri := "memory://?ttl=3600&limit=1"
-
-	cache, err := cache.NewCache(cache_ctx, cache_uri)
-
-	if err != nil {
-		return nil, err
-	}
+func NewFlickrSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
 
 	if config.Flickr.ClientURI == "" {
 		return nil, fmt.Errorf("Missing config.Flickr.ClientURI property")
 	}
 
-	ctx := context.Background()
+	q := url.Value{}
+	q.Set("client-uri", config.Flickr.ClientURI)
+	
+	u := url.URL{}
+	u.Scheme = "flickr"
+	u.RawQuery = q.Encode()
+	
+	return u.String(), nil
+}
+	
+func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 
-	flickr_client, err := client.NewClient(ctx, config.Flickr.ClientURI)
+	uri, err := NewFlickrSourceURIFromConfig(config)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewFlickrSourceFromURI(uri)
+}
+
+func NewFlickrSourceFromURI(uri) (*FlickrSource, error) {
+
+	ctx := context.Background()
+	
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	client_uri := q.Get("client-uri")
+	flickr_client, err := client.NewClient(ctx, client_uri)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create new Flickr client, %w", err)
 	}
 
+	cache_uri := "memory://?ttl=3600&limit=1"
+	cache, err := cache.NewCache(ctx, cache_uri)
+
+	if err != nil {
+		return nil, err
+	}
+	
 	http_client := &http.Client{}
 
 	fs := FlickrSource{
