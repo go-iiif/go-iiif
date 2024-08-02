@@ -5,7 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -282,7 +282,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return err
 	}
 
-	log.Printf("Listening on %s\n", s.Address())
+	slog.Info("Listening for requests", "address", s.Address())
 
 	err = s.ListenAndServe(ctx, router)
 

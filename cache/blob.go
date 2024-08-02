@@ -3,14 +3,13 @@ package cache
 import (
 	"context"
 	"errors"
-	"io/ioutil"
-	_ "log"
+	"io/io"
 	"net/url"
 	"strings"
 
 	"github.com/aaronland/gocloud-blob/bucket"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3/s3manager"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"
 )
@@ -100,7 +99,7 @@ func (bc *BlobCache) Get(uri string) ([]byte, error) {
 
 	defer fh.Close()
 
-	return ioutil.ReadAll(fh)
+	return io.ReadAll(fh)
 }
 
 // Set writes data to a BlobCache location.

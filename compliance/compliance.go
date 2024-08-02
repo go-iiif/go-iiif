@@ -8,6 +8,7 @@ very much related but somehow seem like they should be in separate namespaces. I
 
 */
 
+// ComplianceDetails
 type ComplianceDetails struct {
 	Name      string `json:"name"`
 	Syntax    string `json:"syntax"`

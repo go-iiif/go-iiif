@@ -5,19 +5,25 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 
 	"gocloud.dev/blob"
 )
 
+// type Config is a struct containing configuration details for IIIF processes and services.
 type Config struct {
-	Level       LevelConfig       `json:"level"`
-	Profile     ProfileConfig     `json:"profile"`
-	Graphics    GraphicsConfig    `json:"graphics"`
-	Features    FeaturesConfig    `json:"features"`
-	Images      ImagesConfig      `json:"images"`
+	// Level is a `LevelConfig` instance detailing the IIIF level in use.
+	Level LevelConfig `json:"level"`
+	// Profile is a `ProfileConfig` instance detailing the IIIF profile in use.
+	Profile ProfileConfig `json:"profile"`
+	// Graphics is a `GraphicsConfig` instance detailing the graphics processor used for IIIF processes.
+	Graphics GraphicsConfig `json:"graphics"`
+	// Features is a `ProfileConfig` instance detailing the IIIF features in use.
+	Features FeaturesConfig `json:"features"`
+	// Images is a `ImagesConfig` detailing how and where IIIF source images are stored.
+	Images ImagesConfig `json:"images"`
+	// Derivatives is a `DerivativesConfig` detailing how and where IIIF derivative images are stored.
 	Derivatives DerivativesConfig `json:"derivatives"`
 	Flickr      FlickrConfig      `json:"flickr,omitempty"`
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
@@ -27,22 +33,28 @@ type Config struct {
 	Custom      interface{}       `json:"custom,omitempty"`
 }
 
+// ProfileConfig defines configuration details for the IIIF profile in use.
 type ProfileConfig struct {
+	// Services is a `ServicesConfig` instance detailing IIIF services in use.
 	Services ServicesConfig `json:"services"`
 }
 
+// ServicesConfig defines configuration details for the IIIF services in use.
 type ServicesConfig struct {
+	// Enable is a list of `ServiceToggle` instance to enable for IIIF processing.
 	Enable ServicesToggle `json:"enable"`
 }
 
 type ServicesToggle []string
 
+// PaletteConfig details configuration details for colour palette extraction services.
 type PaletteConfig struct {
 	Extruder SourceConfig   `json:"extruder"`
 	Grid     SourceConfig   `json:"grid"`
 	Palettes []SourceConfig `json:"palettes"`
 }
 
+// BlurHashConfig defines configuration details for blurhash generation services.
 type BlurHashConfig struct {
 	X    int `json:"x"`
 	Y    int `json:"y"`
@@ -96,6 +108,7 @@ type SourceConfig struct {
 	Count       int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
 }
 
+// FlickrConfig defines confiruation
 type FlickrConfig struct {
 	// A valid `aaronland/go-flickr-api.Client` URI.
 	ClientURI string `json:"client_uri"`
@@ -136,9 +149,10 @@ func NewConfigFromFlag(flag string) (*Config, error) {
 	return NewConfigFromFile(flag)
 }
 
+// NewConfigFromFile returns a new `Config` instance derived from 'file' which is assumed to be a local file on disk.
 func NewConfigFromFile(file string) (*Config, error) {
 
-	body, err := ioutil.ReadFile(file)
+	body, err := io.ReadFile(file)
 
 	if err != nil {
 		return nil, err
@@ -147,9 +161,10 @@ func NewConfigFromFile(file string) (*Config, error) {
 	return NewConfigFromBytes(body)
 }
 
-func NewConfigFromReader(fh io.Reader) (*Config, error) {
+// NewConfigFromFile returns a new `Config` instance derived from 'r'..
+func NewConfigFromReader(io.Reader) (*Config, error) {
 
-	body, err := ioutil.ReadAll(fh)
+	body, err := io.ReadAll(r)
 
 	if err != nil {
 		return nil, err
@@ -158,19 +173,21 @@ func NewConfigFromReader(fh io.Reader) (*Config, error) {
 	return NewConfigFromBytes(body)
 }
 
-func NewConfigFromBucket(ctx context.Context, bucket *blob.Bucket, fname string) (*Config, error) {
+// NewConfigFromFile returns a new `Config` instance derived the key 'key' in the `gocloud.dev/blob.Bucket` identified by 'bucket'.
+func NewConfigFromBucket(ctx context.Context, bucket *blob.Bucket, key string) (*Config, error) {
 
-	fh, err := bucket.NewReader(ctx, fname, nil)
+	r, err := bucket.NewReader(ctx, key, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer fh.Close()
+	defer r.Close()
 
-	return NewConfigFromReader(fh)
+	return NewConfigFromReader(r)
 }
 
+// NewConfigFromFile returns a new `Config` instance derived from the environment variable 'name'.
 func NewConfigFromEnv(name string) (*Config, error) {
 
 	env, ok := os.LookupEnv(name)
@@ -182,6 +199,7 @@ func NewConfigFromEnv(name string) (*Config, error) {
 	return NewConfigFromBytes([]byte(env))
 }
 
+// NewConfigFromFile returns a new `Config` instance derived from 'body'.
 func NewConfigFromBytes(body []byte) (*Config, error) {
 
 	c := Config{}

@@ -5,8 +5,9 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/url"
-	"os"
+	_ "os"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -23,7 +24,6 @@ import (
 	"github.com/sfomuseum/go-csvdict"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
-	"github.com/whosonfirst/go-whosonfirst-log"
 )
 
 type Seed struct {
@@ -228,17 +228,19 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return fmt.Errorf("Failed to determine format flag, %w", err)
 	}
 
-	logfile, err := lookup.StringVar(fs, "logfile")
+	/*
+		logfile, err := lookup.StringVar(fs, "logfile")
 
-	if err != nil {
-		return fmt.Errorf("Failed to determine logfile flag, %w", err)
-	}
+		if err != nil {
+			return fmt.Errorf("Failed to determine logfile flag, %w", err)
+		}
 
-	loglevel, err := lookup.StringVar(fs, "loglevel")
+		loglevel, err := lookup.StringVar(fs, "loglevel")
 
-	if err != nil {
-		return fmt.Errorf("Failed to determine loglevel flag, %w", err)
-	}
+		if err != nil {
+			return fmt.Errorf("Failed to determine loglevel flag, %w", err)
+		}
+	*/
 
 	processes, err := lookup.IntVar(fs, "processes")
 
@@ -280,6 +282,11 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return fmt.Errorf("Required -config-source flag is empty.")
 	}
 
+	if verbose {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+		slog.Debug("Verbose logging enabled")
+	}
+
 	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
@@ -298,27 +305,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return fmt.Errorf("Failed to create tileseed(er), %w", err)
 	}
 
-	writers := make([]io.Writer, 0)
-
-	if verbose {
-		writers = append(writers, os.Stdout)
-	}
-
-	if logfile != "" {
-
-		fh, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
-
-		if err != nil {
-			return fmt.Errorf("Failed to open logfile, %w", err)
-		}
-
-		writers = append(writers, fh)
-	}
-
-	writer := io.MultiWriter(writers...)
-
-	logger := log.NewWOFLogger("")
-	logger.AddLogger(writer, loglevel)
+	// Something something something writers for slog stuff...
 
 	scales := make([]int, 0)
 
@@ -350,7 +337,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 
 		<-throttle
 
-		logger.Debug("Tile waiting to seed '%s': %v", seed.Source, time.Since(t1))
+		slog.Debug("Tile waiting to seed", "source", seed.Source, "time", time.Since(t1))
 
 		go func(seed *Seed, wg *sync.WaitGroup) {
 
@@ -360,7 +347,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 			alt_id := seed.Target
 
 			defer func() {
-				logger.Debug("Time to seed tiles for '%s': %v", seed.Source, time.Since(t1))
+				slog.Debug("Time to seed tiles", "source", seed.Source, "time", time.Since(t1))
 				throttle <- true
 				wg.Done()
 			}()
@@ -372,9 +359,9 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 			}
 
 			if err != nil {
-				logger.Warning("Failed to seed tiles for '%s', %s", src_id, err)
+				slog.Warn("Failed to seed tiles", "id", src_id, "error", err)
 			} else {
-				logger.Debug("Seeded %d tiles for '%s'", count, src_id)
+				slog.Debug("Seeded tiles complete", "id", src_id, "count", count)
 			}
 
 		}(seed, wg)
@@ -450,14 +437,14 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 				src_id, ok := row["source_id"]
 
 				if !ok {
-					logger.Warning("Unable to determine source ID", row)
+					slog.Warn("Unable to determine source ID for row", "row", row)
 					continue
 				}
 
 				alt_id, ok := row["alternate_id"]
 
 				if !ok {
-					logger.Warning("Unable to determine alternate ID", row)
+					slog.Warn("Unable to determine alternate ID for row", "row", row)
 					continue
 				}
 
@@ -488,7 +475,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		}
 
 		root := u.Path
-		logger.Info("Watching %s", root)
+		slog.Info("Watching filesystem", "root", root)
 
 		watcher, err := fsnotify.NewWatcher()
 
@@ -521,21 +508,21 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 						u, err := t.uriFunc(rel_path)
 
 						if err != nil {
-							logger.Warning("Failed to run URI function from path '%s' (%s), %s", rel_path, abs_path, err)
+							slog.Warn("Failed to run URI function from path", "rel_path", rel_path, "abs_path", abs_path, "error", err)
 							continue
 						}
 
 						seed, err := SeedFromURI(u, noextension)
 
 						if err != nil {
-							logger.Warning("Failed to determine seed from path '%s' (%s), %s", rel_path, abs_path, err)
+							slog.Warn("Failed to determine seed from path", "rel_path", rel_path, "abs_path", abs_path, "error", err)
 							continue
 						}
 
 						err = tile_func(seed, wg)
 
 						if err != nil {
-							logger.Warning("Failed to generate tiles for path '%s', %s", rel_path, err)
+							slog.Warn("Failed to generate tiles from path", "rel_path", rel_path, "error", err)
 							continue
 						}
 					}
@@ -546,7 +533,7 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 						return
 					}
 
-					logger.Warning("fsnotify error: %s", err)
+					slog.Warn("fsnotify error", "error", err)
 				}
 			}
 		}()

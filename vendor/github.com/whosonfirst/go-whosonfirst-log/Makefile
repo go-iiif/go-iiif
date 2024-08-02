@@ -1,2 +1,0 @@
-fmt:
-	go fmt *.go

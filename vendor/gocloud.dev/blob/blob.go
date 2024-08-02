@@ -70,7 +70,6 @@ import (
 	"fmt"
 	"hash"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
@@ -128,12 +127,11 @@ func (r *Reader) Read(p []byte) (int, error) {
 		// to (SeekEnd, 0) and use the return value to determine the size
 		// of the data, then Seek back to (SeekStart, 0).
 		saved := r.savedOffset
-		r.savedOffset = -1
 		if r.relativeOffset == saved {
 			// Nope! We're at the same place we left off.
+			r.savedOffset = -1
 		} else {
 			// Yep! We've changed the offset. Recreate the reader.
-			_ = r.r.Close()
 			length := r.baseLength
 			if length >= 0 {
 				length -= r.relativeOffset
@@ -142,11 +140,13 @@ func (r *Reader) Read(p []byte) (int, error) {
 					return 0, gcerr.Newf(gcerr.Internal, nil, "blob: invalid Seek (base length %d, relative offset %d)", r.baseLength, r.relativeOffset)
 				}
 			}
-			var err error
-			r.r, err = r.b.NewRangeReader(r.ctx, r.key, r.baseOffset+r.relativeOffset, length, r.dopts)
+			newR, err := r.b.NewRangeReader(r.ctx, r.key, r.baseOffset+r.relativeOffset, length, r.dopts)
 			if err != nil {
 				return 0, wrapError(r.b, err, r.key)
 			}
+			_ = r.r.Close()
+			r.savedOffset = -1
+			r.r = newR
 		}
 	}
 	n, err := r.r.Read(p)
@@ -731,7 +731,7 @@ func (b *Bucket) ReadAll(ctx context.Context, key string) (_ []byte, err error) 
 		return nil, err
 	}
 	defer r.Close()
-	return ioutil.ReadAll(r)
+	return io.ReadAll(r)
 }
 
 // Download writes the content of a blob into an io.Writer w.

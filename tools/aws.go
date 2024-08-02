@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	aws_events "github.com/aws/aws-lambda-go/events"
-	"github.com/aws/aws-sdk-go/aws/arn"
+	"github.com/aws/aws-sdk-go-v2/aws/arn"
 )
 
 type Record struct {
