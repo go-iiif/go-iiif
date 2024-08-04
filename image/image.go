@@ -10,6 +10,8 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+
+	"github.com/go-iiif/go-iiif/v6/colour"
 )
 
 type Image interface {
@@ -21,6 +23,7 @@ type Image interface {
 	Format() string
 	ContentType() string
 	Dimensions() (Dimensions, error)
+	ColourProfile() colour.Profile
 }
 
 type Dimensions interface {

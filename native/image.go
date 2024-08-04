@@ -19,6 +19,7 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifimage "github.com/go-iiif/go-iiif/v6/image"
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	"github.com/go-iiif/go-iiif/v6/colour"	
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
 	"golang.org/x/image/bmp"
@@ -34,7 +35,7 @@ type NativeImage struct {
 	id         string
 	img        image.Image
 	format     string
-	colorspace string
+	colorspace colour.
 }
 
 type NativeDimensions struct {
@@ -73,6 +74,11 @@ func (im *NativeImage) Body() []byte {
 func (im *NativeImage) Format() string {
 
 	return im.format
+}
+
+func (im *NativeImage) ColourProfile() string {
+
+	return colour.UNKNOWN
 }
 
 func (im *NativeImage) ContentType() string {
