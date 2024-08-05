@@ -22,7 +22,7 @@ func NewBlobSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
 		cfg := config.Images
 		uri = cfg.Source.Path
 	}
-	
+
 	return uri, nil
 }
 
@@ -33,7 +33,7 @@ func NewBlobSource(config *iiifconfig.Config) (Source, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return NewBlobSourceFromURI(uri)
 }
 

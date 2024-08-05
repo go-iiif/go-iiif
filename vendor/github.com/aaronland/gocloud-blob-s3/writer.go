@@ -4,23 +4,29 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/aaronland/gocloud-blob/s3"
+	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"gocloud.dev/blob"
 )
 
 // NewWriterWithACL returns a new `blob.Writer` instance that has been configured with the relevant
 // `blob.WriterOptions` to ensure that files written to S3 will be done using AWS ACL permissions
 // defined in 'acl'.
-func NewWriterWithACL(ctx context.Context, bucket *blob.Bucket, path string, acl string) (*blob.Writer, error) {
+func NewWriterWithACL(ctx context.Context, bucket *blob.Bucket, path string, str_acl string) (*blob.Writer, error) {
+
+	acl, err := s3.StringACLToObjectCannedACL(str_acl)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to derive canned ACL from string, %w", err)
+	}
 
 	before := func(asFunc func(interface{}) bool) error {
 
-		req := &s3manager.UploadInput{}
+		req := &aws_s3.PutObjectInput{}
 		ok := asFunc(&req)
 
 		if ok {
-			req.ACL = aws.String(acl)
+			req.ACL = acl
 		}
 
 		return nil

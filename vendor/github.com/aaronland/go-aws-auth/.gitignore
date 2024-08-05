@@ -1,0 +1,8 @@
+*~
+pkg
+src
+!vendor/src
+bin
+*.pdf
+.DS_Store
+*.db

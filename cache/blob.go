@@ -3,13 +3,14 @@ package cache
 import (
 	"context"
 	"errors"
-	"io/io"
+	"io"
 	"net/url"
 	"strings"
 
 	"github.com/aaronland/gocloud-blob/bucket"
+	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/s3/s3manager"
+	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"
 )
@@ -138,16 +139,22 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
 
+		acl, err := aa_s3.StringACLToObjectCannedACL(bc.acl)
+
+		if err != nil {
+			return fmt.Errorf("Failed to derive ACL object, %w", err)
+		}
+
 		before := func(asFunc func(interface{}) bool) error {
 
-			req := &s3manager.UploadInput{}
+			req := &aws_s3.PutObjectInput{}
 			ok := asFunc(&req)
 
 			if !ok {
 				return errors.New("invalid s3 type")
 			}
 
-			req.ACL = aws.String(bc.acl)
+			req.ACL = acl
 			return nil
 		}
 

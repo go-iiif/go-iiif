@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	
+
 	"github.com/aaronland/go-flickr-api/client"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -52,14 +52,14 @@ func NewFlickrSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
 
 	q := url.Value{}
 	q.Set("client-uri", config.Flickr.ClientURI)
-	
+
 	u := url.URL{}
 	u.Scheme = "flickr"
 	u.RawQuery = q.Encode()
-	
+
 	return u.String(), nil
 }
-	
+
 func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 
 	uri, err := NewFlickrSourceURIFromConfig(config)
@@ -74,7 +74,7 @@ func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 func NewFlickrSourceFromURI(uri) (*FlickrSource, error) {
 
 	ctx := context.Background()
-	
+
 	u, err := url.Parse(uri)
 
 	if err != nil {
@@ -94,7 +94,7 @@ func NewFlickrSourceFromURI(uri) (*FlickrSource, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	http_client := &http.Client{}
 
 	fs := FlickrSource{

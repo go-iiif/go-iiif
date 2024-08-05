@@ -2,12 +2,17 @@
 
 This is thing wrapper around the default `go-cloud` S3 blob opener to check for a `credentials` parameter (in blob URIs) and use it to assign AWS S3 session credentials.
 
+## Important
+
+This package might still be moved in to the [aaronland/go-cloud](https://github.com/aaronland/gocloud-blob) package. TBD...
+
 ## Example
 
 ```			
 import (
 	"context"
 	"gocloud.dev/blob"
+	
 	_ "github.com/aaronland/gocloud-blob-s3"
 )
 
@@ -35,5 +40,5 @@ Credentials for AWS sessions are defined as string labels. They are:
 
 ## See also
 
-* https://github.com/aaronland/go-aws-session
+* https://github.com/aaronland/go-aws-auth
 * https://gocloud.dev/howto/blob

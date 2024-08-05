@@ -15,7 +15,7 @@ func NewDiskSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
 		cfg := config.Images
 		uri = fmt.Sprintf("file://%s", cfg.Source.Path)
 	}
-	
+
 	return uri, nil
 }
 

@@ -1,4 +1,3 @@
-// pcakage random provides methods for generating random strings.
 package random
 
 import (
@@ -54,21 +53,14 @@ func init() {
 
 }
 
-// Options is a struct containing configuration options for the `String` method.
 type Options struct {
-	// The length in bytes of the final string.
-	Length int
-	// The number of characters in the final string.
-	Chars int
-	// A boolean flag indicating that only ASCII characters be included in the final string.
-	ASCII bool
-	// A boolean flag indicating that only alphanumeric (a-zA-Z0-9) characters be included in the final string.
+	Length       int
+	Chars        int
+	ASCII        bool
 	AlphaNumeric bool
-	// A boolean flag indicating the random string should be returned as a base32 encoded string.
-	Base32 bool
+	Base32       bool
 }
 
-// DefaultOptions returns an `Options` instance with no limits or restrictions save a minimum length of 32 bytes.
 func DefaultOptions() *Options {
 
 	opts := Options{
@@ -82,7 +74,6 @@ func DefaultOptions() *Options {
 	return &opts
 }
 
-// String returns a randomly-generated string configured by 'opts'.
 func String(opts *Options) (string, error) {
 
 	count := len(runes)

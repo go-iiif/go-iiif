@@ -2,14 +2,14 @@ package s3blob
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	_ "log/slog"
 	"net/url"
-	"strings"
 	"sync"
 
-	"github.com/aaronland/go-aws-session"
-	aws_session "github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aaronland/go-aws-auth"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"gocloud.dev/blob"
 	gc_s3blob "gocloud.dev/blob/s3blob"
 )
@@ -21,7 +21,9 @@ func init() {
 }
 
 type URLOpener struct {
-	Session *aws_session.Session
+	config *aws.Config
+	bucket string
+	prefix string
 }
 
 type lazySessionOpener struct {
@@ -34,23 +36,20 @@ func (o *lazySessionOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blo
 
 	o.init.Do(func() {
 
-		query := u.Query()
+		bucket := u.Host
 
-		dsn := make([]string, 0)
+		q := u.Query()
+		prefix := q.Get("prefix")
 
-		for k, v := range query {
+		auth_q := url.Values{}
+		auth_q.Set("region", q.Get("region"))
+		auth_q.Set("credentials", q.Get("credentials"))
 
-			if len(v) != 1 {
-				o.err = errors.New("Invalid DSN value")
-				return
-			}
+		auth_uri := url.URL{}
+		auth_uri.Scheme = "aws"
+		auth_uri.RawQuery = auth_q.Encode()
 
-			dsn = append(dsn, fmt.Sprintf("%s=%s", k, v[0]))
-		}
-
-		str_dsn := strings.Join(dsn, " ")
-
-		sess, err := session.NewSessionWithDSN(str_dsn)
+		cfg, err := auth.NewConfig(ctx, auth_uri.String())
 
 		if err != nil {
 			o.err = err
@@ -58,7 +57,9 @@ func (o *lazySessionOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blo
 		}
 
 		o.opener = &URLOpener{
-			Session: sess,
+			config: &cfg,
+			bucket: bucket,
+			prefix: prefix,
 		}
 	})
 
@@ -70,5 +71,20 @@ func (o *lazySessionOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blo
 }
 
 func (o *URLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket, error) {
-	return gc_s3blob.OpenBucket(ctx, o.Session, u.Host, nil)
+
+	s3_client := s3.NewFromConfig(*o.config)
+	s3_bucket := o.bucket
+	s3_prefix := o.prefix
+
+	b, err := gc_s3blob.OpenBucketV2(ctx, s3_client, s3_bucket, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if s3_prefix != "" {
+		b = blob.PrefixedBucket(b, s3_prefix)
+	}
+
+	return b, nil
 }

@@ -1,3 +1,6 @@
 *~
 vendor
 .DS_Store
+go.work*
+work
+bin

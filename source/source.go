@@ -1,8 +1,8 @@
 package source
 
 import (
-	"errors"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -25,7 +25,7 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 
 	var source_uri string
 	var err error
-	
+
 	// note that there is no "Memory" source or at least not yet
 	// since it assumes you're passing it []bytes and not a config
 	// file (20160907/thisisaaronland)
@@ -35,7 +35,7 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 
 	switch config.Source.URI {
 	case "":
-		
+
 		switch strings.ToLower(cfg.Source.Name) {
 		case "blob":
 			source_uri, err = NewBlobSourceURIFromConfig(config)
