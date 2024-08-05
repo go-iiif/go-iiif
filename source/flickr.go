@@ -47,10 +47,10 @@ type PhotoSize struct {
 func NewFlickrSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
 
 	if config.Flickr.ClientURI == "" {
-		return nil, fmt.Errorf("Missing config.Flickr.ClientURI property")
+		return "", fmt.Errorf("Missing config.Flickr.ClientURI property")
 	}
 
-	q := url.Value{}
+	q := url.Values{}
 	q.Set("client-uri", config.Flickr.ClientURI)
 
 	u := url.URL{}
@@ -71,7 +71,7 @@ func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 	return NewFlickrSourceFromURI(uri)
 }
 
-func NewFlickrSourceFromURI(uri) (*FlickrSource, error) {
+func NewFlickrSourceFromURI(uri string) (*FlickrSource, error) {
 
 	ctx := context.Background()
 
@@ -81,6 +81,8 @@ func NewFlickrSourceFromURI(uri) (*FlickrSource, error) {
 		return nil, err
 	}
 
+	q := u.Query()
+
 	client_uri := q.Get("client-uri")
 	flickr_client, err := client.NewClient(ctx, client_uri)
 
@@ -89,7 +91,7 @@ func NewFlickrSourceFromURI(uri) (*FlickrSource, error) {
 	}
 
 	cache_uri := "memory://?ttl=3600&limit=1"
-	cache, err := cache.NewCache(ctx, cache_uri)
+	cache, err := iiifcache.NewCache(ctx, cache_uri)
 
 	if err != nil {
 		return nil, err

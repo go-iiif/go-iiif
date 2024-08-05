@@ -1,6 +1,9 @@
 package source
 
+// URI as in "URI Template" – this is a badly named package
+
 import (
+	"fmt"
 	"io"
 	"net/http"
 
@@ -14,12 +17,32 @@ type URISource struct {
 	client   *http.Client
 }
 
-func NewURISource(config *iiifconfig.Config) (*URISource, error) {
+func NewURISourceURIFromConfig(cfg *iiifconfig.Config) (string, error) {
 
-	cfg := config.Images
+	uri := cfg.Images.Source.URI
+
+	if uri == "" {
+		uri = fmt.Sprintf("file://%s", cfg.Images.Source.Path)
+	}
+
+	return uri, nil
+}
+
+func NewURISource(cfg *iiifconfig.Config) (*URISource, error) {
+
+	uri, err := NewURISourceURIFromConfig(cfg)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return NewURISourceFromURI(uri)
+}
+
+func NewURISourceFromURI(uri string) (*URISource, error) {
 
 	client := &http.Client{}
-	template, err := uritemplates.Parse(cfg.Source.Path)
+	template, err := uritemplates.Parse(uri)
 
 	if err != nil {
 		return nil, err

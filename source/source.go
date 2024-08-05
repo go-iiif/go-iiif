@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"log"
 	"net/url"
 	"sort"
 	"strings"
 
+	"github.com/aaronland/go-roster"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
@@ -26,14 +25,7 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 	var source_uri string
 	var err error
 
-	// note that there is no "Memory" source or at least not yet
-	// since it assumes you're passing it []bytes and not a config
-	// file (20160907/thisisaaronland)
-
-	var source Source
-	var err error
-
-	switch config.Source.URI {
+	switch cfg.Source.URI {
 	case "":
 
 		switch strings.ToLower(cfg.Source.Name) {
@@ -53,14 +45,15 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 			err = errors.New("Unknown source type")
 		}
 	default:
-		source_uri = config.Source.URI
+		source_uri = config.Images.Source.URI
 	}
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive source URI, %w", err)
 	}
 
-	return NewCache(ctx, source_uri)
+	ctx := context.Background()
+	return NewSource(ctx, source_uri)
 }
 
 //
@@ -69,7 +62,7 @@ var source_roster roster.Roster
 
 // SourceInitializationFunc is a function defined by individual source package and used to create
 // an instance of that source
-type SourceInitializationFunc func(ctx context.Context, uri string) (Source, error)
+type SourceInitializationFunc func(uri string) (Source, error)
 
 // RegisterSource registers 'scheme' as a key pointing to 'init_func' in an internal lookup table
 // used to create new `Source` instances by the `NewSource` method.
@@ -121,7 +114,7 @@ func NewSource(ctx context.Context, uri string) (Source, error) {
 	}
 
 	init_func := i.(SourceInitializationFunc)
-	return init_func(ctx, uri)
+	return init_func(uri)
 }
 
 // SourceSchemes returns the list of schemes that have been registered.

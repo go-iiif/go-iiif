@@ -7,21 +7,20 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
-func NewDiskSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
+func NewDiskSourceURIFromConfig(cfg *iiifconfig.Config) (string, error) {
 
-	uri := cfg.Source.URI
+	uri := cfg.Images.Source.URI
 
 	if uri == "" {
-		cfg := config.Images
-		uri = fmt.Sprintf("file://%s", cfg.Source.Path)
+		uri = fmt.Sprintf("file://%s", cfg.Images.Source.Path)
 	}
 
 	return uri, nil
 }
 
-func NewDiskSource(config *iiifconfig.Config) (Source, error) {
+func NewDiskSource(cfg *iiifconfig.Config) (Source, error) {
 
-	uri, err := NewDiskSourceURIFromConfig(config)
+	uri, err := NewDiskSourceURIFromConfig(cfg)
 
 	if err != nil {
 		return nil, err
