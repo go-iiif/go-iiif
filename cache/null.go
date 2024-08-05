@@ -16,12 +16,12 @@ func NewNullCacheURIFromConfig(cfg config.CacheConfig) (string, error) {
 }
 
 // NewNullCache returns a pointer to a NullCache.
-func NewNullCache(cfg config.CacheConfig) (*NullCache, error) {
+func NewNullCache(cfg config.CacheConfig) (Cache, error) {
 	uri, _ := NewNullCacheURIFromConfig(cfg)
 	return NewNullCacheFromURI(uri)
 }
 
-func NewNullCacheFromURI(uri string) (*NullCache, error) {
+func NewNullCacheFromURI(uri string) (Cache, error) {
 	c := NullCache{}
 	return &c, nil
 }

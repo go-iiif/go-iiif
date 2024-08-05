@@ -21,6 +21,14 @@ type FlickrSource struct {
 	flickr_client client.Client
 }
 
+func init() {
+	ctx := context.Background()
+	err := RegisterSource(ctx, "flickr", NewFlickrSourceFromURI)
+	if err != nil {
+		panic(err)
+	}	
+}
+
 type PhotoRsp struct {
 	Sizes PhotoSizes `json:"sizes"`
 }
@@ -60,7 +68,7 @@ func NewFlickrSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
 	return u.String(), nil
 }
 
-func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
+func NewFlickrSource(config *iiifconfig.Config) (Source, error) {
 
 	uri, err := NewFlickrSourceURIFromConfig(config)
 
@@ -71,7 +79,7 @@ func NewFlickrSource(config *iiifconfig.Config) (*FlickrSource, error) {
 	return NewFlickrSourceFromURI(uri)
 }
 
-func NewFlickrSourceFromURI(uri string) (*FlickrSource, error) {
+func NewFlickrSourceFromURI(uri string) (Source, error) {
 
 	ctx := context.Background()
 

@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
@@ -24,6 +25,14 @@ type MemoryCache struct {
 	eviction_lock *sync.Mutex
 }
 
+func init() {
+	ctx := context.Background()
+	err := RegisterCache(ctx, "memory", NewMemoryCacheFromURI)
+	if err != nil {
+		panic(err)
+	}
+}
+	
 // NewMemoryCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
 func NewMemoryCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
 
@@ -45,7 +54,7 @@ func NewMemoryCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
 }
 
 // NewMemoryCache returns a new `MemoryCache` instance derived from 'cfg'.
-func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
+func NewMemoryCache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	uri := cfg.URI
 
@@ -64,7 +73,7 @@ func NewMemoryCache(cfg iiifconfig.CacheConfig) (*MemoryCache, error) {
 }
 
 // NewMemoryCacheFromURI returns a new `MemoryCache` instance derived from 'uri'
-func NewMemoryCacheFromURI(uri string) (*MemoryCache, error) {
+func NewMemoryCacheFromURI(uri string) (Cache, error) {
 
 	u, err := url.Parse(uri)
 
