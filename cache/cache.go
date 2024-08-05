@@ -71,8 +71,8 @@ func NewCacheFromConfig(config iiifconfig.CacheConfig) (Cache, error) {
 		return nil, fmt.Errorf("Failed to derive cache URI, %w", err)
 	}
 
+	ctx := context.Background()
 	return NewCache(ctx, cache_uri)
-	return cache, err
 }
 
 //

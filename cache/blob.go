@@ -3,13 +3,13 @@ package cache
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"net/url"
 	"strings"
 
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
-	"github.com/aws/aws-sdk-go-v2/aws"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"

@@ -16,10 +16,10 @@ import (
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
 	"github.com/anthonynsimon/bild/transform"
+	"github.com/go-iiif/go-iiif/v6/colour"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifimage "github.com/go-iiif/go-iiif/v6/image"
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
-	"github.com/go-iiif/go-iiif/v6/colour"	
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
 	"golang.org/x/image/bmp"
@@ -35,7 +35,7 @@ type NativeImage struct {
 	id         string
 	img        image.Image
 	format     string
-	colorspace colour.
+	colorspace string
 }
 
 type NativeDimensions struct {

@@ -10,8 +10,7 @@ require (
 	github.com/aaronland/go-image v1.2.5
 	github.com/aaronland/go-mimetypes v0.0.2
 	github.com/aaronland/go-roster v1.0.0
-	github.com/aaronland/gocloud-blob v0.0.18
-	github.com/aaronland/gocloud-blob-s3 v0.3.0
+	github.com/aaronland/gocloud-blob v0.1.0
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go-v2 v1.30.3

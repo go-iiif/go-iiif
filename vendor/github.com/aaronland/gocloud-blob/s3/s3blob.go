@@ -1,15 +1,14 @@
-package s3blob
+package s3
 
 import (
 	"context"
 	"fmt"
-	_ "log/slog"
 	"net/url"
 	"sync"
 
 	"github.com/aaronland/go-aws-auth"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
+	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"gocloud.dev/blob"
 	gc_s3blob "gocloud.dev/blob/s3blob"
 )
@@ -72,7 +71,7 @@ func (o *lazySessionOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blo
 
 func (o *URLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket, error) {
 
-	s3_client := s3.NewFromConfig(*o.config)
+	s3_client := aws_s3.NewFromConfig(*o.config)
 	s3_bucket := o.bucket
 	s3_prefix := o.prefix
 

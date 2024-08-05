@@ -3,11 +3,11 @@ package cache
 import (
 	"fmt"
 
-	"github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 // NewDiskCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
-func NewDiskCacheURIFromConfig(config iiifconfig.CacheConfig) (string, error) {
+func NewDiskCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
 
 	root := cfg.Path
 	uri := fmt.Sprintf("file://%s", root)
@@ -15,7 +15,7 @@ func NewDiskCacheURIFromConfig(config iiifconfig.CacheConfig) (string, error) {
 }
 
 // NewDiskCache returns a NewBlobCacheFromURI for a local files system location.
-func NewDiskCache(cfg config.CacheConfig) (Cache, error) {
+func NewDiskCache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	uri := cfg.URI
 

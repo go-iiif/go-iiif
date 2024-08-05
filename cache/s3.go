@@ -3,12 +3,12 @@ package cache
 import (
 	"fmt"
 
-	_ "github.com/aaronland/gocloud-blob-s3"
+	_ "github.com/aaronland/gocloud-blob/s3"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 // NewS3CacheURIFromConfig returns a URI derived from 'cfg'.
-func NewS3CacheURIFromConfig(cfg iiifconfig.CacheConfig) (sintr, error) {
+func NewS3CacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
 
 	bucket := cfg.Path
 	prefix := cfg.Prefix

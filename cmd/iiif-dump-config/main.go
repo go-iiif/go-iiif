@@ -9,7 +9,7 @@ import (
 	"log"
 	"sort"
 
-	_ "github.com/aaronland/gocloud-blob-s3"
+	_ "github.com/aaronland/gocloud-blob/s3"
 	iiifcompliance "github.com/go-iiif/go-iiif/v6/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
