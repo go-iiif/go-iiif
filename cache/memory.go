@@ -2,6 +2,7 @@ package cache
 
 import (
 	"errors"
+	"fmt"
 	"net/url"
 	"strconv"
 	"sync"
@@ -38,7 +39,7 @@ func NewMemoryCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
 
 	u := url.URL{}
 	u.Scheme = "mem"
-	q.RawQuery = q.Encode()
+	u.RawQuery = q.Encode()
 
 	return u.String(), nil
 }

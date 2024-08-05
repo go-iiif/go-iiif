@@ -10,7 +10,6 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-
 	// "github.com/go-iiif/go-iiif/v6/colour"
 )
 

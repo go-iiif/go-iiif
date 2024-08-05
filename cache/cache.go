@@ -4,8 +4,6 @@ package cache
 import (
 	"context"
 	"fmt"
-	"io"
-	"log"
 	"net/url"
 	"sort"
 	"strings"
@@ -81,7 +79,7 @@ var cache_roster roster.Roster
 
 // CacheInitializationFunc is a function defined by individual cache package and used to create
 // an instance of that cache
-type CacheInitializationFunc func(ctx context.Context, uri string) (Cache, error)
+type CacheInitializationFunc func(uri string) (Cache, error)
 
 // RegisterCache registers 'scheme' as a key pointing to 'init_func' in an internal lookup table
 // used to create new `Cache` instances by the `NewCache` method.
@@ -133,7 +131,7 @@ func NewCache(ctx context.Context, uri string) (Cache, error) {
 	}
 
 	init_func := i.(CacheInitializationFunc)
-	return init_func(ctx, uri)
+	return init_func(uri)
 }
 
 // CacheSchemes returns the list of schemes that have been registered.

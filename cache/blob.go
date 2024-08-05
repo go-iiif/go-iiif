@@ -27,7 +27,7 @@ type BlobCache struct {
 func init() {
 	ctx := context.Background()
 	// To do: The gocloud/blob register thingies trick
-	err := RegisterCache(ctx, "blob", NewCacheFromURI)
+	err := RegisterCache(ctx, "blob", NewBlobCacheFromURI)
 
 	if err != nil {
 		panic(err)

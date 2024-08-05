@@ -18,7 +18,7 @@ func NewNullCacheURIFromConfig(cfg config.CacheConfig) (string, error) {
 // NewNullCache returns a pointer to a NullCache.
 func NewNullCache(cfg config.CacheConfig) (*NullCache, error) {
 	uri, _ := NewNullCacheURIFromConfig(cfg)
-	NewNullCacheFromURI(uri)
+	return NewNullCacheFromURI(uri)
 }
 
 func NewNullCacheFromURI(uri string) (*NullCache, error) {
