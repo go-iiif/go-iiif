@@ -80,11 +80,11 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	
 	br := bytes.NewReader(body)
 	
-	profile, err := colour.DeriveProfile(br)
+	model, err := colour.DeriveModel(br)
 
 	if err != nil {
-		slog.Debug("Unable to derive profile for image, default to unknown", "id", id, "error", err)
-		profile = colour.UnknownProfile
+		slog.Debug("Unable to derive model for image, default to unknown", "id", id, "error", err)
+		model = colour.UnknownModel
 	}
 	
 	im := NativeImage{
@@ -94,7 +94,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		id:        id,
 		img:       img,
 		format:    img_fmt,
-		profile:   profile,
+		model:   model,
 	}
 
 	return &im, nil

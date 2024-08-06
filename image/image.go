@@ -23,7 +23,7 @@ type Image interface {
 	Format() string
 	ContentType() string
 	Dimensions() (Dimensions, error)
-	ColourProfile() colour.Profile
+	ColourModel() colour.Model
 }
 
 type Dimensions interface {

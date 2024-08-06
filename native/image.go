@@ -35,7 +35,7 @@ type NativeImage struct {
 	id        string
 	img       image.Image
 	format    string
-	profile   colour.Profile
+	model   colour.Model
 }
 
 type NativeDimensions struct {
@@ -76,9 +76,9 @@ func (im *NativeImage) Format() string {
 	return im.format
 }
 
-func (im *NativeImage) ColourProfile() colour.Profile {
+func (im *NativeImage) ColourModel() colour.Model {
 
-	return im.profile
+	return im.model
 }
 
 func (im *NativeImage) ContentType() string {
