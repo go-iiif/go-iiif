@@ -32,7 +32,7 @@ func init() {
 		panic(err)
 	}
 }
-	
+
 // NewMemoryCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
 func NewMemoryCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
 

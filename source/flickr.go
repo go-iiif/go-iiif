@@ -26,7 +26,7 @@ func init() {
 	err := RegisterSource(ctx, "flickr", NewFlickrSourceFromURI)
 	if err != nil {
 		panic(err)
-	}	
+	}
 }
 
 type PhotoRsp struct {

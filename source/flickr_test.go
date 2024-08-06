@@ -18,7 +18,7 @@ func TestNewFlickrSourceFromURI(t *testing.T) {
 	source_u := url.URL{}
 	source_u.Scheme = "flickr"
 	source_u.RawQuery = source_q.Encode()
-	
+
 	uri := source_u.String()
 
 	_, err := NewFlickrSourceFromURI(uri)
@@ -33,5 +33,4 @@ func TestNewFlickrSourceFromURI(t *testing.T) {
 		t.Fatalf("Failed to create Flickr source calling NewSource, %v", err)
 	}
 
-	
 }

@@ -12,11 +12,11 @@ import (
 	"image/png"
 	_ "log"
 
+	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-mimetypes"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
 	"github.com/anthonynsimon/bild/transform"
-	"github.com/go-iiif/go-iiif/v6/colour"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifimage "github.com/go-iiif/go-iiif/v6/image"
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
@@ -29,13 +29,13 @@ import (
 
 type NativeImage struct {
 	iiifimage.Image
-	config     *iiifconfig.Config
-	source     iiifsource.Source
-	source_id  string
-	id         string
-	img        image.Image
-	format     string
-	colorspace string
+	config    *iiifconfig.Config
+	source    iiifsource.Source
+	source_id string
+	id        string
+	img       image.Image
+	format    string
+	profile   colour.Profile
 }
 
 type NativeDimensions struct {
@@ -76,9 +76,9 @@ func (im *NativeImage) Format() string {
 	return im.format
 }
 
-func (im *NativeImage) ColourProfile() string {
+func (im *NativeImage) ColourProfile() colour.Profile {
 
-	return colour.UNKNOWN
+	return im.profile
 }
 
 func (im *NativeImage) ContentType() string {

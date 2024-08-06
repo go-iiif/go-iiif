@@ -12,3 +12,4 @@ bin/
 vips-*
 *.zip
 docker
+go.work*

@@ -5,8 +5,10 @@ import (
 	"context"
 	"fmt"
 	"image"
-	_ "log"
+	"log/slog"
 
+	
+	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-image/rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -73,10 +75,18 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 
 			img = new_img
 		}
+
 	}
+	
+	br := bytes.NewReader(body)
+	
+	profile, err := colour.DeriveProfile(br)
 
-	// TO DO: GET COLORSPACE HERE
-
+	if err != nil {
+		slog.Debug("Unable to derive profile for image, default to unknown", "id", id, "error", err)
+		profile = colour.UnknownProfile
+	}
+	
 	im := NativeImage{
 		config:    config,
 		source:    src,
@@ -84,6 +94,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		id:        id,
 		img:       img,
 		format:    img_fmt,
+		profile:   profile,
 	}
 
 	return &im, nil
