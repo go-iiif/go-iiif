@@ -10,7 +10,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	_ "log"
+	"log/slog"
 
 	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-mimetypes"
@@ -35,7 +35,7 @@ type NativeImage struct {
 	id        string
 	img       image.Image
 	format    string
-	model   colour.Model
+	model     colour.Model
 }
 
 type NativeDimensions struct {
@@ -58,6 +58,21 @@ func (im *NativeImage) Update(body []byte) error {
 	if err != nil {
 		return fmt.Errorf("Failed to decode image bytes, %w", err)
 	}
+
+	// START OF make sure we don't re-encode image colours over and over again
+
+	switch im.ColourModel() {
+	case colour.AppleDisplayP3Model:
+		img = colour.ToDisplayP3(img)
+	case colour.AdobeRGBModel:
+		img = colour.ToAdobeRGB(img)
+	case colour.UnknownModel, colour.SRGBModel:
+		// pass
+	default:
+		slog.Debug("Unknown or unsupported colour model", "model", im.ColourModel())
+	}
+
+	// END OF make sure we don't re-encode image colours over and over again
 
 	im.img = img
 	im.format = img_fmt

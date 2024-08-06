@@ -7,7 +7,6 @@ import (
 	"image"
 	"log/slog"
 
-	
 	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-image/rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
@@ -77,16 +76,16 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		}
 
 	}
-	
+
 	br := bytes.NewReader(body)
-	
+
 	model, err := colour.DeriveModel(br)
 
 	if err != nil {
 		slog.Debug("Unable to derive model for image, default to unknown", "id", id, "error", err)
 		model = colour.UnknownModel
 	}
-	
+
 	im := NativeImage{
 		config:    config,
 		source:    src,
@@ -94,7 +93,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		id:        id,
 		img:       img,
 		format:    img_fmt,
-		model:   model,
+		model:     model,
 	}
 
 	return &im, nil
