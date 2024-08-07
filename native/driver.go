@@ -39,7 +39,7 @@ func NewNativeDriver() (iiifdriver.Driver, error) {
 
 func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.Source, id string) (iiifimage.Image, error) {
 
-	slog.Debug("NewImageFromConfigWithSource", "id", id, "source", src)
+	slog.Info("NewImageFromConfigWithSource", "id", id, "source", src)
 
 	body, err := src.Read(id)
 
@@ -55,6 +55,8 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		return nil, fmt.Errorf("Failed to decode image, %w", err)
 	}
 
+	slog.Info("New Image", "id", id, "format", img_fmt, "source", src)
+	
 	if img_fmt == "jpeg" {
 
 		ctx := context.Background()
@@ -88,7 +90,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		model = colour.UnknownModel
 	}
 
-	// slog.Debug("Color model", "id", id, "mode", model)
+	slog.Info("Color model", "id", id, "mode", model, "source", src)
 
 	im := NativeImage{
 		config:    config,
@@ -111,7 +113,6 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 
 	if err == nil {
 
-		slog.Info("GOT BODY FROM CACHE", "id", id)
 		source, err := iiifsource.NewMemorySource(body)
 
 		if err != nil {
@@ -133,11 +134,6 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 		if err != nil {
 			return nil, fmt.Errorf("Failed to derive image from config for '%s', %w", id, err)
 		}
-
-		// slog.Debug("OMG", "id", id, "model", image.ColourModel())
-
-		// THIS IS THE PROBLEM. WHY ARE WE ONLY CACHING image.Body which is []byte
-		// and not iiifimage.Image...
 
 		go func() {
 			slog.Debug("Cache image source", "id", id)

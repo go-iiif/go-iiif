@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log/slog"
 	"golang.org/x/image/tiff"
 	"golang.org/x/image/webp"
 	"image"
@@ -131,4 +132,20 @@ func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) 
 	}
 
 	return out.Bytes(), nil
+}
+
+func ApplyColourModel(im image.Image, model colour.Model) image.Image {
+
+	switch model {
+	case colour.AppleDisplayP3Model:
+		im = colour.ToDisplayP3(im)
+	case colour.AdobeRGBModel:
+		im = colour.ToAdobeRGB(im)
+	case colour.UnknownModel, colour.SRGBModel:
+		// pass
+	default:
+		slog.Warn("Unknown or unsupported colour model", "model", model)
+	}
+
+	return im
 }

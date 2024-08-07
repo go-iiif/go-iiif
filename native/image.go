@@ -59,23 +59,6 @@ func (im *NativeImage) Update(body []byte) error {
 		return fmt.Errorf("Failed to decode image bytes, %w", err)
 	}
 
-	// START OF make sure we don't re-encode image colours over and over again
-
-	switch im.ColourModel() {
-	case colour.AppleDisplayP3Model:
-		slog.Debug("recast image to Apple Display P3", "id", im.id)
-		img = colour.ToDisplayP3(img)
-	case colour.AdobeRGBModel:
-		slog.Debug("recast image to Adobe RGB", "id", im.id)
-		img = colour.ToAdobeRGB(img)
-	case colour.UnknownModel, colour.SRGBModel:
-		// pass
-	default:
-		slog.Debug("Unknown or unsupported colour model", "model", im.ColourModel())
-	}
-
-	// END OF make sure we don't re-encode image colours over and over again
-
 	im.img = img
 	im.format = img_fmt
 
@@ -83,7 +66,7 @@ func (im *NativeImage) Update(body []byte) error {
 }
 
 func (im *NativeImage) Body() []byte {
-
+	slog.Info("ENCODE BODY", "id", im.id)
 	body, _ := encodeImage(im.img, im.format)
 	return body
 }
@@ -316,8 +299,6 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// TO DO: WRITE COLORSPACE HERE
 
 	wr.Flush()
 

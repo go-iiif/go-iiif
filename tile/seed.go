@@ -87,7 +87,7 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 
 func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refresh bool) (int, error) {
 
-	slog.Debug("Seed tiles for image", "source id", src_id, "alt id", alt_id, "image cache", ts.images_cache, "derivatives cache", ts.derivatives_cache)
+	slog.Info("Seed tiles for image", "source id", src_id, "alt id", alt_id, "image cache", ts.images_cache, "derivatives cache", ts.derivatives_cache)
 
 	count := 0
 
@@ -187,6 +187,13 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					return
 				}
 
+				/*
+				br := bytes.NewReader(tmp.Body())
+				model, _ := colour.DeriveModel(br)
+
+				slog.Info("Model for tmp", "model", model)
+				*/
+				
 				err = tmp.Transform(tr)
 
 				if err != nil {
@@ -194,7 +201,13 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					return
 				}
 
-				// slog.Info("SAVE TILE", "uri", uri, "model", tmp.ColourModel())
+				/*
+				br = bytes.NewReader(tmp.Body())
+				model, _ = colour.DeriveModel(br)
+				slog.Info("Model for tmp (post transform)", "model", model)
+				*/
+				
+				slog.Debug("SAVE TILE", "uri", uri, "model", tmp.ColourModel())
 
 				err = ts.derivatives_cache.Set(uri, tmp.Body())
 

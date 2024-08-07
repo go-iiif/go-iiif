@@ -18,7 +18,7 @@ type MemorySource struct {
 func NewMemorySource(body []byte) (Source, error) {
 
 	sum := sha256.Sum256(body)
-	key := fmt.Sprintf("memory://%x", sum)
+	key := fmt.Sprintf("%x", sum)
 	
 	return NewMemorySourceWithKey(key, body)
 }
@@ -51,7 +51,7 @@ func NewMemorySourceWithKey(key string, body []byte) (Source, error) {
 }
 
 func (bs *MemorySource) String() string {
-	return bs.key
+	return fmt.Sprintf("memory://%s", bs.key)
 }
 
 func (bs *MemorySource) Read(key string) ([]byte, error) {
