@@ -111,6 +111,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 
 	if err == nil {
 
+		slog.Info("GOT BODY FROM CACHE", "id", id)
 		source, err := iiifsource.NewMemorySource(body)
 
 		if err != nil {

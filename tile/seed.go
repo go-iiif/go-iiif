@@ -125,10 +125,10 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		}
 	}
 
-	source, err := iiifsource.NewMemorySource(image.Body())
+	source, err := iiifsource.NewMemorySourceWithKey(image.Identifier(), image.Body())
 
 	if err != nil {
-		return count, fmt.Errorf("Failed to create image from memory, %w", err)
+		return count, fmt.Errorf("Failed to create memory source from image, %w", err)
 	}
 
 	br := bytes.NewReader(image.Body())
@@ -194,7 +194,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					return
 				}
 
-				slog.Info("SAVE TILE", "uri", uri, "model", tmp.ColourModel())
+				// slog.Info("SAVE TILE", "uri", uri, "model", tmp.ColourModel())
 
 				err = ts.derivatives_cache.Set(uri, tmp.Body())
 
