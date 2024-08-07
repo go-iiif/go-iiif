@@ -50,7 +50,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	img, img_fmt, err := image.Decode(buf)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to decode image, %w", err)
 	}
 
 	if img_fmt == "jpeg" {
@@ -85,6 +85,8 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		slog.Debug("Unable to derive model for image, default to unknown", "id", id, "error", err)
 		model = colour.UnknownModel
 	}
+
+	// slog.Debug("Color model", "id", id, "mode", model)
 
 	im := NativeImage{
 		config:    config,

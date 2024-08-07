@@ -27,10 +27,40 @@ type MemoryCache struct {
 
 func init() {
 	ctx := context.Background()
-	err := RegisterCache(ctx, "memory", NewMemoryCacheFromURI)
+	err := RegisterMemoryCacheSchemes(ctx)
 	if err != nil {
 		panic(err)
 	}
+}
+
+// RegisterMemoryCacheSchemes will...
+func RegisterMemoryCacheSchemes(ctx context.Context) error {
+
+	register_mu.Lock()
+	defer register_mu.Unlock()
+
+	schemes := []string{
+		"memory",
+	}
+
+	for _, scheme := range schemes {
+
+		_, exists := register_map[scheme]
+
+		if exists {
+			continue
+		}
+
+		err := RegisterCache(ctx, scheme, NewMemoryCacheFromURI)
+
+		if err != nil {
+			return fmt.Errorf("Failed to register blob cache for '%s', %w", scheme, err)
+		}
+
+		register_map[scheme] = true
+	}
+
+	return nil
 }
 
 // NewMemoryCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
@@ -47,7 +77,7 @@ func NewMemoryCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
 	}
 
 	u := url.URL{}
-	u.Scheme = "mem"
+	u.Scheme = "memory"
 	u.RawQuery = q.Encode()
 
 	return u.String(), nil

@@ -26,12 +26,37 @@ type BlobCache struct {
 
 func init() {
 	ctx := context.Background()
-	// To do: The gocloud/blob register thingies trick
-	err := RegisterCache(ctx, "blob", NewBlobCacheFromURI)
+	err := RegisterBlobCacheSchemes(ctx)
 
 	if err != nil {
 		panic(err)
 	}
+}
+
+// RegisterBloblCacheSchemes will explicitly register all the schemes associated with the
+func RegisterBlobCacheSchemes(ctx context.Context) error {
+
+	register_mu.Lock()
+	defer register_mu.Unlock()
+
+	for _, scheme := range blob.DefaultURLMux().BucketSchemes() {
+
+		_, exists := register_map[scheme]
+
+		if exists {
+			continue
+		}
+
+		err := RegisterCache(ctx, scheme, NewBlobCacheFromURI)
+
+		if err != nil {
+			return fmt.Errorf("Failed to register blob cache for '%s', %w", scheme, err)
+		}
+
+		register_map[scheme] = true
+	}
+
+	return nil
 }
 
 // NewBlobCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.

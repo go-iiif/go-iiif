@@ -274,7 +274,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, config_name)
 
 	if err != nil {
-		return fmt.Errorf("Failed to create new config from bucket, %w", err)
+		return fmt.Errorf("Failed to create new config from bucket %s (%s), %w", config_bucket, config_name, err)
 	}
 
 	instructions_bucket, err := blob.OpenBucket(ctx, instructions_source)

@@ -63,8 +63,10 @@ func (im *NativeImage) Update(body []byte) error {
 
 	switch im.ColourModel() {
 	case colour.AppleDisplayP3Model:
+		slog.Debug("recast image to Apple Display P3", "id", im.id)
 		img = colour.ToDisplayP3(img)
 	case colour.AdobeRGBModel:
+		slog.Debug("recast image to Adobe RGB", "id", im.id)
 		img = colour.ToAdobeRGB(img)
 	case colour.UnknownModel, colour.SRGBModel:
 		// pass

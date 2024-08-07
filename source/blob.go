@@ -2,7 +2,7 @@ package source
 
 import (
 	"context"
-	_ "log"
+	"fmt"
 
 	"github.com/aaronland/gocloud-blob/bucket"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -12,6 +12,41 @@ import (
 type BlobSource struct {
 	Source
 	bucket *blob.Bucket
+}
+
+func init() {
+	ctx := context.Background()
+	err := RegisterBlobSourceSchemes(ctx)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+// RegisterBloblSourceSchemes will ...
+func RegisterBlobSourceSchemes(ctx context.Context) error {
+
+	register_mu.Lock()
+	defer register_mu.Unlock()
+
+	for _, scheme := range blob.DefaultURLMux().BucketSchemes() {
+
+		_, exists := register_map[scheme]
+
+		if exists {
+			continue
+		}
+
+		err := RegisterSource(ctx, scheme, NewBlobSourceFromURI)
+
+		if err != nil {
+			return fmt.Errorf("Failed to register blob source for '%s', %w", scheme, err)
+		}
+
+		register_map[scheme] = true
+	}
+
+	return nil
 }
 
 func NewBlobSourceURIFromConfig(cfg *iiifconfig.Config) (string, error) {

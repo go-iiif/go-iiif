@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -198,7 +199,7 @@ func NewConfigFromReader(r io.Reader) (*Config, error) {
 	body, err := io.ReadAll(r)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to read config body, %w", err)
 	}
 
 	return NewConfigFromBytes(body)
@@ -210,7 +211,7 @@ func NewConfigFromBucket(ctx context.Context, bucket *blob.Bucket, key string) (
 	r, err := bucket.NewReader(ctx, key, nil)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create new reader for '%s', %w", key, err)
 	}
 
 	defer r.Close()
@@ -238,7 +239,7 @@ func NewConfigFromBytes(body []byte) (*Config, error) {
 	err := json.Unmarshal(body, &c)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to unmarshal config, %w", err)
 	}
 
 	return &c, nil
