@@ -17,6 +17,7 @@ type URISource struct {
 	Source
 	template *uritemplates.UriTemplate
 	client   *http.Client
+	uri      string
 }
 
 func init() {
@@ -74,6 +75,10 @@ func NewURISourceFromURI(uri string) (Source, error) {
 	}
 
 	return &us, nil
+}
+
+func (us *URISource) String() string {
+	return us.uri
 }
 
 func (us *URISource) Read(id string) ([]byte, error) {

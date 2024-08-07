@@ -69,6 +69,8 @@ func SeedFromURI(u iiifuri.URI, no_extension bool) (*Seed, error) {
 		target = strings.TrimSuffix(target, filepath.Ext(target))
 	}
 
+	slog.Debug("New tile seed", "origin", origin, "target", target)
+
 	seed := &Seed{
 		Source: origin,
 		Target: target,

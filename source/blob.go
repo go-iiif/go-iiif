@@ -3,6 +3,7 @@ package source
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/aaronland/gocloud-blob/bucket"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -11,7 +12,8 @@ import (
 
 type BlobSource struct {
 	Source
-	bucket *blob.Bucket
+	bucket     *blob.Bucket
+	bucket_uri string
 }
 
 func init() {
@@ -30,6 +32,8 @@ func RegisterBlobSourceSchemes(ctx context.Context) error {
 	defer register_mu.Unlock()
 
 	for _, scheme := range blob.DefaultURLMux().BucketSchemes() {
+
+		slog.Debug("Register blob source scheme", "scheme", scheme)
 
 		_, exists := register_map[scheme]
 
@@ -82,10 +86,15 @@ func NewBlobSourceFromURI(uri string) (Source, error) {
 	}
 
 	bs := &BlobSource{
-		bucket: b,
+		bucket:     b,
+		bucket_uri: uri,
 	}
 
 	return bs, nil
+}
+
+func (bs *BlobSource) String() string {
+	return bs.bucket_uri
 }
 
 func (bs *BlobSource) Read(uri string) ([]byte, error) {

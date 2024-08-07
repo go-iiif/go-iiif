@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/url"
 	"strconv"
 	"sync"
@@ -23,6 +24,7 @@ type MemoryCache struct {
 	keys          []string
 	lock          *sync.Mutex
 	eviction_lock *sync.Mutex
+	uri           string
 }
 
 func init() {
@@ -168,11 +170,16 @@ func NewMemoryCacheFromURI(uri string) (Cache, error) {
 		sizemap:       sizemap,
 		lock:          lock,
 		eviction_lock: ev_lock,
+		uri:           uri,
 	}
 
 	gc.OnEvicted(mc.OnEvicted)
 
 	return &mc, nil
+}
+
+func (mc *MemoryCache) String() string {
+	return mc.uri
 }
 
 // Exists returns a bool set to true if the configured memory location exists.
@@ -189,9 +196,11 @@ func (mc *MemoryCache) Get(key string) ([]byte, error) {
 	data, ok := mc.provider.Get(key)
 
 	if !ok {
+		slog.Debug("Get cache (MISS)", "key", key)
 		return nil, errors.New("cache miss")
 	}
 
+	slog.Debug("Get cache (HIT)", "key", key)
 	return data.([]byte), nil
 }
 
@@ -233,12 +242,14 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 
 	mc.provider.Set(key, data, gocache.DefaultExpiration)
 
+	slog.Debug("Set cache (OK)", "key", key)
 	return nil
 }
 
 // Unset deletes data from a memory location.
 func (mc *MemoryCache) Unset(key string) error {
 
+	slog.Debug("Unset cache", "key", key)
 	mc.provider.Delete(key)
 	return nil
 }

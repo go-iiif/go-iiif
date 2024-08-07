@@ -26,6 +26,10 @@ func NewNullCacheFromURI(uri string) (Cache, error) {
 	return &c, nil
 }
 
+func (c *NullCache) String() string {
+	return "null://"
+}
+
 // Exists is always false for a NullCache.
 func (c *NullCache) Exists(rel_path string) bool {
 	return false

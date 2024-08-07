@@ -23,7 +23,7 @@ func NewMemorySource(body []byte) (Source, error) {
 		return nil, err
 	}
 
-	uri := "mem"
+	uri := "memory://"
 
 	err = b.WriteAll(ctx, uri, body, nil)
 
@@ -37,6 +37,10 @@ func NewMemorySource(body []byte) (Source, error) {
 	}
 
 	return bs, nil
+}
+
+func (bs *MemorySource) String() string {
+	return bs.uri
 }
 
 func (bs *MemorySource) Read(uri string) ([]byte, error) {

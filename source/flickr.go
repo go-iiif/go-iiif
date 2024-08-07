@@ -19,6 +19,7 @@ type FlickrSource struct {
 	cache         iiifcache.Cache
 	http_client   *http.Client
 	flickr_client client.Client
+	uri           string
 }
 
 func init() {
@@ -111,9 +112,15 @@ func NewFlickrSourceFromURI(uri string) (Source, error) {
 		flickr_client: flickr_client,
 		http_client:   http_client,
 		cache:         cache,
+		uri:           uri,
 	}
 
 	return &fs, nil
+}
+
+func (fs *FlickrSource) String() string {
+	// TO DO: strip keys/secrets
+	return fs.uri
 }
 
 func (fs *FlickrSource) Read(id string) ([]byte, error) {

@@ -1,12 +1,15 @@
 package tile
 
 import (
+	"bytes"
 	"fmt"
-	"log"
+	"log/slog"
 	"math"
 	"runtime"
 	"sync"
+	"time"
 
+	"github.com/aaronland/go-image/colour"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
@@ -84,6 +87,8 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 
 func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refresh bool) (int, error) {
 
+	slog.Debug("Seed tiles for image", "source id", src_id, "alt id", alt_id, "image cache", ts.images_cache, "derivatives cache", ts.derivatives_cache)
+
 	count := 0
 
 	image, err := ts.driver.NewImageFromConfigWithCache(ts.config, ts.images_cache, src_id)
@@ -126,6 +131,11 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		return count, fmt.Errorf("Failed to create image from memory, %w", err)
 	}
 
+	br := bytes.NewReader(image.Body())
+	model, err := colour.DeriveModel(br)
+
+	slog.Debug("TILE MODEL", "id", src_id, "model", model, "mode", image.ColourModel())
+
 	throttle := make(chan bool, ts.procs)
 
 	for i := 0; i < ts.procs; i++ {
@@ -137,7 +147,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		crops, err := ts.TileSizes(image, scale)
 
 		if err != nil {
-			log.Printf("Unable to determine tile sizes for %d (%s), %s\n", scale, image.Identifier(), err)
+			slog.Warn("Unable to determine tile sizes", "id", image.Identifier(), "scale", scale, "error", err)
 			continue
 		}
 
@@ -151,20 +161,21 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 			go func(throttle chan bool, im iiifimage.Image, tr *iiifimage.Transformation, wg *sync.WaitGroup) {
 
+				uri, _ := tr.ToURI(alt_id)
+				t1 := time.Now()
+
 				defer func() {
+					slog.Debug("Time to seed tile", "uri", uri, "time", time.Since(t1))
 					wg.Done()
 					throttle <- true
 				}()
-
-				// log.SetOutput(os.Stdout)
-
-				uri, _ := tr.ToURI(alt_id)
 
 				if !refresh {
 
 					_, err := ts.derivatives_cache.Get(uri)
 
 					if err == nil {
+						slog.Debug("Tile exists in cache, skipping", "uri", uri)
 						return
 					}
 				}
@@ -172,21 +183,23 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 				tmp, err := ts.driver.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
 
 				if err != nil {
-					log.Println(err)
+					slog.Warn("Failed to derive new image from config", "identifier", im.Identifier(), "error", err)
 					return
 				}
 
 				err = tmp.Transform(tr)
 
 				if err != nil {
-					log.Printf("[%s] transform failed: %s\n", im.Identifier(), err)
+					slog.Warn("Failed to apply transformation", "identifier", im.Identifier(), "error", err)
 					return
 				}
+
+				slog.Info("SAVE TILE", "uri", uri, "model", tmp.ColourModel())
 
 				err = ts.derivatives_cache.Set(uri, tmp.Body())
 
 				if err != nil {
-					log.Printf("[%s] cache set (%s) failed: %s\n", im.Identifier(), uri, err)
+					slog.Warn("Failed to save tile", "identifier", im.Identifier(), "error", err)
 					return
 				}
 
@@ -331,6 +344,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			quality := quality
 			format := format
 
+			// slog.Debug("Create transformation (tile)", "region", region, "size", size, "rotation", rotation, "quality", quality, "format", format)
 			transformation, err := iiifimage.NewTransformation(compliance, region, size, rotation, quality, format)
 
 			if err != nil {

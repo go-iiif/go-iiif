@@ -4,6 +4,7 @@ package cache
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"net/url"
 	"sort"
 	"strings"
@@ -79,6 +80,8 @@ func NewCacheFromConfig(config iiifconfig.CacheConfig) (Cache, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive cache URI, %w", err)
 	}
+
+	slog.Debug("Create new cache", "uri", cache_uri)
 
 	ctx := context.Background()
 	return NewCache(ctx, cache_uri)

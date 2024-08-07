@@ -39,6 +39,8 @@ func NewNativeDriver() (iiifdriver.Driver, error) {
 
 func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.Source, id string) (iiifimage.Image, error) {
 
+	slog.Debug("NewImageFromConfigWithSource", "id", id, "source", src)
+
 	body, err := src.Read(id)
 
 	if err != nil {
@@ -121,6 +123,8 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 			return nil, fmt.Errorf("Failed to derive image from source for '%s', %w", id, err)
 		}
 
+		// slog.Debug("WTF", "id", id, "model", image.ColourModel())
+
 	} else {
 
 		image, err = dr.NewImageFromConfig(config, id)
@@ -129,7 +133,13 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 			return nil, fmt.Errorf("Failed to derive image from config for '%s', %w", id, err)
 		}
 
+		// slog.Debug("OMG", "id", id, "model", image.ColourModel())
+
+		// THIS IS THE PROBLEM. WHY ARE WE ONLY CACHING image.Body which is []byte
+		// and not iiifimage.Image...
+
 		go func() {
+			slog.Debug("Cache image source", "id", id)
 			cache.Set(id, image.Body())
 		}()
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 	"net/url"
 	"sort"
 	"strings"
@@ -42,6 +43,8 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 		switch strings.ToLower(cfg.Source.Name) {
 		case "blob":
 			source_uri, err = NewBlobSourceURIFromConfig(config)
+		// case "memory":
+		// 	source_uri, err = NewMemorySourceURIFromConfig(config)
 		case "disk":
 			source_uri, err = NewDiskSourceURIFromConfig(config)
 		case "flickr":
@@ -62,6 +65,8 @@ func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive source URI, %w", err)
 	}
+
+	slog.Debug("Create new source", "uri", source_uri)
 
 	ctx := context.Background()
 	return NewSource(ctx, source_uri)

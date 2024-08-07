@@ -123,6 +123,10 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 	return bc, nil
 }
 
+func (bc *BlobCache) String() string {
+	return bc.bucket_uri
+}
+
 // Exists returns a bool set to true if the configured bucket exists.
 func (bc *BlobCache) Exists(uri string) bool {
 
