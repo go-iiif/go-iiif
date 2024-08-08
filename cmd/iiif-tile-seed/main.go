@@ -8,6 +8,7 @@ import (
 	_ "github.com/go-iiif/go-iiif/v6/native"
 	"github.com/go-iiif/go-iiif/v6/tools"
 	_ "gocloud.dev/blob/fileblob"
+	_ "gocloud.dev/blob/memblob"	
 )
 
 func main() {
