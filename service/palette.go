@@ -5,7 +5,6 @@ package service
 
 import (
 	"context"
-	_ "log"
 
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/extruder"
@@ -54,9 +53,6 @@ func (s *PaletteService) Value() interface{} {
 }
 
 func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
-
-	// b, _ := json.Marshal(cfg)
-	// log.Println(string(b))
 
 	use_extruder := cfg.Extruder.Name
 	count_colours := cfg.Extruder.Count

@@ -3,7 +3,7 @@ package http
 import (
 	"expvar"
 	"fmt"
-	"log"
+	"log/slog"
 	gohttp "net/http"
 	"strings"
 )
@@ -15,8 +15,7 @@ func ExpvarHandler(host string) (gohttp.HandlerFunc, error) {
 		remote := strings.Split(req.RemoteAddr, ":")
 
 		if remote[0] != "127.0.0.1" && remote[0] != host {
-
-			log.Printf("host '%s' remote '%s'\n", remote[0], host)
+			slog.Debug("Invalid host", "remote", remote[0], "allowed", host)
 			gohttp.Error(rsp, "No soup for you!", gohttp.StatusForbidden)
 			return
 		}

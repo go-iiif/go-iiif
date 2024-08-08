@@ -5,7 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/url"
 	"sync"
 
@@ -159,8 +159,8 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		select {
 		case <-done_ch:
 			remaining -= 1
-		case e := <-err_ch:
-			log.Println(e)
+		case err := <-err_ch:
+			slog.Error(err.Error())
 		default:
 			//
 		}

@@ -191,8 +191,6 @@ func (fs *FlickrSource) GetSource(id string) (string, error) {
 		return "", err
 	}
 
-	// log.Println(string(body))
-
 	var data PhotoRsp
 	err = json.Unmarshal(body, &data)
 

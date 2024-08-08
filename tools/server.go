@@ -12,7 +12,6 @@ import (
 
 	"github.com/aaronland/go-http-ping"
 	"github.com/aaronland/go-http-server"
-	// "github.com/aaronland/gocloud-blob/bucket"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"

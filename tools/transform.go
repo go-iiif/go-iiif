@@ -10,7 +10,7 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"io/ioutil"
+	"io"
 	"path/filepath"
 
 	"github.com/aaronland/gocloud-blob/bucket"
@@ -67,37 +67,37 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 		return err
 	}
 
-	fh, err := opts.SourceBucket.NewReader(ctx, origin, nil)
+	source_r, err := opts.SourceBucket.NewReader(ctx, origin, nil)
 
 	if err != nil {
 		return err
 	}
 
-	defer fh.Close()
+	defer source_r.Close()
 
 	if !opts.Transformation.HasTransformation() {
 		return errors.New("No transformation")
 	}
 
-	body, err := ioutil.ReadAll(fh)
+	source_body, err := io.ReadAll(source_r)
 
 	if err != nil {
 		return err
 	}
 
-	source, err := iiifsource.NewMemorySource(body)
+	source, err := iiifsource.NewMemorySource(source_body)
 
 	if err != nil {
 		return err
 	}
 
-	image, err := opts.Driver.NewImageFromConfigWithSource(opts.Config, source, origin)
+	iiif_image, err := opts.Driver.NewImageFromConfigWithSource(opts.Config, source, origin)
 
 	if err != nil {
 		return err
 	}
 
-	err = image.Transform(opts.Transformation)
+	err = iiif_image.Transform(opts.Transformation)
 
 	if err != nil {
 		return err
@@ -106,11 +106,10 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 	wr, err := opts.TargetBucket.NewWriter(ctx, target, nil)
 
 	if err != nil {
-
 		return err
 	}
 
-	_, err = wr.Write(image.Body())
+	_, err = wr.Write(iiif_image.Body())
 
 	if err != nil {
 		return err
@@ -271,21 +270,6 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 	if err != nil {
 		return err
 	}
-
-	/*
-	config_bucket, err := bucket.OpenBucket(ctx, config_source)
-
-	if err != nil {
-		return err
-	}
-
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
-
-	if err != nil {
-		return err
-	}
-
-	*/
 	
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
