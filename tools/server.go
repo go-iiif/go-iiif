@@ -2,7 +2,6 @@ package tools
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -104,18 +103,6 @@ func (t *IIIFServerTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) e
 
 func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_source, err := lookup.StringVar(fs, "config-source")
-
-	if err != nil {
-		return err
-	}
-
-	config_name, err := lookup.StringVar(fs, "config-name")
-
-	if err != nil {
-		return err
-	}
-
 	proto, err := lookup.StringVar(fs, "protocol")
 
 	if err != nil {
@@ -152,30 +139,12 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return err
 	}
 
-	if config_source == "" {
-		return errors.New("Required -config-source flag is empty.")
-	}
-
-	config, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+	config, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
 	if err != nil {
 		return err
 	}
-	
-	/*
-	config_bucket, err := bucket.OpenBucket(ctx, config_source)
-
-	if err != nil {
-		return err
-	}
-
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
-
-	if err != nil {
-		return err
-	}
-	*/
-	
+		
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {

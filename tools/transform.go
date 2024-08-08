@@ -201,18 +201,6 @@ func (t *TransformTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) er
 
 func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_name, err := lookup.StringVar(fs, "config-name")
-
-	if err != nil {
-		return err
-	}
-
-	config_source, err := lookup.StringVar(fs, "config-source")
-
-	if err != nil {
-		return err
-	}
-
 	region, err := lookup.StringVar(fs, "region")
 
 	if err != nil {
@@ -261,11 +249,7 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 		return err
 	}
 
-	if config_source == "" {
-		return errors.New("Required -config-source flag is empty.")
-	}
-
-	config, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+	config, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
 	if err != nil {
 		return err

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"flag"
 	"io"
 	"log/slog"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"gocloud.dev/blob"
 	"github.com/aaronland/gocloud-blob/bucket"
 	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"
+	"github.com/sfomuseum/go-flags/lookup"
 )
 
 // type Config is a struct containing configuration details for IIIF processes and services.
@@ -271,4 +273,41 @@ func LoadConfig(ctx context.Context, bucket_uri string, key string) (*Config, er
 	defer config_bucket.Close()
 	
 	return NewConfigFromBucket(ctx, config_bucket, key)
+}
+
+func LoadConfigWithFlagSet(ctx context.Context, fs *flag.FlagSet) (*Config, error) {
+
+	config_source, err := lookup.StringVar(fs, "config-source")
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to lookup -config-source flag, %w", err)
+	}
+
+	config_name, err := lookup.StringVar(fs, "config-name")
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to lookup -config-name flag, %w", err)
+	}
+	
+	cfg, err := LoadConfig(ctx, config_source, config_name)
+
+	if err != nil {
+		return nil, err
+	}
+
+	images_source_uri, _ := lookup.StringVar(fs, "config-images-source-uri")
+
+	if images_source_uri != "" {
+		slog.Debug("Reassign images source", "uri", images_source_uri)
+		cfg.Images.Source.URI = images_source_uri
+	}
+
+	derivatives_cache_uri, _ := lookup.StringVar(fs, "config-derivatives-cache-uri")
+
+	if derivatives_cache_uri != "" {
+		slog.Debug("Reassign derivatives cache", "uri", derivatives_cache_uri)		
+		cfg.Derivatives.Cache.URI = derivatives_cache_uri
+	}
+
+	return cfg, nil
 }

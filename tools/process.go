@@ -210,18 +210,6 @@ func (t *ProcessTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) erro
 
 func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_source, err := lookup.StringVar(fs, "config-source")
-
-	if err != nil {
-		return fmt.Errorf("Failed to lookup -config-source flag, %w", err)
-	}
-
-	config_name, err := lookup.StringVar(fs, "config-name")
-
-	if err != nil {
-		return fmt.Errorf("Failed to lookup -config-name flag, %w", err)
-	}
-
 	instructions_source, err := lookup.StringVar(fs, "instructions-source")
 
 	if err != nil {
@@ -258,57 +246,18 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		return err
 	}
 
-	if config_source == "" {
-		return errors.New("Required -config-source flag is empty.")
-	}
-
-	if instructions_source == "" {
-		return errors.New("Required -instructions-source flag is empty.")
-	}
-
-	cfg, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+	cfg, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
 	if err != nil {
 		return err
 	}
-
+	
 	instructions_set, err := iiifprocess.LoadInstructions(ctx, instructions_source, instructions_name)
 
 	if err != nil {
 		return err
 	}
 	
-	/*
-	config_bucket, err := blob.OpenBucket(ctx, config_source)
-
-	if err != nil {
-		return fmt.Errorf("Failed to open config bucket, %w", err)
-	}
-
-	defer config_bucket.Close()
-
-	cfg, err := config.NewConfigFromBucket(ctx, config_bucket, config_name)
-
-	if err != nil {
-		return fmt.Errorf("Failed to create new config from bucket %s (%s), %w", config_bucket, config_name, err)
-	}
-	
-	instructions_bucket, err := blob.OpenBucket(ctx, instructions_source)
-
-	if err != nil {
-		return fmt.Errorf("Failed to open instructions bucket, %w", err)
-	}
-
-	defer instructions_bucket.Close()
-
-	instructions_set, err := iiifprocess.ReadInstructionsFromBucket(ctx, instructions_bucket, instructions_name)
-
-	if err != nil {
-		return fmt.Errorf("Failed to read instructions from bucket, %w", err)
-	}
-
-	*/
-
 	var report_bucket *blob.Bucket
 	
 	if report_source != "" {

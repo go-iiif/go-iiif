@@ -194,18 +194,6 @@ func (t *TileSeedTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) err
 
 func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_source, err := lookup.StringVar(fs, "config-source")
-
-	if err != nil {
-		return fmt.Errorf("Failed to determine config-source flag, %w", err)
-	}
-
-	config_name, err := lookup.StringVar(fs, "config-name")
-
-	if err != nil {
-		return fmt.Errorf("Failed to determine config-name flag, %w", err)
-	}
-
 	csv_source, err := lookup.StringVar(fs, "csv-source")
 
 	if err != nil {
@@ -280,16 +268,12 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return err
 	}
 
-	if config_source == "" {
-		return fmt.Errorf("Required -config-source flag is empty.")
-	}
-
 	if verbose {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 		slog.Debug("Verbose logging enabled")
 	}
 
-	config, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+	config, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
 	if err != nil {
 		return err
