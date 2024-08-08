@@ -36,7 +36,13 @@ func ServerToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("server", flag.ExitOnError)
 
-	err := AppendCommonServerToolFlags(ctx, fs)
+	err := AppendCommonFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+	
+	err = AppendCommonServerToolFlags(ctx, fs)
 
 	if err != nil {
 		return nil, err

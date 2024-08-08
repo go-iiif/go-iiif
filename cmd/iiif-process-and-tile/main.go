@@ -26,7 +26,13 @@ func main() {
 
 	fs := flag.NewFlagSet("iiif-process-and-tile", flag.ExitOnError)
 
-	err := tools.AppendCommonConfigFlags(ctx, fs)
+	err := tools.AppendCommonFlags(ctx, fs)
+
+	if err != nil {
+		log.Fatalf("Failed to append config flags, %v", err)
+	}
+	
+	err = tools.AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
 		log.Fatalf("Failed to append config flags, %v", err)

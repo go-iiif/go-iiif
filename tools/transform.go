@@ -128,7 +128,13 @@ func TransformToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("transform", flag.ExitOnError)
 
-	err := AppendCommonTransformToolFlags(ctx, fs)
+	err := AppendCommonFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+	
+	err = AppendCommonTransformToolFlags(ctx, fs)
 
 	if err != nil {
 		return nil, err

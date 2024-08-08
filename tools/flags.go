@@ -5,6 +5,12 @@ import (
 	"flag"
 )
 
+func AppendCommonFlags(ctx context.Context, fs *flag.FlagSet) error {
+
+	fs.Bool("verbose", false, "Enabled verbose (debug) loggging.")
+	return nil
+}
+
 func AppendCommonConfigFlags(ctx context.Context, fs *flag.FlagSet) error {
 
 	fs.String("config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located. Optionally, if 'defaults://' is specified then the default config bundled with this package will be used.")

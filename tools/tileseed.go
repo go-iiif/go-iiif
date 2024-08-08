@@ -129,7 +129,13 @@ func TileSeedToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 func AppendCommonTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 
-	err := AppendCommonConfigFlags(ctx, fs)
+	err := AppendCommonFlags(ctx, fs)
+
+	if err != nil {
+		return err
+	}
+	
+	err = AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
 		return err
@@ -161,8 +167,6 @@ func AppendTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 
 	fs.Bool("refresh", false, "Refresh a tile even if already exists (default false)")
 	fs.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
-
-	fs.Bool("verbose", false, "Write logging to STDOUT in addition to any other log targets that may have been defined")
 
 	return nil
 }
