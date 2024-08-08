@@ -210,6 +210,8 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		count += len(crops)
 	}
 
+	// Generate info.json file
+	
 	level, err := iiiflevel.NewLevel0(ts.config, ts.Endpoint)
 
 	if err != nil {
@@ -239,6 +241,8 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 	uri := fmt.Sprintf("%s/info.json", alt_id)
 	ts.derivatives_cache.Set(uri, body)
 
+	//
+	
 	return count, nil
 }
 

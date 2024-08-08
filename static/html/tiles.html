@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />    
+    <link rel="stylesheet" href="assets/leaflet.css" />
+    <style type="text/css">
+     html, body, #map{
+	     height: 100%;
+	     margin: 0;
+     }
+    </style>
+  </head>
+  <body>
+    <div id="map">
+    </div>
+    <script src="assets/leaflet.js"></script>
+    <script src="assets/leaflet-iiif.js"></script>    
+    <script type="text/javascript">
+     var map;
+
+     map = L.map('map', {
+	 center: [0, 0],
+	 crs: L.CRS.Simple,
+	 zoom: 0
+     });
+     
+     var url = window.location.search.replace('?url=', '')
+     
+     // http://stackoverflow.com/a/18222306
+     var urlregex = /^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/;
+     
+     if (urlregex.test(url)) {
+	 layer = L.tileLayer.iiif(url, {}).addTo(map);
+     }
+    </script>
+  </body>
+</html>

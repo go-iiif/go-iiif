@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"embed"
 	"flag"
 	"fmt"
 	"io"
@@ -20,7 +21,11 @@ import (
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"	
 	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
+	"github.com/go-iiif/go-iiif/v6/static/javascript"
+	"github.com/go-iiif/go-iiif/v6/static/css"
+	"github.com/go-iiif/go-iiif/v6/static/html"
 	"github.com/sfomuseum/go-csvdict"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
@@ -222,9 +227,6 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return fmt.Errorf("Failed to determine format flag, %w", err)
 	}
 
-	/*
-	*/
-
 	processes, err := lookup.IntVar(fs, "processes")
 
 	if err != nil {
@@ -333,6 +335,80 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return err
 	}
 
+	t.onCompleteFunc = func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error){
+
+		derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+		
+		if err != nil {
+			slog.Error("Failed to load derivatives cache from config", "error", err)
+			return
+		}
+		
+		write_assets := func(assets_fs embed.FS, assets []string) error {
+
+			for _, fname := range assets {
+
+				root := filepath.Join(alt_id, "assets")
+				path := filepath.Join(root, fname)
+				
+				body, err := assets_fs.ReadFile(fname)
+				
+				if err != nil {
+					return fmt.Errorf("Failed to read %s, %w", fname, err)
+				}
+				
+				err = derivatives_cache.Set(path, body)
+				
+				if err != nil {
+					return fmt.Errorf("Failed to write %s, %w", path, err)
+				}
+			}
+			
+			return nil
+		}
+			
+		js_assets := []string{
+			"leaflet.js",
+			"leaflet-iiif.js",
+		}
+
+		css_assets := []string{
+			"leaflet.css",
+		}
+
+		err = write_assets(javascript.FS, js_assets)
+
+		if err != nil {
+			slog.Error("Failed to write JS assets", "error", err)
+			return
+		}
+
+		err = write_assets(css.FS, css_assets)
+
+		if err != nil {
+			slog.Error("Failed to write CSS assets", "error", err)
+			return
+		}
+
+		root := filepath.Join(alt_id)
+		path := filepath.Join(root, "index.html")
+				
+		body, err := html.FS.ReadFile("tiles.html")
+				
+		if err != nil {
+			slog.Error("Failed to read tiles HTML", "error", err)
+			return
+		}
+		
+		err = derivatives_cache.Set(path, body)
+		
+		if err != nil {
+			slog.Error("Failed to write HTML", "path", path, "error", err)
+			return
+		}
+		
+	}
+	
 	ts, err := iiiftile.NewTileSeed(config, 256, 256, endpoint, quality, format)
 
 	if err != nil {
