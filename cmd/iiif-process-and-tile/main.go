@@ -5,9 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/url"
 	"path/filepath"
-
+	"strings"
+	
 	"github.com/go-iiif/go-iiif-uri"
 	"github.com/go-iiif/go-iiif/v6/tools"
 	"github.com/sfomuseum/go-flags/flagset"
@@ -106,6 +108,8 @@ func main() {
 
 		ts_uri_func := func(raw_uri string) (uri.URI, error) {
 
+			slog.Debug("Derive tileseed URI func for prefix", "uri", raw_uri, "prefix", tiles_prefix)
+			
 			/*
 
 				what the following code suggests is that the go-iiif-uri.URI
@@ -117,13 +121,13 @@ func main() {
 			u, err := uri.NewURI(ctx, raw_uri)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to derive new URI from '%s', %w", raw_uri, err)
 			}
 
 			u2, err := url.Parse(raw_uri)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed parse URI '%s', %w", raw_uri, err)
 			}
 
 			q := u2.Query()
@@ -131,16 +135,21 @@ func main() {
 			target, err := u.Target(&q)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to derive target from URI %s, %w", u, err)
 			}
 
 			origin := u.Origin()
 
+			if !strings.HasPrefix(origin, "/"){
+				origin = fmt.Sprintf("/%s", origin)
+			}
+			
 			root := filepath.Dir(target)
 			path := filepath.Join(root, "tiles")
 
 			file_uri := fmt.Sprintf("%s://%s?target=%s", uri.FILE_SCHEME, origin, path)
 
+			slog.Debug("Tile seed URI", "uri", file_uri)
 			return uri.NewFileURI(ctx, file_uri)
 		}
 

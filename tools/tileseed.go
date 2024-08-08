@@ -7,7 +7,7 @@ import (
 	"io"
 	"log/slog"
 	"net/url"
-	_ "os"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -223,17 +223,6 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	}
 
 	/*
-		logfile, err := lookup.StringVar(fs, "logfile")
-
-		if err != nil {
-			return fmt.Errorf("Failed to determine logfile flag, %w", err)
-		}
-
-		loglevel, err := lookup.StringVar(fs, "loglevel")
-
-		if err != nil {
-			return fmt.Errorf("Failed to determine loglevel flag, %w", err)
-		}
 	*/
 
 	processes, err := lookup.IntVar(fs, "processes")
@@ -266,6 +255,48 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		return err
 	}
 
+	// START OF logging
+
+	logfile, err := lookup.StringVar(fs, "logfile")
+	
+	if err != nil {
+		return fmt.Errorf("Failed to determine logfile flag, %w", err)
+	}
+	
+	loglevel, err := lookup.StringVar(fs, "loglevel")
+	
+	if err != nil {
+		return fmt.Errorf("Failed to determine loglevel flag, %w", err)
+	}
+
+	// This is mostly because I still can't figure out how
+	// the get the current log level from log/slog and we need
+	// to assign a default slog.Level to the logfile handler
+	// below.
+	var sloglevel slog.Level
+	
+	switch loglevel {
+	case "debug":
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+		sloglevel = slog.LevelDebug		
+	case "info":
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+		sloglevel = slog.LevelInfo
+	case "status":
+		slog.Warn("Log level is no longer supported, defaulting to INFO", "level", "loglevel")		
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+		sloglevel = slog.LevelInfo		
+	case "warning":
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+		sloglevel = slog.LevelWarn		
+	case "error", "fatal":
+		slog.Warn("Log level is no longer supported, defaulting to WARN", "level", "loglevel")
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+		sloglevel = slog.LevelWarn				
+	default:
+		sloglevel = slog.LevelInfo
+	}
+
 	verbose, err := lookup.BoolVar(fs, "verbose")
 
 	if err != nil {
@@ -274,9 +305,28 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 
 	if verbose {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
+		sloglevel = slog.LevelDebug
 		slog.Debug("Verbose logging enabled")
 	}
 
+	if logfile != "" {
+
+		wr, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
+
+		if err != nil {
+			return fmt.Errorf("Failed to open '%s' for writing (logs), %w", logfile, err)
+		}
+
+		defer wr.Close()
+		
+		mw := io.MultiWriter(os.Stderr, wr)
+		
+		h := slog.NewTextHandler(mw, &slog.HandlerOptions{Level: sloglevel})
+		slog.SetDefault(slog.New(h))
+	}	
+	
+	// END OF logging
+	
 	config, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
 	if err != nil {
