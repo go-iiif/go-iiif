@@ -39,7 +39,11 @@ func NewNativeDriver() (iiifdriver.Driver, error) {
 
 func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.Source, id string) (iiifimage.Image, error) {
 
-	slog.Info("NewImageFromConfigWithSource", "id", id, "source", src)
+	logger := slog.Default()
+	logger = logger.With("source", src)
+	logger = logger.With("id", id)
+	
+	slog.Debug("New image from config with source")
 
 	body, err := src.Read(id)
 
@@ -47,22 +51,51 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		return nil, fmt.Errorf("Failed to read body for '%s', %w", id, err)
 	}
 
-	buf := bytes.NewBuffer(body)
-
+	buf := bytes.NewReader(body)
+	
 	img, img_fmt, err := image.Decode(buf)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to decode image, %w", err)
 	}
 
-	slog.Info("New Image", "id", id, "format", img_fmt, "source", src)
+	_, err = buf.Seek(0, 0)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to rewind buffer, %w", err)
+	}
+
+	model, err := colour.DeriveModel(buf)
+
+	if err != nil {
+		slog.Debug("Unable to derive model for image, default to unknown", "id", id, "error", err)
+		model = colour.UnknownModel
+	}
+	
+	logger.Debug("New Golang image", "format", img_fmt, "model", model)	
+
+	switch model {
+	case colour.AppleDisplayP3Model:
+		img = colour.ToDisplayP3(img)
+	case colour.AdobeRGBModel:
+		img = colour.ToAdobeRGB(img)
+	case colour.UnknownModel, colour.SRGBModel:
+		// pass
+	default:
+		// pass
+	}
 	
 	if img_fmt == "jpeg" {
 
-		ctx := context.Background()
-		br := bytes.NewReader(body)
+		_, err = buf.Seek(0, 0)
 
-		o, err := rotate.GetImageOrientation(ctx, br)
+		if err != nil {
+			return nil, fmt.Errorf("Failed to rewind buffer, %w", err)
+		}
+
+		ctx := context.Background()
+		
+		o, err := rotate.GetImageOrientation(ctx, buf)
 
 		if err != nil && !exif.IsCriticalError(err) {
 			return nil, fmt.Errorf("Failed to derive image orientation for '%s', %w", id, err)
@@ -80,17 +113,6 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		}
 
 	}
-
-	br := bytes.NewReader(body)
-
-	model, err := colour.DeriveModel(br)
-
-	if err != nil {
-		slog.Debug("Unable to derive model for image, default to unknown", "id", id, "error", err)
-		model = colour.UnknownModel
-	}
-
-	slog.Info("Color model", "id", id, "mode", model, "source", src)
 
 	im := NativeImage{
 		config:    config,
@@ -124,8 +146,6 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 		if err != nil {
 			return nil, fmt.Errorf("Failed to derive image from source for '%s', %w", id, err)
 		}
-
-		// slog.Debug("WTF", "id", id, "model", image.ColourModel())
 
 	} else {
 

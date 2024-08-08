@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"strings"
 
 	"gocloud.dev/blob"
+	"github.com/aaronland/gocloud-blob/bucket"
+	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"	
 )
 
 type IIIFInstructionSet map[Label]IIIFInstructions
@@ -23,15 +25,15 @@ type IIIFInstructions struct {
 
 func ReadInstructionsFromBucket(ctx context.Context, bucket *blob.Bucket, fname string) (IIIFInstructionSet, error) {
 
-	instructions_fh, err := bucket.NewReader(ctx, fname, nil)
+	instructions_r, err := bucket.NewReader(ctx, fname, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer instructions_fh.Close()
+	defer instructions_r.Close()
 
-	return ReadInstructionsReader(instructions_fh)
+	return ReadInstructionsReader(instructions_r)
 }
 
 func ReadInstructions(str_instructions string) (IIIFInstructionSet, error) {
@@ -57,9 +59,9 @@ func ReadInstructions(str_instructions string) (IIIFInstructionSet, error) {
 
 }
 
-func ReadInstructionsReader(fh io.Reader) (IIIFInstructionSet, error) {
+func ReadInstructionsReader(r io.Reader) (IIIFInstructionSet, error) {
 
-	body, err := ioutil.ReadAll(fh)
+	body, err := io.ReadAll(r)
 
 	if err != nil {
 		return nil, err
@@ -79,6 +81,32 @@ func ReadInstructionsBytes(body []byte) (IIIFInstructionSet, error) {
 	}
 
 	return instruction_set, nil
+}
+
+func LoadInstructions(ctx context.Context, bucket_uri string, key string) (IIIFInstructionSet, error) {
+
+	if bucket_uri == iiifdefaults.URI {
+
+		key = "instructions.json"
+		
+		r, err := iiifdefaults.FS.Open(key)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to load config (%s) from defaults, %w", key, err)
+		}
+
+		return ReadInstructionsReader(r)
+	}
+	
+	instructions_bucket, err := bucket.OpenBucket(ctx, bucket_uri)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to open instructions bucket, %w", err)
+	}
+
+	defer instructions_bucket.Close()
+	
+	return ReadInstructionsFromBucket(ctx, instructions_bucket, key)
 }
 
 func EnsureInstructions(i IIIFInstructions) IIIFInstructions {

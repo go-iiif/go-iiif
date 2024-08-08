@@ -289,6 +289,13 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		slog.Debug("Verbose logging enabled")
 	}
 
+	config, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+
+	if err != nil {
+		return err
+	}
+
+	/*
 	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
@@ -300,7 +307,8 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	if err != nil {
 		return fmt.Errorf("Failed to create new config from bucket, %w", err)
 	}
-
+	*/
+	
 	ts, err := iiiftile.NewTileSeed(config, 256, 256, endpoint, quality, format)
 
 	if err != nil {

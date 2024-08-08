@@ -16,7 +16,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	"github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"	
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
 	"github.com/go-iiif/go-iiif/v6/process"
 	"github.com/sfomuseum/go-flags/flagset"
@@ -46,7 +46,7 @@ func NewProcessToolWithURIFunc(uri_func URIFunc) (Tool, error) {
 type ProcessResultsReport map[string]interface{}
 
 type ProcessOptions struct {
-	Config         *config.Config
+	Config         *iiifconfig.Config
 	Driver         iiifdriver.Driver
 	Processor      process.Processor
 	Instructions   process.IIIFInstructionSet
@@ -263,6 +263,19 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		return errors.New("Required -instructions-source flag is empty.")
 	}
 
+	cfg, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+
+	if err != nil {
+		return err
+	}
+
+	instructions_set, err := process.LoadInstructions(ctx, instructions_source, instructions_name)
+
+	if err != nil {
+		return err
+	}
+	
+	/*
 	config_bucket, err := blob.OpenBucket(ctx, config_source)
 
 	if err != nil {
@@ -276,7 +289,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	if err != nil {
 		return fmt.Errorf("Failed to create new config from bucket %s (%s), %w", config_bucket, config_name, err)
 	}
-
+	
 	instructions_bucket, err := blob.OpenBucket(ctx, instructions_source)
 
 	if err != nil {
@@ -285,8 +298,16 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 
 	defer instructions_bucket.Close()
 
-	var report_bucket *blob.Bucket
+	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, instructions_name)
 
+	if err != nil {
+		return fmt.Errorf("Failed to read instructions from bucket, %w", err)
+	}
+
+	*/
+
+	var report_bucket *blob.Bucket
+	
 	if report_source != "" {
 
 		b, err := blob.OpenBucket(ctx, report_source)
@@ -299,12 +320,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		defer report_bucket.Close()
 	}
 
-	instructions_set, err := process.ReadInstructionsFromBucket(ctx, instructions_bucket, instructions_name)
-
-	if err != nil {
-		return fmt.Errorf("Failed to read instructions from bucket, %w", err)
-	}
-
+	
 	driver, err := iiifdriver.NewDriverFromConfig(cfg)
 
 	if err != nil {

@@ -15,6 +15,7 @@ import (
 	iiifservice "github.com/go-iiif/go-iiif/v6/service"
 )
 
+// ParallelProcessURIWithInstructionSet processes 'u' according to each instruction in 'instruction_set' in concurrent processes
 func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdriver.Driver, pr Processor, instruction_set IIIFInstructionSet, u iiifuri.URI) (map[string]interface{}, error) {
 
 	done_ch := make(chan bool)

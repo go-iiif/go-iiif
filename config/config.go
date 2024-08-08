@@ -11,6 +11,8 @@ import (
 	"strings"
 
 	"gocloud.dev/blob"
+	"github.com/aaronland/gocloud-blob/bucket"
+	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"
 )
 
 // type Config is a struct containing configuration details for IIIF processes and services.
@@ -243,4 +245,30 @@ func NewConfigFromBytes(body []byte) (*Config, error) {
 	}
 
 	return &c, nil
+}
+
+func LoadConfig(ctx context.Context, bucket_uri string, key string) (*Config, error) {
+
+	if bucket_uri == iiifdefaults.URI {	
+
+		key = "config.json"
+		
+		r, err := iiifdefaults.FS.Open(key)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to load config (%s) from defaults, %w", key, err)
+		}
+
+		return NewConfigFromReader(r)
+	}
+	
+	config_bucket, err := bucket.OpenBucket(ctx, bucket_uri)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to open config bucket, %w", err)
+	}
+
+	defer config_bucket.Close()
+	
+	return NewConfigFromBucket(ctx, config_bucket, key)
 }

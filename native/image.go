@@ -10,8 +10,8 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"log/slog"
-
+	_ "log/slog"
+	
 	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-mimetypes"
 	"github.com/anthonynsimon/bild/effect"
@@ -66,7 +66,6 @@ func (im *NativeImage) Update(body []byte) error {
 }
 
 func (im *NativeImage) Body() []byte {
-	slog.Info("ENCODE BODY", "id", im.id)
 	body, _ := encodeImage(im.img, im.format)
 	return body
 }

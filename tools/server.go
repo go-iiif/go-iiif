@@ -12,7 +12,7 @@ import (
 
 	"github.com/aaronland/go-http-ping"
 	"github.com/aaronland/go-http-server"
-	"github.com/aaronland/gocloud-blob/bucket"
+	// "github.com/aaronland/gocloud-blob/bucket"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
@@ -157,6 +157,13 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return errors.New("Required -config-source flag is empty.")
 	}
 
+	config, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+
+	if err != nil {
+		return err
+	}
+	
+	/*
 	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
@@ -168,7 +175,8 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 	if err != nil {
 		return err
 	}
-
+	*/
+	
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {

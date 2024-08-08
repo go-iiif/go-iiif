@@ -266,6 +266,13 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 		return errors.New("Required -config-source flag is empty.")
 	}
 
+	config, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
+
+	if err != nil {
+		return err
+	}
+
+	/*
 	config_bucket, err := bucket.OpenBucket(ctx, config_source)
 
 	if err != nil {
@@ -278,6 +285,8 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 		return err
 	}
 
+	*/
+	
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {
