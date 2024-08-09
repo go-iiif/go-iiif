@@ -96,7 +96,7 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to open bucket for %s, %w", uri, err)
 	}
 
 	// something something something permissions and ACLs in Go Cloud
