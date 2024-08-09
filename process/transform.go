@@ -3,6 +3,7 @@ package process
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"strings"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -15,12 +16,21 @@ import (
 
 func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
 
+	ctx := context.Background()
+
 	origin := u.Origin()
 	target, err := u.Target(nil)
 
 	if err != nil {
 		return nil, nil, fmt.Errorf("Failed to derive target for origin '%s', %w", origin, err)
 	}
+
+	logger := slog.Default()
+	logger = logger.With("uri", u)
+	logger = logger.With("origin", origin)
+	logger = logger.With("target", target)
+
+	logger.Debug("Transform with instructions")
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://localhost")
 
@@ -41,7 +51,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 	switch u.Scheme() {
 
 	case "rewrite":
-		// pass
+		// logger.Warn("Origin has rewrite scheme, do not rewrite")
 	default:
 
 		tr_uri, err := transformation.ToURI(target)
@@ -50,7 +60,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 			return nil, nil, fmt.Errorf("Failed to create transformation URI for origin '%s' with target '%s', %w", origin, target, err)
 		}
 
-		ctx := context.Background()
+		logger.Debug("Transformation URI", "uri", tr_uri)
 
 		str_uri := fmt.Sprintf("%s://%s", iiifuri.FILE_SCHEME, tr_uri)
 		new_uri, err := iiifuri.NewURI(ctx, str_uri)
@@ -65,7 +75,10 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 			return nil, nil, fmt.Errorf("Failed to create target for origin '%s' from URI '%s', %w", origin, new_uri, err)
 		}
 
+		logger.Debug("Rewrite target", "new target", new_target)
 		target = new_target
+
+		logger = logger.With("new target", new_target)
 	}
 
 	im, err := driver.NewImageFromConfigWithCache(config, source_cache, origin)
@@ -86,8 +99,6 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, fmt.Errorf("Failed to store new derivative for origin '%s' at '%s', %w", origin, target, err)
 	}
 
-	ctx := context.Background()
-
 	uri_target := target
 
 	if !strings.HasPrefix(uri_target, "/") {
@@ -101,5 +112,6 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, fmt.Errorf("Failed to derive new IIIF URI for origin '%s' from string '%s', %w", origin, str_uri, err)
 	}
 
+	logger.Debug("Return transformation", "new uri", new_uri)
 	return new_uri, im, nil
 }
