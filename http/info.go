@@ -13,44 +13,46 @@ import (
 
 func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.HandlerFunc, error) {
 
-	fn := func(w gohttp.ResponseWriter, r *gohttp.Request) {
+	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		ctx := r.Context()
+		logger := LoggerForRequest(req)
 
-		parser, err := NewIIIFQueryParser(r)
+		ctx := req.Context()
+
+		params, err := IIIFParamtersFromRequest(req)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusBadRequest)
+			logger.Error("Failed to derive IIIF parameters for request", "error", err)
+			gohttp.Error(rsp, "Bad request", gohttp.StatusBadRequest)
 			return
 		}
 
-		id, err := parser.GetIIIFParameter("identifier")
-
-		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusBadRequest)
-			return
-		}
+		id := params.Identifier
+		logger = logger.With("id", id)
 
 		image, err := driver.NewImageFromConfig(config, id)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			logger.Error("Failed to derive image from id", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
 
-		endpoint := EndpointFromRequest(r)
+		endpoint := EndpointFromRequest(req)
 
 		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			logger.Error("Failed to derive level from config", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
 
 		info, err := iiifinfo.New(iiifinfo.IMAGE_V2_CONTEXT, level, image)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			logger.Error("Failed to derive info", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
 
@@ -66,7 +68,8 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 				service, err := iiifservice.NewService(ctx, service_uri, config, image)
 
 				if err != nil {
-					gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+					logger.Error("Failed to instantiate server", "service", service_uri, "error", err)
+					gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 					return
 				}
 
@@ -79,13 +82,13 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 		b, err := iiifinfo.MarshalJSON(info)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			logger.Error("Failed to marshal info", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Write(b)
+		rsp.Header().Set("Content-Type", "application/json")
+		rsp.Write(b)
 
 	}
 

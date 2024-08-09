@@ -55,13 +55,28 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	mux := http.NewServeMux()
 
+	// router.Handle("/ping", ping_handler)
+	// router.HandleFunc("/debug/vars", expvar_handler)
+	// router.HandleFunc("/{identifier:.+}/info.json", info_handler)
+	// router.HandleFunc("/{identifier:.+}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
+
 	info_handler, err := iiifhttp.InfoHandler(cfg, driver)
 
 	if err != nil {
 		return fmt.Errorf("Failed to create info handler, %w", err)
 	}
 
-	mux.Handle("/info", info_handler)
+	// DO CORS STUFF HERE
+
+	mux.Handle("/{identifier}/info.json", info_handler)
+
+	image_handler, err := iiifhttp.ImageHandler(cfg, driver)
+
+	if err != nil {
+		return fmt.Errorf("Failed to create image handler, %w", err)
+	}
+
+	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
 
 	s, err := server.NewServer(ctx, opts.ServerURI)
 
