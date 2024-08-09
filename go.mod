@@ -29,6 +29,7 @@ require (
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/sfomuseum/go-csvdict v1.0.0
 	github.com/sfomuseum/go-flags v0.10.0
+	github.com/sfomuseum/go-template v1.10.0
 	github.com/tidwall/pretty v1.2.1
 	github.com/whosonfirst/algnhsa v0.1.0
 	github.com/whosonfirst/go-sanitize v0.1.0
@@ -84,6 +85,7 @@ require (
 	github.com/neocortical/noborders v0.0.0-20180212065722-427885311d44 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
