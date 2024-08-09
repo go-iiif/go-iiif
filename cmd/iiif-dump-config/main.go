@@ -17,7 +17,7 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	_ "gocloud.dev/blob/fileblob"
-	_ "gocloud.dev/blob/memblob"	
+	_ "gocloud.dev/blob/memblob"
 )
 
 type FeatureDetails struct {

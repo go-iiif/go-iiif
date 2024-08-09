@@ -20,12 +20,12 @@ import (
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"	
-	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
-	"github.com/go-iiif/go-iiif/v6/static/javascript"
 	"github.com/go-iiif/go-iiif/v6/static/css"
 	"github.com/go-iiif/go-iiif/v6/static/html"
+	"github.com/go-iiif/go-iiif/v6/static/javascript"
+	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
 	"github.com/sfomuseum/go-csvdict"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
@@ -139,7 +139,7 @@ func AppendCommonTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error 
 	if err != nil {
 		return err
 	}
-	
+
 	err = AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
@@ -174,7 +174,7 @@ func AppendTileSeedToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 	fs.String("endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
 
 	fs.Bool("generate-tiles-html", false, "If true then the tiles directory will be updated to include HTML/JavaScript/CSS assets to display tiles as a \"slippy\" map (using the leaflet-iiif.js library.")
-	
+
 	return nil
 }
 
@@ -262,13 +262,13 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	// START OF logging
 
 	logfile, err := lookup.StringVar(fs, "logfile")
-	
+
 	if err != nil {
 		return fmt.Errorf("Failed to determine logfile flag, %w", err)
 	}
-	
+
 	loglevel, err := lookup.StringVar(fs, "loglevel")
-	
+
 	if err != nil {
 		return fmt.Errorf("Failed to determine loglevel flag, %w", err)
 	}
@@ -278,25 +278,25 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	// to assign a default slog.Level to the logfile handler
 	// below.
 	var sloglevel slog.Level
-	
+
 	switch loglevel {
 	case "debug":
 		slog.SetLogLoggerLevel(slog.LevelDebug)
-		sloglevel = slog.LevelDebug		
+		sloglevel = slog.LevelDebug
 	case "info":
 		slog.SetLogLoggerLevel(slog.LevelInfo)
 		sloglevel = slog.LevelInfo
 	case "status":
-		slog.Warn("Log level is no longer supported, defaulting to INFO", "level", "loglevel")		
+		slog.Warn("Log level is no longer supported, defaulting to INFO", "level", "loglevel")
 		slog.SetLogLoggerLevel(slog.LevelInfo)
-		sloglevel = slog.LevelInfo		
+		sloglevel = slog.LevelInfo
 	case "warning":
 		slog.SetLogLoggerLevel(slog.LevelWarn)
-		sloglevel = slog.LevelWarn		
+		sloglevel = slog.LevelWarn
 	case "error", "fatal":
 		slog.Warn("Log level is no longer supported, defaulting to WARN", "level", "loglevel")
 		slog.SetLogLoggerLevel(slog.LevelWarn)
-		sloglevel = slog.LevelWarn				
+		sloglevel = slog.LevelWarn
 	default:
 		sloglevel = slog.LevelInfo
 	}
@@ -322,13 +322,13 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 		}
 
 		defer wr.Close()
-		
+
 		mw := io.MultiWriter(os.Stderr, wr)
-		
+
 		h := slog.NewTextHandler(mw, &slog.HandlerOptions{Level: sloglevel})
 		slog.SetDefault(slog.New(h))
-	}	
-	
+	}
+
 	// END OF logging
 
 	config, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
@@ -338,103 +338,103 @@ func (t *TileSeedTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Flag
 	}
 
 	// END OF generate HTML for tiles
-	
+
 	generate_tiles_html, err := lookup.BoolVar(fs, "generate-tiles-html")
-	
+
 	if err != nil {
 		return fmt.Errorf("Failed to determine generate-tiles-html flag, %w", err)
 	}
-	
+
 	if generate_tiles_html {
-		
-		t.onCompleteFunc = func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error){
+
+		t.onCompleteFunc = func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error) {
 
 			logger := slog.Default()
 			logger = logger.With("source", src_id)
 			logger = logger.With("alt", alt_id)
-			
+
 			if err != nil {
 				logger.Warn("Skipping on complete func because error present", "error", err)
 				return
 			}
 
 			logger.Info("Generate HTML index page for tiles")
-			
+
 			derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
-			
+
 			if err != nil {
 				logger.Error("Failed to load derivatives cache from config", "error", err)
 				return
 			}
-			
+
 			write_assets := func(assets_fs embed.FS, assets []string) error {
 
 				for _, fname := range assets {
-					
+
 					root := filepath.Join(alt_id, "assets")
 					path := filepath.Join(root, fname)
-					
+
 					body, err := assets_fs.ReadFile(fname)
-					
+
 					if err != nil {
 						return fmt.Errorf("Failed to read %s, %w", fname, err)
 					}
-					
+
 					err = derivatives_cache.Set(path, body)
-					
+
 					if err != nil {
 						return fmt.Errorf("Failed to write %s, %w", path, err)
 					}
 				}
-				
+
 				return nil
 			}
-			
+
 			js_assets := []string{
 				"leaflet.js",
 				"leaflet-iiif.js",
 			}
-			
+
 			css_assets := []string{
 				"leaflet.css",
 			}
-			
+
 			err = write_assets(javascript.FS, js_assets)
-			
+
 			if err != nil {
 				logger.Error("Failed to write JS assets", "error", err)
 				return
 			}
-			
+
 			err = write_assets(css.FS, css_assets)
-			
+
 			if err != nil {
 				logger.Error("Failed to write CSS assets", "error", err)
 				return
 			}
-			
+
 			root := filepath.Join(alt_id)
 			path := filepath.Join(root, "index.html")
-				
+
 			body, err := html.FS.ReadFile("tiles.html")
-			
+
 			if err != nil {
 				logger.Error("Failed to read tiles HTML", "error", err)
 				return
 			}
-			
+
 			err = derivatives_cache.Set(path, body)
-			
+
 			if err != nil {
 				logger.Error("Failed to write HTML", "path", path, "error", err)
 				return
 			}
 		}
-		
+
 	}
 
 	// END OF generate HTML for tiles
-	
+
 	ts, err := iiiftile.NewTileSeed(config, 256, 256, endpoint, quality, format)
 
 	if err != nil {

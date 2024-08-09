@@ -11,7 +11,7 @@ func TestDefaultURIFunc(t *testing.T) {
 	}
 
 	fn := DefaultURIFunc()
-	
+
 	for _, u := range tests {
 
 		_, err := fn(u)

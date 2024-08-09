@@ -1,25 +1,25 @@
 package source
 
 import (
-	"fmt"
 	"crypto/sha256"
+	"fmt"
 	_ "log/slog"
 
-	"github.com/dgraph-io/ristretto"	
+	"github.com/dgraph-io/ristretto"
 )
 
 var memory_cache *ristretto.Cache
 
 type MemorySource struct {
 	Source
-	key    string
+	key string
 }
 
 func NewMemorySource(body []byte) (Source, error) {
 
 	sum := sha256.Sum256(body)
 	key := fmt.Sprintf("%x", sum)
-	
+
 	return NewMemorySourceWithKey(key, body)
 }
 
@@ -32,7 +32,7 @@ func NewMemorySourceWithKey(key string, body []byte) (Source, error) {
 			MaxCost:     1 << 30, // maximum cost of cache (1GB).
 			BufferItems: 64,      // number of keys per Get buffer.
 		})
-		
+
 		if err != nil {
 			return nil, fmt.Errorf("Failed to create source memory cache, %w", err)
 		}
@@ -42,9 +42,9 @@ func NewMemorySourceWithKey(key string, body []byte) (Source, error) {
 
 	memory_cache.Set(key, body, 1)
 	memory_cache.Wait()
-	
+
 	bs := &MemorySource{
-		key:    key,
+		key: key,
 	}
 
 	return bs, nil
@@ -55,9 +55,9 @@ func (bs *MemorySource) String() string {
 }
 
 func (bs *MemorySource) Read(key string) ([]byte, error) {
-	
+
 	v, exists := memory_cache.Get(key)
-	
+
 	if !exists {
 		return nil, fmt.Errorf("%s not found", bs.key)
 	}

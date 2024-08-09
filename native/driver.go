@@ -42,7 +42,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	logger := slog.Default()
 	logger = logger.With("source", src)
 	logger = logger.With("id", id)
-	
+
 	// logger.Debug("New image from config with source")
 
 	body, err := src.Read(id)
@@ -52,7 +52,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	}
 
 	buf := bytes.NewReader(body)
-	
+
 	img, img_fmt, err := image.Decode(buf)
 
 	if err != nil {
@@ -71,8 +71,8 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		slog.Debug("Unable to derive model for image, default to unknown", "id", id, "error", err)
 		model = colour.UnknownModel
 	}
-	
-	// logger.Debug("New Golang image", "format", img_fmt, "model", model)	
+
+	// logger.Debug("New Golang image", "format", img_fmt, "model", model)
 
 	switch model {
 	case colour.AppleDisplayP3Model:
@@ -84,7 +84,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	default:
 		// pass
 	}
-	
+
 	if img_fmt == "jpeg" {
 
 		_, err = buf.Seek(0, 0)
@@ -94,7 +94,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		}
 
 		ctx := context.Background()
-		
+
 		o, err := rotate.GetImageOrientation(ctx, buf)
 
 		if err != nil && !exif.IsCriticalError(err) {

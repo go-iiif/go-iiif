@@ -87,8 +87,8 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 	logger := slog.Default()
 	logger = logger.With("source id", src_id)
-	logger = logger.With("alt id", alt_id)	
-	
+	logger = logger.With("alt id", alt_id)
+
 	logger.Info("Seed tiles for image", "image cache", ts.images_cache, "derivatives cache", ts.derivatives_cache, "processes", ts.procs, "scales", scales)
 
 	count := 0
@@ -183,14 +183,14 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					logger.Warn("Failed to derive new image from config", "identifier", im.Identifier(), "error", err)
 					return
 				}
-				
+
 				err = tmp.Transform(tr)
 
 				if err != nil {
 					logger.Warn("Failed to apply transformation", "identifier", im.Identifier(), "error", err)
 					return
 				}
-				
+
 				err = ts.derivatives_cache.Set(uri, tmp.Body())
 
 				if err != nil {
@@ -211,7 +211,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 	}
 
 	// Generate info.json file
-	
+
 	level, err := iiiflevel.NewLevel0(ts.config, ts.Endpoint)
 
 	if err != nil {
@@ -242,7 +242,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 	ts.derivatives_cache.Set(uri, body)
 
 	//
-	
+
 	return count, nil
 }
 
@@ -250,7 +250,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 
 	logger := slog.Default()
 	logger = logger.With("id", im.Identifier())
-	
+
 	dims, err := im.Dimensions()
 
 	if err != nil {

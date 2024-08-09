@@ -11,7 +11,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	_ "log/slog"
-	
+
 	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-mimetypes"
 	"github.com/anthonynsimon/bild/effect"

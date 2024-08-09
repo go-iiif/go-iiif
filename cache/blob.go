@@ -40,13 +40,13 @@ func RegisterBlobCacheSchemes(ctx context.Context) error {
 	defer register_mu.Unlock()
 
 	to_register := make([]string, 0)
-	
+
 	for _, scheme := range blob.DefaultURLMux().BucketSchemes() {
 		to_register = append(to_register, scheme)
 	}
 
 	for _, scheme := range to_register {
-		
+
 		_, exists := register_map[scheme]
 
 		if exists {

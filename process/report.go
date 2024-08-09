@@ -1,19 +1,19 @@
 package process
 
 import (
+	"bufio"
 	"bytes"
-	"bufio"	
 	"context"
 	"crypto/sha256"
 	"fmt"
-	"strings"
 	"path/filepath"
 	"sort"
-	
-	"github.com/go-iiif/go-iiif/v6/static/templates/html"	
+	"strings"
+
 	iiifuri "github.com/go-iiif/go-iiif-uri"
+	"github.com/go-iiif/go-iiif/v6/static/templates/html"
 	"github.com/jtacoma/uritemplates"
-	"github.com/tidwall/gjson"	
+	"github.com/tidwall/gjson"
 )
 
 const REPORTNAME_TEMPLATE string = "process_{sha256_origin}.json"
@@ -46,17 +46,17 @@ func DeriveReportNameFromURI(ctx context.Context, u iiifuri.URI, uri_template st
 func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte, error) {
 
 	type Image struct {
-		URI string
+		URI    string
 		Height int
-		Width int
+		Width  int
 	}
-	
+
 	var images = make([]*Image, 0)
 
 	uris_rsp := gjson.GetBytes(report_body, "uris")
 
 	for label, u := range uris_rsp.Map() {
-		
+
 		uri := u.String()
 		fname := filepath.Base(uri)
 
@@ -67,9 +67,9 @@ func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte,
 		h := dims[1].Int()
 
 		im := &Image{
-			URI: fname,
+			URI:    fname,
 			Height: int(h),
-			Width: int(w),
+			Width:  int(w),
 		}
 
 		images = append(images, im)
@@ -78,7 +78,7 @@ func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte,
 	sort.Slice(images, func(i, j int) bool {
 		return (images[j].Height * images[j].Width) < (images[i].Height * images[i].Width)
 	})
-	
+
 	type HTMLVars struct {
 		Images []*Image
 	}
@@ -98,10 +98,10 @@ func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte,
 	vars := HTMLVars{
 		Images: images,
 	}
-	
+
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
-	
+
 	err = t.Execute(wr, vars)
 
 	if err != nil {

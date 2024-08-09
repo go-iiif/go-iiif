@@ -1,0 +1,7 @@
+language: go
+
+go:
+  - 1.x
+install:
+  - GO111MODULE=off go get gotest.tools/gotestsum
+script: gotestsum

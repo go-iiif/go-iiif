@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log/slog"
 	"golang.org/x/image/tiff"
 	"golang.org/x/image/webp"
 	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log/slog"
 
 	"github.com/aaronland/go-image/colour"
 )

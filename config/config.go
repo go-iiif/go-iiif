@@ -4,17 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"flag"
+	"fmt"
 	"io"
 	"log/slog"
 	"os"
 	"strings"
 
-	"gocloud.dev/blob"
 	"github.com/aaronland/gocloud-blob/bucket"
 	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"
 	"github.com/sfomuseum/go-flags/lookup"
+	"gocloud.dev/blob"
 )
 
 // type Config is a struct containing configuration details for IIIF processes and services.
@@ -251,10 +251,10 @@ func NewConfigFromBytes(body []byte) (*Config, error) {
 
 func LoadConfig(ctx context.Context, bucket_uri string, key string) (*Config, error) {
 
-	if bucket_uri == iiifdefaults.URI {	
+	if bucket_uri == iiifdefaults.URI {
 
 		key = "config.json"
-		
+
 		r, err := iiifdefaults.FS.Open(key)
 
 		if err != nil {
@@ -263,7 +263,7 @@ func LoadConfig(ctx context.Context, bucket_uri string, key string) (*Config, er
 
 		return NewConfigFromReader(r)
 	}
-	
+
 	config_bucket, err := bucket.OpenBucket(ctx, bucket_uri)
 
 	if err != nil {
@@ -271,7 +271,7 @@ func LoadConfig(ctx context.Context, bucket_uri string, key string) (*Config, er
 	}
 
 	defer config_bucket.Close()
-	
+
 	return NewConfigFromBucket(ctx, config_bucket, key)
 }
 
@@ -288,7 +288,7 @@ func LoadConfigWithFlagSet(ctx context.Context, fs *flag.FlagSet) (*Config, erro
 	if err != nil {
 		return nil, fmt.Errorf("Failed to lookup -config-name flag, %w", err)
 	}
-	
+
 	cfg, err := LoadConfig(ctx, config_source, config_name)
 
 	if err != nil {
@@ -305,7 +305,7 @@ func LoadConfigWithFlagSet(ctx context.Context, fs *flag.FlagSet) (*Config, erro
 	derivatives_cache_uri, _ := lookup.StringVar(fs, "config-derivatives-cache-uri")
 
 	if derivatives_cache_uri != "" {
-		slog.Debug("Reassign derivatives cache", "uri", derivatives_cache_uri)		
+		slog.Debug("Reassign derivatives cache", "uri", derivatives_cache_uri)
 		cfg.Derivatives.Cache.URI = derivatives_cache_uri
 	}
 

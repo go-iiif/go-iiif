@@ -41,7 +41,7 @@ func ServerToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = AppendCommonServerToolFlags(ctx, fs)
 
 	if err != nil {
@@ -150,7 +150,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 	if err != nil {
 		return err
 	}
-		
+
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {

@@ -2,14 +2,13 @@ package uri
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/aaronland/go-string/random"
-	_ "log"
 	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/aaronland/go-string/random"
 )
 
 const IDSECRET_SCHEME string = "idsecret"
@@ -41,7 +40,7 @@ func NewIdSecretURI(ctx context.Context, str_uri string) (URI, error) {
 	origin := strings.TrimLeft(u.Path, "/")
 
 	if origin == "" {
-		return nil, errors.New("Invalid path")
+		return nil, fmt.Errorf("Invalid path, '%s' resolves to nil origin after trimming", str_uri)
 	}
 
 	q := u.Query()
@@ -49,7 +48,7 @@ func NewIdSecretURI(ctx context.Context, str_uri string) (URI, error) {
 	str_id := q.Get("id")
 
 	if str_id == "" {
-		return nil, errors.New("Missing id")
+		return nil, fmt.Errorf("Missing ?id= parameter")
 	}
 
 	if q.Get("ensure-int") != "" {
@@ -57,7 +56,7 @@ func NewIdSecretURI(ctx context.Context, str_uri string) (URI, error) {
 		_, err := strconv.ParseUint(str_id, 10, 64)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to resolve integer value for ?id= parameter, %w", err)
 		}
 	}
 
@@ -75,7 +74,7 @@ func NewIdSecretURI(ctx context.Context, str_uri string) (URI, error) {
 		s, err := random.String(rnd_opts)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to derive new secret, %w", err)
 		}
 
 		secret = s
@@ -86,7 +85,7 @@ func NewIdSecretURI(ctx context.Context, str_uri string) (URI, error) {
 		s, err := random.String(rnd_opts)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to derive new original secret, %w", err)
 		}
 
 		secret_o = s
@@ -131,11 +130,11 @@ func (u *IdSecretURI) Target(opts *url.Values) (string, error) {
 	}
 
 	if format == "" {
-		return "", errors.New("Missing format parameter")
+		return "", fmt.Errorf("Missing format parameter")
 	}
 
 	if label == "" {
-		return "", errors.New("Missing label parameter")
+		return "", fmt.Errorf("Missing label parameter")
 	}
 
 	fname := fmt.Sprintf("%s_%s_%s.%s", str_id, secret, label, format)

@@ -29,7 +29,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"	
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
 	iiifprocess "github.com/go-iiif/go-iiif/v6/process"
 	"github.com/sfomuseum/go-flags/flagset"
@@ -59,13 +59,13 @@ func NewProcessToolWithURIFunc(uri_func URIFunc) (Tool, error) {
 type ProcessResultsReport map[string]interface{}
 
 type ProcessOptions struct {
-	Config         *iiifconfig.Config
-	Driver         iiifdriver.Driver
-	Processor      iiifprocess.Processor
-	Instructions   iiifprocess.IIIFInstructionSet
-	Report         bool
-	ReportTemplate string
-	ReportBucket   *blob.Bucket
+	Config             *iiifconfig.Config
+	Driver             iiifdriver.Driver
+	Processor          iiifprocess.Processor
+	Instructions       iiifprocess.IIIFInstructionSet
+	Report             bool
+	ReportTemplate     string
+	ReportBucket       *blob.Bucket
 	GenerateReportHTML bool
 }
 
@@ -87,7 +87,7 @@ func ProcessManyWithReport(ctx context.Context, opts *ProcessOptions, uris ...ii
 
 		logger := slog.Default()
 		logger = logger.With("origin", origin)
-		
+
 		rsp, err := iiifprocess.ParallelProcessURIWithInstructionSet(opts.Config, opts.Driver, opts.Processor, opts.Instructions, uri)
 
 		if err != nil {
@@ -155,7 +155,7 @@ func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = AppendCommonProcessToolFlags(ctx, fs)
 
 	if err != nil {
@@ -172,7 +172,7 @@ func ProcessToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 }
 
 func AppendCommonProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
-	
+
 	err := AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
@@ -200,8 +200,8 @@ func AppendProcessToolFlags(ctx context.Context, fs *flag.FlagSet) error {
 	fs.String("report-template", iiifprocess.REPORTNAME_TEMPLATE, "A valid URI template for generating process report filenames.")
 	fs.String("report-source", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
 
-	fs.Bool("generate-report-html", false, "...")
-	
+	fs.Bool("generate-report-html", false, "Generate an HTML page showing all the images listed in a process report.")
+
 	return nil
 }
 
@@ -267,7 +267,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 	if err != nil {
 		return fmt.Errorf("Failed to lookup -generate-report-html flag, %w", err)
 	}
-	
+
 	mode, err := lookup.StringVar(fs, "mode")
 
 	if err != nil {
@@ -284,21 +284,21 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 		slog.Debug("Verbose logging enabled")
 	}
-	
+
 	cfg, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
 	if err != nil {
 		return err
 	}
-	
+
 	instructions_set, err := iiifprocess.LoadInstructions(ctx, instructions_source, instructions_name)
 
 	if err != nil {
 		return err
 	}
-	
+
 	var report_bucket *blob.Bucket
-	
+
 	if report_source != "" {
 
 		b, err := blob.OpenBucket(ctx, report_source)
@@ -311,7 +311,6 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		defer report_bucket.Close()
 	}
 
-	
 	driver, err := iiifdriver.NewDriverFromConfig(cfg)
 
 	if err != nil {
@@ -328,15 +327,15 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 		slog.Info("-generate-report-html flag is true so automatically setting -report=true")
 		report = true
 	}
-	
+
 	process_opts := &ProcessOptions{
-		Config:         cfg,
-		Processor:      pr,
-		Driver:         driver,
-		Instructions:   instructions_set,
-		Report:         report,
-		ReportTemplate: report_template,
-		ReportBucket:   report_bucket,
+		Config:             cfg,
+		Processor:          pr,
+		Driver:             driver,
+		Instructions:       instructions_set,
+		Report:             report,
+		ReportTemplate:     report_template,
+		ReportBucket:       report_bucket,
 		GenerateReportHTML: generate_report_html,
 	}
 
@@ -381,7 +380,7 @@ func (t *ProcessTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagS
 
 		logger := slog.Default()
 		logger = logger.With("root", root)
-		
+
 		logger.Info("Watching filesystem")
 
 		watcher, err := fsnotify.NewWatcher()
@@ -500,37 +499,37 @@ func report_processing(ctx context.Context, opts *ProcessOptions, key string, rs
 	if opts.ReportBucket != nil {
 
 		fname := filepath.Base(key)
-		
+
 		wr, err := opts.ReportBucket.NewWriter(ctx, fname, nil)
-		
+
 		if err != nil {
 			return fmt.Errorf("Failed to create new writer for processing report, %w", err)
 		}
-		
+
 		_, err = wr.Write(rsp_body)
-		
+
 		if err != nil {
 			return fmt.Errorf("Failed to write processing report, %w", err)
 		}
-		
+
 		err = wr.Close()
-		
+
 		if err != nil {
 			return fmt.Errorf("Failed to close processing report after writing, %w", err)
 		}
-		
+
 		return nil
 	}
-	
+
 	cfg := opts.Config
-	
+
 	dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(cfg)
-	
+
 	if err != nil {
 		return fmt.Errorf("Failed to derive derivatives cache for processing report, %w", err)
-		
+
 	}
-	
+
 	err = dest_cache.Set(key, rsp_body)
 
 	if err != nil {
@@ -542,18 +541,18 @@ func report_processing(ctx context.Context, opts *ProcessOptions, key string, rs
 	// START OF HTML version
 
 	if opts.GenerateReportHTML {
-		
+
 		report_html, err := iiifprocess.GenerateProcessReportHTML(ctx, rsp_body)
-		
+
 		html_root := filepath.Dir(key)
 		html_path := filepath.Join(html_root, "index.html")
-		
+
 		err = dest_cache.Set(html_path, report_html)
-		
+
 		if err != nil {
 			return fmt.Errorf("Failed to write HTML %s, %w", html_path, err)
 		}
 	}
-	
+
 	return nil
 }

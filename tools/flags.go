@@ -17,7 +17,7 @@ func AppendCommonConfigFlags(ctx context.Context, fs *flag.FlagSet) error {
 	fs.String("config-name", "config.json", "The name of your go-iiif config file. This value will be ignored if -config-source is 'defaults://'.")
 
 	fs.String("config-images-source-uri", "", "If present this value will be used to assign the 'images.source.uri' property in the config file. Note: The 'images.source.uri' property takes precedence over other properties in 'images.source' block.")
-	fs.String("config-derivatives-cache-uri", "", "If present this value will be used to assign the 'derivatives.cache.uri' property in the config file. Note: The 'derivatives.cache.uri' property takes precedence over other properties in 'derivatives.cache' block.")	
+	fs.String("config-derivatives-cache-uri", "", "If present this value will be used to assign the 'derivatives.cache.uri' property in the config file. Note: The 'derivatives.cache.uri' property takes precedence over other properties in 'derivatives.cache' block.")
 	return nil
 }
 

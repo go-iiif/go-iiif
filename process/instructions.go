@@ -3,14 +3,14 @@ package process
 import (
 	"context"
 	"encoding/json"
-	"io"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
-	"gocloud.dev/blob"
 	"github.com/aaronland/gocloud-blob/bucket"
-	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"	
+	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"
+	"gocloud.dev/blob"
 )
 
 type IIIFInstructionSet map[Label]IIIFInstructions
@@ -88,7 +88,7 @@ func LoadInstructions(ctx context.Context, bucket_uri string, key string) (IIIFI
 	if bucket_uri == iiifdefaults.URI {
 
 		key = "instructions.json"
-		
+
 		r, err := iiifdefaults.FS.Open(key)
 
 		if err != nil {
@@ -97,7 +97,7 @@ func LoadInstructions(ctx context.Context, bucket_uri string, key string) (IIIFI
 
 		return ReadInstructionsReader(r)
 	}
-	
+
 	instructions_bucket, err := bucket.OpenBucket(ctx, bucket_uri)
 
 	if err != nil {
@@ -105,7 +105,7 @@ func LoadInstructions(ctx context.Context, bucket_uri string, key string) (IIIFI
 	}
 
 	defer instructions_bucket.Close()
-	
+
 	return ReadInstructionsFromBucket(ctx, instructions_bucket, key)
 }
 

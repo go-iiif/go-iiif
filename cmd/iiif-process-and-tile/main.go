@@ -27,15 +27,15 @@ import (
 	"net/url"
 	"path/filepath"
 	"strings"
-	
+
+	_ "github.com/aaronland/gocloud-blob/s3"
 	"github.com/go-iiif/go-iiif-uri"
+	_ "github.com/go-iiif/go-iiif/v6/native"
 	"github.com/go-iiif/go-iiif/v6/tools"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
-	_ "github.com/aaronland/gocloud-blob/s3"
-	_ "github.com/go-iiif/go-iiif/v6/native"
 	_ "gocloud.dev/blob/fileblob"
-	_ "gocloud.dev/blob/memblob"		
+	_ "gocloud.dev/blob/memblob"
 )
 
 func main() {
@@ -51,7 +51,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to append config flags, %v", err)
 	}
-	
+
 	err = tools.AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
@@ -127,7 +127,7 @@ func main() {
 		ts_uri_func := func(raw_uri string) (uri.URI, error) {
 
 			slog.Debug("Derive tileseed URI func for prefix", "uri", raw_uri, "prefix", tiles_prefix)
-			
+
 			/*
 
 				what the following code suggests is that the go-iiif-uri.URI
@@ -158,10 +158,10 @@ func main() {
 
 			origin := u.Origin()
 
-			if !strings.HasPrefix(origin, "/"){
+			if !strings.HasPrefix(origin, "/") {
 				origin = fmt.Sprintf("/%s", origin)
 			}
-			
+
 			root := filepath.Dir(target)
 			path := filepath.Join(root, "tiles")
 

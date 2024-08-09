@@ -133,7 +133,7 @@ func TransformToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = AppendCommonTransformToolFlags(ctx, fs)
 
 	if err != nil {
@@ -260,7 +260,7 @@ func (t *TransformTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fla
 	if err != nil {
 		return err
 	}
-	
+
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
 	if err != nil {

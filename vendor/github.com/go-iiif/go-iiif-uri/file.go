@@ -2,7 +2,6 @@ package uri
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -32,7 +31,7 @@ func NewFileURI(ctx context.Context, str_uri string) (URI, error) {
 	origin := strings.TrimLeft(u.Path, "/")
 
 	if origin == "" {
-		return nil, errors.New("Invalid path")
+		return nil, fmt.Errorf("Invalid path, '%s' resolves to nil origin after trimming", str_uri)
 	}
 
 	q := u.Query()

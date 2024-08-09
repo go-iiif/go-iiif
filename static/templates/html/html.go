@@ -5,7 +5,7 @@ import (
 	"embed"
 	"html/template"
 
-	sfom_html "github.com/sfomuseum/go-template/html"	
+	sfom_html "github.com/sfomuseum/go-template/html"
 )
 
 //go:embed *.html
