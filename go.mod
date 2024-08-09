@@ -5,7 +5,6 @@ go 1.22.4
 require (
 	github.com/aaronland/go-colours v0.1.2
 	github.com/aaronland/go-flickr-api v1.0.5
-	github.com/aaronland/go-http-ping v1.0.0
 	github.com/aaronland/go-http-server v1.4.1
 	github.com/aaronland/go-image v1.3.0
 	github.com/aaronland/go-mimetypes v0.0.2
@@ -21,19 +20,17 @@ require (
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/go-iiif/go-iiif-uri v0.5.2
-	github.com/gorilla/mux v1.8.1
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
 	github.com/muesli/smartcrop v0.3.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
+	github.com/rs/cors v1.11.0
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/sfomuseum/go-csvdict v1.0.0
 	github.com/sfomuseum/go-flags v0.10.0
 	github.com/sfomuseum/go-template v1.10.0
 	github.com/tidwall/gjson v1.17.3
 	github.com/tidwall/pretty v1.2.1
-	github.com/whosonfirst/algnhsa v0.1.0
-	github.com/whosonfirst/go-sanitize v0.1.0
 	gocloud.dev v0.38.0
 	golang.org/x/image v0.19.0
 )

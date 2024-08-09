@@ -7,6 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 
+	// "github.com/rs/cors"
 	"github.com/aaronland/go-http-server"
 	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
@@ -66,7 +67,8 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return fmt.Errorf("Failed to create info handler, %w", err)
 	}
 
-	// DO CORS STUFF HERE
+	// cors_wrapper := cors.Default()
+	// info_handler = cors_wrapper.Handler(info_handler)
 
 	mux.Handle("/{identifier}/info.json", info_handler)
 
