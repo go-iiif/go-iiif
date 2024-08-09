@@ -20,6 +20,7 @@ type FlickrSource struct {
 	http_client   *http.Client
 	flickr_client client.Client
 	uri           string
+	safe_uri      string
 }
 
 func init() {
@@ -106,6 +107,32 @@ func NewFlickrSourceFromURI(uri string) (Source, error) {
 		return nil, err
 	}
 
+	//
+
+	client_u, err := url.Parse(client_uri)
+
+	if err != nil {
+		return nil, fmt.Errorf("Failed to parse Flickr client URI, %w", err)
+	}
+
+	client_q := url.Values{}
+	client_q.Set("consumer_key", "{KEY}")
+	client_q.Set("consumer_secret", "{SECRET}")
+	client_q.Set("oauth_token", "{TOKEN}")
+	client_q.Set("oauth_token_secret", "{SECRET}")
+
+	client_u.RawQuery = client_q.Encode()
+
+	safe_q := url.Values{}
+	safe_q.Set("client-uri", client_u.String())
+
+	safe_u, _ := url.Parse(uri)
+	safe_u.RawQuery = safe_q.Encode()
+
+	safe_uri := safe_u.String()
+
+	//
+
 	http_client := &http.Client{}
 
 	fs := FlickrSource{
@@ -113,14 +140,14 @@ func NewFlickrSourceFromURI(uri string) (Source, error) {
 		http_client:   http_client,
 		cache:         cache,
 		uri:           uri,
+		safe_uri:      safe_uri,
 	}
 
 	return &fs, nil
 }
 
 func (fs *FlickrSource) String() string {
-	// TO DO: strip keys/secrets
-	return fs.uri
+	return fs.safe_uri
 }
 
 func (fs *FlickrSource) Read(id string) ([]byte, error) {

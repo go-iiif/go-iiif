@@ -32,3 +32,7 @@ func NewDiskCache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	return NewBlobCacheFromURI(uri)
 }
+
+func NewDiskCacheFromURI(uri string) (Cache, error) {
+	return NewBlobCacheFromURI(uri)
+}

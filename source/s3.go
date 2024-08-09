@@ -30,3 +30,7 @@ func NewS3Source(cfg *iiifconfig.Config) (Source, error) {
 
 	return NewBlobSourceFromURI(uri)
 }
+
+func NewS3SourceFromURI(uri string) (Source, error) {
+	return NewBlobSourceFromURI(uri)
+}

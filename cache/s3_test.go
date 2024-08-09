@@ -6,13 +6,13 @@ import (
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
-func TestS3Cache(t testing.T) {
+func TestS3Cache(t *testing.T) {
 
-	cfg := &iiifconfig.CacheConfig{
+	cfg := iiifconfig.CacheConfig{
 		Path:        "config.json",
 		Prefix:      "",
 		Region:      "us-east-1",
-		Credentials: "session",
+		Credentials: "env:",
 	}
 
 	_, err := NewS3Cache(cfg)

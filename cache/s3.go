@@ -36,3 +36,7 @@ func NewS3Cache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
 	return NewBlobCacheFromURI(uri)
 }
+
+func NewS3CacheFromURI(uri string) (Cache, error) {
+	return NewBlobCacheFromURI(uri)
+}
