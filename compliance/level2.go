@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	_ "log"
 	"regexp"
 
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -237,8 +236,6 @@ func (c *Level2Compliance) isvalid(property string, value string) (bool, error) 
 
 	for name, details := range sect {
 
-		// log.Printf("%s %t (%s = %s)", name, details.Supported, property, value)
-
 		re, err := regexp.Compile(details.Match)
 
 		if err != nil {
@@ -254,7 +251,6 @@ func (c *Level2Compliance) isvalid(property string, value string) (bool, error) 
 			return false, errors.New(message)
 		}
 
-		// log.Printf("%s %s MATCH %s", name, property, value)
 		ok = true
 		break
 

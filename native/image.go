@@ -5,13 +5,14 @@ package native
 import (
 	"bufio"
 	"bytes"
-	"errors"
+	"fmt"
 	"image"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	_ "log"
+	_ "log/slog"
 
+	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-mimetypes"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
@@ -34,6 +35,7 @@ type NativeImage struct {
 	id        string
 	img       image.Image
 	format    string
+	model     colour.Model
 }
 
 type NativeDimensions struct {
@@ -51,20 +53,19 @@ func (d *NativeDimensions) Width() int {
 
 func (im *NativeImage) Update(body []byte) error {
 
-	img, fmt, err := decodeImageBytes(body)
+	img, img_fmt, err := decodeImageBytes(body)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to decode image bytes, %w", err)
 	}
 
 	im.img = img
-	im.format = fmt
+	im.format = img_fmt
 
 	return nil
 }
 
 func (im *NativeImage) Body() []byte {
-
 	body, _ := encodeImage(im.img, im.format)
 	return body
 }
@@ -72,6 +73,11 @@ func (im *NativeImage) Body() []byte {
 func (im *NativeImage) Format() string {
 
 	return im.format
+}
+
+func (im *NativeImage) ColourModel() colour.Model {
+
+	return im.model
 }
 
 func (im *NativeImage) ContentType() string {
@@ -107,13 +113,13 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		rgi, err := t.RegionInstructions(im)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to derive region instructions, %w", err)
 		}
 
 		si, err := t.SizeInstructions(im)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to derive size instructions, %w", err)
 		}
 
 		if rgi.SmartCrop {
@@ -127,7 +133,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 			topCrop, err := analyzer.FindBestCrop(im.img, width, height)
 
 			if err != nil {
-				return err
+				return fmt.Errorf("Failed to derive best crop, %w", err)
 			}
 
 			type SubImager interface {
@@ -236,13 +242,13 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 		body, err := encodeImage(im.img, fi.Format)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to encode image, %w", err)
 		}
 
 		img, format, err := decodeImageBytes(body)
 
 		if err != nil {
-			return err
+			return fmt.Errorf("Failed to decode image, %w", err)
 		}
 
 		im.img = img
@@ -286,7 +292,7 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 		opts := tiff.Options{}
 		err = tiff.Encode(wr, im, &opts)
 	default:
-		err = errors.New("Unsupported encoding")
+		err = fmt.Errorf("Unsupported encoding, '%s'", format)
 	}
 
 	if err != nil {

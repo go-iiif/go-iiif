@@ -1,28 +1,16 @@
 package tools
 
+// Important: Almost everything in the package will change in the v7 release.
+// Not so much the functionality the way in which the code is organized. "Tools"
+// will no longer be concered with flags - those will be moved in to the app
+// package - but instead only use tool-specific "options" structs. The Tool interface
+// will probably only contain a single Run(ctx context.Context, uris ...string) error
+// method.
+
 import (
 	"context"
 	"flag"
 )
-
-/*
-
-the idea for each and any of the non-native drivers to be able to provide their
-own copy of the standard toolset by doing something like this (error handling
-omitted for brevity) :
-
-import (
-	"context"
-	_ "github.com/go-iiif/go-iiif/native"
-	"github.com/go-iiif/go-iiif/tools"
-)
-
-func main() {
-	tool, _ := tools.NewTransformTool()
-	tool.Run(context.Background())
-}
-
-*/
 
 type Tool interface {
 	Run(context.Context) error

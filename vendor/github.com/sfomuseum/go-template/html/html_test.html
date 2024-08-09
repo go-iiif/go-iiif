@@ -1,0 +1,3 @@
+{{ define "test"}}
+<html><head><title>{{ if (IsAvailable "PageTitle" .) }}{{ .PageTitle }}{{ end }}</title></head><body>{{ if (IsAvailable "UserName" .) }}Hello {{ .UserName }}{{ else }}This is a test.{{ end }}</body></html>
+{{ end }}

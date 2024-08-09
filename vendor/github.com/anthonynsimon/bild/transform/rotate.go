@@ -25,9 +25,8 @@ type RotationOptions struct {
 //
 // Usage example:
 //
-// 		// Rotate 90.0 degrees clockwise, preserving the image size and the pivot point at the top left corner
-// 		result := transform.Rotate(img, 90.0, &transform.RotationOptions{ResizeBounds: true, Pivot: &image.Point{0, 0}})
-//
+//	// Rotate 90.0 degrees clockwise, preserving the image size and the pivot point at the top left corner
+//	result := transform.Rotate(img, 90.0, &transform.RotationOptions{ResizeBounds: true, Pivot: &image.Point{0, 0}})
 func Rotate(img image.Image, angle float64, options *RotationOptions) *image.RGBA {
 	src := clone.AsShallowRGBA(img)
 	srcW, srcH := src.Bounds().Dx(), src.Bounds().Dy()
@@ -66,15 +65,16 @@ func Rotate(img image.Image, angle float64, options *RotationOptions) *image.RGB
 	angleRadians := -angle * (math.Pi / 180)
 
 	var dstW, dstH int
+	var sin, cos = math.Sincos(angleRadians)
 	if resizeBounds {
 		// Reserve larger size in destination image for full image bounds rotation
 		// If not preserving size, always take image center as pivot
 		pivotX, pivotY = float64(srcW)/2, float64(srcH)/2
 
-		a := math.Abs(float64(srcW) * math.Sin(angleRadians))
-		b := math.Abs(float64(srcW) * math.Cos(angleRadians))
-		c := math.Abs(float64(srcH) * math.Sin(angleRadians))
-		d := math.Abs(float64(srcH) * math.Cos(angleRadians))
+		a := math.Abs(float64(srcW) * sin)
+		b := math.Abs(float64(srcW) * cos)
+		c := math.Abs(float64(srcH) * sin)
+		d := math.Abs(float64(srcH) * cos)
 
 		dstW, dstH = int(c+b+0.5), int(a+d+0.5)
 	} else {
@@ -100,8 +100,8 @@ func Rotate(img image.Image, angle float64, options *RotationOptions) *image.RGB
 			for x := xStart; x < xEnd; x++ {
 				dx := float64(x) - pivotX + 0.5
 
-				ix := int((math.Cos(angleRadians)*dx - math.Sin(angleRadians)*dy + pivotX))
-				iy := int((math.Sin(angleRadians)*dx + math.Cos(angleRadians)*dy + pivotY))
+				ix := int((cos*dx - sin*dy + pivotX))
+				iy := int((sin*dx + cos*dy + pivotY))
 
 				if ix < 0 || ix >= srcW || iy < 0 || iy >= srcH {
 					continue

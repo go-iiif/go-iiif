@@ -3,11 +3,11 @@ package uri
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-roster"
-	_ "log"
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/aaronland/go-roster"
 )
 
 type URI interface {

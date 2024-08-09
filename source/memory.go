@@ -1,46 +1,66 @@
 package source
 
 import (
-	"context"
+	"crypto/sha256"
+	"fmt"
+	_ "log/slog"
 
-	"gocloud.dev/blob"
-	_ "gocloud.dev/blob/memblob"
+	"github.com/dgraph-io/ristretto"
 )
+
+var memory_cache *ristretto.Cache
 
 type MemorySource struct {
 	Source
-	uri    string
-	bucket *blob.Bucket
+	key string
 }
 
 func NewMemorySource(body []byte) (Source, error) {
 
-	ctx := context.Background()
+	sum := sha256.Sum256(body)
+	key := fmt.Sprintf("%x", sum)
 
-	b, err := blob.OpenBucket(ctx, "mem://")
+	return NewMemorySourceWithKey(key, body)
+}
 
-	if err != nil {
-		return nil, err
+func NewMemorySourceWithKey(key string, body []byte) (Source, error) {
+
+	if memory_cache == nil {
+
+		cache, err := ristretto.NewCache(&ristretto.Config{
+			NumCounters: 1e7,     // number of keys to track frequency of (10M).
+			MaxCost:     1 << 30, // maximum cost of cache (1GB).
+			BufferItems: 64,      // number of keys per Get buffer.
+		})
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to create source memory cache, %w", err)
+		}
+
+		memory_cache = cache
 	}
 
-	uri := "mem"
-
-	err = b.WriteAll(ctx, uri, body, nil)
-
-	if err != nil {
-		return nil, err
-	}
+	memory_cache.Set(key, body, 1)
+	memory_cache.Wait()
 
 	bs := &MemorySource{
-		uri:    uri,
-		bucket: b,
+		key: key,
 	}
 
 	return bs, nil
 }
 
-func (bs *MemorySource) Read(uri string) ([]byte, error) {
+func (bs *MemorySource) String() string {
+	return fmt.Sprintf("memory://%s", bs.key)
+}
 
-	ctx := context.Background()
-	return bs.bucket.ReadAll(ctx, bs.uri)
+func (bs *MemorySource) Read(key string) ([]byte, error) {
+
+	v, exists := memory_cache.Get(key)
+
+	if !exists {
+		return nil, fmt.Errorf("%s not found", bs.key)
+	}
+
+	return v.([]byte), nil
 }

@@ -1,23 +1,41 @@
 package main
 
-import (
-	_ "github.com/aaronland/gocloud-blob-s3"
-	_ "github.com/go-iiif/go-iiif/v6/native"
-	_ "gocloud.dev/blob/fileblob"
-)
+/*
+
+	$> ./bin/iiif-process-and-tile \
+		-config-source defaults:// \
+		-instructions-source defaults:// \
+		-verbose \
+		-scale-factors '1,2,4,8' \
+		-noextension \
+		-report \
+		-refresh \
+		-config-images-source-uri file:///usr/local \
+		-config-derivatives-cache-uri file:///usr/local/test \
+		-tiles-prefix tiles \
+		-generate-tiles-html \
+		'idsecret:///IMG_9998.jpg?id=9998&secret=abc&secret_o=def&format=jpg&label=x'
+
+*/
 
 import (
 	"context"
 	"flag"
 	"fmt"
 	"log"
+	"log/slog"
 	"net/url"
 	"path/filepath"
+	"strings"
 
+	_ "github.com/aaronland/gocloud-blob/s3"
 	"github.com/go-iiif/go-iiif-uri"
+	_ "github.com/go-iiif/go-iiif/v6/native"
 	"github.com/go-iiif/go-iiif/v6/tools"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
+	_ "gocloud.dev/blob/fileblob"
+	_ "gocloud.dev/blob/memblob"
 )
 
 func main() {
@@ -28,7 +46,13 @@ func main() {
 
 	fs := flag.NewFlagSet("iiif-process-and-tile", flag.ExitOnError)
 
-	err := tools.AppendCommonConfigFlags(ctx, fs)
+	err := tools.AppendCommonFlags(ctx, fs)
+
+	if err != nil {
+		log.Fatalf("Failed to append config flags, %v", err)
+	}
+
+	err = tools.AppendCommonConfigFlags(ctx, fs)
 
 	if err != nil {
 		log.Fatalf("Failed to append config flags, %v", err)
@@ -102,6 +126,8 @@ func main() {
 
 		ts_uri_func := func(raw_uri string) (uri.URI, error) {
 
+			slog.Debug("Derive tileseed URI func for prefix", "uri", raw_uri, "prefix", tiles_prefix)
+
 			/*
 
 				what the following code suggests is that the go-iiif-uri.URI
@@ -113,13 +139,13 @@ func main() {
 			u, err := uri.NewURI(ctx, raw_uri)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to derive new URI from '%s', %w", raw_uri, err)
 			}
 
 			u2, err := url.Parse(raw_uri)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed parse URI '%s', %w", raw_uri, err)
 			}
 
 			q := u2.Query()
@@ -127,16 +153,21 @@ func main() {
 			target, err := u.Target(&q)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to derive target from URI %s, %w", u, err)
 			}
 
 			origin := u.Origin()
+
+			if !strings.HasPrefix(origin, "/") {
+				origin = fmt.Sprintf("/%s", origin)
+			}
 
 			root := filepath.Dir(target)
 			path := filepath.Join(root, "tiles")
 
 			file_uri := fmt.Sprintf("%s://%s?target=%s", uri.FILE_SCHEME, origin, path)
 
+			slog.Debug("Tile seed URI", "uri", file_uri)
 			return uri.NewFileURI(ctx, file_uri)
 		}
 

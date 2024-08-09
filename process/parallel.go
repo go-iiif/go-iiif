@@ -5,7 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/url"
 	"sync"
 
@@ -15,6 +15,7 @@ import (
 	iiifservice "github.com/go-iiif/go-iiif/v6/service"
 )
 
+// ParallelProcessURIWithInstructionSet processes 'u' according to each instruction in 'instruction_set' in concurrent processes
 func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdriver.Driver, pr Processor, instruction_set IIIFInstructionSet, u iiifuri.URI) (map[string]interface{}, error) {
 
 	done_ch := make(chan bool)
@@ -158,8 +159,8 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		select {
 		case <-done_ch:
 			remaining -= 1
-		case e := <-err_ch:
-			log.Println(e)
+		case err := <-err_ch:
+			slog.Error(err.Error())
 		default:
 			//
 		}

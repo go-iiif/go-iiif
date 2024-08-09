@@ -9,3 +9,4 @@ bin
 !data/*.json
 *.csv
 tmp
+.DS_Store

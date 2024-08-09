@@ -11,12 +11,23 @@ type NullCache struct {
 	Cache
 }
 
+func NewNullCacheURIFromConfig(cfg config.CacheConfig) (string, error) {
+	return "null://", nil
+}
+
 // NewNullCache returns a pointer to a NullCache.
-func NewNullCache(cfg config.CacheConfig) (*NullCache, error) {
+func NewNullCache(cfg config.CacheConfig) (Cache, error) {
+	uri, _ := NewNullCacheURIFromConfig(cfg)
+	return NewNullCacheFromURI(uri)
+}
 
+func NewNullCacheFromURI(uri string) (Cache, error) {
 	c := NullCache{}
-
 	return &c, nil
+}
+
+func (c *NullCache) String() string {
+	return "null://"
 }
 
 // Exists is always false for a NullCache.

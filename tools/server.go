@@ -2,10 +2,9 @@ package tools
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -21,7 +20,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
-	"gocloud.dev/blob"
 )
 
 type IIIFServerTool struct {
@@ -38,7 +36,13 @@ func ServerToolFlagSet(ctx context.Context) (*flag.FlagSet, error) {
 
 	fs := flag.NewFlagSet("server", flag.ExitOnError)
 
-	err := AppendCommonServerToolFlags(ctx, fs)
+	err := AppendCommonFlags(ctx, fs)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = AppendCommonServerToolFlags(ctx, fs)
 
 	if err != nil {
 		return nil, err
@@ -105,18 +109,6 @@ func (t *IIIFServerTool) RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) e
 
 func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.FlagSet, paths ...string) error {
 
-	config_source, err := lookup.StringVar(fs, "config-source")
-
-	if err != nil {
-		return err
-	}
-
-	config_name, err := lookup.StringVar(fs, "config-name")
-
-	if err != nil {
-		return err
-	}
-
 	proto, err := lookup.StringVar(fs, "protocol")
 
 	if err != nil {
@@ -153,17 +145,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return err
 	}
 
-	if config_source == "" {
-		return errors.New("Required -config-source flag is empty.")
-	}
-
-	config_bucket, err := blob.OpenBucket(ctx, config_source)
-
-	if err != nil {
-		return err
-	}
-
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
+	config, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
 	if err != nil {
 		return err
@@ -282,7 +264,7 @@ func (t *IIIFServerTool) RunWithFlagSetAndPaths(ctx context.Context, fs *flag.Fl
 		return err
 	}
 
-	log.Printf("Listening on %s\n", s.Address())
+	slog.Info("Listening for requests", "address", s.Address())
 
 	err = s.ListenAndServe(ctx, router)
 

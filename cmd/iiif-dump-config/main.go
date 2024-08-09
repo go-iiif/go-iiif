@@ -9,15 +9,15 @@ import (
 	"log"
 	"sort"
 
-	_ "github.com/aaronland/gocloud-blob-s3"
+	_ "github.com/aaronland/gocloud-blob/s3"
 	iiifcompliance "github.com/go-iiif/go-iiif/v6/compliance"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
 	iiiftools "github.com/go-iiif/go-iiif/v6/tools"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
-	"gocloud.dev/blob"
 	_ "gocloud.dev/blob/fileblob"
+	_ "gocloud.dev/blob/memblob"
 )
 
 type FeatureDetails struct {
@@ -66,16 +66,10 @@ func main() {
 		log.Fatalf("Failed to parse -config-name flag, %v", err)
 	}
 
-	config_bucket, err := blob.OpenBucket(ctx, config_source)
+	config, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
 
 	if err != nil {
-		log.Fatalf("Failed to open config bucket, %v", err)
-	}
-
-	config, err := iiifconfig.NewConfigFromBucket(ctx, config_bucket, config_name)
-
-	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to load config, %v", err)
 	}
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "example.com")

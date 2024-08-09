@@ -5,7 +5,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	_ "log"
 )
 
 type ToolRunner struct {

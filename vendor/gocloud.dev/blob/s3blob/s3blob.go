@@ -151,11 +151,11 @@ const (
 
 func toServerSideEncryptionType(value string) (typesv2.ServerSideEncryption, error) {
 	for _, sseType := range typesv2.ServerSideEncryptionAes256.Values() {
-		if strings.ToLower(string(sseType)) == strings.ToLower(value) {
+		if strings.EqualFold(string(sseType), value) {
 			return sseType, nil
 		}
 	}
-	return "", fmt.Errorf("'%s' is not a valid value for '%s'", value, sseTypeParamKey)
+	return "", fmt.Errorf("%q is not a valid value for %q", value, sseTypeParamKey)
 }
 
 // OpenBucketURL opens a blob.Bucket based on u.
@@ -980,7 +980,7 @@ func unescapeKey(key string) string {
 }
 
 // NewTypedWriter implements driver.NewTypedWriter.
-func (b *bucket) NewTypedWriter(ctx context.Context, key string, contentType string, opts *driver.WriterOptions) (driver.Writer, error) {
+func (b *bucket) NewTypedWriter(ctx context.Context, key, contentType string, opts *driver.WriterOptions) (driver.Writer, error) {
 	key = escapeKey(key)
 	if b.useV2 {
 		uploaderV2 := s3managerv2.NewUploader(b.clientV2, func(u *s3managerv2.Uploader) {
@@ -1138,10 +1138,11 @@ func (b *bucket) NewTypedWriter(ctx context.Context, key string, contentType str
 func (b *bucket) Copy(ctx context.Context, dstKey, srcKey string, opts *driver.CopyOptions) error {
 	dstKey = escapeKey(dstKey)
 	srcKey = escapeKey(srcKey)
+	srcKeyWithBucketEscaped := url.QueryEscape(b.name + "/" + srcKey)
 	if b.useV2 {
 		input := &s3v2.CopyObjectInput{
 			Bucket:     aws.String(b.name),
-			CopySource: aws.String(b.name + "/" + srcKey),
+			CopySource: aws.String(srcKeyWithBucketEscaped),
 			Key:        aws.String(dstKey),
 		}
 		if b.encryptionType != "" {
@@ -1168,7 +1169,7 @@ func (b *bucket) Copy(ctx context.Context, dstKey, srcKey string, opts *driver.C
 	} else {
 		input := &s3.CopyObjectInput{
 			Bucket:     aws.String(b.name),
-			CopySource: aws.String(b.name + "/" + srcKey),
+			CopySource: aws.String(srcKeyWithBucketEscaped),
 			Key:        aws.String(dstKey),
 		}
 		if b.encryptionType != "" {

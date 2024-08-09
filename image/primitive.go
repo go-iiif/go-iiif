@@ -9,10 +9,8 @@ import (
 	"image/color/palette"
 	"image/draw"
 	"image/gif"
-	_ "log"
 	"math"
 	"runtime"
-	_ "time"
 
 	"github.com/fogleman/primitive/primitive"
 )
@@ -50,24 +48,14 @@ func PrimitiveImage(im Image, opts PrimitiveOptions) error {
 		size = int(max)
 	}
 
-	// t1 := time.Now()
-	// log.Println("starting model at", t1)
-
 	workers := runtime.NumCPU()
 
 	bg := primitive.MakeColor(primitive.AverageImageColor(goimg))
 	model := primitive.NewModel(goimg, bg, size, workers)
 
 	for i := 1; i <= opts.Iterations; i++ {
-
-		// tx := time.Since(t1)
-		// log.Printf("finished step %d in %v\n", i, tx)
-
 		model.Step(primitive.ShapeType(mode), alpha, workers)
 	}
-
-	// t2 := time.Since(t1)
-	// log.Println("finished model in", t2)
 
 	if opts.Animated {
 

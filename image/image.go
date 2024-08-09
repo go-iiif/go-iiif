@@ -10,6 +10,9 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log/slog"
+
+	"github.com/aaronland/go-image/colour"
 )
 
 type Image interface {
@@ -21,6 +24,7 @@ type Image interface {
 	Format() string
 	ContentType() string
 	Dimensions() (Dimensions, error)
+	ColourModel() colour.Model
 }
 
 type Dimensions interface {
@@ -128,4 +132,20 @@ func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) 
 	}
 
 	return out.Bytes(), nil
+}
+
+func ApplyColourModel(im image.Image, model colour.Model) image.Image {
+
+	switch model {
+	case colour.AppleDisplayP3Model:
+		im = colour.ToDisplayP3(im)
+	case colour.AdobeRGBModel:
+		im = colour.ToAdobeRGB(im)
+	case colour.UnknownModel, colour.SRGBModel:
+		// pass
+	default:
+		slog.Warn("Unknown or unsupported colour model", "model", model)
+	}
+
+	return im
 }
