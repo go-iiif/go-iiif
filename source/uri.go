@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/url"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 	"github.com/jtacoma/uritemplates"
 )
 

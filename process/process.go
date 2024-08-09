@@ -2,7 +2,7 @@ package process
 
 import (
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
 )
 
 type Label string

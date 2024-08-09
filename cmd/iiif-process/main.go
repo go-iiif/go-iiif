@@ -5,8 +5,8 @@ import (
 	"log"
 
 	_ "github.com/aaronland/gocloud-blob/s3"
-	_ "github.com/go-iiif/go-iiif/v6/native"
-	"github.com/go-iiif/go-iiif/v6/tools"
+	_ "github.com/go-iiif/go-iiif/v7/native"
+	"github.com/go-iiif/go-iiif/v7/tools"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
 )

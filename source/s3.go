@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	_ "github.com/aaronland/gocloud-blob/s3"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 )
 
 func NewS3SourceURIFromConfig(cfg *iiifconfig.Config) (string, error) {

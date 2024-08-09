@@ -10,8 +10,8 @@ import (
 	"net/url"
 
 	"github.com/aaronland/go-flickr-api/client"
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 )
 
 type FlickrSource struct {

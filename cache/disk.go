@@ -3,7 +3,7 @@ package cache
 import (
 	"fmt"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 )
 
 // NewDiskCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.

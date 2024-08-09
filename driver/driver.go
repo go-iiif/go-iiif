@@ -7,10 +7,10 @@ import (
 	"strings"
 	"sync"
 
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 )
 
 var (

@@ -3,7 +3,7 @@ package cache
 import (
 	"errors"
 
-	"github.com/go-iiif/go-iiif/v6/config"
+	"github.com/go-iiif/go-iiif/v7/config"
 )
 
 // A NullCache represents a Cache.

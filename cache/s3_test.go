@@ -3,7 +3,7 @@ package cache
 import (
 	"testing"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 )
 
 func TestS3Cache(t *testing.T) {

@@ -30,8 +30,8 @@ import (
 
 	_ "github.com/aaronland/gocloud-blob/s3"
 	"github.com/go-iiif/go-iiif-uri"
-	_ "github.com/go-iiif/go-iiif/v6/native"
-	"github.com/go-iiif/go-iiif/v6/tools"
+	_ "github.com/go-iiif/go-iiif/v7/native"
+	"github.com/go-iiif/go-iiif/v7/tools"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 	_ "gocloud.dev/blob/fileblob"

@@ -11,7 +11,7 @@ import (
 	"sync"
 
 	"github.com/aaronland/go-roster"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 )
 
 // In principle this could also be done with a sync.OnceFunc call but that will

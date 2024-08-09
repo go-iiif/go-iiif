@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	"github.com/go-iiif/go-iiif/v6/static/templates/html"
+	"github.com/go-iiif/go-iiif/v7/static/templates/html"
 	"github.com/jtacoma/uritemplates"
 	"github.com/tidwall/gjson"
 )

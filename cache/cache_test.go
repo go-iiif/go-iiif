@@ -3,8 +3,8 @@ package cache
 import (
 	"testing"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdefaults "github.com/go-iiif/go-iiif/v7/static/defaults"
 	_ "gocloud.dev/blob/memblob"
 )
 

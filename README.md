@@ -14,7 +14,7 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Releases
 
-The current release is `github.com/go-iiif/go-iiif/v6`.
+The current release is `github.com/go-iiif/go-iiif/v7`.
 
 ### v7
 
@@ -60,9 +60,9 @@ Support for alternative image processing libraries, like `libvips` is supported 
 
 ```
 import (
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 )
 
 type Driver interface {
@@ -80,7 +80,7 @@ Drivers are expected to "register" themselves through the `driver.RegisterDriver
 package native
 
 import (
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
 )
 
 func init() {
@@ -101,9 +101,9 @@ And then in your code you might do something like this:
 import (
 	"context"
 	"github.com/aaronland/gocloud-blob-bucket"	
-	_ "github.com/go-iiif/go-iiif/v6/native"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"	
+	_ "github.com/go-iiif/go-iiif/v7/native"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"	
 )
 
 ctx := context.Background()
@@ -135,7 +135,7 @@ The value of the `graphics.source` property should match the name that driver us
 
 The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` object and to invoke the relevant `NewImageFrom...` method as needed. It is assumed that the driver package in question will also implement it's own implementation of the `go-iiif` `image.Image` interface. For working examples you should consult either of the following packages:
 
-* https://github.com/go-iiif/go-iiif/v6/tree/master/native
+* https://github.com/go-iiif/go-iiif/v7/tree/master/native
 * https://github.com/go-iiif/go-iiif-vips
 
 ## Buckets
@@ -1049,9 +1049,9 @@ package example	// for example "github.com/example/go-iiif-example"
 
 import (
 	"context"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"	
-	iiifservice "github.com/go-iiif/go-iiif/v6/service"	
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"	
+	iiifservice "github.com/go-iiif/go-iiif/v7/service"	
 )
 
 func init() {
@@ -1094,8 +1094,8 @@ import (
 import (
 	"context"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/v6/native"
-	"github.com/go-iiif/go-iiif/v6/tools"
+	_ "github.com/go-iiif/go-iiif/v7/native"
+	"github.com/go-iiif/go-iiif/v7/tools"
 	_ "gocloud.dev/blob/fileblob"
 	"log"
 )

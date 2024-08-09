@@ -6,7 +6,7 @@ import (
 	"log/slog"
 
 	"github.com/aaronland/gocloud-blob/bucket"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 	"gocloud.dev/blob"
 )
 

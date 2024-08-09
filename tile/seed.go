@@ -8,13 +8,13 @@ import (
 	"sync"
 	"time"
 
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiifinfo "github.com/go-iiif/go-iiif/v6/info"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifinfo "github.com/go-iiif/go-iiif/v7/info"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 )
 
 type TileSeed struct {
