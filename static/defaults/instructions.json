@@ -1,0 +1,11 @@
+{
+    "o": {"size": "full", "format": "", "rotation": "-1" },
+    "k": {"size": "!2048,1536", "format": "jpg" },
+    "b": {"size": "!1024,768", "format": "jpg" },
+    "c": {"size": "!800,600", "format": "jpg" },
+    "dc": {"size": "!800,600", "quality": "dither", "format": "jpg" },    
+    "z": {"size": "!640,480", "format": "jpg" },
+    "n": {"size": "!320,240", "format": "jpg" },    
+    "s": {"size": "full", "region": "-1,-1,320,320", "quality": "crisp:2.0,0.5,0.025", "format": "jpg" },    
+    "ds": {"size": "full", "quality": "dither", "region": "-1,-1,320,320", "format": "jpg" }	
+}

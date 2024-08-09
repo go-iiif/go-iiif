@@ -1,0 +1,51 @@
+{
+    "level": {
+    	"compliance": "2"
+    },
+    "profile": {
+    	"services": {
+		    "enable": [
+		    	"palette",
+			"blurhash",
+		    	"imagehash"
+		    ]
+	}
+    },
+    "palette": {
+    	"extruder": { "name": "vibrant", "count": 5 },
+    	"grid": { "name": "euclidian" },
+	"palette": [
+		    { "name": "crayola" },
+		    { "name": "css4" }
+        ]
+    },
+    "blurhash": { "x": 8, "y": 8, "size": 200 },
+    "imagehash": {},
+    "graphics": {
+	"source": { "name": "native" }    
+    },
+    "features": {
+	"enable": {
+	    "size": [ "max" ],
+	    "format": [ "webp", "tif", "gif" ],
+	    "rotation": [ "noAutoRotate" ]
+	},
+	"disable": {
+	    "rotation": [ "rotationArbitrary" ],
+	    "quality": [ "bitonal" ]
+	},
+	"append": {
+	    "quality": {
+		"dither": { "syntax": "dither", "required": false, "supported": true, "match": "^dither$" },
+		"crisp": { "syntax": "crisp", "required": false, "supported": true, "match": "^crisp(?:\\:(\\d+\\.\\d+),(\\d+\\.\\d+),(\\d+\\.\\d+))?$" }		
+	    }
+	}
+    },
+    "images": {
+	"source": { "name": "Blob", "path": "mem://" },
+	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+    },
+    "derivatives": {
+	"cache": { "name": "Blob", "path": "mem://" }
+    }
+}
