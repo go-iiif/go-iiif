@@ -3,6 +3,7 @@ package process
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
@@ -87,7 +88,13 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 
 	ctx := context.Background()
 
-	str_uri := fmt.Sprintf("%s://%s", iiifuri.FILE_SCHEME, target)
+	uri_target := target
+
+	if !strings.HasPrefix(uri_target, "/") {
+		uri_target = fmt.Sprintf("/%s", target)
+	}
+
+	str_uri := fmt.Sprintf("%s://%s", iiifuri.FILE_SCHEME, uri_target)
 	new_uri, err := iiifuri.NewURI(ctx, str_uri)
 
 	if err != nil {
