@@ -43,7 +43,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	logger = logger.With("source", src)
 	logger = logger.With("id", id)
 	
-	slog.Debug("New image from config with source")
+	// logger.Debug("New image from config with source")
 
 	body, err := src.Read(id)
 
@@ -72,7 +72,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 		model = colour.UnknownModel
 	}
 	
-	logger.Debug("New Golang image", "format", img_fmt, "model", model)	
+	// logger.Debug("New Golang image", "format", img_fmt, "model", model)	
 
 	switch model {
 	case colour.AppleDisplayP3Model:

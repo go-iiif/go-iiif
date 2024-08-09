@@ -1,5 +1,23 @@
 package main
 
+/*
+
+	$> ./bin/iiif-process-and-tile \
+		-config-source defaults:// \
+		-instructions-source defaults:// \
+		-verbose \
+		-scale-factors '1,2,4,8' \
+		-noextension \
+		-report \
+		-refresh \
+		-config-images-source-uri file:///usr/local \
+		-config-derivatives-cache-uri file:///usr/local/test \
+		-tiles-prefix tiles \
+		-generate-tiles-html \
+		'idsecret:///IMG_9998.jpg?id=9998&secret=abc&secret_o=def&format=jpg&label=x'
+
+*/
+
 import (
 	"context"
 	"flag"

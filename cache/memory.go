@@ -1,10 +1,13 @@
 package cache
 
+// Note: This will be updated to use dgraph-io/ristretto in the v7 release to maintain
+// parity with the source/memory.go code
+
 import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
+	_ "log/slog"
 	"net/url"
 	"strconv"
 	"sync"
@@ -196,11 +199,11 @@ func (mc *MemoryCache) Get(key string) ([]byte, error) {
 	data, ok := mc.provider.Get(key)
 
 	if !ok {
-		slog.Debug("Get cache (MISS)", "key", key)
+		// slog.Debug("Get cache (MISS)", "key", key)
 		return nil, errors.New("cache miss")
 	}
 
-	slog.Debug("Get cache (HIT)", "key", key)
+	// slog.Debug("Get cache (HIT)", "key", key)
 	return data.([]byte), nil
 }
 
@@ -242,14 +245,13 @@ func (mc *MemoryCache) Set(key string, data []byte) error {
 
 	mc.provider.Set(key, data, gocache.DefaultExpiration)
 
-	slog.Debug("Set cache (OK)", "key", key)
+	// slog.Debug("Set cache (OK)", "key", key)
 	return nil
 }
 
 // Unset deletes data from a memory location.
 func (mc *MemoryCache) Unset(key string) error {
-
-	slog.Debug("Unset cache", "key", key)
+	// slog.Debug("Unset cache", "key", key)
 	mc.provider.Delete(key)
 	return nil
 }
