@@ -90,6 +90,14 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality_dot_format}", image_handler)
 
+	expvar_handler, err := iiifhttp.ExpvarHandler("127.0.0.1")
+
+	if err != nil {
+		return fmt.Errorf("Failed to create expvar handler, %w", err)
+	}
+
+	mux.Handle("/debug/expvar", expvar_handler)
+
 	s, err := server.NewServer(ctx, opts.ServerURI)
 
 	if err != nil {
