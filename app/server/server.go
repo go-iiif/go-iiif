@@ -7,11 +7,11 @@ import (
 	"log/slog"
 	"net/http"
 
-	// "github.com/rs/cors"
 	"github.com/aaronland/go-http-server"
 	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
 	iiifhttp "github.com/go-iiif/go-iiif/v7/http"
+	"github.com/rs/cors"
 )
 
 func Run(ctx context.Context) error {
@@ -31,6 +31,11 @@ func RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 }
 
 func RunWithOptions(ctx context.Context, opts *RunOptions) error {
+
+	if opts.Verbose {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+		slog.Debug("Verbose logging enabled")
+	}
 
 	cfg, err := iiifconfig.LoadConfig(ctx, opts.ConfigSource, opts.ConfigName)
 
@@ -67,10 +72,12 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return fmt.Errorf("Failed to create info handler, %w", err)
 	}
 
+	// This makes the compiler sad:
 	// cors_wrapper := cors.Default()
 	// info_handler = cors_wrapper.Handler(info_handler)
 
-	mux.Handle("/{identifier}/info.json", info_handler)
+	// This does not because... computers:
+	mux.Handle("/{identifier}/info.json", cors.Default().Handler(info_handler))
 
 	image_handler, err := iiifhttp.ImageHandler(cfg, driver)
 
@@ -78,7 +85,10 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return fmt.Errorf("Failed to create image handler, %w", err)
 	}
 
-	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
+	// > go run cmd/iiif-server/main.go -config-images-source-uri file:///Users/asc/Downloads
+	// panic: parsing "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}": at offset 41: bad wildcard name "quality}.{format"
+
+	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality_dot_format}", image_handler)
 
 	s, err := server.NewServer(ctx, opts.ServerURI)
 

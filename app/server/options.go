@@ -14,6 +14,7 @@ type RunOptions struct {
 	ConfigImagesSourceURI     string
 	ConfigDerivativesCacheURI string
 	ServerURI                 string
+	Verbose                   bool
 }
 
 func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, error) {
@@ -32,6 +33,7 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 		ConfigImagesSourceURI:     images_source_uri,
 		ConfigDerivativesCacheURI: derivatives_cache_uri,
 		ServerURI:                 server_uri,
+		Verbose:                   verbose,
 	}
 
 	return opts, nil

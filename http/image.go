@@ -73,12 +73,22 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.H
 
 			cacheHit.Add(1)
 
-			source, _ := iiifsource.NewMemorySource(body)
-			image, _ := driver.NewImageFromConfigWithSource(config, source, "cache")
+			source, err := iiifsource.NewMemorySource(body)
 
-			rsp.Header().Set("Content-Type", image.ContentType())
-			rsp.Write(image.Body())
-			return
+			if err != nil {
+				logger.Warn("Failed to derive image from cache body", "error", err)
+			} else {
+
+				image, err := driver.NewImageFromConfigWithSource(config, source, "cache")
+
+				if err != nil {
+					logger.Warn("Failed to derive new image from source (cache body)", "error", err)
+				} else {
+					rsp.Header().Set("Content-Type", image.ContentType())
+					rsp.Write(image.Body())
+					return
+				}
+			}
 		}
 
 		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)

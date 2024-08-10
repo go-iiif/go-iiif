@@ -16,6 +16,7 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		logger := LoggerForRequest(req)
+		logger.Debug("Handle info request")
 
 		ctx := req.Context()
 

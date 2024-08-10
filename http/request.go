@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"log/slog"
 	gohttp "net/http"
+	"regexp"
 )
+
+var re_quality_dot_format = regexp.MustCompile(`^([^\.]+)\.([^\.]+)$`)
 
 type IIIFParameters struct {
 	Identifier string
@@ -21,8 +24,22 @@ func IIIFParamtersFromRequest(req *gohttp.Request) (*IIIFParameters, error) {
 	region := req.PathValue("region")
 	size := req.PathValue("size")
 	rotation := req.PathValue("rotation")
-	quality := req.PathValue("quality")
-	format := req.PathValue("format")
+
+	// START OF because Go's net/http wildcard stuff
+	// can't deal with {foo}.{bar} URIs
+
+	quality_dot_format := req.PathValue("quality_dot_format")
+
+	var quality string
+	var format string
+
+	if re_quality_dot_format.MatchString(quality_dot_format) {
+		m := re_quality_dot_format.FindStringSubmatch(quality_dot_format)
+		quality = m[1]
+		format = m[2]
+	}
+
+	// END OF because Go's net/http wildcard stuff
 
 	params := &IIIFParameters{
 		Identifier: id,
