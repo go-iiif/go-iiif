@@ -37,6 +37,8 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		slog.Debug("Verbose logging enabled")
 	}
 
+	// Set up config and driver
+	
 	cfg, err := iiifconfig.LoadConfig(ctx, opts.ConfigSource, opts.ConfigName)
 
 	if err != nil {
@@ -59,12 +61,11 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return fmt.Errorf("Failed to load driver, %w", err)
 	}
 
+	// Set up HTTP mux
+	
 	mux := http.NewServeMux()
 
-	// router.Handle("/ping", ping_handler)
-	// router.HandleFunc("/debug/vars", expvar_handler)
-	// router.HandleFunc("/{identifier:.+}/info.json", info_handler)
-	// router.HandleFunc("/{identifier:.+}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
+	// Info handler
 
 	info_handler, err := iiifhttp.InfoHandler(cfg, driver)
 
@@ -79,17 +80,18 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	// This does not because... computers:
 	mux.Handle("/{identifier}/info.json", cors.Default().Handler(info_handler))
 
+	// Image handler
+	
 	image_handler, err := iiifhttp.ImageHandler(cfg, driver)
 
 	if err != nil {
 		return fmt.Errorf("Failed to create image handler, %w", err)
 	}
 
-	// > go run cmd/iiif-server/main.go -config-images-source-uri file:///Users/asc/Downloads
-	// panic: parsing "/{identifier}/{region}/{size}/{rotation}/{quality}.{format}": at offset 41: bad wildcard name "quality}.{format"
-
 	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality_dot_format}", image_handler)
 
+	// Expvar handler
+	
 	expvar_handler, err := iiifhttp.ExpvarHandler("127.0.0.1")
 
 	if err != nil {
@@ -98,6 +100,8 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	mux.Handle("/debug/expvar", expvar_handler)
 
+	// Start the server
+	
 	s, err := server.NewServer(ctx, opts.ServerURI)
 
 	if err != nil {
