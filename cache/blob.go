@@ -5,9 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/url"
 	"strings"
-
+	_ "time"
+	
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -152,15 +154,15 @@ func (bc *BlobCache) Get(uri string) ([]byte, error) {
 
 	ctx := context.Background()
 
-	fh, err := bc.bucket.NewReader(ctx, uri, nil)
+	r, err := bc.bucket.NewReader(ctx, uri, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer fh.Close()
+	defer r.Close()
 
-	return io.ReadAll(fh)
+	return io.ReadAll(r)
 }
 
 // Set writes data to a BlobCache location.
@@ -172,11 +174,20 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	// see notes above in NewBlobCacheFromURI
 
-	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
+	logger := slog.Default()
+	logger = logger.With("bucket uri", bc.bucket_uri)
+	logger = logger.With("uri", uri)
 
+	logger.Debug("S3 SET", "scheme", bc.scheme)
+	
+	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
+		
+		// logger.Debug("ACL", "acl", bc.acl)
+		
 		acl, err := aa_s3.StringACLToObjectCannedACL(bc.acl)
 
 		if err != nil {
+			logger.Error("Failed to derive ACL object", "error", err)
 			return fmt.Errorf("Failed to derive ACL object, %w", err)
 		}
 
@@ -186,9 +197,11 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 			ok := asFunc(&req)
 
 			if !ok {
+				logger.Error("Invalid S3 type (asFunc)")
 				return errors.New("invalid s3 type")
 			}
 
+			logger.Debug("Set ACL", "acl", acl)
 			req.ACL = acl
 			return nil
 		}
@@ -201,12 +214,14 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	fh, err := bc.bucket.NewWriter(ctx, uri, wr_opts)
 
 	if err != nil {
+		logger.Error("Failed to create new blob writer", "error", err)
 		return err
 	}
 
 	_, err = fh.Write(body)
 
 	if err != nil {
+		logger.Error("Failed to write blob", "error", err)
 		fh.Close()
 		return err
 	}
@@ -214,9 +229,20 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	err = fh.Close()
 
 	if err != nil {
+		logger.Error("Failed to close blob", "error", err)			
 		return err
 	}
 
+	/*
+	signed_opts := &blob.SignedURLOptions{
+		Expiry: 1 * time.Minute,
+	}
+	
+	signed_url, err := bc.bucket.SignedURL(ctx, uri, signed_opts)
+	logger.Debug("Signed URL", "url", signed_url, "error", err)
+	*/
+
+	logger.Debug("Successfully wrote blob")
 	return nil
 }
 
