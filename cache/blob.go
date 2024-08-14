@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strings"
 	_ "time"
-	
+
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -179,11 +179,11 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	logger = logger.With("uri", uri)
 
 	logger.Debug("S3 SET", "scheme", bc.scheme)
-	
+
 	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
-		
+
 		// logger.Debug("ACL", "acl", bc.acl)
-		
+
 		acl, err := aa_s3.StringACLToObjectCannedACL(bc.acl)
 
 		if err != nil {
@@ -229,17 +229,17 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	err = fh.Close()
 
 	if err != nil {
-		logger.Error("Failed to close blob", "error", err)			
+		logger.Error("Failed to close blob", "error", err)
 		return err
 	}
 
 	/*
-	signed_opts := &blob.SignedURLOptions{
-		Expiry: 1 * time.Minute,
-	}
-	
-	signed_url, err := bc.bucket.SignedURL(ctx, uri, signed_opts)
-	logger.Debug("Signed URL", "url", signed_url, "error", err)
+		signed_opts := &blob.SignedURLOptions{
+			Expiry: 1 * time.Minute,
+		}
+
+		signed_url, err := bc.bucket.SignedURL(ctx, uri, signed_opts)
+		logger.Debug("Signed URL", "url", signed_url, "error", err)
 	*/
 
 	logger.Debug("Successfully wrote blob")
