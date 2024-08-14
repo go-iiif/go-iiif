@@ -95,12 +95,19 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 
 	ctx := context.Background()
 
+	logger := slog.Default()
+	logger = logger.With("bucket_uri", uri)
+
+	logger.Debug("Create new blob cache")
+	
 	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to open bucket for %s, %w", uri, err)
 	}
 
+	logger.Debug("Created bucket", "bucket", b)
+	
 	// something something something permissions and ACLs in Go Cloud
 	// basically we need to trap a `acl=VALUE` query parameter in order
 	// to set permission - as of this writing we a) only handle S3 and
@@ -128,6 +135,7 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 		acl:        acl,
 	}
 
+	logger.Debug("Created new blob cache", "cache", bc)
 	return bc, nil
 }
 
@@ -177,8 +185,9 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	logger := slog.Default()
 	logger = logger.With("bucket uri", bc.bucket_uri)
 	logger = logger.With("uri", uri)
-
-	logger.Debug("S3 SET", "scheme", bc.scheme)
+	logger = logger.With("bucket", bc.bucket)
+	
+	logger.Debug("Set blob", "scheme", bc.scheme)
 
 	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
 
