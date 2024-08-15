@@ -13,16 +13,15 @@ import (
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"gocloud.dev/blob"
+	_ "gocloud.dev/blob/s3blob"
 )
 
 func main() {
 
 	var source_bucket_uri string
 	var target_bucket_uri string
-
 	var source_key string
 	var target_key string
-
 	var str_acl string
 
 	flag.StringVar(&source_bucket_uri, "source-bucket-uri", "", "A valid gocloud.dev/blob.Bucket URI.")
@@ -38,6 +37,7 @@ func main() {
 	slog.Info("Create source bucket", "uri", source_bucket_uri)
 
 	source_bucket, err := aa_bucket.OpenBucket(ctx, source_bucket_uri)
+	// source_bucket, err := blob.OpenBucket(ctx, source_bucket_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to open source bucket, %v", err)
@@ -48,6 +48,7 @@ func main() {
 	slog.Info("Create target bucket", "uri", target_bucket_uri)
 
 	target_bucket, err := aa_bucket.OpenBucket(ctx, target_bucket_uri)
+	// target_bucket, err := blob.OpenBucket(ctx, target_bucket_uri)
 
 	if err != nil {
 		log.Fatalf("Failed to open target bucket, %v", err)
