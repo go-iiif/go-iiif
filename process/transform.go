@@ -30,8 +30,8 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 	logger = logger.With("origin", origin)
 	logger = logger.With("target", target)
 	logger = logger.With("source cache", source_cache)
-	logger = logger.With("destination cache", dest_cache)	
-	
+	logger = logger.With("destination cache", dest_cache)
+
 	logger.Debug("Transform with instructions")
 
 	level, err := iiiflevel.NewLevelFromConfig(config, "http://localhost")

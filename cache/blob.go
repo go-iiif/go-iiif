@@ -12,7 +12,7 @@ import (
 
 	"bytes"
 	"github.com/aws/aws-sdk-go-v2/aws"
-	
+
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -102,7 +102,7 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 	logger = logger.With("bucket_uri", uri)
 
 	logger.Debug("Create new blob cache")
-	
+
 	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
@@ -110,7 +110,7 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 	}
 
 	logger.Debug("Created bucket", "bucket", b)
-	
+
 	// something something something permissions and ACLs in Go Cloud
 	// basically we need to trap a `acl=VALUE` query parameter in order
 	// to set permission - as of this writing we a) only handle S3 and
@@ -182,13 +182,13 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	ctx := context.Background()
 
 	var wr_opts *blob.WriterOptions
-	
+
 	// see notes above in NewBlobCacheFromURI
 
 	logger := slog.Default()
 	logger = logger.With("bucket uri", bc.bucket_uri)
 	logger = logger.With("uri", uri)
-	
+
 	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
 
 		// logger.Debug("ACL", "acl", bc.acl)
@@ -214,13 +214,13 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 			req.ACL = acl
 
 			// START OF I don't understand why this is necessary (as in: why bucket is wrong and body are empty)
-			
+
 			b, _ := url.Parse(bc.bucket_uri)
 			req.Bucket = aws.String(b.Host)
 			req.Body = bytes.NewReader(body)
 
-			// END OF I don't understand why this is necessary (as in: why bucket is wrong and body are empty)			
-			
+			// END OF I don't understand why this is necessary (as in: why bucket is wrong and body are empty)
+
 			return nil
 		}
 
