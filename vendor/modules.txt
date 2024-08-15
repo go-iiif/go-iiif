@@ -39,7 +39,7 @@ github.com/aaronland/go-roster
 # github.com/aaronland/go-string v1.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-string/random
-# github.com/aaronland/gocloud-blob v0.1.0
+# github.com/aaronland/gocloud-blob v0.3.0
 ## explicit; go 1.22.2
 github.com/aaronland/gocloud-blob/bucket
 github.com/aaronland/gocloud-blob/s3
