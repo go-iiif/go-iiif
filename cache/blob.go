@@ -10,6 +10,9 @@ import (
 	"strings"
 	_ "time"
 
+	"bytes"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -179,16 +182,13 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 	ctx := context.Background()
 
 	var wr_opts *blob.WriterOptions
-
+	
 	// see notes above in NewBlobCacheFromURI
 
 	logger := slog.Default()
 	logger = logger.With("bucket uri", bc.bucket_uri)
 	logger = logger.With("uri", uri)
-	logger = logger.With("bucket", bc.bucket)
 	
-	logger.Debug("Set blob", "scheme", bc.scheme)
-
 	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
 
 		// logger.Debug("ACL", "acl", bc.acl)
@@ -212,6 +212,15 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 			logger.Debug("Set ACL", "acl", acl)
 			req.ACL = acl
+
+			// START OF I don't understand why this is necessary (as in: why bucket is wrong and body are empty)
+			
+			b, _ := url.Parse(bc.bucket_uri)
+			req.Bucket = aws.String(b.Host)
+			req.Body = bytes.NewReader(body)
+
+			// END OF I don't understand why this is necessary (as in: why bucket is wrong and body are empty)			
+			
 			return nil
 		}
 
@@ -220,22 +229,22 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 		}
 	}
 
-	fh, err := bc.bucket.NewWriter(ctx, uri, wr_opts)
+	wr, err := bc.bucket.NewWriter(ctx, uri, wr_opts)
 
 	if err != nil {
 		logger.Error("Failed to create new blob writer", "error", err)
 		return err
 	}
 
-	_, err = fh.Write(body)
+	_, err = wr.Write(body)
 
 	if err != nil {
 		logger.Error("Failed to write blob", "error", err)
-		fh.Close()
+		wr.Close()
 		return err
 	}
 
-	err = fh.Close()
+	err = wr.Close()
 
 	if err != nil {
 		logger.Error("Failed to close blob", "error", err)
