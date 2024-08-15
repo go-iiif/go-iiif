@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"sync"
 
 	"github.com/aaronland/go-aws-auth"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -16,7 +15,7 @@ import (
 const Scheme = "s3blob"
 
 func init() {
-	blob.DefaultURLMux().RegisterBucket(Scheme, new(lazySessionOpener))
+	blob.DefaultURLMux().RegisterBucket(Scheme, new(sessionOpener))
 }
 
 type URLOpener struct {
@@ -25,48 +24,39 @@ type URLOpener struct {
 	prefix string
 }
 
-type lazySessionOpener struct {
-	init   sync.Once
+type sessionOpener struct {
 	opener *URLOpener
 	err    error
 }
 
-func (o *lazySessionOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket, error) {
+func (o *sessionOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket, error) {
 
-	o.init.Do(func() {
+	bucket := u.Host
 
-		bucket := u.Host
+	q := u.Query()
+	prefix := q.Get("prefix")
 
-		q := u.Query()
-		prefix := q.Get("prefix")
+	auth_q := url.Values{}
+	auth_q.Set("region", q.Get("region"))
+	auth_q.Set("credentials", q.Get("credentials"))
 
-		auth_q := url.Values{}
-		auth_q.Set("region", q.Get("region"))
-		auth_q.Set("credentials", q.Get("credentials"))
+	auth_uri := url.URL{}
+	auth_uri.Scheme = "aws"
+	auth_uri.RawQuery = auth_q.Encode()
 
-		auth_uri := url.URL{}
-		auth_uri.Scheme = "aws"
-		auth_uri.RawQuery = auth_q.Encode()
+	cfg, err := auth.NewConfig(ctx, auth_uri.String())
 
-		cfg, err := auth.NewConfig(ctx, auth_uri.String())
-
-		if err != nil {
-			o.err = err
-			return
-		}
-
-		o.opener = &URLOpener{
-			config: &cfg,
-			bucket: bucket,
-			prefix: prefix,
-		}
-	})
-
-	if o.err != nil {
-		return nil, fmt.Errorf("open bucket %v: %v", u, o.err)
+	if err != nil {
+		return nil, fmt.Errorf("Failed to create new AWS (auth) config, %w", err)
 	}
 
-	return o.opener.OpenBucketURL(ctx, u)
+	opener := &URLOpener{
+		config: &cfg,
+		bucket: bucket,
+		prefix: prefix,
+	}
+
+	return opener.OpenBucketURL(ctx, u)
 }
 
 func (o *URLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket, error) {
@@ -78,7 +68,7 @@ func (o *URLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket
 	b, err := gc_s3blob.OpenBucketV2(ctx, s3_client, s3_bucket, nil)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to open bucket, %w", err)
 	}
 
 	if s3_prefix != "" {
