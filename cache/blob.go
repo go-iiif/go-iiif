@@ -10,9 +10,6 @@ import (
 	"strings"
 	_ "time"
 
-	"bytes"
-	"github.com/aws/aws-sdk-go-v2/aws"
-
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
@@ -213,14 +210,14 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 			logger.Debug("Set ACL", "acl", acl)
 			req.ACL = acl
 
-			// START OF I don't understand why this is necessary (as in: why bucket is wrong and body are empty)
-
 			b, _ := url.Parse(bc.bucket_uri)
-			req.Bucket = aws.String(b.Host)
-			req.Body = bytes.NewReader(body)
-
-			// END OF I don't understand why this is necessary (as in: why bucket is wrong and body are empty)
-
+			
+			slog.Info("Before write bucket test", "target", b.Host, "put object", *req.Bucket, "key", *req.Key)
+			
+			if *req.Bucket != b.Host {
+				return fmt.Errorf("Request bucket does not match target bucket")
+			}
+			
 			return nil
 		}
 
