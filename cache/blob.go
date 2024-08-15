@@ -8,7 +8,6 @@ import (
 	"log/slog"
 	"net/url"
 	"strings"
-	_ "time"
 
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
@@ -95,18 +94,11 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 
 	ctx := context.Background()
 
-	logger := slog.Default()
-	logger = logger.With("bucket_uri", uri)
-
-	logger.Debug("Create new blob cache")
-
 	b, err := bucket.OpenBucket(ctx, uri)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to open bucket for %s, %w", uri, err)
 	}
-
-	logger.Debug("Created bucket", "bucket", b)
 
 	// something something something permissions and ACLs in Go Cloud
 	// basically we need to trap a `acl=VALUE` query parameter in order
@@ -135,7 +127,6 @@ func NewBlobCacheFromURI(uri string) (Cache, error) {
 		acl:        acl,
 	}
 
-	logger.Debug("Created new blob cache", "cache", bc)
 	return bc, nil
 }
 
@@ -188,8 +179,6 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
 
-		// logger.Debug("ACL", "acl", bc.acl)
-
 		acl, err := aa_s3.StringACLToObjectCannedACL(bc.acl)
 
 		if err != nil {
@@ -209,14 +198,6 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 			logger.Debug("Set ACL", "acl", acl)
 			req.ACL = acl
-
-			b, _ := url.Parse(bc.bucket_uri)
-			
-			slog.Info("Before write bucket test", "target", b.Host, "put object", *req.Bucket, "key", *req.Key)
-			
-			if *req.Bucket != b.Host {
-				return fmt.Errorf("Request bucket does not match target bucket")
-			}
 			
 			return nil
 		}
@@ -247,15 +228,6 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 		logger.Error("Failed to close blob", "error", err)
 		return err
 	}
-
-	/*
-		signed_opts := &blob.SignedURLOptions{
-			Expiry: 1 * time.Minute,
-		}
-
-		signed_url, err := bc.bucket.SignedURL(ctx, uri, signed_opts)
-		logger.Debug("Signed URL", "url", signed_url, "error", err)
-	*/
 
 	logger.Debug("Successfully wrote blob")
 	return nil
