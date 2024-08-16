@@ -1,6 +1,8 @@
 package process
 
 import (
+	"log/slog"
+
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
@@ -22,6 +24,9 @@ func NewIIIFProcessor(config *iiifconfig.Config, driver iiifdriver.Driver) (Proc
 
 func NewIIIFProcessorWithCaches(config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (Processor, error) {
 
+	logger := slog.Default()
+	logger.Debug("New IIIF processor with caches", "source", source_cache, "destination", dest_cache)
+
 	if source_cache == nil {
 
 		c, err := iiifcache.NewImagesCacheFromConfig(config)
@@ -30,6 +35,7 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, driver iiifdriver.Dri
 			return nil, err
 		}
 
+		logger.Debug("Created new IIIF processor source cache", "source", c)
 		source_cache = c
 	}
 
@@ -41,6 +47,7 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, driver iiifdriver.Dri
 			return nil, err
 		}
 
+		logger.Debug("Created new IIIF processor destination cache", "destination", c)
 		dest_cache = c
 	}
 
@@ -55,6 +62,5 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, driver iiifdriver.Dri
 }
 
 func (pr *IIIFProcessor) ProcessURIWithInstructions(u iiifuri.URI, label Label, i IIIFInstructions) (iiifuri.URI, iiifimage.Image, error) {
-
 	return TransformURIWithInstructions(u, i, pr.config, pr.driver, pr.source_cache, pr.dest_cache)
 }

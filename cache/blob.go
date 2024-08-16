@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/url"
 	"strings"
 
@@ -152,15 +153,15 @@ func (bc *BlobCache) Get(uri string) ([]byte, error) {
 
 	ctx := context.Background()
 
-	fh, err := bc.bucket.NewReader(ctx, uri, nil)
+	r, err := bc.bucket.NewReader(ctx, uri, nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer fh.Close()
+	defer r.Close()
 
-	return io.ReadAll(fh)
+	return io.ReadAll(r)
 }
 
 // Set writes data to a BlobCache location.
@@ -172,11 +173,16 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 	// see notes above in NewBlobCacheFromURI
 
+	logger := slog.Default()
+	logger = logger.With("bucket uri", bc.bucket_uri)
+	logger = logger.With("uri", uri)
+
 	if strings.HasPrefix(bc.scheme, "s3") && bc.acl != "" {
 
 		acl, err := aa_s3.StringACLToObjectCannedACL(bc.acl)
 
 		if err != nil {
+			logger.Error("Failed to derive ACL object", "error", err)
 			return fmt.Errorf("Failed to derive ACL object, %w", err)
 		}
 
@@ -186,10 +192,13 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 			ok := asFunc(&req)
 
 			if !ok {
+				logger.Error("Invalid S3 type (asFunc)")
 				return errors.New("invalid s3 type")
 			}
 
+			logger.Debug("Set ACL", "acl", acl)
 			req.ACL = acl
+			
 			return nil
 		}
 
@@ -198,25 +207,29 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 		}
 	}
 
-	fh, err := bc.bucket.NewWriter(ctx, uri, wr_opts)
+	wr, err := bc.bucket.NewWriter(ctx, uri, wr_opts)
 
 	if err != nil {
+		logger.Error("Failed to create new blob writer", "error", err)
 		return err
 	}
 
-	_, err = fh.Write(body)
+	_, err = wr.Write(body)
 
 	if err != nil {
-		fh.Close()
+		logger.Error("Failed to write blob", "error", err)
+		wr.Close()
 		return err
 	}
 
-	err = fh.Close()
+	err = wr.Close()
 
 	if err != nil {
+		logger.Error("Failed to close blob", "error", err)
 		return err
 	}
 
+	logger.Debug("Successfully wrote blob")
 	return nil
 }
 

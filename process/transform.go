@@ -29,6 +29,8 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 	logger = logger.With("uri", u)
 	logger = logger.With("origin", origin)
 	logger = logger.With("target", target)
+	logger = logger.With("source cache", source_cache)
+	logger = logger.With("destination cache", dest_cache)
 
 	logger.Debug("Transform with instructions")
 
@@ -81,9 +83,11 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		logger = logger.With("new target", new_target)
 	}
 
+	logger.Debug("Derive image from source cache", "source cache", source_cache)
 	im, err := driver.NewImageFromConfigWithCache(config, source_cache, origin)
 
 	if err != nil {
+		logger.Debug("Failed to derive image from source cache", "error", err)
 		return nil, nil, fmt.Errorf("Failed to create new image for origin '%s', %w", origin, err)
 	}
 
@@ -93,9 +97,11 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 		return nil, nil, fmt.Errorf("Failed to perform transformation for origin '%s', %w", origin, err)
 	}
 
+	logger.Debug("Write target to destination cache", "destination cache", dest_cache)
 	err = dest_cache.Set(target, im.Body())
 
 	if err != nil {
+		logger.Debug("Failed to write target to destination cache", "error", err)
 		return nil, nil, fmt.Errorf("Failed to store new derivative for origin '%s' at '%s', %w", origin, target, err)
 	}
 

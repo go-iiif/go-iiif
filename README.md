@@ -18,7 +18,7 @@ The current release is `github.com/go-iiif/go-iiif/v7`.
 
 ### v7
 
-Version 7.0.0 is in the early stages of development and it is expected that it will introduce a number of backwards incompatible changes to how the `tools` package is structured and the interface and method signatures it exposes. 
+[Version 7.0.0 is in the early stages of development](https://github.com/go-iiif/go-iiif/tree/v7) and it is expected that it will introduce a number of backwards incompatible changes to how the `tools` package is structured and the interface and method signatures it exposes. 
 
 Additionally, many properties in `config.Config` blocks will be removed in favour of a single URI-style declarative syntax.
 

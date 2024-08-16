@@ -172,7 +172,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					_, err := ts.derivatives_cache.Get(uri)
 
 					if err == nil {
-						logger.Debug("Tile exists in cache, skipping", "uri", uri)
+						// logger.Debug("Tile exists in cache, skipping", "uri", uri)
 						return
 					}
 				}
@@ -346,7 +346,7 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 			quality := quality
 			format := format
 
-			logger.Debug("Create transformation (tile)", "region", region, "size", size, "rotation", rotation, "quality", quality, "format", format)
+			// logger.Debug("Create transformation (tile)", "region", region, "size", size, "rotation", rotation, "quality", quality, "format", format)
 			transformation, err := iiifimage.NewTransformation(compliance, region, size, rotation, quality, format)
 
 			if err != nil {
