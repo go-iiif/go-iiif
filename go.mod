@@ -20,7 +20,6 @@ require (
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
 	github.com/fsnotify/fsnotify v1.7.0
 	github.com/go-iiif/go-iiif-uri v0.5.2
-	github.com/go-iiif/go-iiif/v6 v6.1.2
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
 	github.com/muesli/smartcrop v0.3.0

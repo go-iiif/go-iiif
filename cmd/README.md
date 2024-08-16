@@ -25,7 +25,7 @@ import (
 	"context"
 	
 	_ "github.com/go-iiif/go-iiif-vips"
-	"github.com/go-iiif/go-iiif/v6/tools"
+	"github.com/go-iiif/go-iiif/v7/tools"
 )
 
 func main() {
@@ -42,7 +42,7 @@ package main
 import (
 	"context"
 	_ "github.com/go-iiif/go-iiif-vips"
-	"github.com/go-iiif/go-iiif/v6/tools"
+	"github.com/go-iiif/go-iiif/v7/tools"
 	"flag"
 	"github.com/sfomuseum/go-flags"	
 )

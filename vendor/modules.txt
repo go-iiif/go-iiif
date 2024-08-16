@@ -319,11 +319,6 @@ github.com/go-errors/errors
 # github.com/go-iiif/go-iiif-uri v0.5.2
 ## explicit; go 1.12
 github.com/go-iiif/go-iiif-uri
-# github.com/go-iiif/go-iiif/v6 v6.1.2
-## explicit; go 1.22.4
-github.com/go-iiif/go-iiif/v6/cache
-github.com/go-iiif/go-iiif/v6/config
-github.com/go-iiif/go-iiif/v6/static/defaults
 # github.com/go-ini/ini v1.67.0
 ## explicit
 github.com/go-ini/ini
