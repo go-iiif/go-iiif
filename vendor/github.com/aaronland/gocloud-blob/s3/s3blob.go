@@ -15,7 +15,19 @@ import (
 const Scheme = "s3blob"
 
 func init() {
-	blob.DefaultURLMux().RegisterBucket(Scheme, new(sessionOpener))
+	is_registered := false
+
+	for _, scheme := range blob.DefaultURLMux().BucketSchemes() {
+
+		if scheme == Scheme {
+			is_registered = true
+			break
+		}
+	}
+
+	if !is_registered {
+		blob.DefaultURLMux().RegisterBucket(Scheme, new(sessionOpener))
+	}
 }
 
 type URLOpener struct {

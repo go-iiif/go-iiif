@@ -2,8 +2,6 @@
 
 Go package providing methods and tools for determining or assigning AWS credentials.
 
-This package targets [aws-sdk-go-v2](https://github.com/aws/aws-sdk-go-v2/). For similar functionality targeting `aws-sdk-go` please consult the [aaronland/go-aws-session](https://github.com/aaronland/go-aws-session) package.
-
 ## Documentation
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/aaronland/go-aws-auth.svg)](https://pkg.go.dev/github.com/aaronland/go-aws-auth)
@@ -12,6 +10,7 @@ This package targets [aws-sdk-go-v2](https://github.com/aws/aws-sdk-go-v2/). For
 
 ```
 $> make cli
+go build -mod vendor -ldflags="-s -w" -o bin/aws-sts-session cmd/aws-sts-session/main.go
 go build -mod vendor -ldflags="-s -w" -o bin/aws-mfa-session cmd/aws-mfa-session/main.go
 go build -mod vendor -ldflags="-s -w" -o bin/aws-get-credentials cmd/aws-get-credentials/main.go
 go build -mod vendor -ldflags="-s -w" -o bin/aws-cognito-credentials cmd/aws-cognito-credentials/main.go
@@ -229,6 +228,89 @@ $> bin/aws-sign-request \
     }
   ]
 }
+```
+
+### aws-sts-session
+
+Generate STS credentials for a given profile and MFA token and then write those credentials back to an AWS "credentials" file in a specific profile section.
+
+```
+$> ./bin/aws-sts-session -h
+Generate STS credentials for a given profile and MFA token and then write those credentials back to an AWS "credentials" file in a specific profile section.
+Usage:
+	 ./bin/aws-sts-session [options]
+Valid options are:
+  -config-uri string
+    	A valid aaronland/gp-aws-auth.Config URI.
+  -mfa
+    	Require a valid MFA token code when assuming role. (default true)
+  -mfa-serial-number string
+    	The unique identifier of the MFA device being used for authentication.
+  -mfa-token string
+    	A valid MFA token string. If empty then data will be read from a command line prompt.
+  -role-arn string
+    	The AWS role ARN URI of the role you want to assume.
+  -role-duration int
+    	The duration, in seconds, of the role session. (default 3600)
+  -role-session string
+    	A unique name to identify the session.
+  -session-profile string
+    	The name of the AWS credentials profile to associate the temporary credentials with.
+```
+
+For example:
+
+```
+$> ./bin/aws-sts-session -config-uri 'aws://?region={REGION}&credentials={CREDENTIALS}' \
+	-role-arn 'arn:aws:iam::{AWS_ACCOUNT}:role/{IAM_ROLE}' \
+	-role-session debug \
+	-mfa-serial-number arn:aws:iam::{AWS_ACCOUNT}:mfa/{MFA_LABEL} \
+	-mfa-token {TOKEN} \
+	-session-profile test
+
+2024/11/08 08:23:25 Assumed role "arn:aws:sts::{AWS_ACCOUNT}:assumed-role/{IAM_ROLE}/debug", expires 2024-11-08 17:23:25 +0000 UTC
+```
+
+Note that this assumes a role with a "trust policy" equivalent to this:
+
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Statement1",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "arn:aws:iam::{AWS_ACCOUNT}:user/{IAM_USER}"
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {
+                "Bool": {
+                    "aws:MultiFactorAuthPresent": true
+                }
+            }
+        }
+    ]
+}
+```
+
+## Credentials
+
+Credentials for URIs are defined as string labels. They are:
+
+| Label | Description |
+| --- | --- |
+| `anon:` | Empty or anonymous credentials. |
+| `env:` | Read credentials from AWS defined environment variables. |
+| `iam:` | Assume AWS IAM credentials are in effect. |
+| `sts:{ARN}` | Assume the role defined by `{ARN}` using STS credentials. |
+| `{AWS_PROFILE_NAME}` | This this profile from the default AWS credentials location. |
+| `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}` | This this profile from a user-defined AWS credentials location. |
+
+For example:
+
+```
+aws:///us-east-1?credentials=iam:
 ```
 
 ## See also:

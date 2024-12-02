@@ -11,7 +11,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"strings"
-	
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
@@ -24,7 +24,7 @@ func init() {
 // LambdaFunctionURLServer implements the `Server` interface for a use in a AWS LambdaFunctionURL + API Gateway context.
 type LambdaFunctionURLServer struct {
 	Server
-	handler http.Handler
+	handler            http.Handler
 	binaryContentTypes map[string]bool
 }
 
@@ -36,7 +36,7 @@ type LambdaFunctionURLServer struct {
 // Valid parameters are:
 // * `binary_type={MIMETYPE}` One or more mimetypes to be served by AWS FunctionURLs as binary content types.
 func NewLambdaFunctionURLServer(ctx context.Context, uri string) (Server, error) {
-	
+
 	u, err := url.Parse(uri)
 
 	if err != nil {
@@ -46,15 +46,15 @@ func NewLambdaFunctionURLServer(ctx context.Context, uri string) (Server, error)
 	q := u.Query()
 
 	binary_types := make(map[string]bool)
-		
+
 	for _, t := range q["binary_type"] {
 		binary_types[t] = true
 	}
-	
+
 	server := LambdaFunctionURLServer{
 		binaryContentTypes: binary_types,
 	}
-	
+
 	return &server, nil
 }
 
@@ -91,7 +91,7 @@ func (s *LambdaFunctionURLServer) handleRequest(ctx context.Context, request eve
 
 	event_rsp := events.LambdaFunctionURLResponse{
 		StatusCode: rsp.StatusCode,
-		Headers: event_rsp_headers,
+		Headers:    event_rsp_headers,
 	}
 
 	content_type := rsp.Header.Get("Content-Type")
@@ -102,7 +102,7 @@ func (s *LambdaFunctionURLServer) handleRequest(ctx context.Context, request eve
 	} else {
 		event_rsp.Body = rec.Body.String()
 	}
-	
+
 	return event_rsp, nil
 }
 

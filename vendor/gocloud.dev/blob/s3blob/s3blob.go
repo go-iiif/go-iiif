@@ -47,7 +47,7 @@
 //   - ListOptions.BeforeList: (V1) *s3.ListObjectsV2Input or *s3.ListObjectsInput
 //     when Options.UseLegacyList == true; (V2) *s3v2.ListObjectsV2Input or *[]func(*s3v2.Options), or *s3v2.ListObjectsInput
 //     when Options.UseLegacyList == true
-//   - Reader: (V1) s3.GetObjectOutput; (V2) s3v2.GetObjectInput
+//   - Reader: (V1) s3.GetObjectOutput; (V2) s3v2.GetObjectOutput
 //   - ReaderOptions.BeforeRead: (V1) *s3.GetObjectInput; (V2) *s3v2.GetObjectInput or *[]func(*s3v2.Options)
 //   - Attributes: (V1) s3.HeadObjectOutput; (V2)s3v2.HeadObjectOutput
 //   - CopyOptions.BeforeCopy: *(V1) s3.CopyObjectInput; (V2) s3v2.CopyObjectInput
@@ -130,6 +130,11 @@ const Scheme = "s3"
 // Use "awssdk=v1" to force using AWS SDK v1, "awssdk=v2" to force using AWS SDK v2,
 // or anything else to accept the default.
 //
+// The following S3-specific query options are also supported:
+//   - ssetype: The type of server side encryption used (AES256, aws:kms, aws:kms:dsse)
+//   - kmskeyid: The KMS key ID for server side encryption
+//   - accelerate: A value of "true" uses the S3 Transfer Accleration endpoints
+//
 // For V1, see gocloud.dev/aws/ConfigFromURLParams for supported query parameters
 // for overriding the aws.Session from the URL.
 // For V2, see gocloud.dev/aws/V2ConfigFromURLParams.
@@ -145,8 +150,11 @@ type URLOpener struct {
 }
 
 const (
-	sseTypeParamKey  = "ssetype"
-	kmsKeyIdParamKey = "kmskeyid"
+	sseTypeParamKey      = "ssetype"
+	kmsKeyIdParamKey     = "kmskeyid"
+	accelerateParamKey   = "accelerate"
+	usePathStyleParamkey = "use_path_style"
+	disableHTTPSParamKey = "disable_https"
 )
 
 func toServerSideEncryptionType(value string) (typesv2.ServerSideEncryption, error) {
@@ -178,12 +186,48 @@ func (o *URLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket
 		o.Options.KMSEncryptionID = kmsKeyID
 	}
 
+	accelerate := false
+	if accelerateParam := q.Get(accelerateParamKey); accelerateParam != "" {
+		q.Del(accelerateParamKey)
+		var err error
+		accelerate, err = strconv.ParseBool(accelerateParam)
+		if err != nil {
+			return nil, fmt.Errorf("invalid value for %q: %v", accelerateParamKey, err)
+		}
+	}
+
 	if o.UseV2 {
+		opts := []func(*s3v2.Options){
+			func(o *s3v2.Options) {
+				o.UseAccelerate = accelerate
+			},
+		}
+		if disableHTTPSParam := q.Get(disableHTTPSParamKey); disableHTTPSParam != "" {
+			q.Del(disableHTTPSParamKey)
+			value, err := strconv.ParseBool(disableHTTPSParam)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for %q: %v", disableHTTPSParamKey, err)
+			}
+			opts = append(opts, func(o *s3v2.Options) {
+				o.EndpointOptions.DisableHTTPS = value
+			})
+		}
+		if usePathStyleParam := q.Get(usePathStyleParamkey); usePathStyleParam != "" {
+			q.Del(usePathStyleParamkey)
+			value, err := strconv.ParseBool(usePathStyleParam)
+			if err != nil {
+				return nil, fmt.Errorf("invalid value for %q: %v", usePathStyleParamkey, err)
+			}
+			opts = append(opts, func(o *s3v2.Options) {
+				o.UsePathStyle = value
+			})
+		}
+
 		cfg, err := gcaws.V2ConfigFromURLParams(ctx, q)
 		if err != nil {
 			return nil, fmt.Errorf("open bucket %v: %v", u, err)
 		}
-		clientV2 := s3v2.NewFromConfig(cfg)
+		clientV2 := s3v2.NewFromConfig(cfg, opts...)
 
 		return OpenBucketV2(ctx, clientV2, u.Host, &o.Options)
 	}
@@ -194,6 +238,8 @@ func (o *URLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket
 	if err != nil {
 		return nil, fmt.Errorf("open bucket %v: %v", u, err)
 	}
+
+	overrideCfg.S3UseAccelerate = &accelerate
 	configProvider.Configs = append(configProvider.Configs, overrideCfg)
 
 	return OpenBucket(ctx, configProvider, u.Host, &o.Options)
@@ -380,7 +426,6 @@ func (w *writer) open(r io.Reader, closePipeOnError bool) {
 		if err != nil {
 			if closePipeOnError {
 				w.pr.CloseWithError(err)
-				w.pr = nil
 			}
 			w.err = err
 		}
@@ -970,9 +1015,6 @@ func escapeKey(key string) string {
 			return true
 		// For "../", escape the trailing slash.
 		case i > 1 && c == '/' && r[i-1] == '.' && r[i-2] == '.':
-			return true
-		// Escape \.
-		case c == '\\':
 			return true
 		}
 		return false

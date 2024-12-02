@@ -55,7 +55,17 @@ func username(ctx context.Context, sts_client *sts.Client) (string, error) {
 
 	arn := rsp.Arn
 
-	return strings.Split(*arn, ":user/")[1], nil
+	if strings.Contains(*arn, ":user/") {
+		return strings.Split(*arn, ":user/")[1], nil
+	}
+
+	/*
+		if strings.Contains(*arn, ":assumed-role/") {
+			return strings.Split(*arn, ":assumed-role/")[1], nil
+		}
+	*/
+
+	return "", fmt.Errorf("Failed to derive user name from ARN")
 }
 
 func mfaDevice(ctx context.Context, iam_client *iam.Client, userArn string) (string, error) {
