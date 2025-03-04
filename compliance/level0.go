@@ -95,6 +95,7 @@ func (c *Level0Compliance) Supports() []string {
 
 	supports := make([]string, 0)
 
+	/*
 	for _, s := range c.properties(c.spec.Image.Region) {
 		supports = append(supports, s)
 	}
@@ -115,7 +116,8 @@ func (c *Level0Compliance) Supports() []string {
 
 		supports = append(supports, name)
 	}
-
+	*/
+	
 	return supports
 }
 
