@@ -26,7 +26,7 @@ import (
 	"github.com/go-iiif/go-iiif/v6/static/html"
 	"github.com/go-iiif/go-iiif/v6/static/javascript"
 	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
-	"github.com/sfomuseum/go-csvdict"
+	"github.com/sfomuseum/go-csvdict/v2"
 	"github.com/sfomuseum/go-flags/flagset"
 	"github.com/sfomuseum/go-flags/lookup"
 )
