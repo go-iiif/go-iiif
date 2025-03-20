@@ -1,11 +1,10 @@
 package main
 
 import (
-       "log"
-       
+	"log"
 )
 
 func main() {
 
-     log.Fatal("Not implemented")
-    }		    
+	log.Fatal("Not implemented")
+}
