@@ -1,4 +1,4 @@
-package seed
+package aws
 
 import (
 	"encoding/json"

@@ -15,7 +15,7 @@ import (
 func main() {
 
 	ctx := context.Background()
-	err := tool.Run(ctx)
+	err := process.Run(ctx)
 
 	if err != nil {
 		log.Fatal(err)
