@@ -9,7 +9,7 @@ import (
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
 
-	"github.com/go-iiif/go-iiif/v6/app/tile/seed"
+	"github.com/go-iiif/go-iiif/v6/app/seed"
 )
 
 func main() {
