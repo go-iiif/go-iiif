@@ -247,7 +247,7 @@ func (c *Level2Compliance) isvalid(property string, value string) (bool, error) 
 		}
 
 		if !details.Supported {
-			message := fmt.Sprintf("Unsupported IIIF 2.1 feature (%s) %s", name, value)
+			message := fmt.Sprintf("Unsupported IIIF 2.1 feature (%s) '%s'", name, value)
 			return false, errors.New(message)
 		}
 
@@ -257,7 +257,7 @@ func (c *Level2Compliance) isvalid(property string, value string) (bool, error) 
 	}
 
 	if !ok {
-		message := fmt.Sprintf("Invalid IIIF 2.1 feature property %s %s", property, value)
+		message := fmt.Sprintf("Invalid IIIF 2.1 feature property (%s) : '%s'", property, value)
 		return false, errors.New(message)
 	}
 

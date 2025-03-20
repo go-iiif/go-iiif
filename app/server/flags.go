@@ -29,7 +29,7 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&config_images_source_uri, "config-images-source-uri", "", "If present this value will be used to assign the 'images.source.uri' property in the config file. Note: The 'images.source.uri' property takes precedence over other properties in 'images.source' block.")
 	fs.StringVar(&config_derivatives_cache_uri, "config-derivatives-cache-uri", "", "If present this value will be used to assign the 'derivatives.cache.uri' property in the config file. Note: The 'derivatives.cache.uri' property takes precedence over other properties in 'derivatives.cache' block.")
 
-	fs.BoolVar(&example, "example", false, "Add an /example endpoint to the server for testing and demonstration purposes")
+	fs.BoolVar(&example, "example", false, "Add an example endpoint (at /) to the server for testing and demonstration purposes.")
 
 	fs.StringVar(&server_uri, "server-uri", "http://localhost:8080", "...")
 	return fs

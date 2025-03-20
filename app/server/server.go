@@ -113,13 +113,13 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		if err != nil {
 			return err
 		}
-		
+
 		http_fs := http.FS(tiled_fs)
 		tiled_handler := http.FileServer(http_fs)
 
-		mux.Handle("/example/tiled/", http.StripPrefix("/example/tiled/", tiled_handler))
+		mux.Handle("/", tiled_handler)
 	}
-		
+
 	mux.Handle("/debug/vars", expvar_handler)
 
 	mux.Handle("/{identifier}/info.json", info_handler)
@@ -130,7 +130,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	if err != nil {
 		return err
 	}
-	
+
 	slog.Info("Listening for requests", "address", s.Address())
 
 	return s.ListenAndServe(ctx, mux)

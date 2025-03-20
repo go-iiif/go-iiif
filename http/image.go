@@ -61,13 +61,28 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 
 		body, err := derivatives_cache.Get(uri)
 
-		if err == nil {
+		if err != nil {
+			logger.Debug("Failed to retrieve derivative from cache", "uri", uri, "error", err)
+		} else {
 
 			logger.Debug("Cache hit for image")
 			cacheHit.Add(1)
 
-			source, _ := iiifsource.NewMemorySource(body)
-			image, _ := driver.NewImageFromConfigWithSource(config, source, "cache")
+			source, err := iiifsource.NewMemorySource(body)
+
+			if err != nil {
+				logger.Error("Failed to create memory source", "error", err)
+				gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
+				return
+			}
+
+			image, err := driver.NewImageFromConfigWithSource(config, source, "cache")
+
+			if err != nil {
+				logger.Error("Failed to derive image from memory source", "error", err)
+				gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
+				return
+			}
 
 			rsp.Header().Set("Content-Type", image.ContentType())
 			rsp.Write(image.Body())
@@ -77,8 +92,8 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)
 
 		if err != nil {
-			logger.Error("Failed to retrieve image from cache", "error", err)
-			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
+			logger.Warn("Failed to retrieve image from cache", "error", err)
+			gohttp.Error(rsp, "Not found", gohttp.StatusNotFound)
 			return
 		}
 

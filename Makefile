@@ -15,7 +15,8 @@ debug-server:
 	go run cmd/iiif-server/main.go \
 		-config-derivatives-cache-uri file://$(CWD)/static/example/cache \
 		-config-images-source-uri file://$(CWD)/static/example/images \
-		-example
+		-example \
+		-verbose
 
 lambda:
 	@make lambda-handlers

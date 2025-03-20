@@ -12,7 +12,7 @@ window.addEventListener('load', function(e){
 	params[temp[0]] = temp[1];
     }
     
-    var id = '184512_5f7f47e5b3c66207_x.jpg';	// disk
+    var id = 'spanking-cat.jpg';
     
     if (params['id']){
 	id = params['id'];

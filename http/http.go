@@ -140,7 +140,7 @@ func GetIIIFParameters(req *gohttp.Request) (*IIIFParameters, error) {
 	dot_format := filepath.Ext(quality_dot_format)
 	format := strings.TrimLeft(dot_format, ".")
 
-	quality := strings.Replace(quality_dot_format, format, "", 1)
+	quality := strings.Replace(quality_dot_format, dot_format, "", 1)
 
 	// END OF UNFORTUNATE but net/http URL pattern-mux stuff doesn't allow {foo}.{bar}
 
