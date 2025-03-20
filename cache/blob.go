@@ -198,7 +198,7 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 			logger.Debug("Set ACL", "acl", acl)
 			req.ACL = acl
-			
+
 			return nil
 		}
 
