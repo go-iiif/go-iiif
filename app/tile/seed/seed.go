@@ -133,28 +133,9 @@ func RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	if opts.Verbose {
-		slog.SetLogLoggerLevel(slog.LevelDebug)
-		sloglevel = slog.LevelDebug
+		// FIX ME..
 		slog.Debug("Verbose logging enabled")
 	}
-
-	if logfile != "" {
-
-		wr, err := os.OpenFile(logfile, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0660)
-
-		if err != nil {
-			return fmt.Errorf("Failed to open '%s' for writing (logs), %w", logfile, err)
-		}
-
-		defer wr.Close()
-
-		mw := io.MultiWriter(os.Stderr, wr)
-
-		h := slog.NewTextHandler(mw, &slog.HandlerOptions{Level: sloglevel})
-		slog.SetDefault(slog.New(h))
-	}
-
-	// END OF logging
 
 	config, err := iiifconfig.LoadConfigWithFlagSet(ctx, fs)
 
@@ -260,7 +241,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	// END OF generate HTML for tiles
 
-	ts, err := iiiftile.NewTileSeed(config, 256, 256, endpoint, quality, format)
+	ts, err := iiiftile.NewTileSeed(config, 256, 256, opts.Endpoint, opts.Quality, opt.Format)
 
 	if err != nil {
 		return fmt.Errorf("Failed to create tileseed(er), %w", err)
@@ -268,19 +249,6 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	// Something something something writers for slog stuff...
 
-	scales := make([]int, 0)
-
-	for _, s := range strings.Split(scale_factors, ",") {
-
-		s = strings.Trim(s, " ")
-		scale, err := strconv.Atoi(s)
-
-		if err != nil {
-			return fmt.Errorf("Failed to parse scale factor, %w", err)
-		}
-
-		scales = append(scales, scale)
-	}
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -313,7 +281,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 				wg.Done()
 			}()
 
-			count, err := ts.SeedTiles(src_id, alt_id, scales, refresh)
+			count, err := ts.SeedTiles(src_id, alt_id, opts.ScaleFactors, opts.Refresh)
 
 			if t.onCompleteFunc != nil {
 				t.onCompleteFunc(config, src_id, alt_id, count, err)
@@ -335,7 +303,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 		wg := new(sync.WaitGroup)
 
-		for _, id := range paths {
+		for _, id := range opts.Paths {
 
 			u, err := t.uriFunc(id)
 
