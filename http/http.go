@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	gohttp "net/http"
 	gourl "net/url"
+	"path/filepath"
 	"strings"
 	"sync"
 
@@ -128,17 +129,20 @@ func GetIIIFParameters(req *gohttp.Request) (*IIIFParameters, error) {
 		return nil, err
 	}
 
-	quality, err := GetIIIFParameter(req, "quality")
+	// START OF UNFORTUNATE but net/http URL pattern-mux stuff doesn't allow {foo}.{bar}
+
+	quality_dot_format, err := GetIIIFParameter(req, "quality_dot_format")
 
 	if err != nil {
 		return nil, err
 	}
 
-	format, err := GetIIIFParameter(req, "format")
+	dot_format := filepath.Ext(quality_dot_format)
+	format := strings.TrimLeft(dot_format, ".")
 
-	if err != nil {
-		return nil, err
-	}
+	quality := strings.Replace(quality_dot_format, format, "", 1)
+
+	// END OF UNFORTUNATE but net/http URL pattern-mux stuff doesn't allow {foo}.{bar}
 
 	params := IIIFParameters{
 		Identifier: id,

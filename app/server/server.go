@@ -110,7 +110,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	// https://github.com/go-iiif/go-iiif/issues/4
 
 	mux.Handle("/{identifier}/info.json", info_handler)
-	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
+	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality_dot_format}", image_handler)
 
 	if opts.Example {
 
