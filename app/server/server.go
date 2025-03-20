@@ -13,6 +13,7 @@ import (
 	iiifhttp "github.com/go-iiif/go-iiif/v6/http"
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifexample "github.com/go-iiif/go-iiif/v6/static/example"
 )
 
 func Run(ctx context.Context) error {
@@ -23,7 +24,7 @@ func Run(ctx context.Context) error {
 
 func RunWithFlagSet(ctx context.Context, fs *flag.FlagSet) error {
 
-	opts, err := RunOptionsFromFlagSet(fs)
+	opts, err := RunOptionsFromFlagSet(ctx, fs)
 
 	if err != nil {
 		return err
@@ -104,16 +105,19 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/debug/vars", expvar_handler)
+	mux.Handle("/debug/vars", expvar_handler)
 
 	// https://github.com/go-iiif/go-iiif/issues/4
 
-	mux.HandleFunc("/{identifier:.+}/info.json", info_handler)
-	mux.HandleFunc("/{identifier:.+}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
+	mux.Handle("/{identifier:.+}/info.json", info_handler)
+	mux.Handle("/{identifier:.+}/{region}/{size}/{rotation}/{quality}.{format}", image_handler)
 
 	if opts.Example {
 
-		// read FS from example
+		http_fs := http.FS(iiifexample.FS)
+		example_handler := http.FileServer(http_fs)
+
+		mux.Handle("/example/", example_handler)
 	}
 
 	s, err := server.NewServer(ctx, opts.ServerURI)

@@ -22,7 +22,7 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.BoolVar(&verbose, "verbose", false, "Enabled verbose (debug) loggging.")
 
-	fs.StringVar(&config_source, "config-source", "", "A valid Go Cloud bucket URI where your go-iiif config file is located. Optionally, if 'defaults://' is specified then the default config bundled with this package will be used.")
+	fs.StringVar(&config_source, "config-source", "defaults://", "A valid Go Cloud bucket URI where your go-iiif config file is located. Optionally, if 'defaults://' is specified then the default config bundled with this package will be used.")
 
 	fs.StringVar(&config_name, "config-name", "config.json", "The name of your go-iiif config file. This value will be ignored if -config-source is 'defaults://'.")
 
