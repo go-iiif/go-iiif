@@ -14,6 +14,7 @@ import (
 	"github.com/aaronland/gocloud-blob/bucket"
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
+	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
 	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
 	"github.com/sfomuseum/go-csvdict/v2"
 )
@@ -286,7 +287,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	case "lambda":
 
-		handler := func(ctx context.Context, ev Event) error {
+		handler := func(ctx context.Context, ev iiifaws.Event) error {
 			wg := new(sync.WaitGroup)
 
 			for _, r := range ev.Records {
