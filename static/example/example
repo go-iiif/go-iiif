@@ -1,0 +1,8 @@
+package example
+
+import (
+	"embed"
+)
+
+//go:embed *.json *.html *.css images/* cache/*
+var FS embed.FS
