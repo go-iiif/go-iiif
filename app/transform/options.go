@@ -48,6 +48,9 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 		cfg.Derivatives.Cache.URI = config_derivatives_cache_uri
 	}
 
+	// Do something with source and target here - mostly just a lot of CLI syntactic sugar
+	// make it easier to quickly transform an image on disk
+
 	paths := fs.Args()
 
 	opts := &RunOptions{

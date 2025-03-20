@@ -38,8 +38,9 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.StringVar(&config_derivatives_cache_uri, "config-derivatives-cache-uri", "", "If present this value will be used to assign the 'derivatives.cache.uri' property in the config file. Note: The 'derivatives.cache.uri' property takes precedence over other properties in 'derivatives.cache' block.")
 
-	fs.StringVar(&mode, "mode", "cli", "Valid options are: cli, csv, lambda")
-	fs.StringVar(&csv_source, "csv-source", "A valid Go Cloud bucket URI where your CSV tileseed files are located.", "")
+	fs.StringVar(&mode, "mode", "cli", "Valid options are: cli, csv, fsnotify, lambda")
+
+	fs.StringVar(&csv_source, "csv-source", "file:///", "A valid Go Cloud bucket URI where your CSV tileseed files are located.")
 
 	fs.StringVar(&scale_factors, "scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	fs.StringVar(&quality, "quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
@@ -47,13 +48,14 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.IntVar(&processes, "processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
 
-	fs.BoolVar(&no_extension, "noextension", false, "Remove any extension from destination folder name.")
+	fs.BoolVar(&no_extension, "no-extension", false, "Remove any extension from destination folder name.")
 
-	fs.BoolVar(&refresh, "refresh", false, "Refresh a tile even if already exists (default false)")
 	fs.StringVar(&endpoint, "endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
 
 	fs.BoolVar(&generate_html, "generate-tiles-html", false, "If true then the tiles directory will be updated to include HTML/JavaScript/CSS assets to display tiles as a \"slippy\" map (using the leaflet-iiif.js library.")
 
+	fs.BoolVar(&refresh, "refresh", false, "Refresh a tile even if already exists (default false)")
 	fs.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")
-	return nil
+
+	return fs
 }

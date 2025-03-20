@@ -42,6 +42,7 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&quality, "quality", "default", "A valid IIIF 2.0 quality value.")
 	fs.StringVar(&format, "format", "jpg", "A valid IIIF 2.0 format value.")
 
+	// See notes in options.go - these aren't quite ready
 	// fs.String("source", "file:///", "A valid Go Cloud bucket URI where the source file to transform is located.")
 	// fs.String("target", "file:///", "A valid Go Cloud bucket URI where the transformed file should be written.")
 

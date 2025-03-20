@@ -2,7 +2,11 @@ package transform
 
 /*
 
-> go run -mod vendor cmd/iiif-transform/main.go -config-name config.json.example -config-source file:///usr/local/code/go-iiif/docs/ -region -1,-1,320,320 -quality sharpen -source file:///usr/local/code/go-iiif/example/images -target file:///usr/local/code/go-iiif/example/cache spanking-cat.jpg
+go run cmd/iiif-transform/main.go \
+	-config-images-source-uri file:///usr/local/src/go-iiif/static/example/images \
+	-config-derivatives-cache-uri file:///usr/local/src/go-iiif/ \
+	-region -1,-1,320,320 \
+	spanking-cat.jpg
 
 */
 
@@ -10,19 +14,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io"
 	"log/slog"
 	"path/filepath"
 
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v6/image"
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
-	"gocloud.dev/blob"
 )
 
 func Run(ctx context.Context) error {
@@ -143,8 +145,6 @@ type TransformOptions struct {
 	Config         *iiifconfig.Config
 	Driver         iiifdriver.Driver
 	Transformation *iiifimage.Transformation
-	SourceBucket   *blob.Bucket // DEPRECATED
-	TargetBucket   *blob.Bucket // DEPRECATED
 }
 
 func TransformMany(ctx context.Context, opts *TransformOptions, uris ...iiifuri.URI) error {
@@ -170,39 +170,15 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 		return err
 	}
 
-	source_r, err := opts.SourceBucket.NewReader(ctx, origin, nil)
-
-	if err != nil {
-		return err
-	}
-
-	defer source_r.Close()
-
 	if !opts.Transformation.HasTransformation() {
 		return fmt.Errorf("No transformation")
 	}
 
-	// START OF FIX ME - load from config
-
-	source_body, err := io.ReadAll(source_r)
+	iiif_image, err := opts.Driver.NewImageFromConfig(opts.Config, origin)
 
 	if err != nil {
 		return err
 	}
-
-	source, err := iiifsource.NewMemorySource(source_body)
-
-	if err != nil {
-		return err
-	}
-
-	iiif_image, err := opts.Driver.NewImageFromConfigWithSource(opts.Config, source, origin)
-
-	if err != nil {
-		return err
-	}
-
-	// END OF FIX ME - load from config
 
 	err = iiif_image.Transform(opts.Transformation)
 
@@ -210,27 +186,17 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 		return err
 	}
 
-	// START OF FIX ME - load from config
-
-	wr, err := opts.TargetBucket.NewWriter(ctx, target, nil)
+	cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
 
 	if err != nil {
 		return err
 	}
 
-	_, err = wr.Write(iiif_image.Body())
+	err = cache.Set(target, iiif_image.Body())
 
 	if err != nil {
 		return err
 	}
-
-	err = wr.Close()
-
-	if err != nil {
-		return err
-	}
-
-	// END OF FIX ME - load from config
 
 	return nil
 }
