@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	_ "fmt"
+	"io/fs"
 	"log/slog"
 	"net/http"
 
@@ -13,7 +14,7 @@ import (
 	iiifhttp "github.com/go-iiif/go-iiif/v6/http"
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
-	// iiifexample "github.com/go-iiif/go-iiif/v6/static/example"
+	iiifexample "github.com/go-iiif/go-iiif/v6/static/example"
 )
 
 func Run(ctx context.Context) error {
@@ -105,6 +106,20 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	mux := http.NewServeMux()
 
+	if opts.Example {
+
+		tiled_fs, err := fs.Sub(iiifexample.FS, "tiled")
+
+		if err != nil {
+			return err
+		}
+		
+		http_fs := http.FS(tiled_fs)
+		tiled_handler := http.FileServer(http_fs)
+
+		mux.Handle("/example/tiled/", http.StripPrefix("/example/tiled/", tiled_handler))
+	}
+		
 	mux.Handle("/debug/vars", expvar_handler)
 
 	mux.Handle("/{identifier}/info.json", info_handler)
@@ -115,24 +130,8 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	if err != nil {
 		return err
 	}
-
-	/*
-	if opts.Example {
-
-		http_fs := http.FS(iiifexample.FS)
-		example_handler := http.FileServer(http_fs)
-
-		mux.Handle("/example/", example_handler)
-	}
-	*/
 	
 	slog.Info("Listening for requests", "address", s.Address())
 
-	err = s.ListenAndServe(ctx, mux)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return s.ListenAndServe(ctx, mux)
 }
