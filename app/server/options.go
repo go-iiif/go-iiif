@@ -46,6 +46,7 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 	opts := &RunOptions{
 		Config:    cfg,
 		ServerURI: server_uri,
+		Example:   example,
 		Verbose:   verbose,
 	}
 

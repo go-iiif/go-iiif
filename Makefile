@@ -4,15 +4,6 @@ GOMOD=$(shell test -f "go.work" && echo "readonly" || echo "vendor")
 LDFLAGS=-s -w
 
 cli:
-	@make cli-tools
-
-lambda:
-	@make lambda-handlers
-
-docker:
-	@make docker-build
-
-cli-tools: 	
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-server cmd/iiif-server/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-tile-seed cmd/iiif-tile-seed/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-transform cmd/iiif-transform/main.go
@@ -20,9 +11,20 @@ cli-tools:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-process-and-tile cmd/iiif-process-and-tile/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
 
+debug-server:
+	go run cmd/iiif-server/main.go \
+		-config-derivatives-cache-uri file://$(CWD)/static/example/cache \
+		-config-images-source-uri file://$(CWD)/static/example/images \
+		-example
+
+lambda:
+	@make lambda-handlers
+
+docker:
+	@make docker-build
+
 docker-build:
 	docker build -f Dockerfile -t go-iiif .
-
 
 lambda-handlers:
 	@make lambda-process
@@ -54,8 +56,3 @@ bump-version:
 	perl -i -p -e 's/github.com\/go-iiif\/go-iiif\/$(PREVIOUS)/github.com\/go-iiif\/go-iiif\/$(NEW)/g' go.mod
 	perl -i -p -e 's/github.com\/go-iiif\/go-iiif\/$(PREVIOUS)/github.com\/go-iiif\/go-iiif\/$(NEW)/g' README.md
 	find . -name '*.go' | xargs perl -i -p -e 's/github.com\/go-iiif\/go-iiif\/$(PREVIOUS)/github.com\/go-iiif\/go-iiif\/$(NEW)/g'
-
-debug-server:
-	go run cmd/iiif-server/main.go \
-		-config-source file://$(CWD)/docs \
-		-example
