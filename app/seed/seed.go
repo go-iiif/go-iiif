@@ -1,5 +1,16 @@
 package seed
 
+/*
+
+go run cmd/iiif-tile-seed/main.go \
+	-config-images-source-uri file:///usr/local/src/go-iiif/static/example/images \
+	-config-derivatives-cache-uri file:///usr/local/src/go-iiif/work \
+	-scale-factors '8,4,2,1' \
+	-verbose \
+	'rewrite:///spanking-cat.jpg?target=spank'
+
+*/
+
 import (
 	"context"
 	"flag"
@@ -12,7 +23,7 @@ import (
 	"time"
 
 	"github.com/aaronland/gocloud-blob/bucket"
-	aws_lambda "github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
 	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
@@ -100,18 +111,14 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 			count, err := ts.SeedTiles(ctx, src_id, alt_id, opts.ScaleFactors, opts.Refresh)
 
-			// FIX ME
-
-			/*
-				if t.onCompleteFunc != nil {
-					t.onCompleteFunc(config, src_id, alt_id, count, err)
-				}
-			*/
+			if opts.OnCompleteFunc != nil {
+				opts.OnCompleteFunc(opts.Config, src_id, alt_id, count, err)
+			}
 
 			if err != nil {
 				logger.Warn("Failed to seed tiles", "error", err)
 			} else {
-				logger.Debug("Seeded tiles complete", "count", count)
+				logger.Debug("Tile seeding complete", "count", count)
 			}
 
 		}(ctx, tiled_im, wg)
@@ -311,7 +318,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 			return nil
 		}
 
-		aws_lambda.Start(handler)
+		lambda.Start(handler)
 
 	default:
 		return fmt.Errorf("Invalid -mode")

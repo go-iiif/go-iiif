@@ -40,7 +40,7 @@ func TiledImageFromURI(u iiifuri.URI, no_extension bool) (*TiledImage, error) {
 		target = strings.TrimSuffix(target, filepath.Ext(target))
 	}
 
-	slog.Debug("New tile tiled_im", "origin", origin, "target", target)
+	slog.Debug("New tiled image", "origin", origin, "target", target)
 
 	tiled_im := &TiledImage{
 		Source: origin,

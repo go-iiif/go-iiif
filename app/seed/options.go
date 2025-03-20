@@ -12,18 +12,21 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 )
 
+type TileSeedOnCompleteFunc func(*iiifconfig.Config, string, string, int, error)
+
 type RunOptions struct {
-	Config       *iiifconfig.Config `json:"config"`
-	Mode         string             `json:"mode"`
-	Endpoint     string             `json:"endpoint"`
-	Quality      string             `json:"quality"`
-	Format       string             `json:"format"`
-	Paths        []string           `json:"paths"`
-	ScaleFactors []int              `json:"scale_factors"`
-	Refresh      bool               `json:"refresh"`
-	Workers      int                `json:"workers"`
-	NoExtension  bool               `json:"no_extension"`
-	Verbose      bool               `json:"verbose"`
+	Config         *iiifconfig.Config     `json:"config"`
+	Mode           string                 `json:"mode"`
+	Endpoint       string                 `json:"endpoint"`
+	Quality        string                 `json:"quality"`
+	Format         string                 `json:"format"`
+	Paths          []string               `json:"paths"`
+	ScaleFactors   []int                  `json:"scale_factors"`
+	Refresh        bool                   `json:"refresh"`
+	Workers        int                    `json:"workers"`
+	NoExtension    bool                   `json:"no_extension"`
+	OnCompleteFunc TileSeedOnCompleteFunc `json:",omitempty"`
+	Verbose        bool                   `json:"verbose"`
 }
 
 func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, error) {
@@ -76,6 +79,7 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 		Format:       format,
 		ScaleFactors: scales,
 		Paths:        paths,
+		Workers:      processes,
 		Verbose:      verbose,
 	}
 
