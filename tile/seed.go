@@ -1,6 +1,7 @@
 package tile
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 	"math"
@@ -17,6 +18,8 @@ import (
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
 )
 
+type TileSeedOnCompleteFunc func(*iiifconfig.Config, string, string, int, error)
+
 type TileSeed struct {
 	config            *iiifconfig.Config
 	driver            iiifdriver.Driver
@@ -31,7 +34,7 @@ type TileSeed struct {
 	procs             int
 }
 
-func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
+func NewTileSeed(ctx context.Context, config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
 
 	driver, err := iiifdriver.NewDriverFromConfig(config)
 
@@ -83,7 +86,7 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 	return &ts, nil
 }
 
-func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refresh bool) (int, error) {
+func (ts *TileSeed) SeedTiles(ctx context.Context, src_id string, alt_id string, scales []int, refresh bool) (int, error) {
 
 	logger := slog.Default()
 	logger = logger.With("source id", src_id)

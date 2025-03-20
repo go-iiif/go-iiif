@@ -7,6 +7,7 @@ import (
 	"github.com/sfomuseum/go-flags/flagset"
 )
 
+var mode string
 var csv_source string
 var scale_factors string
 var quality string
@@ -17,10 +18,13 @@ var refresh bool
 var endpoint string
 var generate_html bool
 
+var verbose bool
+
 func DefaultFlagSet() *flag.FlagSet {
 
 	fs := flagset.NewFlagSet("seed")
 
+	fs.StringVar(&mode, "mode", "cli", "Valid options are: cli, csv, lambda")
 	fs.StringVar(&csv_source, "csv-source", "A valid Go Cloud bucket URI where your CSV tileseed files are located.", "")
 
 	fs.StringVar(&scale_factors, "scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
@@ -36,6 +40,7 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.BoolVar(&generate_html, "generate-tiles-html", false, "If true then the tiles directory will be updated to include HTML/JavaScript/CSS assets to display tiles as a \"slippy\" map (using the leaflet-iiif.js library.")
 
+	fs.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")
 	return nil
 }
 
