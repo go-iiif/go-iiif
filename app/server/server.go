@@ -13,7 +13,7 @@ import (
 	iiifhttp "github.com/go-iiif/go-iiif/v6/http"
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
-	iiifexample "github.com/go-iiif/go-iiif/v6/static/example"
+	// iiifexample "github.com/go-iiif/go-iiif/v6/static/example"
 )
 
 func Run(ctx context.Context) error {
@@ -107,18 +107,8 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	mux.Handle("/debug/vars", expvar_handler)
 
-	// https://github.com/go-iiif/go-iiif/issues/4
-
 	mux.Handle("/{identifier}/info.json", info_handler)
 	mux.Handle("/{identifier}/{region}/{size}/{rotation}/{quality_dot_format}", image_handler)
-
-	if opts.Example {
-
-		http_fs := http.FS(iiifexample.FS)
-		example_handler := http.FileServer(http_fs)
-
-		mux.Handle("/example/", example_handler)
-	}
 
 	s, err := server.NewServer(ctx, opts.ServerURI)
 
@@ -126,6 +116,16 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return err
 	}
 
+	/*
+	if opts.Example {
+
+		http_fs := http.FS(iiifexample.FS)
+		example_handler := http.FileServer(http_fs)
+
+		mux.Handle("/example/", example_handler)
+	}
+	*/
+	
 	slog.Info("Listening for requests", "address", s.Address())
 
 	err = s.ListenAndServe(ctx, mux)
