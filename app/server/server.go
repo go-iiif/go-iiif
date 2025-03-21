@@ -3,18 +3,16 @@ package server
 import (
 	"context"
 	"flag"
-	_ "fmt"
-	"io/fs"
 	"log/slog"
 	"net/http"
 
 	"github.com/aaronland/go-http-server"
+	iiifexample "github.com/go-iiif/go-iiif/v6/app/server/example"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
 	iiifhttp "github.com/go-iiif/go-iiif/v6/http"
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
 	iiifsource "github.com/go-iiif/go-iiif/v6/source"
-	iiifexample "github.com/go-iiif/go-iiif/v6/static/example"
 )
 
 func Run(ctx context.Context) error {
@@ -108,16 +106,10 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	if opts.Example {
 
-		tiled_fs, err := fs.Sub(iiifexample.FS, "tiled")
+		example_fs := http.FS(iiifexample.FS)
+		example_handler := http.FileServer(example_fs)
 
-		if err != nil {
-			return err
-		}
-
-		http_fs := http.FS(tiled_fs)
-		tiled_handler := http.FileServer(http_fs)
-
-		mux.Handle("/", tiled_handler)
+		mux.Handle("/", example_handler)
 	}
 
 	mux.Handle("/debug/vars", expvar_handler)

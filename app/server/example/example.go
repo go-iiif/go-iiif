@@ -4,5 +4,5 @@ import (
 	"embed"
 )
 
-//go:embed tiled/* images/* cache/*
+//go:embed index.html *.css *.js
 var FS embed.FS

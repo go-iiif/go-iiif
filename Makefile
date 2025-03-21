@@ -12,8 +12,8 @@ cli:
 
 debug-server:
 	go run cmd/iiif-server/main.go \
-		-config-derivatives-cache-uri file://$(CWD)/static/example/cache \
-		-config-images-source-uri file://$(CWD)/static/example/images \
+		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
+		-config-images-source-uri file://$(CWD)/fixtures/images \
 		-example \
 		-verbose
 
