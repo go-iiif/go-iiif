@@ -10,6 +10,13 @@ cli:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-process cmd/iiif-process/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
 
+debug-seed:
+	go run cmd/iiif-tile-seed/main.go \
+		-config-images-source-uri file://$(CWD)/fixtures/images \
+		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
+		-verbose \
+		'rewrite:///spanking-cat.jpg?target=spank'
+
 debug-server:
 	mkdir -p fixtures/cache
 	go run cmd/iiif-server/main.go \
