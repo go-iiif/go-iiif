@@ -39,7 +39,7 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.StringVar(&mode, "mode", "cli", "Valid options are: cli, csv, fsnotify, lambda")
 
-	fs.StringVar(&scale_factors, "scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
+	fs.StringVar(&scale_factors, "scale-factors", "8,4,2,1", "A comma-separated list of scale factors to seed tiles with")
 	fs.StringVar(&quality, "quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
 	fs.StringVar(&format, "format", "jpg", "A valid IIIF format parameter")
 

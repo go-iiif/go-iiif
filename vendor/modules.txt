@@ -264,6 +264,9 @@ github.com/aws/smithy-go/tracing
 github.com/aws/smithy-go/transport/http
 github.com/aws/smithy-go/transport/http/internal/io
 github.com/aws/smithy-go/waiter
+# github.com/brunoga/deep v1.2.4
+## explicit; go 1.20.0
+github.com/brunoga/deep
 # github.com/buckket/go-blurhash v1.1.0
 ## explicit; go 1.14
 github.com/buckket/go-blurhash
@@ -442,17 +445,6 @@ github.com/sfomuseum/go-exif-update/tags
 # github.com/sfomuseum/go-flags v0.10.0
 ## explicit; go 1.16
 github.com/sfomuseum/go-flags/flagset
-github.com/sfomuseum/go-flags/lookup
-github.com/sfomuseum/go-flags/multi
-# github.com/sfomuseum/go-template v1.10.1
-## explicit; go 1.22
-github.com/sfomuseum/go-template/funcs
-github.com/sfomuseum/go-template/html
-# github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
-## explicit; go 1.13
-github.com/skip2/go-qrcode
-github.com/skip2/go-qrcode/bitset
-github.com/skip2/go-qrcode/reedsolomon
 # github.com/tidwall/gjson v1.18.0
 ## explicit; go 1.12
 github.com/tidwall/gjson

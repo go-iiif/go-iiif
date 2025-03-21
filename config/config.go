@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/aaronland/gocloud-blob/bucket"
+	"github.com/brunoga/deep"
 	iiifdefaults "github.com/go-iiif/go-iiif/v6/defaults"
 	"gocloud.dev/blob"
 )
@@ -39,13 +40,13 @@ type Config struct {
 
 func (c *Config) Clone() (*Config, error) {
 
-	new_c, err := clone(c)
+	new_c, err := deep.Copy(c)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return new_c.(*Config), nil
+	return new_c, nil
 }
 
 // ProfileConfig defines configuration details for the IIIF profile in use.
