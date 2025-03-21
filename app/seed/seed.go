@@ -211,7 +211,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 		for _, id := range opts.Paths {
 
-			tiled_im, err := TiledImageFromString(id, opts.NoExtension)
+			tiled_im, err := opts.TiledImageFromString(ctx, id)
 
 			if err != nil {
 				return fmt.Errorf("Failed to derive seed from URI '%s', %w", id, err)
@@ -395,7 +395,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 						rel_path := strings.Replace(abs_path, root, "", 1)
 						rel_path = strings.TrimLeft(rel_path, "/")
 
-						tiled_im, err := TiledImageFromString(rel_path, opts.NoExtension)
+						tiled_im, err := opts.TiledImageFromString(ctx, rel_path)
 
 						if err != nil {
 							logger.Warn("Failed to determine seed from path", "rel_path", rel_path, "abs_path", abs_path, "error", err)
@@ -434,6 +434,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	case "lambda":
 
 		handler := func(ctx context.Context, ev iiifaws.Event) error {
+
 			wg := new(sync.WaitGroup)
 
 			for _, r := range ev.Records {
@@ -444,7 +445,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 				s3_fname := filepath.Base(s3_key)
 
-				tiled_im, err := TiledImageFromString(s3_fname, opts.NoExtension)
+				tiled_im, err := opts.TiledImageFromString(ctx, s3_fname)
 
 				if err != nil {
 					return fmt.Errorf("Failed to seed tiles from %s, %w", s3_fname, err)

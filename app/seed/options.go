@@ -88,8 +88,20 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 		Paths:        paths,
 		Workers:      processes,
 		GenerateHTML: generate_html,
+		URIFunc:      iiifuri.NewURI,
 		Verbose:      verbose,
 	}
 
 	return opts, nil
+}
+
+func (o *RunOptions) TiledImageFromString(ctx context.Context, id string) (*TiledImage, error) {
+
+	tile_uri, err := o.URIFunc(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return TiledImageFromURI(tile_uri, o.NoExtension)
 }
