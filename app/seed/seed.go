@@ -31,7 +31,6 @@ import (
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
-	// iiifuri "github.com/go-iiif/go-iiif-uri"
 	"github.com/sfomuseum/go-csvdict/v2"
 )
 
@@ -61,6 +60,9 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	if opts.GenerateHTML {
 
+		// Note the use of a locally-scoped *iiifconfig.Config (which may have
+		// had its defaults changed if running in CSV mode)
+
 		html_cb := func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error) error {
 
 			logger := slog.Default()
@@ -74,7 +76,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 			logger.Info("Generate HTML index page for tiles")
 
-			derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+			derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(cfg)
 
 			if err != nil {
 				logger.Error("Failed to load derivatives cache from config", "error", err)
@@ -131,7 +133,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		throttle <- true
 	}
 
-	// This is scoped locally so we can access opts
+	// This is scoped locally so we can access the global opts struct but
 	// cfg is passed in because we might be doing path/URI wrangling on a per-image basis (and this run in Go routines)
 
 	tile_func := func(ctx context.Context, cfg *iiifconfig.Config, tiled_im *TiledImage, wg *sync.WaitGroup) error {
@@ -190,7 +192,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 			for _, cb := range opts.OnCompleteFuncs {
 
-				cb_err := cb(opts.Config, src_id, alt_id, count, err)
+				cb_err := cb(cfg, src_id, alt_id, count, err)
 
 				if cb_err != nil {
 					logger.Warn("Callback function failed", "error", cb_err)
