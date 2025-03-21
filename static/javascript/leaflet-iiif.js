@@ -173,9 +173,11 @@ L.TileLayer.Iiif = L.TileLayer.extend({
       .then(function(response) {
         return response.json();
       })
+      /*
       .catch(function(err){
           console.error(err);
       })
+      */
       .then(function(data) {
         _this.y = data.height;
         _this.x = data.width;
@@ -245,7 +247,7 @@ L.TileLayer.Iiif = L.TileLayer.extend({
         _this._imageSizes = imageSizes;
       })
       .catch(function(err){
-          console.error(err);
+          console.error("Failed to load image data", err);
       });
       
   },

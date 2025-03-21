@@ -52,7 +52,7 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.StringVar(&endpoint, "endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
 
-	fs.BoolVar(&generate_html, "generate-tiles-html", false, "If true then the tiles directory will be updated to include HTML/JavaScript/CSS assets to display tiles as a \"slippy\" map (using the leaflet-iiif.js library.")
+	fs.BoolVar(&generate_html, "generate-html", false, "If true then the tiles directory will be updated to include HTML/JavaScript/CSS assets to display tiles as a \"slippy\" map (using the leaflet-iiif.js library.")
 
 	fs.BoolVar(&refresh, "refresh", false, "Refresh a tile even if already exists (default false)")
 	fs.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")

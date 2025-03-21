@@ -13,6 +13,7 @@ go run cmd/iiif-tile-seed/main.go \
 
 import (
 	"context"
+	"embed"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -25,7 +26,10 @@ import (
 	"github.com/aaronland/gocloud-blob/bucket"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
+	iiifhtml "github.com/go-iiif/go-iiif/v6/app/seed/html"
 	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
 	"github.com/sfomuseum/go-csvdict/v2"
 )
@@ -58,6 +62,69 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	if err != nil {
 		return fmt.Errorf("Failed to create tileseed(er), %w", err)
+	}
+
+	if opts.GenerateHTML {
+
+		html_cb := func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error) error {
+
+			logger := slog.Default()
+			logger = logger.With("source", src_id)
+			logger = logger.With("alt", alt_id)
+
+			if err != nil {
+				logger.Warn("Skipping on complete func because error present", "error", err)
+				return nil
+			}
+
+			logger.Info("Generate HTML index page for tiles")
+
+			derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+
+			if err != nil {
+				logger.Error("Failed to load derivatives cache from config", "error", err)
+				return err
+			}
+
+			assets := []string{
+				"leaflet.iiif.bundle.js",
+				"leaflet.css",
+				"index.html",
+			}
+
+			write_assets := func(assets_fs embed.FS, assets []string) error {
+
+				for _, fname := range assets {
+
+					body, err := assets_fs.ReadFile(fname)
+
+					if err != nil {
+						return fmt.Errorf("Failed to read %s, %w", fname, err)
+					}
+
+					path := filepath.Join(alt_id, fname)
+
+					err = derivatives_cache.Set(path, body)
+
+					if err != nil {
+						return fmt.Errorf("Failed to write %s, %w", path, err)
+					}
+				}
+
+				return nil
+			}
+
+			err = write_assets(iiifhtml.FS, assets)
+
+			if err != nil {
+				logger.Error("Failed to write assets", "error", err)
+				return err
+			}
+
+			return nil
+		}
+
+		opts.OnCompleteFuncs = append(opts.OnCompleteFuncs, html_cb)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -111,14 +178,19 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 			count, err := ts.SeedTiles(ctx, src_id, alt_id, opts.ScaleFactors, opts.Refresh)
 
-			if opts.OnCompleteFunc != nil {
-				opts.OnCompleteFunc(opts.Config, src_id, alt_id, count, err)
-			}
-
 			if err != nil {
 				logger.Warn("Failed to seed tiles", "error", err)
 			} else {
 				logger.Debug("Tile seeding complete", "count", count)
+			}
+
+			for _, cb := range opts.OnCompleteFuncs {
+
+				cb_err := cb(opts.Config, src_id, alt_id, count, err)
+
+				if cb_err != nil {
+					logger.Warn("Callback function failed", "error", cb_err)
+				}
 			}
 
 		}(ctx, tiled_im, wg)

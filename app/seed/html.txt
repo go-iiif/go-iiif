@@ -8,7 +8,7 @@
 
 	if generate_tiles_html {
 
-		t.onCompleteFunc = func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error) {
+	   	t.onCompleteFunc = func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error) {
 
 			logger := slog.Default()
 			logger = logger.With("source", src_id)
