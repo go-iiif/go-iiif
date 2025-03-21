@@ -17,7 +17,7 @@ require (
 	github.com/brunoga/deep v1.2.4
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.1.0
-	github.com/dgraph-io/ristretto v0.2.0
+	github.com/dgraph-io/ristretto/v2 v2.1.0
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/go-iiif/go-iiif-uri v0.5.2
@@ -29,7 +29,6 @@ require (
 	github.com/sfomuseum/go-csvdict/v2 v2.0.1
 	github.com/sfomuseum/go-flags v0.10.0
 	github.com/tidwall/gjson v1.18.0
-	github.com/tidwall/pretty v1.2.1
 	github.com/whosonfirst/go-sanitize v0.1.0
 	gocloud.dev v0.40.0
 	golang.org/x/image v0.24.0
@@ -93,10 +92,11 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sfomuseum/go-exif-update v0.1.3 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
 	google.golang.org/api v0.191.0 // indirect

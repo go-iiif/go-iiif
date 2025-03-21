@@ -3,7 +3,10 @@ package http
 import (
 	"fmt"
 	gohttp "net/http"
+	"sync"
+	"time"
 
+	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
 	iiifinfo "github.com/go-iiif/go-iiif/v6/info"
@@ -11,12 +14,18 @@ import (
 	iiifservice "github.com/go-iiif/go-iiif/v6/service"
 )
 
-func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.HandlerFunc, error) {
+func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cache iiifcache.Cache) (gohttp.HandlerFunc, error) {
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
 		ctx := req.Context()
 		logger := LoggerWithRequest(req, nil)
+
+		t1 := time.Now()
+
+		defer func() {
+			logger.Debug("Time to process request", "time", time.Since(t1))
+		}()
 
 		id, err := GetIIIFParameter(req, "identifier")
 
@@ -28,7 +37,9 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 		logger = logger.With("identifier", id)
 
-		image, err := driver.NewImageFromConfig(config, id)
+		image, err := driver.NewImageFromConfigWithCache(config, images_cache, id)
+
+		logger.Debug("WUT 0", "time", time.Since(t1))
 
 		if err != nil {
 			logger.Error("Failed to derive image from config", "error", err)
@@ -58,37 +69,68 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 		if count_services > 0 {
 
+			ts1 := time.Now()
+
 			services := make([]iiifservice.Service, count_services)
+
+			mu := new(sync.RWMutex)
+			done_ch := make(chan bool)
+			err_ch := make(chan error)
 
 			for idx, service_name := range config.Profile.Services.Enable {
 
-				service_uri := fmt.Sprintf("%s://", service_name)
-				service, err := iiifservice.NewService(ctx, service_uri, config, image)
+				go func(idx int, service_name string) {
 
-				if err != nil {
-					logger.Error("Failed to derive service", "service", service_uri, "error", err)
+					ts2 := time.Now()
+
+					defer func() {
+						logger.Debug("Time to load service", "service", service_name, "time", time.Since(ts2))
+						done_ch <- true
+					}()
+
+					service_uri := fmt.Sprintf("%s://", service_name)
+					service, err := iiifservice.NewService(ctx, service_uri, config, image)
+
+					if err != nil {
+						err_ch <- fmt.Errorf("Failed to derive service for '%s', %w", service_uri, err)
+						return
+					}
+
+					mu.Lock()
+					services[idx] = service
+					mu.Unlock()
+
+				}(idx, service_name)
+			}
+
+			remaining := count_services
+
+			for remaining > 0 {
+				select {
+				case <-done_ch:
+					remaining -= 1
+				case err := <-err_ch:
+					logger.Error("Failed to derive service", "error", err)
 					gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 					return
 				}
-
-				services[idx] = service
 			}
 
 			info.Services = services
+
+			logger.Debug("Time to load services", "count", count_services, "time", time.Since(ts1))
 		}
 
-		b, err := iiifinfo.MarshalJSON(info)
+		rsp.Header().Set("Content-Type", "application/json")
+		rsp.Header().Set("Access-Control-Allow-Origin", "*")
+
+		err = info.MarshalJSON(rsp)
 
 		if err != nil {
 			logger.Error("Failed to marshal info", "error", err)
 			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
-
-		rsp.Header().Set("Content-Type", "application/json")
-		rsp.Header().Set("Access-Control-Allow-Origin", "*")
-		rsp.Write(b)
-
 	}
 
 	h := gohttp.HandlerFunc(fn)

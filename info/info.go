@@ -2,7 +2,9 @@
 package info
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 
 	iiifimage "github.com/go-iiif/go-iiif/v6/image"
@@ -82,4 +84,9 @@ func New(iiif_context string, l iiiflevel.Level, im iiifimage.Image) (*Info, err
 	}
 
 	return i, nil
+}
+
+func (i *Info) MarshalJSON(wr io.Writer) error {
+	enc := json.NewEncoder(wr)
+	return enc.Encode(i)
 }

@@ -19,6 +19,12 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 
 		logger := LoggerWithRequest(req, nil)
 
+		t1 := time.Now()
+
+		defer func() {
+			logger.Debug("Time to process request", "time", time.Since(t1))
+		}()
+
 		params, err := GetIIIFParameters(req)
 
 		if err != nil {
@@ -103,9 +109,9 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 			return
 		}
 
-		t1 := time.Now()
+		tr1 := time.Now()
 		err = image.Transform(transformation)
-		t2 := time.Since(t1)
+		tr2 := time.Since(tr1)
 
 		if err != nil {
 			logger.Error("Failed to apply transformation", "error", err)
@@ -114,6 +120,8 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 		}
 
 		go func(t time.Duration) {
+
+			logger.Debug("Time to transform", "time", t)
 
 			ns := t.Nanoseconds()
 			ms := ns / (int64(time.Millisecond) / int64(time.Nanosecond))
@@ -129,7 +137,7 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 			transformsAvgTime.Set(avg)
 
 			timers_mu.Unlock()
-		}(t2)
+		}(tr2)
 
 		go func(k string, im iiifimage.Image) {
 			logger.Debug("Set cache for image")

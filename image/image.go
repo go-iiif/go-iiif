@@ -12,6 +12,8 @@ import (
 	"image/png"
 	"log/slog"
 
+	"time"
+
 	"github.com/aaronland/go-image/colour"
 )
 
@@ -32,8 +34,34 @@ type Dimensions interface {
 	Width() int
 }
 
+/*
+func IIIFImageToGolangImageWithCache(im Image, c ristretto.Cache[string, image.Image]) (image.Image, error) {
+
+	go_im, ok := c.Get(im.Identifier())
+
+	if ok {
+		return go_im, nil
+	}
+
+	go_im, err := IIIFImageToGolangImage(im)
+
+	if err != nil {
+		return nil, err
+	}
+
+	c.Set(im.Identifier(), go_im, 1)
+	return go_im, nil
+
+}
+*/
+
 // Convert a go-iiif/image.Image instance to a Go language image.Image instance.
 func IIIFImageToGolangImage(im Image) (image.Image, error) {
+
+	t1 := time.Now()
+	defer func() {
+		slog.Info("Time to transform image", "time", time.Since(t1))
+	}()
 
 	var goimg image.Image
 	var err error

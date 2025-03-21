@@ -1,6 +1,8 @@
 package tile
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"fmt"
 	"log/slog"
@@ -235,16 +237,19 @@ func (ts *TileSeed) SeedTiles(ctx context.Context, src_id string, alt_id string,
 		},
 	}
 
-	body, err := iiifinfo.MarshalJSON(info)
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	err = info.MarshalJSON(wr)
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to marshal info, %w", err)
 	}
 
-	uri := fmt.Sprintf("%s/info.json", alt_id)
-	ts.derivatives_cache.Set(uri, body)
+	wr.Flush()
 
-	//
+	uri := fmt.Sprintf("%s/info.json", alt_id)
+	ts.derivatives_cache.Set(uri, buf.Bytes())
 
 	return count, nil
 }

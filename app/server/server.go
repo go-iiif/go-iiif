@@ -84,7 +84,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		return err
 	}
 
-	info_handler, err := iiifhttp.InfoHandler(opts.Config, driver)
+	info_handler, err := iiifhttp.InfoHandler(opts.Config, driver, images_cache)
 
 	if err != nil {
 		return err
