@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"github.com/sfomuseum/go-flags/flagset"
 )
@@ -15,19 +16,24 @@ import (
 type TileSeedOnCompleteFunc func(*iiifconfig.Config, string, string, int, error) error
 
 type RunOptions struct {
-	Config          *iiifconfig.Config       `json:"config"`
-	Mode            string                   `json:"mode"`
-	Endpoint        string                   `json:"endpoint"`
-	Quality         string                   `json:"quality"`
-	Format          string                   `json:"format"`
-	Paths           []string                 `json:"paths"`
-	ScaleFactors    []int                    `json:"scale_factors"`
-	Refresh         bool                     `json:"refresh"`
-	Workers         int                      `json:"workers"`
-	NoExtension     bool                     `json:"no_extension"`
-	GenerateHTML    bool                     `json:"generate_html"`
-	OnCompleteFuncs []TileSeedOnCompleteFunc `json:",omitempty"`
-	Verbose         bool                     `json:"verbose"`
+	Config          *iiifconfig.Config        `json:"config"`
+	Mode            string                    `json:"mode"`
+	Endpoint        string                    `json:"endpoint"`
+	Quality         string                    `json:"quality"`
+	Format          string                    `json:"format"`
+	Paths           []string                  `json:"paths"`
+	ScaleFactors    []int                     `json:"scale_factors"`
+	Refresh         bool                      `json:"refresh"`
+	Workers         int                       `json:"workers"`
+	NoExtension     bool                      `json:"no_extension"`
+	GenerateHTML    bool                      `json:"generate_html"`
+	OnCompleteFuncs []TileSeedOnCompleteFunc  `json:",omitempty"`
+	URIFunc         iiifuri.URIInitializeFunc `json:",omitempty"`
+	Verbose         bool                      `json:"verbose"`
+}
+
+func (o *RunOptions) AddOnCompleteFunc(fn TileSeedOnCompleteFunc) {
+	o.OnCompleteFuncs = append(o.OnCompleteFuncs, fn)
 }
 
 func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, error) {

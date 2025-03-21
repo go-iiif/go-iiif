@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifprocess "github.com/go-iiif/go-iiif/v6/process"
 	"github.com/sfomuseum/go-flags/flagset"
@@ -20,6 +21,7 @@ type RunOptions struct {
 	ReportBucketURI string                         `json:"report_bucket_uri"`
 	ReportTemplate  string                         `json:"report_template"`
 	ReportHTML      bool                           `json:"report_html"`
+	URIFunc         iiifuri.URIInitializeFunc      `json:",omitempty"`
 	Verbose         bool                           `json:"verbose"`
 }
 
