@@ -1,6 +1,7 @@
 package process
 
 import (
+	"context"
 	"log/slog"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
@@ -61,6 +62,6 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, driver iiifdriver.Dri
 	return &pr, nil
 }
 
-func (pr *IIIFProcessor) ProcessURIWithInstructions(u iiifuri.URI, label Label, i IIIFInstructions) (iiifuri.URI, iiifimage.Image, error) {
-	return TransformURIWithInstructions(u, i, pr.config, pr.driver, pr.source_cache, pr.dest_cache)
+func (pr *IIIFProcessor) ProcessURIWithInstructions(ctx context.Context, u iiifuri.URI, label Label, i IIIFInstructions) (iiifuri.URI, iiifimage.Image, error) {
+	return TransformURIWithInstructions(ctx, u, i, pr.config, pr.driver, pr.source_cache, pr.dest_cache)
 }

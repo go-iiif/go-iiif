@@ -39,7 +39,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		slog.Debug("Verbose logging enabled")
 	}
 
-	driver, err := iiifdriver.NewDriverFromConfig(opts.Config)
+	driver, err := iiifdriver.NewDriverFromConfig(ctx, opts.Config)
 
 	if err != nil {
 		return err

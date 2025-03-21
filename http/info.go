@@ -37,7 +37,7 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cac
 
 		logger = logger.With("identifier", id)
 
-		image, err := driver.NewImageFromConfigWithCache(config, images_cache, id)
+		image, err := driver.NewImageFromConfigWithCache(ctx, config, images_cache, id)
 
 		logger.Debug("WUT 0", "time", time.Since(t1))
 

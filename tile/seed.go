@@ -38,7 +38,7 @@ type TileSeed struct {
 
 func NewTileSeed(ctx context.Context, config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
 
-	driver, err := iiifdriver.NewDriverFromConfig(config)
+	driver, err := iiifdriver.NewDriverFromConfig(ctx, config)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create tileseed driver from config, %w", err)
@@ -98,7 +98,7 @@ func (ts *TileSeed) SeedTiles(ctx context.Context, src_id string, alt_id string,
 
 	count := 0
 
-	image, err := ts.driver.NewImageFromConfigWithCache(ts.config, ts.images_cache, src_id)
+	image, err := ts.driver.NewImageFromConfigWithCache(ctx, ts.config, ts.images_cache, src_id)
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to create image for %s, %w", src_id, err)
@@ -182,7 +182,7 @@ func (ts *TileSeed) SeedTiles(ctx context.Context, src_id string, alt_id string,
 					}
 				}
 
-				tmp, err := ts.driver.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
+				tmp, err := ts.driver.NewImageFromConfigWithSource(ctx, ts.config, source, im.Identifier())
 
 				if err != nil {
 					logger.Warn("Failed to derive new image from config", "identifier", im.Identifier(), "error", err)

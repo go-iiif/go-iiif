@@ -84,7 +84,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		defer report_bucket.Close()
 	}
 
-	driver, err := iiifdriver.NewDriverFromConfig(opts.Config)
+	driver, err := iiifdriver.NewDriverFromConfig(ctx, opts.Config)
 
 	if err != nil {
 		return fmt.Errorf("Failed to create new driver from config, %w", err)
@@ -274,7 +274,7 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI)
 		logger := slog.Default()
 		logger = logger.With("origin", origin)
 
-		rsp, err := iiifprocess.ParallelProcessURIWithInstructionSet(opts.Config, opts.Driver, opts.Processor, opts.Instructions, uri)
+		rsp, err := iiifprocess.ParallelProcessURIWithInstructionSet(ctx, opts.Config, opts.Driver, opts.Processor, opts.Instructions, uri)
 
 		if err != nil {
 			return &results, err

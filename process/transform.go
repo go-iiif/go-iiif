@@ -14,9 +14,7 @@ import (
 	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
 )
 
-func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
-
-	ctx := context.Background()
+func TransformURIWithInstructions(ctx context.Context, u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {
 
 	origin := u.Origin()
 	target, err := u.Target(nil)
@@ -84,7 +82,7 @@ func TransformURIWithInstructions(u iiifuri.URI, i IIIFInstructions, config *iii
 	}
 
 	logger.Debug("Derive image from source cache", "source cache", source_cache)
-	im, err := driver.NewImageFromConfigWithCache(config, source_cache, origin)
+	im, err := driver.NewImageFromConfigWithCache(ctx, config, source_cache, origin)
 
 	if err != nil {
 		logger.Debug("Failed to derive image from source cache", "error", err)

@@ -17,6 +17,7 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 
 	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
+		ctx := req.Context()
 		logger := LoggerWithRequest(req, nil)
 
 		t1 := time.Now()
@@ -85,7 +86,7 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 				return
 			}
 
-			image, err := driver.NewImageFromConfigWithSource(config, source, uri)
+			image, err := driver.NewImageFromConfigWithSource(ctx, config, source, uri)
 
 			if err != nil {
 				logger.Error("Failed to create new image from memory source", "error", err)
@@ -101,7 +102,7 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 		logger.Info("Cache miss for URI", "uri", uri)
 		cacheMiss.Add(1)
 
-		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)
+		image, err := driver.NewImageFromConfigWithCache(ctx, config, images_cache, params.Identifier)
 
 		if err != nil {
 			logger.Warn("Failed to retrieve image", "error", err)

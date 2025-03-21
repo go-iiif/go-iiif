@@ -19,25 +19,23 @@ import (
 
 func init() {
 
-	dr, err := NewNativeDriver()
+	err := iiifdriver.RegisterDriver(context.Background(), "native", NewNativeDriver)
 
 	if err != nil {
 		panic(err)
 	}
-
-	iiifdriver.RegisterDriver("native", dr)
 }
 
 type NativeDriver struct {
 	iiifdriver.Driver
 }
 
-func NewNativeDriver() (iiifdriver.Driver, error) {
+func NewNativeDriver(ctx context.Context, uri string) (iiifdriver.Driver, error) {
 	dr := &NativeDriver{}
 	return dr, nil
 }
 
-func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, src iiifsource.Source, id string) (iiifimage.Image, error) {
+func (dr *NativeDriver) NewImageFromConfigWithSource(ctx context.Context, config *iiifconfig.Config, src iiifsource.Source, id string) (iiifimage.Image, error) {
 
 	logger := slog.Default()
 	logger = logger.With("source", src)
@@ -127,7 +125,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(config *iiifconfig.Config, 
 	return &im, nil
 }
 
-func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, cache iiifcache.Cache, id string) (iiifimage.Image, error) {
+func (dr *NativeDriver) NewImageFromConfigWithCache(ctx context.Context, config *iiifconfig.Config, cache iiifcache.Cache, id string) (iiifimage.Image, error) {
 
 	var image iiifimage.Image
 
@@ -141,7 +139,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 			return nil, fmt.Errorf("Failed to derive memory source for '%s', %w", id, err)
 		}
 
-		image, err = dr.NewImageFromConfigWithSource(config, source, id)
+		image, err = dr.NewImageFromConfigWithSource(ctx, config, source, id)
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to derive image from source for '%s', %w", id, err)
@@ -149,7 +147,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 
 	} else {
 
-		image, err = dr.NewImageFromConfig(config, id)
+		image, err = dr.NewImageFromConfig(ctx, config, id)
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to derive image from config for '%s', %w", id, err)
@@ -164,7 +162,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 	return image, nil
 }
 
-func (dr *NativeDriver) NewImageFromConfig(config *iiifconfig.Config, id string) (iiifimage.Image, error) {
+func (dr *NativeDriver) NewImageFromConfig(ctx context.Context, config *iiifconfig.Config, id string) (iiifimage.Image, error) {
 
 	source, err := iiifsource.NewSourceFromConfig(config)
 
@@ -172,5 +170,5 @@ func (dr *NativeDriver) NewImageFromConfig(config *iiifconfig.Config, id string)
 		return nil, err
 	}
 
-	return dr.NewImageFromConfigWithSource(config, source, id)
+	return dr.NewImageFromConfigWithSource(ctx, config, source, id)
 }
