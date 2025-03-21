@@ -40,7 +40,7 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.StringVar(&mode, "mode", "cli", "Valid options are: cli, csv, fsnotify, lambda")
 
-	fs.StringVar(&csv_source, "csv-source", "file:///", "A valid Go Cloud bucket URI where your CSV tileseed files are located.")
+	fs.StringVar(&csv_source, "csv-source", "", "A valid Go Cloud bucket URI where your CSV tileseed files are located.")
 
 	fs.StringVar(&scale_factors, "scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	fs.StringVar(&quality, "quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")

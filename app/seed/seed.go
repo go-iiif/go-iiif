@@ -58,12 +58,6 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		slog.Debug("Verbose logging enabled")
 	}
 
-	ts, err := iiiftile.NewTileSeed(ctx, opts.Config, 256, 256, opts.Endpoint, opts.Quality, opts.Format)
-
-	if err != nil {
-		return fmt.Errorf("Failed to create tileseed(er), %w", err)
-	}
-
 	if opts.GenerateHTML {
 
 		html_cb := func(cfg *iiifconfig.Config, src_id string, alt_id string, count int, err error) error {
@@ -136,7 +130,10 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		throttle <- true
 	}
 
-	tile_func := func(ctx context.Context, tiled_im *TiledImage, wg *sync.WaitGroup) error {
+	// This is scoped locally so we can access opts
+	// cfg is passed in because we might be doing path/URI wrangling on a per-image basis (and this run in Go routines)
+
+	tile_func := func(ctx context.Context, cfg *iiifconfig.Config, tiled_im *TiledImage, wg *sync.WaitGroup) error {
 
 		select {
 		case <-ctx.Done():
@@ -150,9 +147,15 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 		<-throttle
 
+		ts, err := iiiftile.NewTileSeed(ctx, cfg, 256, 256, opts.Endpoint, opts.Quality, opts.Format)
+
+		if err != nil {
+			return fmt.Errorf("Failed to create tileseed(er), %w", err)
+		}
+
 		slog.Debug("Tile waiting to seed", "source", tiled_im.Source, "time", time.Since(t1))
 
-		go func(ctx context.Context, tiled_im *TiledImage, wg *sync.WaitGroup) {
+		go func(ctx context.Context, ts *iiiftile.TileSeed, tiled_im *TiledImage, wg *sync.WaitGroup) {
 
 			t1 := time.Now()
 
@@ -193,7 +196,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 				}
 			}
 
-		}(ctx, tiled_im, wg)
+		}(ctx, ts, tiled_im, wg)
 
 		return nil
 	}
@@ -211,7 +214,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 				return fmt.Errorf("Failed to derive seed from URI '%s', %w", id, err)
 			}
 
-			tile_func(ctx, tiled_im, wg)
+			tile_func(ctx, opts.Config, tiled_im, wg)
 		}
 
 		wg.Wait()
@@ -253,26 +256,46 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 					return err
 				}
 
-				src_id, ok := row["source_id"]
+				new_cfg, err := opts.Config.Clone()
+
+				if err != nil {
+					return err
+				}
+
+				src, ok := row["source"]
 
 				if !ok {
 					logger.Warn("Unable to determine source ID for row", "row", row)
 					continue
 				}
 
-				alt_id, ok := row["alternate_id"]
+				target, ok := row["target"]
 
 				if !ok {
 					logger.Warn("Unable to determine alternate ID for row", "row", row)
 					continue
 				}
 
+				// START OF source/target wrangling...
+
+				// source, possible values:
+				// filename.jpg
+				// /path/to/filename.jpg
+				// scheme://uri <-- no
+				// scheme://uri/filename.jpg
+
+				// START OF source/target wrangling...
+
 				tiled_im := &TiledImage{
-					Source: src_id,
-					Target: alt_id,
+					Source: src,
+					Target: target,
 				}
 
-				tile_func(ctx, tiled_im, wg)
+				err = tile_func(ctx, new_cfg, tiled_im, wg)
+
+				if err != nil {
+					logger.Error("Failed to tile image", "error", err)
+				}
 			}
 
 		}
@@ -335,7 +358,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 							continue
 						}
 
-						err = tile_func(ctx, tiled_im, wg)
+						err = tile_func(ctx, opts.Config, tiled_im, wg)
 
 						if err != nil {
 							logger.Error("Failed to generate tiles from path", "rel_path", rel_path, "error", err)
@@ -383,7 +406,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 					return fmt.Errorf("Failed to seed tiles from %s, %w", s3_fname, err)
 				}
 
-				tile_func(ctx, tiled_im, wg)
+				tile_func(ctx, opts.Config, tiled_im, wg)
 			}
 
 			wg.Wait()
