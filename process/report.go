@@ -9,9 +9,10 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-
+	"html/template"
+	
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	"github.com/go-iiif/go-iiif/v6/static/templates/html"
+	// "github.com/go-iiif/go-iiif/v6/static/templates/html"
 	"github.com/jtacoma/uritemplates"
 	"github.com/tidwall/gjson"
 )
@@ -83,12 +84,16 @@ func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte,
 		Images []*Image
 	}
 
+	var t *template.Template
+
+	/*
 	t, err := html.LoadTemplates(ctx)
 
 	if err != nil {
 		return nil, err
 	}
-
+	*/
+	
 	t = t.Lookup("process_report")
 
 	if t == nil {
@@ -102,7 +107,7 @@ func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte,
 	var buf bytes.Buffer
 	wr := bufio.NewWriter(&buf)
 
-	err = t.Execute(wr, vars)
+	err := t.Execute(wr, vars)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to render 'process_report' template, %w", err)
