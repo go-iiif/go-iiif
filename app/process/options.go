@@ -57,8 +57,6 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 		return nil, err
 	}
 
-	// Instructions stuff here...
-
 	paths := fs.Args()
 
 	opts := &RunOptions{
@@ -70,6 +68,7 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 		ReportBucketURI: report_bucket_uri,
 		ReportTemplate:  report_template,
 		Paths:           paths,
+		URIFunc:         iiifuri.NewURI,
 		Verbose:         verbose,
 	}
 

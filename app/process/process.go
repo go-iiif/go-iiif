@@ -24,7 +24,7 @@ import (
 	"sync"
 
 	"github.com/aaronland/gocloud-blob/bucket"
-	aws_lambda "github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
@@ -120,7 +120,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 		for _, str_uri := range opts.Paths {
 
-			u, err := iiifuri.NewURI(ctx, str_uri)
+			u, err := opts.URIFunc(ctx, str_uri)
 
 			if err != nil {
 				return fmt.Errorf("URI Func for '%s' failed: %w", str_uri, err)
@@ -184,7 +184,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 						rel_path := strings.Replace(abs_path, root, "", 1)
 						rel_path = strings.TrimLeft(rel_path, "/")
 
-						u, err := iiifuri.NewURI(ctx, rel_path)
+						u, err := opts.URIFunc(ctx, rel_path)
 
 						if err != nil {
 							logger.Warn("Failed to parse path", "rel path", rel_path, "abs path", abs_path, "error", err)
@@ -234,7 +234,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 				s3_fname := filepath.Base(s3_key)
 
-				u, err := iiifuri.NewURI(ctx, s3_fname)
+				u, err := opts.URIFunc(ctx, s3_fname)
 
 				if err != nil {
 					return err
@@ -252,7 +252,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 			return nil
 		}
 
-		aws_lambda.Start(handler)
+		lambda.Start(handler)
 
 	default:
 		return fmt.Errorf("Unsupported mode")

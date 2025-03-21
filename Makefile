@@ -17,6 +17,16 @@ debug-seed:
 		-verbose \
 		'rewrite:///spanking-cat.jpg?target=spank'
 
+debug-process:
+	go run cmd/iiif-process/main.go \
+		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
+		-config-images-source-uri file://$(CWD)/fixtures/images \
+		-report \
+		-report-bucket-uri file://$(CWD)/fixtures/reports \
+		-report-html \
+		-verbose \
+		'idsecret:///spanking-cat.jpg?id=9998&secret=abc&secret_o=def&format=jpg&label=x'
+
 debug-server:
 	mkdir -p fixtures/cache
 	go run cmd/iiif-server/main.go \
