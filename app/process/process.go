@@ -15,7 +15,6 @@ go run cmd/iiif-process/main.go \
 
 import (
 	"context"
-	"errors"
 	"flag"
 	"fmt"
 	"log/slog"
@@ -147,7 +146,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		}
 
 		if u.Scheme != "file" {
-			return errors.New("Invalid image source for -mode fsnotify")
+			return fmt.Errorf("Invalid image source for -mode fsnotify")
 		}
 
 		root := u.Path
@@ -256,7 +255,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		aws_lambda.Start(handler)
 
 	default:
-		return errors.New("Unsupported mode")
+		return fmt.Errorf("Unsupported mode")
 	}
 
 	return nil
