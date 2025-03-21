@@ -7,11 +7,11 @@ import (
 	"crypto/sha256"
 	_ "embed"
 	"fmt"
+	"html/template"
 	"path/filepath"
 	"sort"
 	"strings"
-	"html/template"
-	
+
 	iiifuri "github.com/go-iiif/go-iiif-uri"
 	"github.com/jtacoma/uritemplates"
 	"github.com/tidwall/gjson"
@@ -89,7 +89,7 @@ func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte,
 
 	t := template.New("report")
 	t, err := t.Parse(report_html)
-	
+
 	if err != nil {
 		return nil, err
 	}

@@ -12,15 +12,15 @@ import (
 )
 
 type RunOptions struct {
-	Config         *iiifconfig.Config             `json:"config"`
-	Instructions   iiifprocess.IIIFInstructionSet `json:"instructions"`
-	Mode           string                         `json:"mode"`
-	Paths          []string                       `json:"paths"`
-	Report         bool                           `json:"report"`
-	ReportSource   string                         `json:"report_source"`
-	ReportTemplate string                         `json:"report_template"`
-	ReportHTML     bool                           `json:"report_html"`
-	Verbose        bool                           `json:"verbose"`
+	Config          *iiifconfig.Config             `json:"config"`
+	Instructions    iiifprocess.IIIFInstructionSet `json:"instructions"`
+	Mode            string                         `json:"mode"`
+	Paths           []string                       `json:"paths"`
+	Report          bool                           `json:"report"`
+	ReportBucketURI string                         `json:"report_bucket_uri"`
+	ReportTemplate  string                         `json:"report_template"`
+	ReportHTML      bool                           `json:"report_html"`
+	Verbose         bool                           `json:"verbose"`
 }
 
 func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, error) {
@@ -60,14 +60,15 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 	paths := fs.Args()
 
 	opts := &RunOptions{
-		Mode:           mode,
-		Config:         cfg,
-		Instructions:   instructions,
-		Report:         report,
-		ReportSource:   report_source,
-		ReportTemplate: report_template,
-		Paths:          paths,
-		Verbose:        verbose,
+		Mode:            mode,
+		Config:          cfg,
+		Instructions:    instructions,
+		Report:          report,
+		ReportHTML:      report_html,
+		ReportBucketURI: report_bucket_uri,
+		ReportTemplate:  report_template,
+		Paths:           paths,
+		Verbose:         verbose,
 	}
 
 	return opts, nil

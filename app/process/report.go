@@ -11,7 +11,7 @@ import (
 	iiifprocess "github.com/go-iiif/go-iiif/v6/process"
 )
 
-func report_processing(ctx context.Context, opts *ProcessOptions, key string, rsp map[string]interface{}) error {
+func GenerateReports(ctx context.Context, opts *ProcessOptions, key string, rsp map[string]interface{}) error {
 
 	rsp_body, err := json.Marshal(rsp)
 
@@ -41,31 +41,40 @@ func report_processing(ctx context.Context, opts *ProcessOptions, key string, rs
 			return fmt.Errorf("Failed to close processing report after writing, %w", err)
 		}
 
-		return nil
+	} else {
+
+		dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+
+		if err != nil {
+			return fmt.Errorf("Failed to derive derivatives cache for processing report, %w", err)
+
+		}
+
+		err = dest_cache.Set(key, rsp_body)
+
+		if err != nil {
+			return fmt.Errorf("Failed to write report, %w", err)
+		}
+
+		slog.Debug("Wrote processing report file", "path", key)
 	}
-
-	cfg := opts.Config
-
-	dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(cfg)
-
-	if err != nil {
-		return fmt.Errorf("Failed to derive derivatives cache for processing report, %w", err)
-
-	}
-
-	err = dest_cache.Set(key, rsp_body)
-
-	if err != nil {
-		return fmt.Errorf("Failed to write report, %w", err)
-	}
-
-	slog.Debug("Wrote processing report file", "path", key)
 
 	// START OF HTML version
 
 	if opts.GenerateReportHTML {
 
+		dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+
+		if err != nil {
+			return fmt.Errorf("Failed to derive derivatives cache for processing report, %w", err)
+
+		}
+
 		report_html, err := iiifprocess.GenerateProcessReportHTML(ctx, rsp_body)
+
+		if err != nil {
+			return fmt.Errorf("Failed to generate HTML report, %w", err)
+		}
 
 		html_root := filepath.Dir(key)
 		html_path := filepath.Join(html_root, "index.html")
