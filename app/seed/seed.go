@@ -31,6 +31,7 @@ import (
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
+	// iiifuri "github.com/go-iiif/go-iiif-uri"
 	"github.com/sfomuseum/go-csvdict/v2"
 )
 
@@ -221,22 +222,28 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	case "csv":
 
-		csv_bucket, err := bucket.OpenBucket(ctx, csv_source)
-
-		if err != nil {
-			return fmt.Errorf("Failed to open bucket from CSV source, %w", err)
-		}
-
-		defer csv_bucket.Close()
-
 		wg := new(sync.WaitGroup)
 
 		for _, path := range opts.Paths {
 
+			bucket_uri, csv_path, err := bucket.ParseURI(path)
+
+			if err != nil {
+				return fmt.Errorf("Failed to parse CSV source '%s', %w", path, err)
+			}
+
+			csv_bucket, err := bucket.OpenBucket(ctx, bucket_uri)
+
+			if err != nil {
+				return fmt.Errorf("Failed to open bucket from CSV source, %w", err)
+			}
+
+			defer csv_bucket.Close()
+
 			logger := slog.Default()
 			logger = logger.With("path", path)
 
-			r, err := csv_bucket.NewReader(ctx, path, nil)
+			r, err := csv_bucket.NewReader(ctx, csv_path, nil)
 
 			if err != nil {
 				return fmt.Errorf("Failed to open reader from %s, %w", path, err)
@@ -256,42 +263,77 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 					return err
 				}
 
-				new_cfg, err := opts.Config.Clone()
+				ts_cfg, err := opts.Config.Clone()
 
 				if err != nil {
 					return err
 				}
 
-				src, ok := row["source"]
+				var source_id string
+				var target_id string
+
+				src, ok := row["source_filename"]
 
 				if !ok {
-					logger.Warn("Unable to determine source ID for row", "row", row)
+					logger.Warn("Unable to determine source filename for row", "row", row)
 					continue
 				}
 
-				target, ok := row["target"]
+				source_id = src
 
-				if !ok {
-					logger.Warn("Unable to determine alternate ID for row", "row", row)
-					continue
+				src_root, ok := row["source_root"]
+
+				if ok && src_root != "" {
+
+					u, err := url.Parse(src_root)
+
+					if err != nil {
+						logger.Warn("Failed to parse source root, skipping", "root", src_root, "error", err)
+						continue
+					}
+
+					if u.Scheme == "" {
+						u.Scheme = "file"
+					}
+
+					logger.Info("Assign new source URI", "uri", u.String())
+					ts_cfg.Images.Source.URI = u.String()
 				}
 
-				// START OF source/target wrangling...
+				target, _ := row["target_filename"]
 
-				// source, possible values:
-				// filename.jpg
-				// /path/to/filename.jpg
-				// scheme://uri <-- no
-				// scheme://uri/filename.jpg
+				if target == "" {
+					target_id = source_id
+				} else {
+					target_id = target
+				}
 
-				// START OF source/target wrangling...
+				target_root, ok := row["target_root"]
+
+				if ok && target_root != "" {
+
+					u, err := url.Parse(target_root)
+
+					if err != nil {
+						logger.Warn("Failed to parse target root, skipping", "root", target_root, "error", err)
+						continue
+					}
+
+					if u.Scheme == "" {
+						u.Scheme = "file"
+					}
+
+					logger.Info("Assign new cache URI", "uri", u.String())
+					ts_cfg.Derivatives.Cache.URI = u.String()
+				}
 
 				tiled_im := &TiledImage{
-					Source: src,
-					Target: target,
+					Source: source_id,
+					Target: target_id,
 				}
 
-				err = tile_func(ctx, new_cfg, tiled_im, wg)
+				logger.Info("Seed tiles", "source", source_id, "target", target_id)
+				err = tile_func(ctx, ts_cfg, tiled_im, wg)
 
 				if err != nil {
 					logger.Error("Failed to tile image", "error", err)

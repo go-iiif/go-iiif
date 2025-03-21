@@ -14,7 +14,6 @@ var config_images_source_uri string
 var config_derivatives_cache_uri string
 
 var mode string
-var csv_source string
 var scale_factors string
 var quality string
 var format string
@@ -39,8 +38,6 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&config_derivatives_cache_uri, "config-derivatives-cache-uri", "", "If present this value will be used to assign the 'derivatives.cache.uri' property in the config file. Note: The 'derivatives.cache.uri' property takes precedence over other properties in 'derivatives.cache' block.")
 
 	fs.StringVar(&mode, "mode", "cli", "Valid options are: cli, csv, fsnotify, lambda")
-
-	fs.StringVar(&csv_source, "csv-source", "", "A valid Go Cloud bucket URI where your CSV tileseed files are located.")
 
 	fs.StringVar(&scale_factors, "scale-factors", "4", "A comma-separated list of scale factors to seed tiles with")
 	fs.StringVar(&quality, "quality", "default", "A valid IIIF quality parameter - if \"default\" then the code will try to determine which format you've set as the default")
