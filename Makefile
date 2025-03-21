@@ -11,6 +11,7 @@ cli:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
 
 debug-server:
+	mkdir -p fixtures/cache
 	go run cmd/iiif-server/main.go \
 		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
 		-config-images-source-uri file://$(CWD)/fixtures/images \

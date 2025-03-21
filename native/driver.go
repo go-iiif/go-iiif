@@ -135,7 +135,7 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(config *iiifconfig.Config, c
 
 	if err == nil {
 
-		source, err := iiifsource.NewMemorySource(body)
+		source, err := iiifsource.NewMemorySourceWithKey(id, body)
 
 		if err != nil {
 			return nil, fmt.Errorf("Failed to derive memory source for '%s', %w", id, err)

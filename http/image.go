@@ -1,7 +1,6 @@
 package http
 
 import (
-	_ "log"
 	gohttp "net/http"
 	"sync/atomic"
 	"time"
@@ -51,6 +50,12 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 			return
 		}
 
+		if !transformation.HasTransformation() {
+			logger.Error("Transformation is missing.. transformation")
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
+			return
+		}
+
 		uri, err := transformation.ToURI(params.Identifier)
 
 		if err != nil {
@@ -61,14 +66,12 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 
 		body, err := derivatives_cache.Get(uri)
 
-		if err != nil {
-			logger.Debug("Failed to retrieve derivative from cache", "uri", uri, "error", err)
-		} else {
+		if err == nil {
 
-			logger.Debug("Cache hit for image")
+			logger.Debug("Cache hit for URI", "uri", uri)
 			cacheHit.Add(1)
 
-			source, err := iiifsource.NewMemorySource(body)
+			source, err := iiifsource.NewMemorySourceWithKey(uri, body)
 
 			if err != nil {
 				logger.Error("Failed to create memory source", "error", err)
@@ -76,10 +79,10 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 				return
 			}
 
-			image, err := driver.NewImageFromConfigWithSource(config, source, "cache")
+			image, err := driver.NewImageFromConfigWithSource(config, source, uri)
 
 			if err != nil {
-				logger.Error("Failed to derive image from memory source", "error", err)
+				logger.Error("Failed to create new image from memory source", "error", err)
 				gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 				return
 			}
@@ -89,58 +92,51 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 			return
 		}
 
-		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)
+		logger.Info("Cache miss for URI", "uri", uri)
+		cacheMiss.Add(1)
+
+		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)		
 
 		if err != nil {
-			logger.Warn("Failed to retrieve image from cache", "error", err)
+			logger.Warn("Failed to retrieve image", "error", err)
 			gohttp.Error(rsp, "Not found", gohttp.StatusNotFound)
 			return
 		}
 
-		/*
-			something something something maybe sendfile something something
-			(20160901/thisisaaronland)
-		*/
+		t1 := time.Now()
+		err = image.Transform(transformation)
+		t2 := time.Since(t1)
 
-		if transformation.HasTransformation() {
-
-			cacheMiss.Add(1)
-
-			t1 := time.Now()
-			err = image.Transform(transformation)
-			t2 := time.Since(t1)
-
-			if err != nil {
-				logger.Error("Failed to apply transformation", "error", err)
-				gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
-				return
-			}
-
-			go func(t time.Duration) {
-
-				ns := t.Nanoseconds()
-				ms := ns / (int64(time.Millisecond) / int64(time.Nanosecond))
-
-				timers_mu.Lock()
-
-				counter := atomic.AddInt64(&transforms_counter, 1)
-				timer := atomic.AddInt64(&transforms_timer, ms)
-
-				avg := float64(timer) / float64(counter)
-
-				transformsCount.Add(1)
-				transformsAvgTime.Set(avg)
-
-				timers_mu.Unlock()
-			}(t2)
-
-			go func(k string, im iiifimage.Image) {
-				logger.Debug("Set cache for image")
-				derivatives_cache.Set(k, im.Body())
-				cacheSet.Add(1)
-
-			}(uri, image)
+		if err != nil {
+			logger.Error("Failed to apply transformation", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
+			return
 		}
+
+		go func(t time.Duration) {
+
+			ns := t.Nanoseconds()
+			ms := ns / (int64(time.Millisecond) / int64(time.Nanosecond))
+
+			timers_mu.Lock()
+
+			counter := atomic.AddInt64(&transforms_counter, 1)
+			timer := atomic.AddInt64(&transforms_timer, ms)
+
+			avg := float64(timer) / float64(counter)
+
+			transformsCount.Add(1)
+			transformsAvgTime.Set(avg)
+
+			timers_mu.Unlock()
+		}(t2)
+
+		go func(k string, im iiifimage.Image) {
+			logger.Debug("Set cache for image")
+			derivatives_cache.Set(k, im.Body())
+			cacheSet.Add(1)
+
+		}(uri, image)
 
 		rsp.Header().Set("Content-Type", image.ContentType())
 		rsp.Write(image.Body())
