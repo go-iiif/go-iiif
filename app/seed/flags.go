@@ -46,7 +46,7 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.IntVar(&processes, "processes", runtime.NumCPU(), "The number of concurrent processes to use when tiling images")
 
-	fs.BoolVar(&no_extension, "no-extension", false, "Remove any extension from destination folder name.")
+	fs.BoolVar(&no_extension, "no-extension", false, "Remove any extension from destination folder name. For example the target (destination) folder for tiles produced from a source file called 'example.jpg' would be 'example'.")
 
 	fs.StringVar(&endpoint, "endpoint", "http://localhost:8080", "The endpoint (scheme, host and optionally port) that will serving these tiles, used for generating an 'info.json' for each source image")
 
