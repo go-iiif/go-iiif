@@ -18,24 +18,40 @@
 	   border: solid thin;
 	   width:800px !important;
 	   height:600px !important;
-	   margin-bottom:1rem;
-	   
    }
+
+   #feedback {
+	   text-align: center;
+	   font-style:italic;
+   }
+   
+   .row {
+	   margin-bottom:.5rem;
+   }
+   
   </style>
 </head>
 <body>
-  <div id="container">
-      <div id="map"></div>
-      <select id="choice">
-	  <option value="spanking-cat.jpg">Spanking Cat</option>
-	  <option value="walrus.jpg">Airplane Walrus</option>
-      </select>
+    <div id="container">
+	<div class="row">
+	    <div id="map"></div>
+	</div>
+	<div class="row" id="feedback"></div>
+	<div class="row">
+	    <select id="choice">
+		<option value="spanking-cat.jpg">Spanking Cat</option>
+		<option value="walrus.jpg">Airplane Walrus</option>
+	    </select>
+	</div>
   </div>
   <script src="leaflet.iiif.bundle.js"></script>  
   <script type="text/javascript">
 
    var tile_layer;
    var current_id;
+
+   var feedback_el = document.getElementById("feedback");
+   var choice_el = document.getElementById("choice");   
    
    function load_tiles(id){
 
@@ -49,10 +65,16 @@
        if (tile_layer){
 	   map.removeLayer(tile_layer);
        }
+
+       feedback_el.innerText = "loading tiles...";
        
        tile_layer = L.tileLayer.iiif(info);
-       tile_layer.addTo(map);
 
+       tile_layer.on("load", function(){
+	   feedback_el.innerHTML = "";
+       });
+       
+       tile_layer.addTo(map);       
        current_id = id;
    }
 
@@ -62,8 +84,6 @@
        zoom: 1,
        minZoom: 1,
    });
-
-   var choice_el = document.getElementById("choice");
    
    choice.onchange = function(e){
        load_tiles(choice_el.value);

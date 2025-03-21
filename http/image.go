@@ -95,7 +95,7 @@ func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_ca
 		logger.Info("Cache miss for URI", "uri", uri)
 		cacheMiss.Add(1)
 
-		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)		
+		image, err := driver.NewImageFromConfigWithCache(config, images_cache, params.Identifier)
 
 		if err != nil {
 			logger.Warn("Failed to retrieve image", "error", err)
