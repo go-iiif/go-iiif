@@ -64,3 +64,7 @@ func (bs *MemorySource) Read(key string) ([]byte, error) {
 
 	return v, nil
 }
+
+func (bs *MemorySource) Close() error {
+	return nil
+}

@@ -7,13 +7,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	_ "log/slog"
+	// "log/slog"
 	"net/url"
 	"strconv"
 	"sync"
 	"time"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	// iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	gocache "github.com/patrickmn/go-cache"
 )
 
@@ -56,7 +56,7 @@ func RegisterMemoryCacheSchemes(ctx context.Context) error {
 			continue
 		}
 
-		err := RegisterCache(ctx, scheme, NewMemoryCacheFromURI)
+		err := RegisterCache(ctx, scheme, NewMemoryCache)
 
 		if err != nil {
 			return fmt.Errorf("Failed to register blob cache for '%s', %w", scheme, err)
@@ -68,14 +68,8 @@ func RegisterMemoryCacheSchemes(ctx context.Context) error {
 	return nil
 }
 
-// NewMemoryCache returns a new `MemoryCache` instance derived from 'cfg'.
-func NewMemoryCache(cfg iiifconfig.CacheConfig) (Cache, error) {
-
-	return NewMemoryCacheFromURI(cfg.URI)
-}
-
-// NewMemoryCacheFromURI returns a new `MemoryCache` instance derived from 'uri'
-func NewMemoryCacheFromURI(uri string) (Cache, error) {
+// NewMemoryCache returns a new `MemoryCache` instance derived from 'uri'
+func NewMemoryCache(ctx context.Context, uri string) (Cache, error) {
 
 	u, err := url.Parse(uri)
 
@@ -243,4 +237,8 @@ func (mc *MemoryCache) OnEvicted(key string, value interface{}) {
 	}
 
 	mc.keys = new_keys
+}
+
+func (mc *MemoryCache) Close() error {
+	return nil
 }

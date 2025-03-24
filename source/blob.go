@@ -85,3 +85,7 @@ func (bs *BlobSource) Read(uri string) ([]byte, error) {
 	ctx := context.Background()
 	return bs.bucket.ReadAll(ctx, uri)
 }
+
+func (bs *BlobSource) Close() error {
+	return bs.bucket.Close()
+}

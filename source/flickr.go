@@ -54,14 +54,7 @@ type PhotoSize struct {
 	Media  string `json:"media"`
 }
 
-func NewFlickrSource(cfg *iiifconfig.Config) (Source, error) {
-
-	return NewFlickrSourceFromURI(cfg.Flickr.ClientURI)
-}
-
-func NewFlickrSourceFromURI(uri string) (Source, error) {
-
-	ctx := context.Background()
+func NewFlickrSourceFromURI(ctx context.Context, uri string) (Source, error) {
 
 	u, err := url.Parse(uri)
 
@@ -232,4 +225,8 @@ func (fs *FlickrSource) GetSource(id string) (string, error) {
 	}()
 
 	return source, nil
+}
+
+func (fs *FlickrSource) Close() error {
+	return nil
 }

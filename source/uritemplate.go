@@ -1,7 +1,5 @@
 package source
 
-// URI as in "URI Template" – this is a badly named package
-
 import (
 	"context"
 	"fmt"
@@ -13,7 +11,7 @@ import (
 	"github.com/jtacoma/uritemplates"
 )
 
-type URISource struct {
+type URITemplateSource struct {
 	Source
 	template *uritemplates.UriTemplate
 	client   *http.Client
@@ -22,19 +20,14 @@ type URISource struct {
 
 func init() {
 	ctx := context.Background()
-	err := RegisterSource(ctx, "rfc6570", NewURISourceFromURI)
+	err := RegisterSource(ctx, "rfc6570", NewURITemplateSourceFromURI)
 
 	if err != nil {
 		panic(err)
 	}
 }
 
-func NewURISource(cfg *iiifconfig.Config) (Source, error) {
-
-	return NewURISourceFromURI(cfg.Images.Source.URI)
-}
-
-func NewURISourceFromURI(uri string) (Source, error) {
+func NewURITemplateSource(ctx context.Context, uri string) (Source, error) {
 
 	u, err := url.Parse(uri)
 
@@ -52,7 +45,7 @@ func NewURISourceFromURI(uri string) (Source, error) {
 		return nil, err
 	}
 
-	us := URISource{
+	us := URITemplateSource{
 		template: template,
 		client:   client,
 	}
@@ -60,11 +53,11 @@ func NewURISourceFromURI(uri string) (Source, error) {
 	return &us, nil
 }
 
-func (us *URISource) String() string {
+func (us *URITemplateSource) String() string {
 	return us.uri
 }
 
-func (us *URISource) Read(id string) ([]byte, error) {
+func (us *URITemplateSource) Read(id string) ([]byte, error) {
 
 	values := make(map[string]interface{})
 	values["id"] = id
@@ -91,4 +84,8 @@ func (us *URISource) Read(id string) ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func (us *URITemplateSource) Close() error {
+	return nil
 }

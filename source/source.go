@@ -27,20 +27,8 @@ var register_map = map[string]bool{}
 type Source interface {
 	// Read returns the body of the file located at 'uri'.
 	Read(uri string) ([]byte, error)
+	Close() error
 }
-
-func NewSourceFromConfig(config *iiifconfig.Config) (Source, error) {
-
-	cfg := config.Images
-
-	source_uri := cfg.Source.URI
-	slog.Debug("Create new source", "uri", source_uri)
-
-	ctx := context.Background()
-	return NewSource(ctx, source_uri)
-}
-
-//
 
 var source_roster roster.Roster
 

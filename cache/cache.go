@@ -4,14 +4,14 @@ package cache
 import (
 	"context"
 	"fmt"
-	"log/slog"
+	// "log/slog"
 	"net/url"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/aaronland/go-roster"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	// iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 // In principle this could also be done with a sync.OnceFunc call but that will
@@ -34,38 +34,14 @@ type Cache interface {
 	Set(string, []byte) error
 	// Unset removes a specific key from the cache.
 	Unset(string) error
+	Close() error
 }
-
-// NewImagesCacheFromConfig returns a NewCacheFromConfig.
-func NewImagesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
-
-	cfg := config.Images.Cache
-	return NewCacheFromConfig(cfg)
-}
-
-// NewDerivativesCacheFromConfig returns a NewCacheFromConfig.
-func NewDerivativesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
-
-	cfg := config.Derivatives.Cache
-	return NewCacheFromConfig(cfg)
-}
-
-// NewCacheFromConfig returns a Cache object depending on the type of cache requested. Cache types can be blob, disk, memory, s3 or s3blob.
-func NewCacheFromConfig(config iiifconfig.CacheConfig) (Cache, error) {
-
-	slog.Debug("Create new cache", "uri", config.URI)
-
-	ctx := context.Background()
-	return NewCache(ctx, config.URI)
-}
-
-//
 
 var cache_roster roster.Roster
 
 // CacheInitializationFunc is a function defined by individual cache package and used to create
 // an instance of that cache
-type CacheInitializationFunc func(uri string) (Cache, error)
+type CacheInitializationFunc func(context.Context, string) (Cache, error)
 
 // RegisterCache registers 'scheme' as a key pointing to 'init_func' in an internal lookup table
 // used to create new `Cache` instances by the `NewCache` method.
@@ -117,7 +93,7 @@ func NewCache(ctx context.Context, uri string) (Cache, error) {
 	}
 
 	init_func := i.(CacheInitializationFunc)
-	return init_func(uri)
+	return init_func(ctx, uri)
 }
 
 // CacheSchemes returns the list of schemes that have been registered.
