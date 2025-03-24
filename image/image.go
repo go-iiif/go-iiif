@@ -2,7 +2,6 @@ package image
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"golang.org/x/image/tiff"
 	"golang.org/x/image/webp"
@@ -11,11 +10,29 @@ import (
 	"image/jpeg"
 	"image/png"
 	"log/slog"
-
 	"time"
 
 	"github.com/aaronland/go-image/colour"
+	"github.com/dgraph-io/ristretto/v2"
 )
+
+var golang_image_cache *ristretto.Cache[string, image.Image]
+
+func init() {
+
+	cache, err := ristretto.NewCache(&ristretto.Config[string, image.Image]{
+		NumCounters: 1e7,     // number of keys to track frequency of (10M).
+		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		BufferItems: 64,      // number of keys per Get buffer.
+	})
+
+	if err != nil {
+		slog.Error("Failed to set up golang image cache", "error", err)
+		return
+	}
+
+	golang_image_cache = cache
+}
 
 type Image interface {
 	Identifier() string
@@ -34,34 +51,28 @@ type Dimensions interface {
 	Width() int
 }
 
-/*
-func IIIFImageToGolangImageWithCache(im Image, c ristretto.Cache[string, image.Image]) (image.Image, error) {
-
-	go_im, ok := c.Get(im.Identifier())
-
-	if ok {
-		return go_im, nil
-	}
-
-	go_im, err := IIIFImageToGolangImage(im)
-
-	if err != nil {
-		return nil, err
-	}
-
-	c.Set(im.Identifier(), go_im, 1)
-	return go_im, nil
-
-}
-*/
-
 // Convert a go-iiif/image.Image instance to a Go language image.Image instance.
 func IIIFImageToGolangImage(im Image) (image.Image, error) {
 
+	logger := slog.Default()
+	logger = logger.With("id", im.Identifier())
+
 	t1 := time.Now()
 	defer func() {
-		slog.Info("Time to transform image", "time", time.Since(t1))
+		logger.Info("Time to transform image", "time", time.Since(t1))
 	}()
+
+	if golang_image_cache != nil {
+
+		go_im, ok := golang_image_cache.Get(im.Identifier())
+
+		if ok {
+			logger.Debug("Cache HIT")
+			return go_im, nil
+		}
+
+		logger.Debug("Cache MISS")
+	}
 
 	var goimg image.Image
 	var err error
@@ -94,12 +105,22 @@ func IIIFImageToGolangImage(im Image) (image.Image, error) {
 		goimg, err = webp.Decode(buf)
 
 	} else {
-		msg := fmt.Sprintf("Unsupported content type '%s' for decoding", content_type)
-		err = errors.New(msg)
+		err = fmt.Errorf("Unsupported content type '%s' for decoding", content_type)
 	}
 
 	if err != nil {
+		logger.Error("Failed to convert image", "error", err)
 		return nil, err
+	}
+
+	if golang_image_cache != nil {
+
+		ttl := 2 * time.Minute
+		ok := golang_image_cache.SetWithTTL(im.Identifier(), goimg, 1, ttl)
+
+		if !ok {
+			logger.Error("Failed to set cache for image", "error", err)
+		}
 	}
 
 	return goimg, nil
@@ -151,8 +172,7 @@ func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) 
 
 	} else {
 
-		msg := fmt.Sprintf("Unsupported content type '%s' for encoding", content_type)
-		err = errors.New(msg)
+		err = fmt.Errorf("Unsupported content type '%s' for encoding", content_type)
 	}
 
 	if err != nil {

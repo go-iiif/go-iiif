@@ -39,8 +39,6 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cac
 
 		image, err := driver.NewImageFromConfigWithCache(ctx, config, images_cache, id)
 
-		logger.Debug("WUT 0", "time", time.Since(t1))
-
 		if err != nil {
 			logger.Error("Failed to derive image from config", "error", err)
 			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
