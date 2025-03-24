@@ -53,26 +53,9 @@ func RegisterBlobSourceSchemes(ctx context.Context) error {
 	return nil
 }
 
-func NewBlobSourceURIFromConfig(cfg *iiifconfig.Config) (string, error) {
-
-	uri := cfg.Images.Source.URI
-
-	if uri == "" {
-		uri = cfg.Images.Source.Path
-	}
-
-	return uri, nil
-}
-
 func NewBlobSource(cfg *iiifconfig.Config) (Source, error) {
 
-	uri, err := NewBlobSourceURIFromConfig(cfg)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return NewBlobSourceFromURI(uri)
+	return NewBlobSourceFromURI(cfg.Images.Source.URI)
 }
 
 func NewBlobSourceFromURI(uri string) (Source, error) {

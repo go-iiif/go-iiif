@@ -54,31 +54,9 @@ type PhotoSize struct {
 	Media  string `json:"media"`
 }
 
-func NewFlickrSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
+func NewFlickrSource(cfg *iiifconfig.Config) (Source, error) {
 
-	if config.Flickr.ClientURI == "" {
-		return "", fmt.Errorf("Missing config.Flickr.ClientURI property")
-	}
-
-	q := url.Values{}
-	q.Set("client-uri", config.Flickr.ClientURI)
-
-	u := url.URL{}
-	u.Scheme = "flickr"
-	u.RawQuery = q.Encode()
-
-	return u.String(), nil
-}
-
-func NewFlickrSource(config *iiifconfig.Config) (Source, error) {
-
-	uri, err := NewFlickrSourceURIFromConfig(config)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return NewFlickrSourceFromURI(uri)
+	return NewFlickrSourceFromURI(cfg.Flickr.ClientURI)
 }
 
 func NewFlickrSourceFromURI(uri string) (Source, error) {

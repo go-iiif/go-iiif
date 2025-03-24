@@ -29,26 +29,9 @@ func init() {
 	}
 }
 
-func NewURISourceURIFromConfig(cfg *iiifconfig.Config) (string, error) {
-
-	uri := cfg.Images.Source.URI
-
-	if uri == "" {
-		uri = fmt.Sprintf("rfc6570://?template=%s", cfg.Images.Source.Path)
-	}
-
-	return uri, nil
-}
-
 func NewURISource(cfg *iiifconfig.Config) (Source, error) {
 
-	uri, err := NewURISourceURIFromConfig(cfg)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return NewURISourceFromURI(uri)
+	return NewURISourceFromURI(cfg.Images.Source.URI)
 }
 
 func NewURISourceFromURI(uri string) (Source, error) {
