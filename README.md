@@ -18,13 +18,13 @@ The current release is `github.com/go-iiif/go-iiif/v6`.
 
 ### v7
 
-[Version 7.0.0 is in the early stages of development](https://github.com/go-iiif/go-iiif/tree/v7) and it is expected that it will introduce a number of backwards incompatible changes to how the `tools` package is structured and the interface and method signatures it exposes. 
+Version 7.0.0 is introduces a number of backwards incompatible changes to how the package is structured and the interface and method signatures it exposes. The entire `tools` subpackage has been replaced by `app`. Additionally:
 
-Additionally, many properties in `config.Config` blocks will be removed in favour of a single URI-style declarative syntax.
+* Some properties in `config.Config` blocks have been removed in favour of a single URI-style declarative syntax.
+* The `disk`, `memory` and `s3` source and cache providers have been removed and been replaced ...
 
 The goal is to leave the command-line tools unchanged with the exception of removing any flags that have previously been flagged as deprecated.
 
-There is no expected release date for the `v7` branch yet.
 
 ### v6
 
@@ -85,13 +85,7 @@ import (
 
 func init() {
 
-	dr, err := NewNativeDriver()
-
-	if err != nil {
-		panic(err)
-	}
-
-	iiifdriver.RegisterDriver("native", dr)
+	iiifdriver.RegisterDriver(context.Background(), "native", dr)
 }
 ```
 
@@ -100,8 +94,10 @@ And then in your code you might do something like this:
 ```
 import (
 	"context"
-	"github.com/aaronland/gocloud-blob-bucket"	
+
 	_ "github.com/go-iiif/go-iiif/v6/native"
+	
+	"github.com/aaronland/gocloud-blob-bucket"	
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"	
 )
@@ -112,14 +108,14 @@ config_bucket, _ := bucket.OpenBucket(ctx, "file:///etc/go-iiif")
 
 cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
 
-driver, _ := iiifdriver.NewDriverFromConfig(cfg)
+driver, _ := iiifdriver.NewDriver(ctx, cfg.Graphics.Driver)
 ```
 
 That's really the only change to existing code. Careful readers may note the calls to `bucket.OpenBucket` and `config.NewConfigFromBucket` to load `go-iiif` configuration files. This is discussed below. In the meantime the only other change is to update the previously default `graphics.source` property in the configuration file from `VIPS` (or `vips`) to `native`. For example:
 
 ```
     "graphics": {
-	"source": { "name": "VIPS" }
+	"driver": { "name": "vips://" }
     }
 ```
 
@@ -127,15 +123,15 @@ Becomes:
 
 ```
     "graphics": {
-	"source": { "name": "native" }
+	"driver": { "name": "native://" }    
     }
 ```
 
-The value of the `graphics.source` property should match the name that driver uses to register itself with `go-iiif`.
+The value of the `graphics.native` property should match the URI that driver uses to register itself with `go-iiif`.
 
 The rest of the code in `go-iiif` has been updated to expect a `driver.Driver` object and to invoke the relevant `NewImageFrom...` method as needed. It is assumed that the driver package in question will also implement it's own implementation of the `go-iiif` `image.Image` interface. For working examples you should consult either of the following packages:
 
-* https://github.com/go-iiif/go-iiif/v6/tree/master/native
+* https://github.com/go-iiif/go-iiif/v6/tree/main/native
 * https://github.com/go-iiif/go-iiif-vips
 
 ## Buckets
