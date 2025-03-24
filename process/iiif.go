@@ -19,18 +19,18 @@ type IIIFProcessor struct {
 	dest_cache   iiifcache.Cache
 }
 
-func NewIIIFProcessor(config *iiifconfig.Config, driver iiifdriver.Driver) (Processor, error) {
-	return NewIIIFProcessorWithCaches(config, driver, nil, nil)
+func NewIIIFProcessor(ctx context.Context, config *iiifconfig.Config, driver iiifdriver.Driver) (Processor, error) {
+	return NewIIIFProcessorWithCaches(ctx, config, driver, nil, nil)
 }
 
-func NewIIIFProcessorWithCaches(config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (Processor, error) {
+func NewIIIFProcessorWithCaches(ctx context.Context, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (Processor, error) {
 
 	logger := slog.Default()
 	logger.Debug("New IIIF processor with caches", "source", source_cache, "destination", dest_cache)
 
 	if source_cache == nil {
 
-		c, err := iiifcache.NewImagesCacheFromConfig(config)
+		c, err := iiifcache.NewCache(ctx, config.Images.Cache.URI)
 
 		if err != nil {
 			return nil, err
@@ -42,7 +42,7 @@ func NewIIIFProcessorWithCaches(config *iiifconfig.Config, driver iiifdriver.Dri
 
 	if dest_cache == nil {
 
-		c, err := iiifcache.NewDerivativesCacheFromConfig(config)
+		c, err := iiifcache.NewCache(ctx, config.Derivatives.Cache.URI)
 
 		if err != nil {
 			return nil, err

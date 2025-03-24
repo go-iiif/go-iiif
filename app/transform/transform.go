@@ -186,7 +186,7 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 		return err
 	}
 
-	cache, err := iiifcache.NewCache(ctx, opts.Config.Derivatives.Cache.URI) // DerivativesCacheFromConfig(opts.Config)
+	cache, err := iiifcache.NewCache(ctx, opts.Config.Derivatives.Cache.URI)
 
 	if err != nil {
 		return err

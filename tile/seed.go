@@ -38,7 +38,7 @@ type TileSeed struct {
 
 func NewTileSeed(ctx context.Context, config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
 
-	driver, err := iiifdriver.NewDriverFromConfig(ctx, config)
+	driver, err := iiifdriver.NewDriver(ctx, config.Graphics.Driver)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create tileseed driver from config, %w", err)
@@ -50,13 +50,13 @@ func NewTileSeed(ctx context.Context, config *iiifconfig.Config, h int, w int, e
 		return nil, fmt.Errorf("Failed to create level0 instance, %w", err)
 	}
 
-	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
+	images_cache, err := iiifcache.NewCache(ctx, config.Images.Cache.URI)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive image cache from config, %w", err)
 	}
 
-	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+	derivatives_cache, err := iiifcache.NewCache(ctx, config.Derivatives.Cache.URI)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive derivatives cache from config, %w", err)

@@ -43,7 +43,7 @@ func GenerateReports(ctx context.Context, opts *ProcessOptions, key string, rsp 
 
 	} else {
 
-		dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+		dest_cache, err := iiifcache.NewCache(ctx, opts.Config.Derivatives.Cache.URI)
 
 		if err != nil {
 			return fmt.Errorf("Failed to derive derivatives cache for processing report, %w", err)
@@ -63,7 +63,7 @@ func GenerateReports(ctx context.Context, opts *ProcessOptions, key string, rsp 
 
 	if opts.GenerateReportHTML {
 
-		dest_cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+		dest_cache, err := iiifcache.NewCache(ctx, opts.Config.Derivatives.Cache.URI)
 
 		if err != nil {
 			return fmt.Errorf("Failed to derive derivatives cache for processing report, %w", err)

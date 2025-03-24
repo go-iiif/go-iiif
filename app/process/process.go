@@ -84,13 +84,13 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		defer report_bucket.Close()
 	}
 
-	driver, err := iiifdriver.NewDriverFromConfig(ctx, opts.Config)
+	driver, err := iiifdriver.NewDriver(ctx, opts.Config.Graphics.Driver)
 
 	if err != nil {
 		return fmt.Errorf("Failed to create new driver from config, %w", err)
 	}
 
-	pr, err := iiifprocess.NewIIIFProcessor(opts.Config, driver)
+	pr, err := iiifprocess.NewIIIFProcessor(ctx, opts.Config, driver)
 
 	if err != nil {
 		return fmt.Errorf("Failed to create new IIIF processor, %w", err)

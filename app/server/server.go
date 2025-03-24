@@ -39,7 +39,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		slog.Debug("Verbose logging enabled")
 	}
 
-	driver, err := iiifdriver.NewDriverFromConfig(ctx, opts.Config)
+	driver, err := iiifdriver.NewDriver(ctx, opts.Config.Graphics.Driver)
 
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		before we start serving images (20160901/thisisaaronland)
 	*/
 
-	_, err = iiifsource.NewSourceFromConfig(opts.Config)
+	_, err = iiifsource.NewSource(ctx, opts.Config.Images.Source.URI)
 
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	host := "FIXME"
 
-	_, err = iiiflevel.NewLevelFromConfig(opts.Config, host)
+	_, err = iiiflevel.NewLevelFromConfig(opts.Config, opts.Host)
 
 	if err != nil {
 		return err
@@ -72,13 +72,13 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	*/
 
-	images_cache, err := iiifcache.NewImagesCacheFromConfig(opts.Config)
+	images_cache, err := iiifcache.NewCache(ctx, opts.Config.Images.Cache.URI)
 
 	if err != nil {
 		return err
 	}
 
-	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+	derivatives_cache, err := iiifcache.NewCache(ctx, opts.Config.Derivatives.Cache.URI)
 
 	if err != nil {
 		return err

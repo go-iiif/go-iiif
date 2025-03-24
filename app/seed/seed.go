@@ -76,7 +76,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 			logger.Info("Generate HTML index page for tiles")
 
-			derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(cfg)
+			derivatives_cache, err := iiifcache.NewCache(ctx, cfg.Derivatives.Cache.URI)
 
 			if err != nil {
 				logger.Error("Failed to load derivatives cache from config", "error", err)

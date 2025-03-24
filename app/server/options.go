@@ -12,6 +12,7 @@ import (
 
 type RunOptions struct {
 	Config    *iiifconfig.Config `json:"config"`
+	Host      string             `json:"host"`
 	ServerURI string             `json:"server_uri"`
 	Example   bool               `json:"example"`
 	Verbose   bool               `json:"verbose"`
