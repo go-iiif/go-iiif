@@ -348,7 +348,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 
 	case "fsnotify":
 
-		images_source := opts.Config.Images.Source.Path
+		images_source := opts.Config.Images.Source.URI
 
 		u, err := url.Parse(images_source)
 
