@@ -6,8 +6,6 @@ import (
 
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	iiifdefaults "github.com/go-iiif/go-iiif/v6/defaults"
-	_ "gocloud.dev/blob/fileblob"
-	_ "gocloud.dev/blob/memblob"
 )
 
 func TestNewImagesCacheFromConfig(t *testing.T) {
