@@ -122,14 +122,12 @@ type DerivativesConfig struct {
 
 // GraphicsConfig
 type GraphicsConfig struct {
-	Source SourceConfig `json:"source"`
+	Driver string `json:"driver"`
 }
 
 type SourceConfig struct {
 	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
-	URI    string `json:"uri"`
-	Tmpdir string `json:"tmpdir,omitempty"`
-	Count  int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
+	URI string `json:"uri"`
 }
 
 // FlickrConfig defines configuration details for interacting with the Flickr photo-sharing service.

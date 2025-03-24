@@ -162,9 +162,9 @@ func (dr *NativeDriver) NewImageFromConfigWithCache(ctx context.Context, config 
 	return image, nil
 }
 
-func (dr *NativeDriver) NewImageFromConfig(ctx context.Context, config *iiifconfig.Config, id string) (iiifimage.Image, error) {
+func (dr *NativeDriver) NewImageFromConfig(ctx context.Context, cfg *iiifconfig.Config, id string) (iiifimage.Image, error) {
 
-	source, err := iiifsource.NewSourceFromConfig(config)
+	source, err := iiifsource.NewSource(ctx, cfg.ImagesConfig.Source.URI) // FromConfig(config)
 
 	if err != nil {
 		return nil, err

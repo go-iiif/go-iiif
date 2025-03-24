@@ -11,7 +11,6 @@ import (
 
 	"github.com/aaronland/go-flickr-api/client"
 	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 type FlickrSource struct {
@@ -25,7 +24,7 @@ type FlickrSource struct {
 
 func init() {
 	ctx := context.Background()
-	err := RegisterSource(ctx, "flickr", NewFlickrSourceFromURI)
+	err := RegisterSource(ctx, "flickr", NewFlickrSource)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +53,7 @@ type PhotoSize struct {
 	Media  string `json:"media"`
 }
 
-func NewFlickrSourceFromURI(ctx context.Context, uri string) (Source, error) {
+func NewFlickrSource(ctx context.Context, uri string) (Source, error) {
 
 	u, err := url.Parse(uri)
 

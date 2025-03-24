@@ -102,7 +102,3 @@ func NewDriver(ctx context.Context, driver_uri string) (Driver, error) {
 	f := i.(DriverInitializeFunc)
 	return f(ctx, driver_uri)
 }
-
-func NewDriverFromConfig(ctx context.Context, config *iiifconfig.Config) (Driver, error) {
-	return NewDriver(ctx, config.Graphics.Source.URI)
-}

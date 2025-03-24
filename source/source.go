@@ -3,14 +3,12 @@ package source
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net/url"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/aaronland/go-roster"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 // In principle this could also be done with a sync.OnceFunc call but that will
@@ -34,7 +32,7 @@ var source_roster roster.Roster
 
 // SourceInitializationFunc is a function defined by individual source package and used to create
 // an instance of that source
-type SourceInitializationFunc func(uri string) (Source, error)
+type SourceInitializationFunc func(context.Context, string) (Source, error)
 
 // RegisterSource registers 'scheme' as a key pointing to 'init_func' in an internal lookup table
 // used to create new `Source` instances by the `NewSource` method.
@@ -86,7 +84,7 @@ func NewSource(ctx context.Context, uri string) (Source, error) {
 	}
 
 	init_func := i.(SourceInitializationFunc)
-	return init_func(uri)
+	return init_func(ctx, uri)
 }
 
 // SourceSchemes returns the list of schemes that have been registered.

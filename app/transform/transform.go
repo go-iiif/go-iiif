@@ -50,7 +50,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 		slog.Debug("Verbose logging enabled")
 	}
 
-	driver, err := iiifdriver.NewDriverFromConfig(ctx, opts.Config)
+	driver, err := iiifdriver.NewDriver(ctx, opts.Config.Graphics.Driver)
 
 	if err != nil {
 		return err
@@ -186,7 +186,7 @@ func Transform(ctx context.Context, opts *TransformOptions, uri iiifuri.URI) err
 		return err
 	}
 
-	cache, err := iiifcache.NewDerivativesCacheFromConfig(opts.Config)
+	cache, err := iiifcache.NewCache(ctx, opts.Config.Derivatives.Cache.URI) // DerivativesCacheFromConfig(opts.Config)
 
 	if err != nil {
 		return err

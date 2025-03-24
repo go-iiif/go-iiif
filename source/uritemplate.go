@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"github.com/jtacoma/uritemplates"
 )
 
@@ -20,7 +19,7 @@ type URITemplateSource struct {
 
 func init() {
 	ctx := context.Background()
-	err := RegisterSource(ctx, "rfc6570", NewURITemplateSourceFromURI)
+	err := RegisterSource(ctx, "rfc6570", NewURITemplateSource)
 
 	if err != nil {
 		panic(err)
