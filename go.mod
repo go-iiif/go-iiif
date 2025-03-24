@@ -24,7 +24,6 @@ require (
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
 	github.com/muesli/smartcrop v0.3.0
-	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/sfomuseum/go-csvdict/v2 v2.0.1
 	github.com/sfomuseum/go-flags v0.10.0

@@ -1,33 +1,20 @@
 package cache
 
-// Note: This will be updated to use dgraph-io/ristretto in the v7 release to maintain
-// parity with the source/memory.go code
+// This is nearly indistinguishable from cache/memory.go and maybe they should
+// be reconciled but not today...
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	// "log/slog"
-	"net/url"
-	"strconv"
-	"sync"
-	"time"
 
-	// iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	gocache "github.com/patrickmn/go-cache"
+	"github.com/dgraph-io/ristretto/v2"
 )
 
 // A MemoryCache represents a cache location in memory.
 type MemoryCache struct {
 	Cache
-	provider      *gocache.Cache
-	size          int
-	maxsize       int
-	sizemap       map[string]int
-	keys          []string
-	lock          *sync.Mutex
-	eviction_lock *sync.Mutex
-	uri           string
+	cache *ristretto.Cache[string, []byte]
+	uri   string
 }
 
 func init() {
@@ -71,73 +58,20 @@ func RegisterMemoryCacheSchemes(ctx context.Context) error {
 // NewMemoryCache returns a new `MemoryCache` instance derived from 'uri'
 func NewMemoryCache(ctx context.Context, uri string) (Cache, error) {
 
-	u, err := url.Parse(uri)
+	cache, err := ristretto.NewCache(&ristretto.Config[string, []byte]{
+		NumCounters: 1e7,     // number of keys to track frequency of (10M).
+		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		BufferItems: 64,      // number of keys per Get buffer.
+	})
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create source memory cache, %w", err)
 	}
-
-	q := u.Query()
-
-	ttl := 300
-	limit := 100
-
-	if q.Has("ttl") {
-
-		v, err := strconv.Atoi(q.Get("ttl"))
-
-		if err != nil {
-			return nil, fmt.Errorf("Invalid ?ttl= parameter, %w", err)
-		}
-
-		ttl = v
-	}
-
-	if q.Has("limit") {
-
-		v, err := strconv.Atoi(q.Get("limit"))
-
-		if err != nil {
-			return nil, fmt.Errorf("Invalid ?limit= parameter, %w", err)
-		}
-
-		limit = v
-	}
-
-	window := time.Duration(ttl) * time.Second
-
-	gc := gocache.New(window, 30*time.Second)
-
-	size := 0
-	maxsize := limit * 1024 * 1024
-
-	keys := make([]string, 0)
-	sizemap := make(map[string]int)
-
-	/*
-
-		see this - it's two separate locking mechanisms - that's because we need to account
-		for the sizemap and maxsize properties being updated during multiple Set events, one
-		of which may be trying purge old records to make room and/or the normal gocache janitor
-		cleaning up expired documents (20160911/thisisaaronland)
-
-	*/
-
-	lock := new(sync.Mutex)
-	ev_lock := new(sync.Mutex)
 
 	mc := MemoryCache{
-		provider:      gc,
-		size:          size,
-		keys:          keys,
-		maxsize:       maxsize,
-		sizemap:       sizemap,
-		lock:          lock,
-		eviction_lock: ev_lock,
-		uri:           uri,
+		cache: cache,
+		uri:   uri,
 	}
-
-	gc.OnEvicted(mc.OnEvicted)
 
 	return &mc, nil
 }
@@ -149,7 +83,7 @@ func (mc *MemoryCache) String() string {
 // Exists returns a bool set to true if the configured memory location exists.
 func (mc *MemoryCache) Exists(key string) bool {
 
-	_, ok := mc.provider.Get(key)
+	_, ok := mc.cache.Get(key)
 
 	return ok
 }
@@ -157,88 +91,34 @@ func (mc *MemoryCache) Exists(key string) bool {
 // Get reads data from a memory location.
 func (mc *MemoryCache) Get(key string) ([]byte, error) {
 
-	data, ok := mc.provider.Get(key)
+	data, ok := mc.cache.Get(key)
 
 	if !ok {
-		// slog.Debug("Get cache (MISS)", "key", key)
-		return nil, errors.New("cache miss")
+		return nil, fmt.Errorf("Cache miss")
 	}
 
-	// slog.Debug("Get cache (HIT)", "key", key)
-	return data.([]byte), nil
+	return data, nil
 }
 
 // Set writes data to a memory location.
 func (mc *MemoryCache) Set(key string, data []byte) error {
 
-	mc.lock.Lock()
-	defer mc.lock.Unlock()
+	ok := mc.cache.Set(key, data, 1)
 
-	_, ok := mc.sizemap[key]
-
-	if ok {
-		return nil
+	if !ok {
+		return fmt.Errorf("Failed to set key")
 	}
 
-	size := len(data)
-
-	if size > mc.maxsize {
-		return errors.New("key is too big")
-	}
-
-	if size+mc.size > mc.maxsize {
-
-		for mc.size > mc.maxsize-size {
-
-			for _, k := range mc.keys {
-				mc.Unset(k)
-			}
-		}
-
-	}
-
-	mc.eviction_lock.Lock()
-	defer mc.eviction_lock.Unlock()
-
-	mc.size += size
-	mc.sizemap[key] = size
-	mc.keys = append(mc.keys, key)
-
-	mc.provider.Set(key, data, gocache.DefaultExpiration)
-
-	// slog.Debug("Set cache (OK)", "key", key)
 	return nil
 }
 
 // Unset deletes data from a memory location.
 func (mc *MemoryCache) Unset(key string) error {
-	// slog.Debug("Unset cache", "key", key)
-	mc.provider.Delete(key)
+	mc.cache.Del(key)
 	return nil
 }
 
-func (mc *MemoryCache) OnEvicted(key string, value interface{}) {
-
-	mc.eviction_lock.Lock()
-	defer mc.eviction_lock.Unlock()
-
-	size, _ := mc.sizemap[key]
-	mc.size -= size
-
-	delete(mc.sizemap, key)
-
-	new_keys := make([]string, 0)
-
-	for _, k := range mc.keys {
-
-		if k != key {
-			new_keys = append(new_keys, k)
-		}
-	}
-
-	mc.keys = new_keys
-}
-
 func (mc *MemoryCache) Close() error {
+	mc.cache.Close()
 	return nil
 }
