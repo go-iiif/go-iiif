@@ -38,7 +38,7 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 	cfg, err := iiifconfig.LoadConfig(ctx, config_source, config_name)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to load config source: %s name: %s, %w", config_source, config_name, err)
 	}
 
 	if config_images_source_uri != "" {
