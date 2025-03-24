@@ -1,6 +1,7 @@
 package cache
 
 import (
+	"context"
 	"testing"
 
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
@@ -10,6 +11,8 @@ import (
 
 func TestNewImagesCacheFromConfig(t *testing.T) {
 
+	ctx := context.Background()
+	
 	r, err := iiifdefaults.FS.Open("config.json")
 
 	if err != nil {
@@ -24,7 +27,7 @@ func TestNewImagesCacheFromConfig(t *testing.T) {
 		t.Fatalf("Failed to derive config from defaults, %v", err)
 	}
 
-	_, err = NewImagesCacheFromConfig(cfg)
+	_, err = NewCache(ctx, cfg.Images.Cache.URI)
 
 	if err != nil {
 		t.Fatalf("Failed to derive images cache from defaults, %v", err)
@@ -33,6 +36,8 @@ func TestNewImagesCacheFromConfig(t *testing.T) {
 
 func TestNewDerivativesCacheFromConfig(t *testing.T) {
 
+	ctx := context.Background()
+	
 	r, err := iiifdefaults.FS.Open("config.json")
 
 	if err != nil {
@@ -47,7 +52,7 @@ func TestNewDerivativesCacheFromConfig(t *testing.T) {
 		t.Fatalf("Failed to derive config fromd defaults, %v", err)
 	}
 
-	_, err = NewDerivativesCacheFromConfig(cfg)
+	_, err = NewCache(ctx, cfg.Derivatives.Cache.URI)
 
 	if err != nil {
 		t.Fatalf("Failed to derive derivatives cache from defaults, %v", err)
