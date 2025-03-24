@@ -1,8 +1,6 @@
 package cache
 
 import (
-	"fmt"
-
 	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 

@@ -65,15 +65,15 @@ type ServicesToggle []string
 
 // PaletteConfig details configuration details for colour palette extraction services.
 type PaletteConfig struct {
-	Name string `json:"name"`
-	Extruder ExtruderConfig   `json:"extruder"`
-	Grid     GridConfig   `json:"grid"`
-	Palettes []GridConfig `json:"palettes"`
+	Name     string         `json:"name"`
+	Extruder ExtruderConfig `json:"extruder"`
+	Grid     GridConfig     `json:"grid"`
+	Palettes []GridConfig   `json:"palettes"`
 }
 
 type ExtruderConfig struct {
-	Name string `json:"name"`
-	Count int `json:"count"`
+	Name  string `json:"name"`
+	Count int    `json:"count"`
 }
 
 type GridConfig struct {
@@ -127,9 +127,9 @@ type GraphicsConfig struct {
 
 type SourceConfig struct {
 	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
-	URI string `json:"uri"`
-	Tmpdir      string `json:"tmpdir,omitempty"`
-	Count       int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
+	URI    string `json:"uri"`
+	Tmpdir string `json:"tmpdir,omitempty"`
+	Count  int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
 }
 
 // FlickrConfig defines configuration details for interacting with the Flickr photo-sharing service.

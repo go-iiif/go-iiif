@@ -68,43 +68,10 @@ func RegisterMemoryCacheSchemes(ctx context.Context) error {
 	return nil
 }
 
-// NewMemoryCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
-func NewMemoryCacheURIFromConfig(cfg iiifconfig.CacheConfig) (string, error) {
-
-	q := url.Values{}
-
-	if cfg.TTL > 0 {
-		q.Set("ttl", strconv.Itoa(cfg.TTL))
-	}
-
-	if cfg.TTL > 0 {
-		q.Set("limit", strconv.Itoa(cfg.Limit))
-	}
-
-	u := url.URL{}
-	u.Scheme = "memory"
-	u.RawQuery = q.Encode()
-
-	return u.String(), nil
-}
-
 // NewMemoryCache returns a new `MemoryCache` instance derived from 'cfg'.
 func NewMemoryCache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
-	uri := cfg.URI
-
-	if uri == "" {
-
-		v, err := NewMemoryCacheURIFromConfig(cfg)
-
-		if err != nil {
-			return nil, err
-		}
-
-		uri = v
-	}
-
-	return NewMemoryCacheFromURI(uri)
+	return NewMemoryCacheFromURI(cfg.URI)
 }
 
 // NewMemoryCacheFromURI returns a new `MemoryCache` instance derived from 'uri'
