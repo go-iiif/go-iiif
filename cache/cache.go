@@ -53,38 +53,10 @@ func NewDerivativesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
 // NewCacheFromConfig returns a Cache object depending on the type of cache requested. Cache types can be blob, disk, memory, s3 or s3blob.
 func NewCacheFromConfig(config iiifconfig.CacheConfig) (Cache, error) {
 
-	var cache_uri string
-	var err error
-
-	switch config.URI {
-	case "":
-
-		switch strings.ToLower(config.Name) {
-		case "blob":
-			cache_uri, err = NewBlobCacheURIFromConfig(config)
-		case "disk":
-			cache_uri, err = NewDiskCacheURIFromConfig(config)
-		case "memory":
-			cache_uri, err = NewMemoryCacheURIFromConfig(config)
-		case "s3":
-			cache_uri, err = NewS3CacheURIFromConfig(config)
-		case "s3blob":
-			cache_uri, err = NewS3CacheURIFromConfig(config)
-		default:
-			cache_uri, err = NewNullCacheURIFromConfig(config)
-		}
-	default:
-		cache_uri = config.URI
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to derive cache URI, %w", err)
-	}
-
-	slog.Debug("Create new cache", "uri", cache_uri)
+	slog.Debug("Create new cache", "uri", config.URI)
 
 	ctx := context.Background()
-	return NewCache(ctx, cache_uri)
+	return NewCache(ctx, config.URI)
 }
 
 //

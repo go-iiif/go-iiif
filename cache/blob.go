@@ -66,27 +66,10 @@ func RegisterBlobCacheSchemes(ctx context.Context) error {
 	return nil
 }
 
-// NewBlobCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
-func NewBlobCacheURIFromConfig(config iiifconfig.CacheConfig) (string, error) {
-	return config.Path, nil
-}
-
 // NewBlobCache returns a NewBlobCacheFromURI.
 func NewBlobCache(cfg iiifconfig.CacheConfig) (Cache, error) {
 
-	uri := cfg.URI
-
-	if uri == "" {
-		v, err := NewBlobCacheURIFromConfig(cfg)
-
-		if err != nil {
-			return nil, err
-		}
-
-		uri = v
-	}
-
-	return NewBlobCacheFromURI(uri)
+	return NewBlobCacheFromURI(cfg.URI)
 }
 
 // NewBlobCacheFromURI returns a BlobCache using the GoCloud package.

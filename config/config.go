@@ -65,9 +65,19 @@ type ServicesToggle []string
 
 // PaletteConfig details configuration details for colour palette extraction services.
 type PaletteConfig struct {
-	Extruder SourceConfig   `json:"extruder"`
-	Grid     SourceConfig   `json:"grid"`
-	Palettes []SourceConfig `json:"palettes"`
+	Name string `json:"name"`
+	Extruder ExtruderConfig   `json:"extruder"`
+	Grid     GridConfig   `json:"grid"`
+	Palettes []GridConfig `json:"palettes"`
+}
+
+type ExtruderConfig struct {
+	Name string `json:"name"`
+	Count int `json:"count"`
+}
+
+type GridConfig struct {
+	Name string `json:"name"`
 }
 
 // BlurHashConfig defines configuration details for blurhash generation services.
@@ -118,16 +128,6 @@ type GraphicsConfig struct {
 type SourceConfig struct {
 	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
 	URI string `json:"uri"`
-	// The name of the source provider. Deprecated; Please use the URI property instead.
-	Name string `json:"name"`
-	// Path information for the source provider. Deprecated; Please use the URI property instead.
-	Path string `json:"path,omitempty"`
-	// Path information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.
-	Prefix string `json:"prefix,omitempty"`
-	// Region information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.
-	Region string `json:"region,omitempty"`
-	// Credentials information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.
-	Credentials string `json:"credentials,omitempty"`
 	Tmpdir      string `json:"tmpdir,omitempty"`
 	Count       int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
 }
@@ -148,20 +148,6 @@ type PrimitiveConfig struct {
 type CacheConfig struct {
 	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
 	URI string `json:"uri"`
-	// The name of the caching source. Deprecated; Please use the URI property instead.
-	Name string `json:"name"`
-	// Path information for the caching source. Deprecated; Please use the URI property instead.
-	Path string `json:"path,omitempty"`
-	// Time-to-live information for the memory caching source. Deprecated; Please use the URI property instead.
-	TTL int `json:"ttl,omitempty"`
-	// Cache limit information for the memory caching source. Deprecated; Please use the URI property instead.
-	Limit int `json:"limit,omitempty"`
-	// Path information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.
-	Prefix string `json:"prefix,omitempty"`
-	// Region information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.
-	Region string `json:"region,omitempty"`
-	// Credentials information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.
-	Credentials string `json:"credentials,omitempty"`
 }
 
 // NewConfigFromFlag is DEPRECATED and will simply hand off to the `NewConfigFromString` method.
