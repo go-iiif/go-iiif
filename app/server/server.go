@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -42,18 +43,13 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	driver, err := iiifdriver.NewDriver(ctx, opts.Config.Graphics.Driver)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new driver '%s', %w", opts.Config.Graphics.Driver, err)
 	}
-
-	/*
-		See this - we're just going to make sure we have a valid source
-		before we start serving images (20160901/thisisaaronland)
-	*/
 
 	_, err = iiifsource.NewSource(ctx, opts.Config.Images.Source.URI)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new source '%s', %w", opts.Config.Images.Source.URI, err)
 	}
 
 	host := "FIXME"
@@ -61,7 +57,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	_, err = iiiflevel.NewLevelFromConfig(opts.Config, opts.Host)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new level, %w", err)
 	}
 
 	/*
@@ -75,25 +71,25 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	images_cache, err := iiifcache.NewCache(ctx, opts.Config.Images.Cache.URI)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create images cache, %w", err)
 	}
 
 	derivatives_cache, err := iiifcache.NewCache(ctx, opts.Config.Derivatives.Cache.URI)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create derivatives cache, %w", err)
 	}
 
 	info_handler, err := iiifhttp.InfoHandler(opts.Config, driver, images_cache)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create info handler, %w", err)
 	}
 
 	image_handler, err := iiifhttp.ImageHandler(opts.Config, driver, images_cache, derivatives_cache)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create images handler, %w", err)
 	}
 
 	expvar_handler, err := iiifhttp.ExpvarHandler(host)
@@ -120,10 +116,9 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 	s, err := server.NewServer(ctx, opts.ServerURI)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("Failed to create new server, %w", err)
 	}
 
 	slog.Info("Listening for requests", "address", s.Address())
-
 	return s.ListenAndServe(ctx, mux)
 }

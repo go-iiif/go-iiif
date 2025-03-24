@@ -24,7 +24,6 @@ func init() {
 	}
 }
 
-// RegisterBloblSourceSchemes will ...
 func RegisterBlobSourceSchemes(ctx context.Context) error {
 
 	register_mu.Lock()

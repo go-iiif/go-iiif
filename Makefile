@@ -11,13 +11,16 @@ cli:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
 
 debug-seed:
+	if test -d $(CWD)/fixtures/cache/spank; then rm -rf $(CWD)/fixtures/cache/spank; fi
 	go run cmd/iiif-tile-seed/main.go \
 		-config-images-source-uri file://$(CWD)/fixtures/images \
 		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
 		-verbose \
+		-generate-html \
 		'rewrite:///spanking-cat.jpg?target=spank'
 
 debug-process:
+	if test -d $(CWD)/fixtures/cache/999; then rm -rf $(CWD)/fixtures/cache/999; fi
 	go run cmd/iiif-process/main.go \
 		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
 		-config-images-source-uri file://$(CWD)/fixtures/images \

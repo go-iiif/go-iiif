@@ -22,7 +22,7 @@
     "blurhash": { "x": 8, "y": 8, "size": 200 },
     "imagehash": {},
     "graphics": {
-	"source": { "name": "native" }    
+	"driver": "native://"
     },
     "features": {
 	"enable": {
@@ -42,10 +42,10 @@
 	}
     },
     "images": {
-	"source": { "name": "Blob", "path": "mem://" },
-	"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+	"source": { "uri": "mem://" },
+	"cache": { "uri": "memory://" }
     },
     "derivatives": {
-	"cache": { "name": "Blob", "path": "mem://" }
+	"cache": { "uri": "mem://" }
     }
 }
