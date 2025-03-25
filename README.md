@@ -159,7 +159,7 @@ $> ll fixtures/cache/*-csv/info.json
 
 _Note the way we passed the `-generate-html` flag like we did in the first example ensuring that each set of tiles has its own HTML "zoomable image" representation._
 
-Please make sure to consult the [usage documentation](cmd/iiif-tile-seed/README.md) for the `iiif-tile-seed` tool for details on how CSV files should be structured.
+Please make sure to consult the [usage documentation](cmd/iiif-tile-seed/README.md#csv-input) for the `iiif-tile-seed` tool for details on how CSV files should be structured.
 
 #### Generating named (labeled) derivatives using an "instructions" file
 
