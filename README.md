@@ -128,14 +128,17 @@ $> make debug-seed-csv
 if test -d /usr/local/src/go-iiif/fixtures/cache/spanking-csv; then rm -rf /usr/local/src/go-iiif/fixtures/cache/spanking-csv; fi
 if test -d /usr/local/src/go-iiif/fixtures/cache/walrus-csv; then rm -rf /usr/local/src/go-iiif/fixtures/cache/walrus-csv; fi
 if test -f /usr/local/src/go-iiif/fixtures/seed.csv; then /usr/local/src/go-iiif/fixtures/seed.csv; fi
+
 echo "source_filename,source_root,target_filename,target_root" > /usr/local/src/go-iiif/fixtures/seed.csv
 echo "spanking-cat.jpg,/usr/local/src/go-iiif/fixtures/images,spanking-csv,/usr/local/src/go-iiif/fixtures/cache" >> /usr/local/src/go-iiif/fixtures/seed.csv
 echo "walrus.jpg,/usr/local/src/go-iiif/fixtures/images,walrus-csv,/usr/local/src/go-iiif/fixtures/cache" >> /usr/local/src/go-iiif/fixtures/seed.csv
+
 go run cmd/iiif-tile-seed/main.go \
 		-mode csv \
 		-generate-html \
 		-verbose \
 		/usr/local/src/go-iiif/fixtures/seed.csv
+		
 2025/03/25 14:39:51 DEBUG Verbose logging enabled
 2025/03/25 14:39:51 INFO Assign new source URI path=/usr/local/src/go-iiif/fixtures/seed.csv uri=file:///usr/local/src/go-iiif/fixtures/images
 2025/03/25 14:39:51 INFO Assign new cache URI path=/usr/local/src/go-iiif/fixtures/seed.csv uri=file:///usr/local/src/go-iiif/fixtures/cache
