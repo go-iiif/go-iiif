@@ -2,6 +2,8 @@ package transform
 
 import (
 	"flag"
+	"fmt"
+	"os"
 
 	"github.com/sfomuseum/go-flags/flagset"
 )
@@ -42,9 +44,12 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&quality, "quality", "default", "A valid IIIF 2.0 quality value.")
 	fs.StringVar(&format, "format", "jpg", "A valid IIIF 2.0 format value.")
 
-	// See notes in options.go - these aren't quite ready
-	// fs.String("source", "file:///", "A valid Go Cloud bucket URI where the source file to transform is located.")
-	// fs.String("target", "file:///", "A valid Go Cloud bucket URI where the transformed file should be written.")
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Transform one or more images using the IIIF API.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n\t %s[options] uri(N) uri(N)\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Valid options are:\n")
+		fs.PrintDefaults()
+	}
 
 	return fs
 }

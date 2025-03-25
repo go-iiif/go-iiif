@@ -2,6 +2,8 @@ package process
 
 import (
 	"flag"
+	"fmt"
+	"os"
 
 	iiifdefaults "github.com/go-iiif/go-iiif/v6/defaults"
 	iiifprocess "github.com/go-iiif/go-iiif/v6/process"
@@ -49,6 +51,13 @@ func DefaultFlagSet() *flag.FlagSet {
 	fs.StringVar(&report_bucket_uri, "report-bucket-uri", "", "A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.")
 
 	fs.BoolVar(&report_html, "report-html", false, "Generate an HTML page showing all the images listed in a process report.")
+
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Process multiple derivatives using the IIIF API for one or more images.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n\t %s[options] uri(N) uri(N)\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Valid options are:\n")
+		fs.PrintDefaults()
+	}
 
 	return fs
 }

@@ -2,6 +2,8 @@ package server
 
 import (
 	"flag"
+	"fmt"
+	"os"
 
 	"github.com/sfomuseum/go-flags/flagset"
 )
@@ -31,6 +33,14 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.BoolVar(&example, "example", false, "Add an example endpoint (at /) to the server for testing and demonstration purposes.")
 
-	fs.StringVar(&server_uri, "server-uri", "http://localhost:8080", "...")
+	fs.StringVar(&server_uri, "server-uri", "http://localhost:8080", "A registered aaronland/go-http-server.Server URI.")
+
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Expose the IIIF Image API via an HTTP endpoint.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n\t %s[options]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Valid options are:\n")
+		fs.PrintDefaults()
+	}
+
 	return fs
 }

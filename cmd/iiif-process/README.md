@@ -1,8 +1,15 @@
-### iiif-process
+# iiif-process
+
+Process multiple derivatives using the IIIF API for one or more images.
 
 ```
 $> ./bin/iiif-process -h
-Usage of process:
+Process multiple derivatives using the IIIF API for one or more images.
+
+Usage:
+	 ./bin/iiif-process[options] uri(N) uri(N)
+
+Valid options are:
   -config-derivatives-cache-uri string
     	If present this value will be used to assign the 'derivatives.cache.uri' property in the config file. Note: The 'derivatives.cache.uri' property takes precedence over other properties in 'derivatives.cache' block.
   -config-images-source-uri string
@@ -10,19 +17,19 @@ Usage of process:
   -config-name string
     	The name of your go-iiif config file. This value will be ignored if -config-source is 'defaults://'. (default "config.json")
   -config-source string
-    	A valid Go Cloud bucket URI where your go-iiif config file is located. Optionally, if 'defaults://' is specified then the default config bundled with this package will be used.
-  -generate-report-html
-    	Generate an HTML page showing all the images listed in a process report.
+    	A valid Go Cloud bucket URI where your go-iiif config file is located. Optionally, if 'defaults://' is specified then the default config bundled with this package will be used. (default "defaults://")
   -instructions-name string
     	The name of your go-iiif instructions file. This value will be ignored if -instructions-source is 'defaults://'. (default "instructions.json")
   -instructions-source string
-    	A valid Go Cloud bucket URI where your go-iiif "instructions" processing file is located. Optionally, if 'defaults://' is specified then the default instructions set bundled with this package will be used.
+    	A valid Go Cloud bucket URI where your go-iiif "instructions" processing file is located. Optionally, if 'defaults://' is specified then the default instructions set bundled with this package will be used. (default "defaults://")
   -mode string
-    	Valid modes are: cli, csv, fsnotify, lambda. (default "cli")
+    	Valid options are: cli, fsnotify, lambda (default "cli")
   -report
     	Store a process report (JSON) for each URI in the cache tree.
-  -report-source string
+  -report-bucket-uri string
     	A valid Go Cloud bucket URI where your report file will be saved. If empty reports will be stored alongside derivative (or cached) images.
+  -report-html
+    	Generate an HTML page showing all the images listed in a process report.
   -report-template string
     	A valid URI template for generating process report filenames. (default "process_{sha256_origin}.json")
   -verbose

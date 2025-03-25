@@ -6,7 +6,7 @@ The current release is `github.com/go-iiif/go-iiif/v6`.
 
 Version 7.0.0 is introduces a number of backwards incompatible changes to how the package is structured and the interface and method signatures it exposes. The entire `tools` subpackage has been replaced by `app`. Additionally:
 
-* The `cmd/iiif-tile-and-seed` tool has been removed. Other command line tools should not have any user-facing changes save for the removal of deprecated flags.
+* The `cmd/iiif-process-and-tile` tool has been removed. Other command line tools should not have any user-facing changes save for the removal of deprecated flags.
 * Some properties in `config.Config` blocks have been removed in favour of a single URI-style declarative syntax.
 * The `disk`, `memory` and `s3` source and cache providers have been removed and been replaced by the [gocloud.dev/blob](#) equivalents (`file://`, `mem://` and `s3://` or `s3blob://`).
 

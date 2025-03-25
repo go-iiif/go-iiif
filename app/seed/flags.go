@@ -2,6 +2,8 @@ package seed
 
 import (
 	"flag"
+	"fmt"
+	"os"
 	"runtime"
 
 	iiifdefaults "github.com/go-iiif/go-iiif/v6/defaults"
@@ -54,6 +56,13 @@ func DefaultFlagSet() *flag.FlagSet {
 
 	fs.BoolVar(&refresh, "refresh", false, "Refresh a tile even if already exists (default false)")
 	fs.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")
+
+	fs.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Generate IIIF Level-0 image tiles for one or images.\n\n")
+		fmt.Fprintf(os.Stderr, "Usage:\n\t %s[options] uri(N) uri(N)\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Valid options are:\n")
+		fs.PrintDefaults()
+	}
 
 	return fs
 }

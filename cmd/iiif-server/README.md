@@ -1,8 +1,15 @@
-### iiif-server
+# iiif-server
+
+Expose the IIIF Image API via an HTTP endpoint.
 
 ```
 $> ./bin/iiif-server -h
-Usage of server:
+Expose the IIIF Image API via an HTTP endpoint.
+
+Usage:
+	 ./bin/iiif-server[options]
+
+Valid options are:
   -config-derivatives-cache-uri string
     	If present this value will be used to assign the 'derivatives.cache.uri' property in the config file. Note: The 'derivatives.cache.uri' property takes precedence over other properties in 'derivatives.cache' block.
   -config-images-source-uri string
@@ -10,22 +17,16 @@ Usage of server:
   -config-name string
     	The name of your go-iiif config file. This value will be ignored if -config-source is 'defaults://'. (default "config.json")
   -config-source string
-    	A valid Go Cloud bucket URI where your go-iiif config file is located. Optionally, if 'defaults://' is specified then the default config bundled with this package will be used.
+    	A valid Go Cloud bucket URI where your go-iiif config file is located. Optionally, if 'defaults://' is specified then the default config bundled with this package will be used. (default "defaults://")
   -example
-    	Add an /example endpoint to the server for testing and demonstration purposes
-  -example-root string
-    	An explicit path to a folder containing example assets (default "example")
-  -host string
-    	Bind the server to this host. THIS FLAG IS DEPRECATED: Please use -server-uri instead.
-  -port int
-    	Bind the server to this port. THIS FLAG IS DEPRECATED: Please use -server-uri instead.
-  -protocol string
-    	The protocol for iiif-server server to listen on. Valid protocols are: http, lambda. THIS FLAG IS DEPRECATED: Please use -server-uri instead.
+    	Add an example endpoint (at /) to the server for testing and demonstration purposes.
   -server-uri string
-    	A valid aaronland/go-http-server URI (default "http://localhost:8080")
+    	A registered aaronland/go-http-server.Server URI. (default "http://localhost:8080")
   -verbose
     	Enabled verbose (debug) loggging.
 ```
+
+## Example
 
 For example:
 
