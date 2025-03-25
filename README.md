@@ -157,7 +157,9 @@ $> ll fixtures/cache/*-csv/info.json
 -rw-r--r--  1 asc  staff  334 Mar 25 14:39 fixtures/cache/walrus-csv/info.json
 ```
 
-Note the way we passed the `-generate-html` flag like we did in the first example ensuring that each set of tiles has its own HTML "zoomable image" representation.
+_Note the way we passed the `-generate-html` flag like we did in the first example ensuring that each set of tiles has its own HTML "zoomable image" representation._
+
+Please make sure to consult the [usage documentation](cmd/iiif-seed/README.md) for the `iiif-seed` tool for details on how CSV files should be structured.
 
 #### Generating named (labeled) derivatives using an "instructions" file
 
