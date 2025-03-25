@@ -101,9 +101,13 @@ Sample out for the `palette` service is included [below](#non-standard-services)
 
 ```
 	"graphics": {
-		"source": { "name": "native" }
+		"driver": "native://"
 	}
 ```
+
+`native://` is the default graphics driver. Others include:
+
+* https://github.com/go-iiif/go-iiif-vips which uses [libvips](https://github.com/jcupitt/libvips) to perform all image-processing functions.
 
 ### features
 
@@ -248,58 +252,41 @@ _Important: It is left to you to actually implement support for new features in 
 
 ```
 	"images": {
-		"source": { "name": "Disk", "path": "example/images" },
-		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+		"source": { "uri", "file:///example/images" },
+		"cache": { "uri": "memory://" }
 	}
 ```
 
-Details about source images.
+Image configuration details consist of a "source" and a "cache" target. Each target is defined by a URI which identifies code implementing the `go-iiif/source.Source` and `go-iiif/cache.Cache` interfaecs respectively.
 
 #### images.source
 
 Where to find source images.
 
-##### Blob
+
 
 ```
 	"images": {
-		"source": { "name": "Blob", "path": "file:///example/images" }
+		"source": { "uri": "file:///example/images" }
 	}
 ```
 
-Fetch sources images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
+Fetch sources images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem (`file://`)](https://gocloud.dev/howto/blob/#local), [in-memory (`mem://`)](https://gocloud.dev/howto/blob/#local) and [S3 (`s3://`](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
 
-Some notes about the `Blob` source:
-
-* Under the hood the [github.com/aaronland/go-cloud-s3blob](https://github.com/aaronland/go-cloud-s3blob) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
+There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials).
 
 ```
 	"images": {
-		"source": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:" }
+		"source": { "uri": "s3blob:///bucket-name?region=us-east-1&credentials=iam:" }
 	}
 ```
-
-##### Disk
-
-```
-	"images": {
-		"source": { "name": "Disk", "path": "example/images" }
-	}
-```
-
-Fetch source images from a locally available filesystem.
-
-_The `Disk` source is still supported but has been replaced by the `Blob` source._
 
 ##### Flickr
 
 ```
 	"images": {
-		"source": { "name": "Flickr" },
-		"cache": { "name": "Memory", "ttl": 60, "limit": 100 }
-	},
-	"flickr": {
-		"client_uri": "oauth1://?consumer_key={KEY}&consumer_secret={SECRET}",
+		"source": { "uri": "flickr://?client-uri=oauth1://?consumer_key={KEY}&consumer_secret={SECRET}" },
+		"cache": { "uri": "memory://" }
 	}
 ```
 
@@ -315,107 +302,51 @@ Here's an example [with this photo](https://www.flickr.com/photos/straup/4136870
 
 ![](misc/go-iiif-flickr-detail.png)
 
-##### S3
+##### URI Templates (RFC 6570)
 
 ```
 	"images": {
-		"source": { "name": "S3", "path": "your.S3.bucket", "region": "us-east-1", "credentials": "default" }
+		"source": { "uri": "rfc6570://template=https://images.collection.cooperhewitt.org/{id}" }
 	}
 ```
 
-Fetch source images from Amazon's S3 service. S3 caches assume that that the `path` key is the name of the S3 bucket you are reading from. S3 caches have three addition properties:
-
-* **prefix** is an optional path to a sub-path inside of your S3 bucket where images are stored.
-* **region** is the name of the AWS region where your S3 bucket lives. Sorry [this is an AWS-ism](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html)
-* **credentials** is a string describing [how your AWS credentials are defined](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html). Valid options are:
- * `env:` - Signals that you you have defined valid AWS credentials as environment variables
- * `shared:PATH_TO_SHARED_CREDENTIALS_FILE:SHARED_CREDENTIALS_PROFILE` - Signals that your AWS credentials are in a [shared credentials files](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html) and that `go-iiif` should use a specific profile - _this syntax is deprecated and you should just use use `PATH_TO_SHARED_CREDENTIALS_FILE:SHARED_CREDENTIALS_PROFILE` instead._
- * `iam:` - Signals that you are using `go-iiif` in an AWS environment with suitable roles and permissioning for working with S3. The details of how and where you configure IAM roles are outside the scope of this document.
- * `PATH_TO_SHARED_CREDENTIALS_FILE:SHARED_CREDENTIALS_PROFILE` - Signals that your AWS credentials are in a [shared credentials files](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html) and that `go-iiif` should use a specific profile
- * `SHARED_CREDENTIALS_PROFILE` - Signals that your AWS credentials are in default location(s) for the current user and that `go-iiif` should use a specific profile
- 
-For the sake of backwards compatibilty if the value of `credentials` is any other string then it will be assumed to be the name of the profile you wish to use for a valid [credential files](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html) in the home directory of the current user. Likewise if the value of `credentials` is an _empty_ string (or absent) it will be assumed that valid AWS access credentials have been defined as environment variables.
-
-It is not possible to define your AWS credentials as properties in your `go-iiif` config file.
-
-Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times.
-
-_The `S3` source is still supported but has been replaced by the `Blob` source._
-
-![](misc/go-iiif-aws-source-cache.png)
-
-##### URI
-
-```
-	"images": {
-		"source": { "name": "URI", "path": "https://images.collection.cooperhewitt.org/{id}" }
-	}
-```
-
-Fetch source images from a remote URI. The `path` parameter must be a valid (Level 4) [URI Template](http://tools.ietf.org/html/rfc6570) with an `{id}` placeholder.
+Fetch source images from a remote URI. The `template` parameter must be a valid (Level 4) [URI Template](http://tools.ietf.org/html/rfc6570) with an `{id}` placeholder.
 
 #### images.cache
 
 Caching options for source images.
 
-##### Blob
+##### Blob (or `gocloud.dev/blob`)
 
 ```
 	"images": {
-		"cache": { "name": "Blob", "path": "file:///example/images" }
+		"cache": { "uri": "file:///example/images" }
 	}
 ```
 
-Cache sources images to any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
+Read and write cached images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem (`file://`)](https://gocloud.dev/howto/blob/#local), [in-memory (`mem://`)](https://gocloud.dev/howto/blob/#local) and [S3 (`s3://`](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
 
-Some notes about the `Blob` cache:
-
-* Under the hood the [github.com/aaronland/go-cloud-s3blob](https://github.com/aaronland/go-cloud-s3blob) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
+There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials). This package is	identified using the `s3blob://` URI scheme.
 
 ```
 	"images": {
-		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:" }
+		"source": { "uri": "s3blob:///bucket-name?region=us-east-1&credentials=iam:" }
 	}
 ```
-
-* Under the hood the `Blob` cache supports an optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/master/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs". For example:
-
-```
-	"images": {
-		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:&acl=public-read" }
-	}
-```
-
-##### Disk
-
-```
-	"images": {
-		"cache": { "name": "Disk", "path": "example/cache" }
-	}
-```
-
-Cache images to a locally available filesystem.
-
-_The `Disk` cache is still supported but has been replaced by the `Blob` cache._
 
 ##### Memory
 
 ```
 	"images": {
-		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+		"cache": { "uri": "memory://" }
 	}
 ```
-
-Cache images in memory. Memory caches have two addition properties:
-
-* **ttl** is the maximum number of seconds an image should live in cache.
-* **limit** the maximum number of megabytes the cache should hold at any one time.
 
 ##### Null
 
 ```
 	"images": {
-		"cache": { "name": "Null" }
+		"cache": { "uri": "null://" }
 	}
 ```
 
@@ -425,7 +356,7 @@ Because you must define a caching layer this is here to satify the requirements 
 
 ```
 	"derivatives": {
-		"cache": { "name": "Disk", "path": "example/cache" }
+		"cache": { "uri": "file://example/cache" }
 	}
 ```
 
@@ -435,97 +366,41 @@ Details about derivative images.
 
 Caching options for derivative images.
 
-##### Blob
+##### Blob (or `gocloud.dev/blob`)
 
 ```
 	"derivatives": {
-		"cache": { "name": "Blob", "path": "file:///example/images" }
+		"cache": { "uri": "file:///example/images" }
 	}
 ```
 
-Cache derivation images to any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services).
+Read and write derivative images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem (`file://`)](https://gocloud.dev/howto/blob/#local), [in-memory (`mem://`)](https://gocloud.dev/howto/blob/#local) and [S3 (`s3://`](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
 
-Some notes about the `Blob` cache:
-
-* Under the hood the [github.com/aaronland/go-cloud-s3blob](https://github.com/aaronland/go-cloud-s3blob) package is used to open Go Cloud "buckets", which are the parent containers for Go Cloud "blobs". This is specifically in order to be able to specify AWS S3 credentials using string values: `env:` (read credentials from AWS defined environment variables), `iam:` (assume AWS IAM credentials), `{AWS_PROFILE_NAME}`, `{AWS_CREDENTIALS_PATH}:{AWS_PROFILE_NAME}`. For example:
+There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials). This package is identified using the `s3blob://` URI scheme. This package is	identified using the `s3blob://` URI scheme.
 
 ```
 	"derivatives": {
-		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:" }
+		"cache": { "uri": "s3blob:///bucket-name?region=us-east-1&credentials=iam:" }
 	}
 ```
-
-* Under the hood the `Blob` cache supports an optional `acl={ACL}` query parameter in the path property (which is equivalent to a Go Cloud URI definition). This is to account for [the inability to assign permissions](https://github.com/google/go-cloud/issues/1108) when writing Go Cloud blob objects. Currently the `acl=ACL` parameter is only honoured for `s3://` URIs but [patches for other sources would be welcome](https://github.com/go-iiif/go-iiif/blob/master/cache/blob.go). Additionally it is only possible to assign ACLs for a Go Cloud "bucket" URI and not invidiual "blobs". For example:
-
-```
-	"derivatives": {
-		"cache": { "name": "Blob", "path": "s3:///bucket-name?region=us-east-1&credentials=iam:&acl=public-read" }
-	}
-```
-
-##### Disk
-
-```
-	"derivatives": {
-		"cache": { "name": "Disk", "path": "example/cache" }
-	}
-```
-
-Cache images to a locally available filesystem.
-
-_The `Disk` cache is still supported but has been replaced by the `Blob` cache._
 
 ##### Memory
 
 ```
 	"derivatives": {
-		"cache": { "name": "Memory", "ttl": 300, "limit": 100 }
+		"cache": { "uri": "memory://" }
 	}
 ```
-
-Cache images in memory. Memory caches have two addition properties:
-
-* **ttl** is the maximum number of seconds an image should live in cache.
-* **limit** the maximum number of megabytes the cache should hold at any one time.
 
 ##### Null
 
 ```
 	"derivatives": {
-		"cache": { "name": "Null" }
+		"cache": { "uri": "null://" }
 	}
 ```
 
 Because you must define a caching layer this is here to satify the requirements without actually caching anything, anywhere.
-
-##### S3
-
-```
-	"derivatives": {
-		"cache": { "name": "S3", "path": "your.S3.bucket", "region": "us-east-1", "credentials": "default" }
-	}
-```
-
-Cache images using Amazon's S3 service. S3 caches assume that that the `path` key is the name of the S3 bucket you are reading from. S3 caches have three addition properties:
-
-* **prefix** is an optional path to a sub-path inside of your S3 bucket where images are stored.
-* **region** is the name of the AWS region where your S3 bucket lives. Sorry [this is an AWS-ism](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html)
-* **credentials** is a string describing [how your AWS credentials are defined](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html). Valid options are:
- * `env:` - Signals that you you have defined valid AWS credentials as environment variables
- * `shared:PATH_TO_SHARED_CREDENTIALS_FILE:SHARED_CREDENTIALS_PROFILE` - Signals that your AWS credentials are in a [shared credentials files](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html) and that `go-iiif` should use a specific profile - _this syntax is deprecated and you should just use use `PATH_TO_SHARED_CREDENTIALS_FILE:SHARED_CREDENTIALS_PROFILE` instead._
- * `iam:` - Signals that you are using `go-iiif` in an AWS environment with suitable roles and permissioning for working with S3. The details of how and where you configure IAM roles are outside the scope of this document.
- * `PATH_TO_SHARED_CREDENTIALS_FILE:SHARED_CREDENTIALS_PROFILE` - Signals that your AWS credentials are in a [shared credentials files](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html) and that `go-iiif` should use a specific profile
- * `SHARED_CREDENTIALS_PROFILE` - Signals that your AWS credentials are in default location(s) for the current user and that `go-iiif` should use a specific profile
-
-For the sake of backwards compatibilty if the value of `credentials` is any other string then it will be assumed to be the name of the profile you wish to use for a valid [credential files](https://docs.aws.amazon.com/sdk-for-go/v1/developerguide/configuring-sdk.html) in the home directory of the current user. Likewise if the value of `credentials` is an _empty_ string (or absent) it will be assumed that valid AWS access credentials have been defined as environment variables.
-
-It is not possible to define your AWS credentials as properties in your `go-iiif` config file.
-
-Important: If you are both reading source files and writing cached derivatives to S3 in the same bucket make sure they have **different** prefixes. If you don't then AWS will happily overwrite your original source files with the directory (which shares the same names as the original file) containing your derivatives. Good times.
-
-_The `S3` cache is still supported but has been replaced by the `Blob` cache._
-
-![](misc/go-iiif-aws-source-cache.png)
 
 ## Non-standard features
 
@@ -687,7 +562,7 @@ http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/full/500,/0/primitive:5,100,
 
 Which would produce this:
 
-![](misc/go-iiif-primitive-animated-rect.gif)
+![](../misc/go-iiif-primitive-animated-rect.gif)
 
 Here are examples where each of the tiles in an slippy image are animated GIFs:
 

@@ -30,7 +30,6 @@ type Config struct {
 	Images ImagesConfig `json:"images"`
 	// Derivatives is a `DerivativesConfig` detailing how and where IIIF derivative images are stored.
 	Derivatives DerivativesConfig `json:"derivatives"`
-	Flickr      FlickrConfig      `json:"flickr,omitempty"`
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
 	Palette     PaletteConfig     `json:"palette,omitempty"`
 	BlurHash    BlurHashConfig    `json:"blurhash,omitempty"`
@@ -128,12 +127,6 @@ type GraphicsConfig struct {
 type SourceConfig struct {
 	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
 	URI string `json:"uri"`
-}
-
-// FlickrConfig defines configuration details for interacting with the Flickr photo-sharing service.
-type FlickrConfig struct {
-	// A valid `aaronland/go-flickr-api.Client` URI.
-	ClientURI string `json:"client_uri"`
 }
 
 // PrimitiveConfig defines configuration details for using the `fogleman/primitive` package.
