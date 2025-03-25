@@ -42,13 +42,13 @@ In the interest of trying to keep simple things simple all of the command line t
 Custom source and cache locations are defined as fully-qualified URIs mapped to implementations of the `Source` and `Cache` interfaces (discussed below). For example to define a custom on-disk location for reading source images you would do this:
 
 ```
-	-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
+	-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images
 ```
 
 And to define a custom on-disk location to write (cache) derivate image files you would do this:
 
 ```
-	-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
+	-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache
 ```
 
 ### iiif-transform
