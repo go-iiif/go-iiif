@@ -59,19 +59,19 @@ Transform one or more images using the IIIF API. For detailed usage consult [cmd
 
 For detailed usage consult [cmd/iiif-tile-seed/README.md](cmd/iiif-tile-seed/README.md)
 
-_Example provided below._
+_[Example provided below.](#generating-level-0-tiles)_
 
 ### iiif-process
 
 Generate IIIF Level-0 image tiles for one or images. For detailed usage consult [cmd/iiif-process/README.md](cmd/iiif-proces/README.md)
 
-_Example provided below._
+_[Example provided below.](#generating-derivatives-using-an-instructions-file)_
 
 ### iiif-server
 
 Expose the IIIF Image API via an HTTP endpoint. For detailed usage consult [cmd/iiif-server/README.md](cmd/iiif-server/README.md)
 
-_Example provided below._
+_[Example provided below.](#running-a-iiif-api-endpoint)_
 
 ### iiif-dump-config
 
@@ -105,11 +105,15 @@ go run cmd/iiif-tile-seed/main.go \
 2025/03/24 17:56:08 DEBUG Time to seed tiles source=spanking-cat.jpg target=spank time=25.699858709s
 ```
 
-And then:
+And then because the `-generate-html` flag was specified you can do this:
 
 ```
 $> open fixtures/cache/spank/index.html
 ```
+
+And see something like this in your web browser:
+
+[IMAGE]
 
 #### Generating derivatives using an "instructions" file
 
@@ -133,11 +137,15 @@ go run cmd/iiif-process/main.go \
 2025/03/24 17:57:17 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=999/8/index.html
 ```
 
-And then:
+And then because the `-report-html` flag was specified you can do this:
 
 ```
 $> open fixtures/cache/999/8/index.html
 ```
+
+And see something like this in your web browser:
+
+[IMAGE]
 
 #### Running a IIIF API endpoint
 
@@ -152,6 +160,10 @@ go run cmd/iiif-server/main.go \
 2025/03/24 17:55:18 DEBUG Verbose logging enabled
 2025/03/24 17:55:18 INFO Listening for requests address=http://localhost:8080
 ```
+
+And then, because the `-example` flag was specified, when you open your web browser to `http://localhost:8080` you'll see this:
+
+[IMAGE]
 
 ### Extending the command line tools
 
