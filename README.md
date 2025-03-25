@@ -157,6 +157,8 @@ $> ll fixtures/cache/*-csv/info.json
 -rw-r--r--  1 asc  staff  334 Mar 25 14:39 fixtures/cache/walrus-csv/info.json
 ```
 
+Note the way we passed the `-generate-html` flag like we did in the first example ensuring that each set of tiles has its own HTML "zoomable image" representation.
+
 #### Generating named (labeled) derivatives using an "instructions" file
 
 Generate a series of named (labeled) derivatives images for the [fixtures/spanking-cat.jpg](fixtures/spanking-cat.jpg) image from an "instructions" file, storing each derivative in a nested tree.

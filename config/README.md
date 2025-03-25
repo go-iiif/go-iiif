@@ -271,7 +271,7 @@ Where to find source images.
 	}
 ```
 
-Fetch sources images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem (`file://`)](https://gocloud.dev/howto/blob/#local), [in-memory (`mem://`)](https://gocloud.dev/howto/blob/#local) and [S3 (`s3://`](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
+Fetch sources images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem](https://gocloud.dev/howto/blob/#local), [in-memory](https://gocloud.dev/howto/blob/#local) and [S3](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
 
 There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials).
 
@@ -298,9 +298,9 @@ Fetch source images from Flickr. You will need to provide a valid [Flickr API ke
 
 Here's an example [with this photo](https://www.flickr.com/photos/straup/4136870023/in/album-72157622883263698/):
 
-![](misc/go-iiif-flickr.png)
+![](../misc/go-iiif-flickr.png)
 
-![](misc/go-iiif-flickr-detail.png)
+![](../misc/go-iiif-flickr-detail.png)
 
 ##### URI Templates (RFC 6570)
 
@@ -324,9 +324,9 @@ Caching options for source images.
 	}
 ```
 
-Read and write cached images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem (`file://`)](https://gocloud.dev/howto/blob/#local), [in-memory (`mem://`)](https://gocloud.dev/howto/blob/#local) and [S3 (`s3://`](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
+Read and write cached images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem)](https://gocloud.dev/howto/blob/#local), [in-memory](https://gocloud.dev/howto/blob/#local) and [S3](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
 
-There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials). This package is	identified using the `s3blob://` URI scheme.
+There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials).
 
 ```
 	"images": {
@@ -374,9 +374,9 @@ Caching options for derivative images.
 	}
 ```
 
-Read and write derivative images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem (`file://`)](https://gocloud.dev/howto/blob/#local), [in-memory (`mem://`)](https://gocloud.dev/howto/blob/#local) and [S3 (`s3://`](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
+Read and write derivative images from any supported [Go Cloud storage service](https://gocloud.dev/howto/blob/#services). By default support for [local filesystem](https://gocloud.dev/howto/blob/#local), [in-memory](https://gocloud.dev/howto/blob/#local) and [S3](https://gocloud.dev/howto/blob/#s3) "bucket" sources is enabled.
 
-There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials). This package is identified using the `s3blob://` URI scheme. This package is	identified using the `s3blob://` URI scheme.
+There is also support for the [github.com/aaronland/gocloud-blob/s3](https://github.com/aaronland/gocloud-blob/s3) package which allows for AWS credentials to be defined using [string labels](https://github.com/aaronland/go-aws-auth?tab=readme-ov-file#credentials). This package is identified using the `s3blob://` URI scheme.
 
 ```
 	"derivatives": {
@@ -468,7 +468,7 @@ http://localhost:8080/spanking-cat.jpg/-1,-1,320,320/full/0/crisp:10.0,2.0,0.05.
 
 Would produce the following image:
 
-![spanking cat](misc/go-iiif-crisp.png)
+![spanking cat](../misc/go-iiif-crisp.png)
 
 #### Dithering
 
@@ -488,7 +488,7 @@ http://localhost:8082/184512_5f7f47e5b3c66207_x.jpg/pct:41,7,40,70/,5000/0/dithe
 
 And here's what you should see, keeping in mind that this screenshot shows only a section of the image at full size:
 
-![spanking cat](misc/go-iiif-dither-detail.png)
+![spanking cat](../misc/go-iiif-dither-detail.png)
 
 There are a few caveats about dithering images:
 
@@ -515,7 +515,7 @@ _Note the way the `primitive` block is a top-level element in your config file._
 
 `primitive` use [@fogleman's primitive library](https://github.com/fogleman/primitive) to reproduce the final image using geometric primitives. Like this:
 
-![](misc/go-iiif-primitive-circles.png)
+![](../misc/go-iiif-primitive-circles.png)
 
 The syntax for invoking this feature is `primitive:{MODE},{ITERATIONS},{ALPHA}` where:
 
@@ -550,9 +550,9 @@ Be aware that it's not exactly "fast". It's [getting faster](https://github.com/
 
 But it is pretty darn cool!
 
-![](misc/go-iiif-primitive-triangles.png)
+![](../misc/go-iiif-primitive-triangles.png)
 
-![](misc/go-iiif-primitive-triangles-detail.png)
+![](../misc/go-iiif-primitive-triangles-detail.png)
 
 If you specify a `gif` format parameter then `go-iiif` will return an animated GIF for the requested image consisting of each intermediate stage that the `primitive` library generated the final image. For example:
 
