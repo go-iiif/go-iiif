@@ -696,3 +696,7 @@ Here are examples where each of the tiles in an slippy image are animated GIFs:
 * https://go-iiif.github.io/go-iiif/animated/?mode=triangles
 
 _Note: You will need to [manually enable support for GIF images](https://github.com/go-iiif/go-iiif/tree/primitive#featuresenable) in your config file for animated GIFs to work._
+
+## Non-standard services
+
+Documentation for non-standard services has been moved in to [../service/README.md](../service/README.md].
