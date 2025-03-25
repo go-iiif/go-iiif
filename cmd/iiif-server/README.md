@@ -32,7 +32,6 @@ Valid options are:
 $> bin/iiif-server \
 	-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
 	-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
-	-example \
 	-verbose
 2025/03/25 14:15:08 DEBUG Verbose logging enabled
 2025/03/25 14:15:08 INFO Listening for requests address=http://localhost:8080
