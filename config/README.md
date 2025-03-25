@@ -574,4 +574,4 @@ _Note: You will need to [manually enable support for GIF images](https://github.
 
 ## Non-standard services
 
-Documentation for non-standard services has been moved in to [../service/README.md](../service/README.md].
+Documentation for non-standard services has been moved in to [../service/README.md](../service/README.md).
