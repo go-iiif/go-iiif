@@ -113,7 +113,7 @@ $> open fixtures/cache/spank/index.html
 
 And see something like this in your web browser:
 
-[IMAGE]
+![](docs/images/go-iiif-v7-seed.png)
 
 #### Generating derivatives using an "instructions" file
 
@@ -145,7 +145,7 @@ $> open fixtures/cache/999/8/index.html
 
 And see something like this in your web browser:
 
-[IMAGE]
+![](docs/images/go-iiif-v7-process.png)
 
 #### Running a IIIF API endpoint
 
@@ -163,7 +163,14 @@ go run cmd/iiif-server/main.go \
 
 And then, because the `-example` flag was specified, when you open your web browser to `http://localhost:8080` you'll see this:
 
-[IMAGE]
+![](docs/images/go-iiif-v7-server.png)
+
+> curl http://localhost:8080/spanking-cat.jpg/info.json
+
+```
+{"height":4096,"width":3897,"@context":"http://iiif.io/api/image/2/context.json","@id":"http://localhost:8080/spanking-cat.jpg","protocol":"http://iiif.io/api/image","profile":["http://iiif.io/api/image/2/level2.json",{"formats":["webp","jpg","png","tif","gif"],"qualities":["dither","crisp","default","color"],"supports":["full","regionByPx","regionByPct","regionSquare","full","max","sizeByW","sizeByH","sizeByPct","sizeByDistortedWh","sizeByConfinedWh","sizeByWh","noAutoRotate","none","rotationBy90s","mirroring","baseUriRedirect","cors","jsonldMediaType"]}],"service":[{"@context":"x-urn:service:go-iiif#palette","profile":"x-urn:service:go-iiif#palette","label":"x-urn:service:go-iiif#palette","palette":[{"name":"#4e3c24","hex":"#4e3c24","reference":"vibrant"},{"name":"#9d8959","hex":"#9d8959","reference":"vibrant"},{"name":"#c7bca6","hex":"#c7bca6","reference":"vibrant"},{"name":"#5a4b36","hex":"#5a4b36","reference":"vibrant"}]},{"@context":"x-urn:service:go-iiif#blurhash","profile":"x-urn:service:go-iiif#blurhash","label":"x-urn:service:go-iiif#blurhash","hash":":NOWsZa{_Nt69Fofxuof_2a{M{ofofaej[ay%Nj[IAj[%MayRjj[jZoft7V@WCofaxj[xuoMRjV@j[t7ofWBoeayfRkCayaxofj[WBaxofozayRjaxofRjayt7ofWBayj?ay"},{"@context":"x-urn:service:go-iiif#imagehash","profile":"x-urn:service:go-iiif#imagehash","label":"x-urn:service:go-iiif#imagehash","average":"a:ffffc7e7c3c3c3c3","difference":"d:c48c0c0e8e8f0e0f"}]}
+```
+
 
 ### Extending the command line tools
 
