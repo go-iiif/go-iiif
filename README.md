@@ -81,7 +81,9 @@ Emit a go-iiif config file as Markdown. For detailed usage consult [cmd/iiif-dum
 
 The easiest way to try things out is to use the handy `debug-{SOMETHING}` Makefile targets which will perform operations on files bundled with this package (in the [fixtures](fixtures) directory).
 
-#### Generating Level-0 tiles
+#### Generating IIIF Level 0 tiles (debug-seed)
+
+Generate IIIF Level 0 tiles for the [fixtures/spanking-cat.jpg](fixtures/spanking-cat.jpg) image and store those tiles in a folder named `spank`.
 
 ```
 $> make debug-seed
@@ -117,7 +119,47 @@ And see something like this in your web browser:
 
 The folder containing the IIIF Level 0 tiles also contains just enough HTML and JavaScript code to show those tiles in a traditional "zoomable image" interface. These views are disabled by default and are mostly meant for reviewing the output of the seeding operation. For a more sophiticated "zoomable image" interface see the [sfomuseum/webcomponent-zoomable-image](https://github.com/sfomuseum/webcomponent-zoomable-image) package.
 
-#### Generating derivatives using an "instructions" file
+#### Generating Level 0 tiles from a CSV file (debug-seed-csv)
+
+Generate a CSV file containing information about images in the [fixtures](fixtures) folder and then generate Level 0 tiles for each image in the CSV file.
+
+```
+$> make debug-seed-csv
+if test -d /usr/local/src/go-iiif/fixtures/cache/spanking-csv; then rm -rf /usr/local/src/go-iiif/fixtures/cache/spanking-csv; fi
+if test -d /usr/local/src/go-iiif/fixtures/cache/walrus-csv; then rm -rf /usr/local/src/go-iiif/fixtures/cache/walrus-csv; fi
+if test -f /usr/local/src/go-iiif/fixtures/seed.csv; then /usr/local/src/go-iiif/fixtures/seed.csv; fi
+echo "source_filename,source_root,target_filename,target_root" > /usr/local/src/go-iiif/fixtures/seed.csv
+echo "spanking-cat.jpg,/usr/local/src/go-iiif/fixtures/images,spanking-csv,/usr/local/src/go-iiif/fixtures/cache" >> /usr/local/src/go-iiif/fixtures/seed.csv
+echo "walrus.jpg,/usr/local/src/go-iiif/fixtures/images,walrus-csv,/usr/local/src/go-iiif/fixtures/cache" >> /usr/local/src/go-iiif/fixtures/seed.csv
+go run cmd/iiif-tile-seed/main.go \
+		-mode csv \
+		-generate-html \
+		-verbose \
+		/usr/local/src/go-iiif/fixtures/seed.csv
+2025/03/25 14:39:51 DEBUG Verbose logging enabled
+2025/03/25 14:39:51 INFO Assign new source URI path=/usr/local/src/go-iiif/fixtures/seed.csv uri=file:///usr/local/src/go-iiif/fixtures/images
+2025/03/25 14:39:51 INFO Assign new cache URI path=/usr/local/src/go-iiif/fixtures/seed.csv uri=file:///usr/local/src/go-iiif/fixtures/cache
+2025/03/25 14:39:51 INFO Seed tiles path=/usr/local/src/go-iiif/fixtures/seed.csv source=spanking-cat.jpg target=spanking-csv
+2025/03/25 14:39:51 DEBUG Tile waiting to seed source=spanking-cat.jpg time=1.338917ms
+2025/03/25 14:39:51 INFO Assign new source URI path=/usr/local/src/go-iiif/fixtures/seed.csv uri=file:///usr/local/src/go-iiif/fixtures/images
+2025/03/25 14:39:51 INFO Assign new cache URI path=/usr/local/src/go-iiif/fixtures/seed.csv uri=file:///usr/local/src/go-iiif/fixtures/cache
+2025/03/25 14:39:51 INFO Seed tiles path=/usr/local/src/go-iiif/fixtures/seed.csv source=walrus.jpg target=walrus-csv
+2025/03/25 14:39:51 INFO Seed tiles for image "source id"=spanking-cat.jpg "alt id"=spanking-csv "image cache"=memory:// "derivatives cache"=file:///usr/local/src/go-iiif/fixtures/cache processes=10 scales="[8 4 2 1]"
+
+... time passes, with lots of debugging information
+```
+
+And then eventually:
+
+```
+$> ll fixtures/cache/*-csv/info.json
+-rw-r--r--  1 asc  staff  336 Mar 25 14:40 fixtures/cache/spanking-csv/info.json
+-rw-r--r--  1 asc  staff  334 Mar 25 14:39 fixtures/cache/walrus-csv/info.json
+```
+
+#### Generating named (labeled) derivatives using an "instructions" file
+
+Generate a series of named (labeled) derivatives images for the [fixtures/spanking-cat.jpg](fixtures/spanking-cat.jpg) image from an "instructions" file, storing each derivative in a nested tree.
 
 ```
 $> make debug-process
@@ -154,6 +196,8 @@ The folder contained the "processed" derivative images also contains a simple HT
 Please make sure to consult the [usage documentation](cmd/iiif-proces/README.md) for the `iiif-process` tool for details on "instructions" and "reports".
 
 #### Running a IIIF API (HTTP) endpoint
+
+Run a IIIF API endpoint (server).
 
 ```
 $> make debug-server

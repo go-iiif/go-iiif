@@ -19,6 +19,19 @@ debug-seed:
 		-generate-html \
 		'rewrite:///spanking-cat.jpg?target=spank'
 
+debug-seed-csv:
+	if test -d $(CWD)/fixtures/cache/spanking-csv; then rm -rf $(CWD)/fixtures/cache/spanking-csv; fi
+	if test -d $(CWD)/fixtures/cache/walrus-csv; then rm -rf $(CWD)/fixtures/cache/walrus-csv; fi
+	if test -f $(CWD)/fixtures/seed.csv; then $(CWD)/fixtures/seed.csv; fi
+	echo "source_filename,source_root,target_filename,target_root" > $(CWD)/fixtures/seed.csv
+	echo "spanking-cat.jpg,$(CWD)/fixtures/images,spanking-csv,$(CWD)/fixtures/cache" >> $(CWD)/fixtures/seed.csv
+	echo "walrus.jpg,$(CWD)/fixtures/images,walrus-csv,$(CWD)/fixtures/cache" >> $(CWD)/fixtures/seed.csv
+	go run cmd/iiif-tile-seed/main.go \
+		-mode csv \
+		-generate-html \
+		-verbose \
+		$(CWD)/fixtures/seed.csv
+
 debug-process:
 	if test -d $(CWD)/fixtures/cache/999; then rm -rf $(CWD)/fixtures/cache/999; fi
 	go run cmd/iiif-process/main.go \
