@@ -10,7 +10,7 @@ type NullCache struct {
 	Cache
 }
 
-func NewNullCacheFromURI(ctx context.Context, uri string) (Cache, error) {
+func NewNullCache(ctx context.Context, uri string) (Cache, error) {
 	c := NullCache{}
 	return &c, nil
 }

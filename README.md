@@ -16,13 +16,285 @@ The current release is `github.com/go-iiif/go-iiif/v6`.
 
 Documentation for releases has been moved in to [RELEASES.md](RELEASES.md).
 
+## Command-line tools
+
+_Note: command-line tools and utilities are included at the top of this document to accomodate the busy and/or curious. There are a number of important concepts to understand in how the `go-iiif` package is used (in particular config files) which are discussed in detail below._
+
+### Building
+
+Run the handy `cli` Makefile target to build all the tools:
+
+```
+$> make cli
+go build -mod vendor -ldflags="-s -w" -o bin/iiif-transform cmd/iiif-transform/main.go
+go build -mod vendor -ldflags="-s -w" -o bin/iiif-tile-seed cmd/iiif-tile-seed/main.go
+go build -mod vendor -ldflags="-s -w" -o bin/iiif-process cmd/iiif-process/main.go
+go build -mod vendor -ldflags="-s -w" -o bin/iiif-server cmd/iiif-server/main.go
+go build -mod vendor -ldflags="-s -w" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
+```
+
+### Config files
+
+Detailed documentation for config files has been moved in to [config/README.md](config/README.md].
+
+In the interest of trying to keep simple things simple all of the command line tools use a default configuration file, indicated by the URI `default://` which is defined in the [defaults/config.json](defaults/config.json) file. The default configuration looks and writes source and cache images, respectively, to an in-memory provider. As such, until you define at least an alternative source location (or your own config file) the tools won't _do_ very much.
+
+Custom source and cache locations are defined as fully-qualified URIs mapped to implementations of the `Source` and `Cache` interfaces (discussed below). For example to define a custom on-disk location for reading source images you would do this:
+
+```
+	-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
+```
+
+And to define a custom on-disk location to write (cache) derivate image files you would do this:
+
+```
+	-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
+```
+
+### iiif-transform
+
+Transform one or more images using the IIIF API. For detailed usage consult [cmd/iiif-transform/README.md](cmd/iiif-transform/README.md)
+
+### iiif-tile-seed
+
+For detailed usage consult [cmd/iiif-tile-seed/README.md](cmd/iiif-tile-seed/README.md)
+
+### iiif-process
+
+Generate IIIF Level-0 image tiles for one or images. For detailed usage consult [cmd/iiif-process/README.md](cmd/iiif-proces/README.md)
+
+### iiif-server
+
+Expose the IIIF Image API via an HTTP endpoint. For detailed usage consult [cmd/iiif-server/README.md](cmd/iiif-server/README.md)
+
+### iiif-dump-config
+
+Emit a go-iiif config file as Markdown. For detailed usage consult [cmd/iiif-dump-config/README.md](cmd/iiif-dump-config/README.md)
+
+### Examples
+
+The easiest way to try things out is to use the handy `debug-{SOMETHING}` Makefile targets which will perform operations on files bundled with this package (in the [fixtures](fixtures) directory).
+
+#### Generating Level-0 tiles
+
+```
+$> make debug-seed
+if test -d /usr/local/src/go-iiif/fixtures/cache/spank; then rm -rf /usr/local/src/go-iiif/fixtures/cache/spank; fi
+go run cmd/iiif-tile-seed/main.go \
+		-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
+		-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
+		-verbose \
+		-generate-html \
+		'rewrite:///spanking-cat.jpg?target=spank'
+2025/03/24 17:55:42 DEBUG Verbose logging enabled
+2025/03/24 17:55:42 DEBUG New tiled image origin=spanking-cat.jpg target=spank
+
+... time passes, with lots of debugging information
+
+2025/03/24 17:56:08 DEBUG Tile seeding complete source=spanking-cat.jpg target=spank count=340
+2025/03/24 17:56:08 INFO Generate HTML index page for tiles source=spanking-cat.jpg alt=spank
+2025/03/24 17:56:08 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=spank/leaflet.iiif.bundle.js
+2025/03/24 17:56:08 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=spank/leaflet.css
+2025/03/24 17:56:08 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=spank/index.html
+2025/03/24 17:56:08 DEBUG Time to seed tiles source=spanking-cat.jpg target=spank time=25.699858709s
+```
+
+And then:
+
+```
+$> open fixtures/cache/spank/index.html
+```
+
+#### Generating derivatives using an "instructions" file
+
+```
+$> make debug-process
+if test -d /usr/local/src/go-iiif/fixtures/cache/999; then rm -rf /usr/local/src/go-iiif/fixtures/cache/999; fi
+go run cmd/iiif-process/main.go \
+		-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
+		-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
+		-report \
+		-report-bucket-uri file:///usr/local/src/go-iiif/fixtures/reports \
+		-report-html \
+		-verbose \
+		'idsecret:///spanking-cat.jpg?id=9998&secret=abc&secret_o=def&format=jpg&label=x'
+2025/03/24 17:57:13 DEBUG Verbose logging enabled
+
+... time passes, with lots of debugging information
+
+2025/03/24 17:57:17 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=999/8/9998_abc_k.jpg
+2025/03/24 17:57:17 DEBUG Return transformation uri="rewrite:///spanking-cat.jpg?target=999%2F8%2F9998_abc_k.jpg" origin=spanking-cat.jpg target=999/8/9998_abc_k.jpg "source cache"=memory:// "destination cache"=file:///usr/local/src/go-iiif/fixtures/cache "new uri"=file:///999/8/9998_abc_k.jpg
+2025/03/24 17:57:17 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=999/8/index.html
+```
+
+And then:
+
+```
+$> open fixtures/cache/999/8/index.html
+```
+
+#### Running a IIIF API endpoint
+
+```
+$> make debug-server
+mkdir -p fixtures/cache
+go run cmd/iiif-server/main.go \
+		-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
+		-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
+		-example \
+		-verbose
+2025/03/24 17:55:18 DEBUG Verbose logging enabled
+2025/03/24 17:55:18 INFO Listening for requests address=http://localhost:8080
+```
+
+### Extending the command line tools
+
+The "guts" of all the command line tools live in the [app](app) package. This allows the definitions for the actual command line tools to be small and easy to extend.
+
+For example if you want to extend the `iiif-tile-seed` tool to use a custom caching layer (discussed below) not included in this package by default you'll need to clone [cmd/iiif-tile-seed/main.go](cmd/iiif-tile-seed/main.go) and then add the relevant import statement. For example:
+
+```
+package main
+
+import (
+	"context"
+	"log"
+
+	_ "github.com/aaronland/gocloud-blob/s3"
+	_ "github.com/go-iiif/go-iiif/v6/native"
+	_ "gocloud.dev/blob/fileblob"
+	_ "gocloud.dev/blob/memblob"
+        _ "yourprovider.host/go-iiif-cache"	// YOUR CUSTOM CODE
+       
+	"github.com/go-iiif/go-iiif/v6/app/seed"
+)
+
+func main() {
+
+	ctx := context.Background()
+	err := seed.Run(ctx)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+```
+
+Which is not ideal but is at least short and sweet and easy.
+
 ## Drivers
 
 `go-iiif` was first written with the [libvips](https://github.com/jcupitt/libvips) library and [bimg](https://github.com/h2non/bimg/) Go wrapper for image processing. `libvips` is pretty great but it introduces non-trivial build and setup requirements. As of version 2.0 `go-iiif` no longer uses `libvips` by default but instead does all its image processing using native (Go) code. This allows `go-iiif` to run on any platform supported by Go without the need for external dependencies.
 
 Detailed documentation for drivers has been moved in to [driver/README.md](driver/README.md])
 
-## Buckets
+## Data sources
+
+Data sources in `go-iiif` are not so much "complicated" as they are "nuanced". By default IIIF assumes that everything is on a local disk (or "mount") and that everything references the canonical filename of an image. There is nothing wrong with these assumptions but they don't always reflect the reality of how data is organized or meant to be exposed.
+
+As such, `go-iiif` makes use of the following constructs when working with data sources:
+
+### Image and cache "sources"
+
+The first are the `Source` and `Cache` interfaces. These define common (Go language) interfaces for data sources (images) and any caching layers necessary for working with those images or the derivative products produced by the IIIF Image API.
+
+The `Source` interface looks like this:
+
+```
+// Source is an interface representing a primary image source.
+type Source interface {
+	// Read returns the body of the file located at 'uri'.
+	Read(uri string) ([]byte, error)
+	// Close performs any final operations specific to a data source.
+	Close() error
+}
+```
+
+The `Cache` interface looks like this:
+
+```
+// A Cache is a representation of a cache provider.
+type Cache interface {
+	// Exists returns a boolean value indicating whether a key exists in the cache.
+	Exists(string) bool
+	// Get returns the value for a specific key in the cache.
+	Get(string) ([]byte, error)
+	// Set assigns the value for a specific key in the cache.
+	Set(string, []byte) error
+	// Unset removes a specific key from the cache.
+	Unset(string) error
+	// Close performs any final operations specific to a cache provider.	
+	Close() error
+}
+```
+
+This package provides the following default implementations for both interfaces:
+
+* Any registered [Go Cloud](https://gocloud.dev/) `Bucket` source (for example: files, in-memory, S3 or other cloud providers). See [source/blob.go](source/blob.go) and [cache/blob.go](cache/blob.go) for details.
+
+#### Default source implementations
+
+This package also provides the following default implementations for the `Source` interface:
+
+* A source provider to yield images using the Flickr API. See [source/flickr.go](source/flickr.go) for details.
+* A source provider to yield images using a custom URI template. See [source/uritemplate.go](source/uritemplate.go) for details.
+
+#### Default cache implementations
+
+This package also provides the following default implementations for the `Cache` interface:
+
+* In-memory key-value storage. See [cache/blob.go](cache/blob.go) for details.
+
+#### Custom implementations
+
+To define custom source or cache implementations you need to do two things:
+
+1. Implement all the relevant interface methods
+2. "Register" a interface-implementation callback method using the `RegisterCache` (or `RegisterSource`) method.
+
+For example, here is how you might implement a custom cache implementation:
+
+```
+import (
+       "context"
+
+       iiifcache "github.com/go-iiif/go-iiif/v6/cache"
+)
+
+type CustomCache struct {
+	Cache
+	// your details here
+}
+
+func init() {
+     iiiicache.RegisterCache(context.Background(), "custom", NewCusomCache)
+}
+
+func NewCusomCache(ctx context.Context, uri string) (Cache, error) {
+	c := CustomCache{}
+	return &c, nil
+}
+
+// Cache interface methods here
+```
+
+And then in your code you would import your custom package like this:
+
+```
+import (
+       _ "yourprovider.host/go-iiif-cache"
+)
+```
+
+And in your config file you would do something like this:
+
+```
+    "derivatives": {
+	"cache": { "uri": "custom://?{YOUR_CUSTOM_PARAMETERS}" }	
+    }        
+```
+
+### "Buckets"
 
 Starting with version 2 the `go-iiif` package uses the [Go Cloud](https://gocloud.dev/) `Bucket` and `Blob` interfaces for reading and writing all files. For example, instead of doing this:
 
@@ -38,11 +310,9 @@ cfg, _ := config.NewConfigFromBucket(ctx, config_bucket, "config.json")
 ```
 This allows for configuration files, and others, to be stored and retrieved from [any "bucket" source that is supported by the Go Cloud package](https://gocloud.dev/howto/blob/#services), notably remote storage services like AWS S3.
 
-The `source` and `caching` layers have also been updated accordingly but support for the older `Disk`, `S3` and `Memory` sources has been updated to use the `Go Cloud` packages so there is no need to update any existing `go-iiif` configuration files.
+### "URIs"
 
-## URIs
-
-[go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URI strings are still a work in progress. While they may still change a bit around the edges efforts will be made to ensure backwards compatibility going forward.
+_[go-iiif-uri](https://github.com/go-iiif/go-iiif-uri) URI strings are technically still a "work in progress" but since they haven't meaningfully changed in a few years they are probably close to being considered stable._
 
 `go-iiif-uri` URI strings are defined by a named scheme which indicates how an URI should be processed, a path which is a reference to an image and zero or more query parameters which are the specific instructions for processing the URI.
 
@@ -141,123 +411,6 @@ go func(ctx context.Context, u iiifuri.URI, label Label, i IIIFInstructions) {
 	// do something with new_uri and im here...
 	
 }(...)
-```
-
-## Command line tools
-
-`go-iiif` was designed to expose all of its functionality outside of the included tools although that hasn't been documented yet. The source code for the [iiif-tile-seed](cmd/iiif-tile-seed.go), [iiif-transform](cmd/iiif-transform.go) and [iiif-process](cmd/iiif-process.go) tools is a good place to start poking around if you're curious.
-
-### Building
-
-Run the handy `cli` Makefile target to build all the tools:
-
-```
-$> make cli
-go build -mod vendor -ldflags="-s -w" -o bin/iiif-server cmd/iiif-server/main.go
-go build -mod vendor -ldflags="-s -w" -o bin/iiif-tile-seed cmd/iiif-tile-seed/main.go
-go build -mod vendor -ldflags="-s -w" -o bin/iiif-transform cmd/iiif-transform/main.go
-go build -mod vendor -ldflags="-s -w" -o bin/iiif-process cmd/iiif-process/main.go
-go build -mod vendor -ldflags="-s -w" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
-```
-
-### iiif-transform
-
-Transform one or more images using the IIIF API. For detailed usage consult [cmd/iiif-transform/README.md](cmd/iiif-transform/README.md)
-
-### iiif-tile-seed
-
-For detailed usage consult [cmd/iiif-tile-seed/README.md](cmd/iiif-tile-seed/README.md)
-
-### iiif-process
-
-Generate IIIF Level-0 image tiles for one or images. For detailed usage consult [cmd/iiif-process/README.md](cmd/iiif-proces/README.md)
-
-### iiif-server
-
-Expose the IIIF Image API via an HTTP endpoint. For detailed usage consult [cmd/iiif-server/README.md](cmd/iiif-server/README.md)
-
-### iiif-dump-config
-
-Emit a go-iiif config file as Markdown. For detailed usage consult [cmd/iiif-dump-config/README.md](cmd/iiif-dump-config/README.md)
-
-## Config files
-
-Documentation for config files has been moved in to [config/README.md](config/README.md].
-
-## Examples
-
-The easiest way to try things out is to use the handy `debug-{SOMETHING}` Makefile targets which will perform operations on files bundled with this package (in the [fixtures](fixtures) directory).
-
-### Generating Level-0 tiles
-
-```
-$> make debug-seed
-if test -d /usr/local/src/go-iiif/fixtures/cache/spank; then rm -rf /usr/local/src/go-iiif/fixtures/cache/spank; fi
-go run cmd/iiif-tile-seed/main.go \
-		-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
-		-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
-		-verbose \
-		-generate-html \
-		'rewrite:///spanking-cat.jpg?target=spank'
-2025/03/24 17:55:42 DEBUG Verbose logging enabled
-2025/03/24 17:55:42 DEBUG New tiled image origin=spanking-cat.jpg target=spank
-
-... time passes, with lots of debugging information
-
-2025/03/24 17:56:08 DEBUG Tile seeding complete source=spanking-cat.jpg target=spank count=340
-2025/03/24 17:56:08 INFO Generate HTML index page for tiles source=spanking-cat.jpg alt=spank
-2025/03/24 17:56:08 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=spank/leaflet.iiif.bundle.js
-2025/03/24 17:56:08 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=spank/leaflet.css
-2025/03/24 17:56:08 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=spank/index.html
-2025/03/24 17:56:08 DEBUG Time to seed tiles source=spanking-cat.jpg target=spank time=25.699858709s
-```
-
-And then:
-
-```
-$> open fixtures/cache/spank/index.html
-```
-
-### Generating derivatives using an "instructions" file
-
-```
-$> make debug-process
-if test -d /usr/local/src/go-iiif/fixtures/cache/999; then rm -rf /usr/local/src/go-iiif/fixtures/cache/999; fi
-go run cmd/iiif-process/main.go \
-		-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
-		-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
-		-report \
-		-report-bucket-uri file:///usr/local/src/go-iiif/fixtures/reports \
-		-report-html \
-		-verbose \
-		'idsecret:///spanking-cat.jpg?id=9998&secret=abc&secret_o=def&format=jpg&label=x'
-2025/03/24 17:57:13 DEBUG Verbose logging enabled
-
-... time passes, with lots of debugging information
-
-2025/03/24 17:57:17 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=999/8/9998_abc_k.jpg
-2025/03/24 17:57:17 DEBUG Return transformation uri="rewrite:///spanking-cat.jpg?target=999%2F8%2F9998_abc_k.jpg" origin=spanking-cat.jpg target=999/8/9998_abc_k.jpg "source cache"=memory:// "destination cache"=file:///usr/local/src/go-iiif/fixtures/cache "new uri"=file:///999/8/9998_abc_k.jpg
-2025/03/24 17:57:17 DEBUG Successfully wrote blob "bucket uri"=file:///usr/local/src/go-iiif/fixtures/cache uri=999/8/index.html
-```
-
-And then:
-
-```
-$> open fixtures/cache/999/8/index.html
-```
-
-### Running a IIIF API endpoint
-
-```
-$> make debug-server
-mkdir -p fixtures/cache
-go run cmd/iiif-server/main.go \
-		-config-derivatives-cache-uri file:///usr/local/src/go-iiif/fixtures/cache \
-		-config-images-source-uri file:///usr/local/src/go-iiif/fixtures/images \
-		-example \
-		-verbose
-2025/03/24 17:55:18 DEBUG Verbose logging enabled
-2025/03/24 17:55:18 INFO Listening for requests address=http://localhost:8080
 ```
 
 ## Performance and load testing

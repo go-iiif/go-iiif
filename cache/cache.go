@@ -4,14 +4,12 @@ package cache
 import (
 	"context"
 	"fmt"
-	// "log/slog"
 	"net/url"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/aaronland/go-roster"
-	// iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 // In principle this could also be done with a sync.OnceFunc call but that will
@@ -24,7 +22,7 @@ import (
 var register_mu = new(sync.RWMutex)
 var register_map = map[string]bool{}
 
-// A Cache is a representation of a cache location.
+// A Cache is a representation of a cache provider.
 type Cache interface {
 	// Exists returns a boolean value indicating whether a key exists in the cache.
 	Exists(string) bool
@@ -34,6 +32,7 @@ type Cache interface {
 	Set(string, []byte) error
 	// Unset removes a specific key from the cache.
 	Unset(string) error
+	// Close performs any final operations specific to a cache provider.	
 	Close() error
 }
 

@@ -25,6 +25,7 @@ var register_map = map[string]bool{}
 type Source interface {
 	// Read returns the body of the file located at 'uri'.
 	Read(uri string) ([]byte, error)
+	// Close performs any final operations specific to a data source.
 	Close() error
 }
 
