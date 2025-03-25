@@ -99,7 +99,7 @@ Images are read-from and stored-to whatever source or derivatives caches defined
 
 ## "Instructions" files
 
-An instruction file is a JSON-encoded dictionary. Keys are user-defined and values are dictionary of IIIF one or more transformation instructions. For example:
+An instruction file is a JSON-encoded dictionary. Keys are user-defined and treated as labels (or suffixes) for images. Values are dictionary of IIIF one or more transformation instructions. For example:
 
 ```
 {
@@ -122,7 +122,7 @@ type IIIFInstructions struct {
 }
 ```
 
-As of this writing there is no explicit response type for image beyond `map[string]interface{}`. There probably could be but it's still early days.
+There is a default instructions file defined in [defaults/instructions.json](../../defaults/instructions.json) which be used if the `-instructions-source` flags is "default://".
 
 ## "Report" files
 

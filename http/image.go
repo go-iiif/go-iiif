@@ -5,12 +5,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 )
 
 func ImageHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cache iiifcache.Cache, derivatives_cache iiifcache.Cache) (gohttp.HandlerFunc, error) {

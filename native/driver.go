@@ -9,11 +9,11 @@ import (
 
 	"github.com/aaronland/go-image/colour"
 	"github.com/aaronland/go-image/rotate"
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 	"github.com/rwcarlsen/goexif/exif"
 )
 

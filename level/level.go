@@ -3,8 +3,8 @@ package level
 import (
 	"fmt"
 
-	iiifcompliance "github.com/go-iiif/go-iiif/v6/compliance"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifcompliance "github.com/go-iiif/go-iiif/v7/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 )
 
 type Level interface {

@@ -32,7 +32,7 @@ type Cache interface {
 	Set(string, []byte) error
 	// Unset removes a specific key from the cache.
 	Unset(string) error
-	// Close performs any final operations specific to a cache provider.	
+	// Close performs any final operations specific to a cache provider.
 	Close() error
 }
 

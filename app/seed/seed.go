@@ -26,11 +26,11 @@ import (
 	"github.com/aaronland/gocloud-blob/bucket"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
-	iiifhtml "github.com/go-iiif/go-iiif/v6/app/seed/html"
-	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiiftile "github.com/go-iiif/go-iiif/v6/tile"
+	iiifhtml "github.com/go-iiif/go-iiif/v7/app/seed/html"
+	iiifaws "github.com/go-iiif/go-iiif/v7/aws"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiiftile "github.com/go-iiif/go-iiif/v7/tile"
 	"github.com/sfomuseum/go-csvdict/v2"
 )
 

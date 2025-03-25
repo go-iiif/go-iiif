@@ -8,12 +8,12 @@ import (
 	"net/http"
 
 	"github.com/aaronland/go-http-server"
-	iiifexample "github.com/go-iiif/go-iiif/v6/app/server/example"
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifhttp "github.com/go-iiif/go-iiif/v6/http"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifexample "github.com/go-iiif/go-iiif/v7/app/server/example"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifhttp "github.com/go-iiif/go-iiif/v7/http"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 )
 
 func Run(ctx context.Context) error {

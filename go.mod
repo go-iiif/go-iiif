@@ -1,4 +1,4 @@
-module github.com/go-iiif/go-iiif/v6
+module github.com/go-iiif/go-iiif/v7
 
 go 1.23
 

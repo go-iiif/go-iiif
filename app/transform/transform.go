@@ -19,12 +19,12 @@ import (
 
 	aws_lambda "github.com/aws/aws-lambda-go/lambda"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
+	iiifaws "github.com/go-iiif/go-iiif/v7/aws"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
 )
 
 func Run(ctx context.Context) error {

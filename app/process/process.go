@@ -27,10 +27,10 @@ import (
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifaws "github.com/go-iiif/go-iiif/v6/aws"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifprocess "github.com/go-iiif/go-iiif/v6/process"
+	iiifaws "github.com/go-iiif/go-iiif/v7/aws"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifprocess "github.com/go-iiif/go-iiif/v7/process"
 	"gocloud.dev/blob"
 )
 

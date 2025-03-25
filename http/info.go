@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifinfo "github.com/go-iiif/go-iiif/v6/info"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifservice "github.com/go-iiif/go-iiif/v6/service"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifinfo "github.com/go-iiif/go-iiif/v7/info"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifservice "github.com/go-iiif/go-iiif/v7/service"
 )
 
 func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cache iiifcache.Cache) (gohttp.HandlerFunc, error) {

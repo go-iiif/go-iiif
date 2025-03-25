@@ -12,7 +12,7 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Releases
 
-The current release is `github.com/go-iiif/go-iiif/v6`.
+The current release is `github.com/go-iiif/go-iiif/v7`.
 
 Documentation for releases has been moved in to [RELEASES.md](RELEASES.md).
 
@@ -151,6 +151,8 @@ And see something like this in your web browser:
 
 The folder contained the "processed" derivative images also contains a simple HTML file displaying each of the derivative images. These views are disabled by default and are mostly for reviewing the output of the process(ing) operation.
 
+Please make sure to consult the [usage documentation](cmd/iiif-proces/README.md) for the `iiif-process` tool for details on "instructions" and "reports".
+
 #### Running a IIIF API (HTTP) endpoint
 
 ```
@@ -185,13 +187,13 @@ import (
 	"log"
 
 	_ "github.com/aaronland/gocloud-blob/s3"
-	_ "github.com/go-iiif/go-iiif/v6/native"
+	_ "github.com/go-iiif/go-iiif/v7/native"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
 	_ "gocloud.dev/blob/s3blob"	
         _ "yourprovider.host/go-iiif-cache"	// YOUR CUSTOM CODE
        
-	"github.com/go-iiif/go-iiif/v6/app/seed"
+	"github.com/go-iiif/go-iiif/v7/app/seed"
 )
 
 func main() {
@@ -283,7 +285,7 @@ For example, here is how you might implement a custom cache implementation:
 import (
        "context"
 
-       iiifcache "github.com/go-iiif/go-iiif/v6/cache"
+       iiifcache "github.com/go-iiif/go-iiif/v7/cache"
 )
 
 type CustomCache struct {

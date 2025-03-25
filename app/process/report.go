@@ -7,8 +7,8 @@ import (
 	"log/slog"
 	"path/filepath"
 
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifprocess "github.com/go-iiif/go-iiif/v6/process"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifprocess "github.com/go-iiif/go-iiif/v7/process"
 )
 
 func GenerateReports(ctx context.Context, opts *ProcessOptions, key string, rsp map[string]interface{}) error {

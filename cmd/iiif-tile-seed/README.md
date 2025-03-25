@@ -77,13 +77,12 @@ You can also run `iiif-tile-seed` pass a list of identifiers as a CSV file. To d
 $> ./bin/iiif-tile-seed [options] -mode csv CSVFILE
 ```
 
-Your CSV file must contain a header specifying a `source_id` and `alternate_id` column, like this:
+CSV should have the following columns:
 
-```
-source_id,alternate_id
-191733_5755a1309e4d66a7_k.jpg,191733_5755a1309e4d66a7
-```
+| Name | Required | Notes |
+| --- | --- | --- |
+| `source_filename` | yes | The name of the file to generate tiles for. |
+| `source_root` | no | A custom source URI to read `source_filename` from. If empty then the default value from the config (`Images.Source.URI`) file will be used. |
+| `target_filename` | no | The final name of the directory to store tiles in. If empty then the value of `source_filename` is used. |
+| `target_root` | no | A custom target URI to write tiles to. If empty then the default value from the config file (`Derivatives.Cache.URI`) will be used. |
 
-While all columns are required if `alternate_id` is empty the code will simply default to using `source_id` for all operations.
-
-_Important: The use of alternate IDs is not fully supported by `iiif-server` yet. Which is to say to the logic for how to convert a source identifier to an alternate identifier is still outside the scope of `go-iiif` so unless you have pre-rendered all of your tiles or other derivatives (in which case the check for cached derivatives at the top of the imgae handler will be triggered) then the server won't know where to write new alternate files._
