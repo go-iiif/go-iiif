@@ -161,7 +161,7 @@ _Note the way we passed the `-generate-html` flag like we did in the first examp
 
 Please make sure to consult the [usage documentation](cmd/iiif-tile-seed/README.md#csv-input) for the `iiif-tile-seed` tool for details on how CSV files should be structured.
 
-#### Generating named (labeled) derivatives using an "instructions" file
+#### Generating named (labeled) derivatives using an "instructions" file (debug-process)
 
 Generate a series of named (labeled) derivatives images for the [fixtures/spanking-cat.jpg](fixtures/spanking-cat.jpg) image from an "instructions" file, storing each derivative in a nested tree.
 
@@ -199,7 +199,7 @@ The folder contained the "processed" derivative images also contains a simple HT
 
 Please make sure to consult the [usage documentation](cmd/iiif-proces/README.md) for the `iiif-process` tool for details on "instructions" and "reports".
 
-#### Running a IIIF API (HTTP) endpoint
+#### Running a IIIF API (HTTP) endpoint (debug-server)
 
 Run a IIIF API endpoint (server).
 
