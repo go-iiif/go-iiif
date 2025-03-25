@@ -59,13 +59,19 @@ Transform one or more images using the IIIF API. For detailed usage consult [cmd
 
 For detailed usage consult [cmd/iiif-tile-seed/README.md](cmd/iiif-tile-seed/README.md)
 
+_Example provided below._
+
 ### iiif-process
 
 Generate IIIF Level-0 image tiles for one or images. For detailed usage consult [cmd/iiif-process/README.md](cmd/iiif-proces/README.md)
 
+_Example provided below._
+
 ### iiif-server
 
 Expose the IIIF Image API via an HTTP endpoint. For detailed usage consult [cmd/iiif-server/README.md](cmd/iiif-server/README.md)
+
+_Example provided below._
 
 ### iiif-dump-config
 
