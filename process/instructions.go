@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/aaronland/gocloud-blob/bucket"
-	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"
+	iiifdefaults "github.com/go-iiif/go-iiif/v7/defaults"
 	"gocloud.dev/blob"
 )
 

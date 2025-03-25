@@ -4,7 +4,52 @@ GOMOD=$(shell test -f "go.work" && echo "readonly" || echo "vendor")
 LDFLAGS=-s -w
 
 cli:
-	@make cli-tools
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-server cmd/iiif-server/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-tile-seed cmd/iiif-tile-seed/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-transform cmd/iiif-transform/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-process cmd/iiif-process/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
+
+debug-seed:
+	if test -d $(CWD)/fixtures/cache/spank; then rm -rf $(CWD)/fixtures/cache/spank; fi
+	go run cmd/iiif-tile-seed/main.go \
+		-config-images-source-uri file://$(CWD)/fixtures/images \
+		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
+		-verbose \
+		-generate-html \
+		'rewrite:///spanking-cat.jpg?target=spank'
+
+debug-seed-csv:
+	if test -d $(CWD)/fixtures/cache/spanking-csv; then rm -rf $(CWD)/fixtures/cache/spanking-csv; fi
+	if test -d $(CWD)/fixtures/cache/walrus-csv; then rm -rf $(CWD)/fixtures/cache/walrus-csv; fi
+	if test -f $(CWD)/fixtures/seed.csv; then $(CWD)/fixtures/seed.csv; fi
+	echo "source_filename,source_root,target_filename,target_root" > $(CWD)/fixtures/seed.csv
+	echo "spanking-cat.jpg,$(CWD)/fixtures/images,spanking-csv,$(CWD)/fixtures/cache" >> $(CWD)/fixtures/seed.csv
+	echo "walrus.jpg,$(CWD)/fixtures/images,walrus-csv,$(CWD)/fixtures/cache" >> $(CWD)/fixtures/seed.csv
+	go run cmd/iiif-tile-seed/main.go \
+		-mode csv \
+		-generate-html \
+		-verbose \
+		$(CWD)/fixtures/seed.csv
+
+debug-process:
+	if test -d $(CWD)/fixtures/cache/999; then rm -rf $(CWD)/fixtures/cache/999; fi
+	go run cmd/iiif-process/main.go \
+		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
+		-config-images-source-uri file://$(CWD)/fixtures/images \
+		-report \
+		-report-bucket-uri file://$(CWD)/fixtures/reports \
+		-report-html \
+		-verbose \
+		'idsecret:///spanking-cat.jpg?id=9998&secret=abc&secret_o=def&format=jpg&label=x'
+
+debug-server:
+	mkdir -p fixtures/cache
+	go run cmd/iiif-server/main.go \
+		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
+		-config-images-source-uri file://$(CWD)/fixtures/images \
+		-example \
+		-verbose
 
 lambda:
 	@make lambda-handlers
@@ -12,17 +57,8 @@ lambda:
 docker:
 	@make docker-build
 
-cli-tools: 	
-	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-server cmd/iiif-server/main.go
-	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-tile-seed cmd/iiif-tile-seed/main.go
-	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-transform cmd/iiif-transform/main.go
-	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-process cmd/iiif-process/main.go
-	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-process-and-tile cmd/iiif-process-and-tile/main.go
-	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/iiif-dump-config cmd/iiif-dump-config/main.go
-
 docker-build:
 	docker build -f Dockerfile -t go-iiif .
-
 
 lambda-handlers:
 	@make lambda-process
@@ -54,8 +90,3 @@ bump-version:
 	perl -i -p -e 's/github.com\/go-iiif\/go-iiif\/$(PREVIOUS)/github.com\/go-iiif\/go-iiif\/$(NEW)/g' go.mod
 	perl -i -p -e 's/github.com\/go-iiif\/go-iiif\/$(PREVIOUS)/github.com\/go-iiif\/go-iiif\/$(NEW)/g' README.md
 	find . -name '*.go' | xargs perl -i -p -e 's/github.com\/go-iiif\/go-iiif\/$(PREVIOUS)/github.com\/go-iiif\/go-iiif\/$(NEW)/g'
-
-debug-server:
-	go run cmd/iiif-server/main.go \
-		-config-source file://$(CWD)/docs \
-		-example

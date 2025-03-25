@@ -9,10 +9,12 @@ import (
 	"net/url"
 	"strings"
 
+	_ "gocloud.dev/blob/fileblob"
+	_ "gocloud.dev/blob/memblob"
+
 	"github.com/aaronland/gocloud-blob/bucket"
 	aa_s3 "github.com/aaronland/gocloud-blob/s3"
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"
 )
 
@@ -54,7 +56,7 @@ func RegisterBlobCacheSchemes(ctx context.Context) error {
 			continue
 		}
 
-		err := RegisterCache(ctx, scheme, NewBlobCacheFromURI)
+		err := RegisterCache(ctx, scheme, NewBlobCache)
 
 		if err != nil {
 			return fmt.Errorf("Failed to register blob cache for '%s', %w", scheme, err)
@@ -66,33 +68,8 @@ func RegisterBlobCacheSchemes(ctx context.Context) error {
 	return nil
 }
 
-// NewBlobCacheURIFromConfig returns a valid cache.Cache URI derived from 'config'.
-func NewBlobCacheURIFromConfig(config iiifconfig.CacheConfig) (string, error) {
-	return config.Path, nil
-}
-
-// NewBlobCache returns a NewBlobCacheFromURI.
-func NewBlobCache(cfg iiifconfig.CacheConfig) (Cache, error) {
-
-	uri := cfg.URI
-
-	if uri == "" {
-		v, err := NewBlobCacheURIFromConfig(cfg)
-
-		if err != nil {
-			return nil, err
-		}
-
-		uri = v
-	}
-
-	return NewBlobCacheFromURI(uri)
-}
-
-// NewBlobCacheFromURI returns a BlobCache using the GoCloud package.
-func NewBlobCacheFromURI(uri string) (Cache, error) {
-
-	ctx := context.Background()
+// NewBlobCache returns a BlobCache using the GoCloud package.
+func NewBlobCache(ctx context.Context, uri string) (Cache, error) {
 
 	b, err := bucket.OpenBucket(ctx, uri)
 
@@ -198,7 +175,7 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 
 			logger.Debug("Set ACL", "acl", acl)
 			req.ACL = acl
-			
+
 			return nil
 		}
 
@@ -237,4 +214,8 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 func (bc *BlobCache) Unset(uri string) error {
 	ctx := context.Background()
 	return bc.bucket.Delete(ctx, uri)
+}
+
+func (bc *BlobCache) Close() error {
+	return bc.bucket.Close()
 }

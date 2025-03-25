@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"regexp"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
 )
 
 //go:embed level0.json
@@ -95,26 +95,28 @@ func (c *Level0Compliance) Supports() []string {
 
 	supports := make([]string, 0)
 
-	for _, s := range c.properties(c.spec.Image.Region) {
-		supports = append(supports, s)
-	}
-
-	for _, s := range c.properties(c.spec.Image.Size) {
-		supports = append(supports, s)
-	}
-
-	for _, s := range c.properties(c.spec.Image.Rotation) {
-		supports = append(supports, s)
-	}
-
-	for name, details := range c.spec.HTTP {
-
-		if !details.Supported {
-			continue
+	/*
+		for _, s := range c.properties(c.spec.Image.Region) {
+			supports = append(supports, s)
 		}
 
-		supports = append(supports, name)
-	}
+		for _, s := range c.properties(c.spec.Image.Size) {
+			supports = append(supports, s)
+		}
+
+		for _, s := range c.properties(c.spec.Image.Rotation) {
+			supports = append(supports, s)
+		}
+
+		for name, details := range c.spec.HTTP {
+
+			if !details.Supported {
+				continue
+			}
+
+			supports = append(supports, name)
+		}
+	*/
 
 	return supports
 }

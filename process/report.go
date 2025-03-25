@@ -5,16 +5,20 @@ import (
 	"bytes"
 	"context"
 	"crypto/sha256"
+	_ "embed"
 	"fmt"
+	"html/template"
 	"path/filepath"
 	"sort"
 	"strings"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	"github.com/go-iiif/go-iiif/v6/static/templates/html"
 	"github.com/jtacoma/uritemplates"
 	"github.com/tidwall/gjson"
 )
+
+//go:embed report.html
+var report_html string
 
 const REPORTNAME_TEMPLATE string = "process_{sha256_origin}.json"
 
@@ -83,16 +87,11 @@ func GenerateProcessReportHTML(ctx context.Context, report_body []byte) ([]byte,
 		Images []*Image
 	}
 
-	t, err := html.LoadTemplates(ctx)
+	t := template.New("report")
+	t, err := t.Parse(report_html)
 
 	if err != nil {
 		return nil, err
-	}
-
-	t = t.Lookup("process_report")
-
-	if t == nil {
-		return nil, fmt.Errorf("Missing 'process_report' template")
 	}
 
 	vars := HTMLVars{

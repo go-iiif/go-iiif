@@ -1,9 +1,8 @@
 package cache
 
 import (
-	"errors"
-
-	"github.com/go-iiif/go-iiif/v6/config"
+	"context"
+	"fmt"
 )
 
 // A NullCache represents a Cache.
@@ -11,17 +10,7 @@ type NullCache struct {
 	Cache
 }
 
-func NewNullCacheURIFromConfig(cfg config.CacheConfig) (string, error) {
-	return "null://", nil
-}
-
-// NewNullCache returns a pointer to a NullCache.
-func NewNullCache(cfg config.CacheConfig) (Cache, error) {
-	uri, _ := NewNullCacheURIFromConfig(cfg)
-	return NewNullCacheFromURI(uri)
-}
-
-func NewNullCacheFromURI(uri string) (Cache, error) {
+func NewNullCache(ctx context.Context, uri string) (Cache, error) {
 	c := NullCache{}
 	return &c, nil
 }
@@ -37,9 +26,7 @@ func (c *NullCache) Exists(rel_path string) bool {
 
 // Get returns nil and an error message.
 func (c *NullCache) Get(rel_path string) ([]byte, error) {
-
-	err := errors.New("null cache is null")
-	return nil, err
+	return nil, fmt.Errorf("Null cache is null")
 }
 
 // Set returns nil.
@@ -50,6 +37,9 @@ func (c *NullCache) Set(rel_path string, body []byte) error {
 
 // Unset returns nil.
 func (c *NullCache) Unset(rel_path string) error {
+	return nil
+}
 
+func (c *NullCache) Close() error {
 	return nil
 }

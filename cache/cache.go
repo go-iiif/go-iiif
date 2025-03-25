@@ -4,14 +4,12 @@ package cache
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"net/url"
 	"sort"
 	"strings"
 	"sync"
 
 	"github.com/aaronland/go-roster"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 )
 
 // In principle this could also be done with a sync.OnceFunc call but that will
@@ -24,7 +22,7 @@ import (
 var register_mu = new(sync.RWMutex)
 var register_map = map[string]bool{}
 
-// A Cache is a representation of a cache location.
+// A Cache is a representation of a cache provider.
 type Cache interface {
 	// Exists returns a boolean value indicating whether a key exists in the cache.
 	Exists(string) bool
@@ -34,66 +32,15 @@ type Cache interface {
 	Set(string, []byte) error
 	// Unset removes a specific key from the cache.
 	Unset(string) error
+	// Close performs any final operations specific to a cache provider.
+	Close() error
 }
-
-// NewImagesCacheFromConfig returns a NewCacheFromConfig.
-func NewImagesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
-
-	cfg := config.Images.Cache
-	return NewCacheFromConfig(cfg)
-}
-
-// NewDerivativesCacheFromConfig returns a NewCacheFromConfig.
-func NewDerivativesCacheFromConfig(config *iiifconfig.Config) (Cache, error) {
-
-	cfg := config.Derivatives.Cache
-	return NewCacheFromConfig(cfg)
-}
-
-// NewCacheFromConfig returns a Cache object depending on the type of cache requested. Cache types can be blob, disk, memory, s3 or s3blob.
-func NewCacheFromConfig(config iiifconfig.CacheConfig) (Cache, error) {
-
-	var cache_uri string
-	var err error
-
-	switch config.URI {
-	case "":
-
-		switch strings.ToLower(config.Name) {
-		case "blob":
-			cache_uri, err = NewBlobCacheURIFromConfig(config)
-		case "disk":
-			cache_uri, err = NewDiskCacheURIFromConfig(config)
-		case "memory":
-			cache_uri, err = NewMemoryCacheURIFromConfig(config)
-		case "s3":
-			cache_uri, err = NewS3CacheURIFromConfig(config)
-		case "s3blob":
-			cache_uri, err = NewS3CacheURIFromConfig(config)
-		default:
-			cache_uri, err = NewNullCacheURIFromConfig(config)
-		}
-	default:
-		cache_uri = config.URI
-	}
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to derive cache URI, %w", err)
-	}
-
-	slog.Debug("Create new cache", "uri", cache_uri)
-
-	ctx := context.Background()
-	return NewCache(ctx, cache_uri)
-}
-
-//
 
 var cache_roster roster.Roster
 
 // CacheInitializationFunc is a function defined by individual cache package and used to create
 // an instance of that cache
-type CacheInitializationFunc func(uri string) (Cache, error)
+type CacheInitializationFunc func(context.Context, string) (Cache, error)
 
 // RegisterCache registers 'scheme' as a key pointing to 'init_func' in an internal lookup table
 // used to create new `Cache` instances by the `NewCache` method.
@@ -145,7 +92,7 @@ func NewCache(ctx context.Context, uri string) (Cache, error) {
 	}
 
 	init_func := i.(CacheInitializationFunc)
-	return init_func(uri)
+	return init_func(ctx, uri)
 }
 
 // CacheSchemes returns the list of schemes that have been registered.

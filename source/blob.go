@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/aaronland/gocloud-blob/bucket"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
 	"gocloud.dev/blob"
 )
 
@@ -25,7 +24,6 @@ func init() {
 	}
 }
 
-// RegisterBloblSourceSchemes will ...
 func RegisterBlobSourceSchemes(ctx context.Context) error {
 
 	register_mu.Lock()
@@ -41,7 +39,7 @@ func RegisterBlobSourceSchemes(ctx context.Context) error {
 			continue
 		}
 
-		err := RegisterSource(ctx, scheme, NewBlobSourceFromURI)
+		err := RegisterSource(ctx, scheme, NewBlobSource)
 
 		if err != nil {
 			return fmt.Errorf("Failed to register blob source for '%s', %w", scheme, err)
@@ -53,31 +51,7 @@ func RegisterBlobSourceSchemes(ctx context.Context) error {
 	return nil
 }
 
-func NewBlobSourceURIFromConfig(cfg *iiifconfig.Config) (string, error) {
-
-	uri := cfg.Images.Source.URI
-
-	if uri == "" {
-		uri = cfg.Images.Source.Path
-	}
-
-	return uri, nil
-}
-
-func NewBlobSource(cfg *iiifconfig.Config) (Source, error) {
-
-	uri, err := NewBlobSourceURIFromConfig(cfg)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return NewBlobSourceFromURI(uri)
-}
-
-func NewBlobSourceFromURI(uri string) (Source, error) {
-
-	ctx := context.Background()
+func NewBlobSource(ctx context.Context, uri string) (Source, error) {
 
 	b, err := bucket.OpenBucket(ctx, uri)
 
@@ -101,4 +75,8 @@ func (bs *BlobSource) Read(uri string) ([]byte, error) {
 
 	ctx := context.Background()
 	return bs.bucket.ReadAll(ctx, uri)
+}
+
+func (bs *BlobSource) Close() error {
+	return bs.bucket.Close()
 }

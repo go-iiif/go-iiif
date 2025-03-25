@@ -1,11 +1,10 @@
-module github.com/go-iiif/go-iiif/v6
+module github.com/go-iiif/go-iiif/v7
 
 go 1.23
 
 require (
 	github.com/aaronland/go-colours v0.1.2
 	github.com/aaronland/go-flickr-api v1.1.5
-	github.com/aaronland/go-http-ping v1.0.0
 	github.com/aaronland/go-http-server v1.5.0
 	github.com/aaronland/go-image v1.3.1
 	github.com/aaronland/go-mimetypes v0.0.2
@@ -15,24 +14,20 @@ require (
 	github.com/aws/aws-lambda-go v1.47.0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.78.0
+	github.com/brunoga/deep v1.2.4
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.1.0
-	github.com/dgraph-io/ristretto v0.2.0
+	github.com/dgraph-io/ristretto/v2 v2.1.0
 	github.com/fogleman/primitive v0.0.0-20200504002142-0373c216458b
 	github.com/fsnotify/fsnotify v1.8.0
 	github.com/go-iiif/go-iiif-uri v0.5.2
-	github.com/gorilla/mux v1.8.1
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
 	github.com/muesli/smartcrop v0.3.0
-	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/sfomuseum/go-csvdict/v2 v2.0.1
 	github.com/sfomuseum/go-flags v0.10.0
-	github.com/sfomuseum/go-template v1.10.1
 	github.com/tidwall/gjson v1.18.0
-	github.com/tidwall/pretty v1.2.1
-	github.com/whosonfirst/algnhsa v0.1.0
 	github.com/whosonfirst/go-sanitize v0.1.0
 	gocloud.dev v0.40.0
 	golang.org/x/image v0.24.0
@@ -95,12 +90,12 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/sfomuseum/go-exif-update v0.1.3 // indirect
-	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e // indirect
 	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
+	golang.org/x/sys v0.29.0 // indirect
 	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
 	google.golang.org/api v0.191.0 // indirect

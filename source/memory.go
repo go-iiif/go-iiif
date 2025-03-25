@@ -5,10 +5,10 @@ import (
 	"fmt"
 	_ "log/slog"
 
-	"github.com/dgraph-io/ristretto"
+	"github.com/dgraph-io/ristretto/v2"
 )
 
-var memory_cache *ristretto.Cache
+var memory_cache *ristretto.Cache[string, []byte]
 
 type MemorySource struct {
 	Source
@@ -27,7 +27,7 @@ func NewMemorySourceWithKey(key string, body []byte) (Source, error) {
 
 	if memory_cache == nil {
 
-		cache, err := ristretto.NewCache(&ristretto.Config{
+		cache, err := ristretto.NewCache(&ristretto.Config[string, []byte]{
 			NumCounters: 1e7,     // number of keys to track frequency of (10M).
 			MaxCost:     1 << 30, // maximum cost of cache (1GB).
 			BufferItems: 64,      // number of keys per Get buffer.
@@ -62,5 +62,9 @@ func (bs *MemorySource) Read(key string) ([]byte, error) {
 		return nil, fmt.Errorf("%s not found", bs.key)
 	}
 
-	return v.([]byte), nil
+	return v, nil
+}
+
+func (bs *MemorySource) Close() error {
+	return nil
 }

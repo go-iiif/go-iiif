@@ -10,8 +10,7 @@ import (
 	"net/url"
 
 	"github.com/aaronland/go-flickr-api/client"
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
 )
 
 type FlickrSource struct {
@@ -25,7 +24,7 @@ type FlickrSource struct {
 
 func init() {
 	ctx := context.Background()
-	err := RegisterSource(ctx, "flickr", NewFlickrSourceFromURI)
+	err := RegisterSource(ctx, "flickr", NewFlickrSource)
 	if err != nil {
 		panic(err)
 	}
@@ -54,36 +53,7 @@ type PhotoSize struct {
 	Media  string `json:"media"`
 }
 
-func NewFlickrSourceURIFromConfig(config *iiifconfig.Config) (string, error) {
-
-	if config.Flickr.ClientURI == "" {
-		return "", fmt.Errorf("Missing config.Flickr.ClientURI property")
-	}
-
-	q := url.Values{}
-	q.Set("client-uri", config.Flickr.ClientURI)
-
-	u := url.URL{}
-	u.Scheme = "flickr"
-	u.RawQuery = q.Encode()
-
-	return u.String(), nil
-}
-
-func NewFlickrSource(config *iiifconfig.Config) (Source, error) {
-
-	uri, err := NewFlickrSourceURIFromConfig(config)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return NewFlickrSourceFromURI(uri)
-}
-
-func NewFlickrSourceFromURI(uri string) (Source, error) {
-
-	ctx := context.Background()
+func NewFlickrSource(ctx context.Context, uri string) (Source, error) {
 
 	u, err := url.Parse(uri)
 
@@ -254,4 +224,8 @@ func (fs *FlickrSource) GetSource(id string) (string, error) {
 	}()
 
 	return source, nil
+}
+
+func (fs *FlickrSource) Close() error {
+	return nil
 }

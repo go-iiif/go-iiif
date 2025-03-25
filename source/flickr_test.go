@@ -22,13 +22,7 @@ func TestNewFlickrSourceFromURI(t *testing.T) {
 
 	uri := source_u.String()
 
-	s, err := NewFlickrSourceFromURI(uri)
-
-	if err != nil {
-		t.Fatalf("Failed to create Flickr source '%s', %v", uri, err)
-	}
-
-	_, err = NewSource(ctx, uri)
+	s, err := NewSource(ctx, uri)
 
 	if err != nil {
 		t.Fatalf("Failed to create Flickr source calling NewSource, %v", err)

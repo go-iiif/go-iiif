@@ -2,12 +2,14 @@
 package info
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"strings"
 
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifservice "github.com/go-iiif/go-iiif/v6/service"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifservice "github.com/go-iiif/go-iiif/v7/service"
 )
 
 // The URI for the IIIF Image API protocol.
@@ -82,4 +84,9 @@ func New(iiif_context string, l iiiflevel.Level, im iiifimage.Image) (*Info, err
 	}
 
 	return i, nil
+}
+
+func (i *Info) MarshalJSON(wr io.Writer) error {
+	enc := json.NewEncoder(wr)
+	return enc.Encode(i)
 }

@@ -1,90 +1,104 @@
 package driver
 
 import (
-	"errors"
+	"context"
 	"fmt"
+	"net/url"
 	"sort"
 	"strings"
-	"sync"
 
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
-)
-
-var (
-	driversMu sync.RWMutex
-	drivers   = make(map[string]Driver)
+	"github.com/aaronland/go-roster"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 )
 
 type Driver interface {
-	NewImageFromConfigWithSource(*iiifconfig.Config, iiifsource.Source, string) (iiifimage.Image, error)
-	NewImageFromConfigWithCache(*iiifconfig.Config, iiifcache.Cache, string) (iiifimage.Image, error)
-	NewImageFromConfig(*iiifconfig.Config, string) (iiifimage.Image, error)
+	NewImageFromConfigWithSource(context.Context, *iiifconfig.Config, iiifsource.Source, string) (iiifimage.Image, error)
+	NewImageFromConfigWithCache(context.Context, *iiifconfig.Config, iiifcache.Cache, string) (iiifimage.Image, error)
+	NewImageFromConfig(context.Context, *iiifconfig.Config, string) (iiifimage.Image, error)
 }
 
-func RegisterDriver(name string, driver Driver) {
+type DriverInitializeFunc func(ctx context.Context, uri string) (Driver, error)
 
-	driversMu.Lock()
-	defer driversMu.Unlock()
+var driver_roster roster.Roster
 
-	if driver == nil {
-		panic("iiif: Register driver is nil")
+func ensureSpatialRoster() error {
 
+	if driver_roster == nil {
+
+		r, err := roster.NewDefaultRoster()
+
+		if err != nil {
+			return err
+		}
+
+		driver_roster = r
 	}
 
-	nrml_name := normalizeName(name)
+	return nil
+}
 
-	if _, dup := drivers[nrml_name]; dup {
-		panic("index: Register called twice for driver " + name)
+func RegisterDriver(ctx context.Context, scheme string, f DriverInitializeFunc) error {
+
+	err := ensureSpatialRoster()
+
+	if err != nil {
+		return err
 	}
 
-	drivers[nrml_name] = driver
+	return driver_roster.Register(ctx, scheme, f)
 }
 
-func normalizeName(name string) string {
-	return strings.ToUpper(name)
-}
+func Schemes() []string {
 
-func unregisterAllDrivers() {
-	driversMu.Lock()
-	defer driversMu.Unlock()
-	drivers = make(map[string]Driver)
-}
+	ctx := context.Background()
+	schemes := []string{}
 
-func Drivers() []string {
+	err := ensureSpatialRoster()
 
-	driversMu.RLock()
-	defer driversMu.RUnlock()
-
-	var list []string
-
-	for name := range drivers {
-		list = append(list, name)
+	if err != nil {
+		return schemes
 	}
 
-	sort.Strings(list)
-	return list
-}
-
-func NewDriver(name string) (Driver, error) {
-
-	driversMu.RLock()
-	defer driversMu.RUnlock()
-
-	nrml_name := normalizeName(name)
-
-	dr, ok := drivers[nrml_name]
-
-	if !ok {
-		msg := fmt.Sprintf("Invalid go-iiif driver '%s' ('%s')", name, nrml_name)
-		return nil, errors.New(msg)
+	for _, dr := range driver_roster.Drivers(ctx) {
+		scheme := fmt.Sprintf("%s://", strings.ToLower(dr))
+		schemes = append(schemes, scheme)
 	}
 
-	return dr, nil
+	sort.Strings(schemes)
+	return schemes
 }
 
-func NewDriverFromConfig(config *iiifconfig.Config) (Driver, error) {
-	return NewDriver(config.Graphics.Source.Name)
+func NewDriver(ctx context.Context, driver_uri string) (Driver, error) {
+
+	u, err := url.Parse(driver_uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	scheme := u.Scheme
+
+	if scheme == "" {
+
+		scheme = "file"
+		u.Scheme = scheme
+
+		if !strings.HasPrefix(u.Path, "/") {
+			u.Path = fmt.Sprintf("/%s", u.Path)
+		}
+
+		driver_uri = u.String()
+	}
+
+	i, err := driver_roster.Driver(ctx, scheme)
+
+	if err != nil {
+		return nil, err
+	}
+
+	f := i.(DriverInitializeFunc)
+	return f(ctx, driver_uri)
 }

@@ -1,6 +1,9 @@
 package tile
 
 import (
+	"bufio"
+	"bytes"
+	"context"
 	"fmt"
 	"log/slog"
 	"math"
@@ -8,14 +11,16 @@ import (
 	"sync"
 	"time"
 
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"
-	iiifinfo "github.com/go-iiif/go-iiif/v6/info"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifinfo "github.com/go-iiif/go-iiif/v7/info"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifsource "github.com/go-iiif/go-iiif/v7/source"
 )
+
+type TileSeedOnCompleteFunc func(*iiifconfig.Config, string, string, int, error)
 
 type TileSeed struct {
 	config            *iiifconfig.Config
@@ -31,9 +36,9 @@ type TileSeed struct {
 	procs             int
 }
 
-func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
+func NewTileSeed(ctx context.Context, config *iiifconfig.Config, h int, w int, endpoint string, quality string, format string) (*TileSeed, error) {
 
-	driver, err := iiifdriver.NewDriverFromConfig(config)
+	driver, err := iiifdriver.NewDriver(ctx, config.Graphics.Driver)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to create tileseed driver from config, %w", err)
@@ -45,13 +50,13 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 		return nil, fmt.Errorf("Failed to create level0 instance, %w", err)
 	}
 
-	images_cache, err := iiifcache.NewImagesCacheFromConfig(config)
+	images_cache, err := iiifcache.NewCache(ctx, config.Images.Cache.URI)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive image cache from config, %w", err)
 	}
 
-	derivatives_cache, err := iiifcache.NewDerivativesCacheFromConfig(config)
+	derivatives_cache, err := iiifcache.NewCache(ctx, config.Derivatives.Cache.URI)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive derivatives cache from config, %w", err)
@@ -83,7 +88,7 @@ func NewTileSeed(config *iiifconfig.Config, h int, w int, endpoint string, quali
 	return &ts, nil
 }
 
-func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refresh bool) (int, error) {
+func (ts *TileSeed) SeedTiles(ctx context.Context, src_id string, alt_id string, scales []int, refresh bool) (int, error) {
 
 	logger := slog.Default()
 	logger = logger.With("source id", src_id)
@@ -93,7 +98,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 
 	count := 0
 
-	image, err := ts.driver.NewImageFromConfigWithCache(ts.config, ts.images_cache, src_id)
+	image, err := ts.driver.NewImageFromConfigWithCache(ctx, ts.config, ts.images_cache, src_id)
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to create image for %s, %w", src_id, err)
@@ -177,7 +182,7 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 					}
 				}
 
-				tmp, err := ts.driver.NewImageFromConfigWithSource(ts.config, source, im.Identifier())
+				tmp, err := ts.driver.NewImageFromConfigWithSource(ctx, ts.config, source, im.Identifier())
 
 				if err != nil {
 					logger.Warn("Failed to derive new image from config", "identifier", im.Identifier(), "error", err)
@@ -232,16 +237,19 @@ func (ts *TileSeed) SeedTiles(src_id string, alt_id string, scales []int, refres
 		},
 	}
 
-	body, err := iiifinfo.MarshalJSON(info)
+	var buf bytes.Buffer
+	wr := bufio.NewWriter(&buf)
+
+	err = info.MarshalJSON(wr)
 
 	if err != nil {
 		return count, fmt.Errorf("Failed to marshal info, %w", err)
 	}
 
-	uri := fmt.Sprintf("%s/info.json", alt_id)
-	ts.derivatives_cache.Set(uri, body)
+	wr.Flush()
 
-	//
+	uri := fmt.Sprintf("%s/info.json", alt_id)
+	ts.derivatives_cache.Set(uri, buf.Bytes())
 
 	return count, nil
 }

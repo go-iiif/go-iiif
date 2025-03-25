@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />    
+    <style type="text/css">
+     .sect {
+	     margin: 2rem;
+     }
+
+     .image {
+	     overflow:scroll !important;
+	     border:solid thin;
+     }
+     .meta {
+	     margin-top:1rem;
+     }
+    </style>
+</head>
+
+<body>
+
+    {{ range $i, $im := .Images -}}
+    <div class="sect">
+	<h3 class="meta">{{ $im.URI }} <code>{{ $im.Width }},{{ $im.Height }}</code></h3>
+	<div class="image"><img src="{{ $im.URI }}" height="{{ $im.Height }}" width="{{ $im.Width }}" loading="lazy" /></div>
+    </div>
+    {{ end -}}
+    
+</body>
+</html>

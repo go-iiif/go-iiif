@@ -3,54 +3,63 @@ package http
 import (
 	"fmt"
 	gohttp "net/http"
+	"sync"
+	"time"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifinfo "github.com/go-iiif/go-iiif/v6/info"
-	iiiflevel "github.com/go-iiif/go-iiif/v6/level"
-	iiifservice "github.com/go-iiif/go-iiif/v6/service"
+	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifinfo "github.com/go-iiif/go-iiif/v7/info"
+	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifservice "github.com/go-iiif/go-iiif/v7/service"
 )
 
-func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.HandlerFunc, error) {
+func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver, images_cache iiifcache.Cache) (gohttp.HandlerFunc, error) {
 
-	fn := func(w gohttp.ResponseWriter, r *gohttp.Request) {
+	fn := func(rsp gohttp.ResponseWriter, req *gohttp.Request) {
 
-		ctx := r.Context()
+		ctx := req.Context()
+		logger := LoggerWithRequest(req, nil)
 
-		parser, err := NewIIIFQueryParser(r)
+		t1 := time.Now()
+
+		defer func() {
+			logger.Debug("Time to process request", "time", time.Since(t1))
+		}()
+
+		id, err := GetIIIFParameter(req, "identifier")
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusBadRequest)
+			logger.Error("Failed to derive identifier", "error", err)
+			gohttp.Error(rsp, "Bad request", gohttp.StatusBadRequest)
 			return
 		}
 
-		id, err := parser.GetIIIFParameter("identifier")
+		logger = logger.With("identifier", id)
+
+		image, err := driver.NewImageFromConfigWithCache(ctx, config, images_cache, id)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusBadRequest)
+			logger.Error("Failed to derive image from config", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
 
-		image, err := driver.NewImageFromConfig(config, id)
-
-		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
-			return
-		}
-
-		endpoint := EndpointFromRequest(r)
+		endpoint := EndpointFromRequest(req)
 
 		level, err := iiiflevel.NewLevelFromConfig(config, endpoint)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			logger.Error("Failed to derive level from config", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
 
 		info, err := iiifinfo.New(iiifinfo.IMAGE_V2_CONTEXT, level, image)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			logger.Error("Failed to derive info", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
 
@@ -58,35 +67,68 @@ func InfoHandler(config *iiifconfig.Config, driver iiifdriver.Driver) (gohttp.Ha
 
 		if count_services > 0 {
 
+			ts1 := time.Now()
+
 			services := make([]iiifservice.Service, count_services)
+
+			mu := new(sync.RWMutex)
+			done_ch := make(chan bool)
+			err_ch := make(chan error)
 
 			for idx, service_name := range config.Profile.Services.Enable {
 
-				service_uri := fmt.Sprintf("%s://", service_name)
-				service, err := iiifservice.NewService(ctx, service_uri, config, image)
+				go func(idx int, service_name string) {
 
-				if err != nil {
-					gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+					ts2 := time.Now()
+
+					defer func() {
+						logger.Debug("Time to load service", "service", service_name, "time", time.Since(ts2))
+						done_ch <- true
+					}()
+
+					service_uri := fmt.Sprintf("%s://", service_name)
+					service, err := iiifservice.NewService(ctx, service_uri, config, image)
+
+					if err != nil {
+						err_ch <- fmt.Errorf("Failed to derive service for '%s', %w", service_uri, err)
+						return
+					}
+
+					mu.Lock()
+					services[idx] = service
+					mu.Unlock()
+
+				}(idx, service_name)
+			}
+
+			remaining := count_services
+
+			for remaining > 0 {
+				select {
+				case <-done_ch:
+					remaining -= 1
+				case err := <-err_ch:
+					logger.Error("Failed to derive service", "error", err)
+					gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 					return
 				}
-
-				services[idx] = service
 			}
 
 			info.Services = services
+
+			logger.Debug("Time to load services", "count", count_services, "time", time.Since(ts1))
 		}
 
-		b, err := iiifinfo.MarshalJSON(info)
+		rsp.Header().Set("Content-Type", "application/json")
+		rsp.Header().Set("Access-Control-Allow-Origin", "*")
+
+		err = info.MarshalJSON(rsp)
 
 		if err != nil {
-			gohttp.Error(w, err.Error(), gohttp.StatusInternalServerError)
+			logger.Error("Failed to marshal info", "error", err)
+			gohttp.Error(rsp, "Internal server error", gohttp.StatusInternalServerError)
 			return
 		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Write(b)
-
 	}
 
 	h := gohttp.HandlerFunc(fn)

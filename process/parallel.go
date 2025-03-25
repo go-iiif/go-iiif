@@ -10,13 +10,13 @@ import (
 	"sync"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
-	iiifservice "github.com/go-iiif/go-iiif/v6/service"
+	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
+	iiifservice "github.com/go-iiif/go-iiif/v7/service"
 )
 
 // ParallelProcessURIWithInstructionSet processes 'u' according to each instruction in 'instruction_set' in concurrent processes
-func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdriver.Driver, pr Processor, instruction_set IIIFInstructionSet, u iiifuri.URI) (map[string]interface{}, error) {
+func ParallelProcessURIWithInstructionSet(ctx context.Context, cfg *iiifconfig.Config, driver iiifdriver.Driver, pr Processor, instruction_set IIIFInstructionSet, u iiifuri.URI) (map[string]interface{}, error) {
 
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
@@ -40,7 +40,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 
 		origin := u.Origin()
 
-		im, err := driver.NewImageFromConfig(cfg, origin)
+		im, err := driver.NewImageFromConfig(ctx, cfg, origin)
 
 		if err != nil {
 			err_ch <- fmt.Errorf("Failed to load image (%s) for processing profile.services : %w", u, err)
@@ -74,8 +74,6 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 		}
 
 	}()
-
-	ctx := context.Background()
 
 	for label, i := range instruction_set {
 
@@ -126,7 +124,7 @@ func ParallelProcessURIWithInstructionSet(cfg *iiifconfig.Config, driver iiifdri
 				process_uri = u
 			}
 
-			new_uri, im, err := pr.ProcessURIWithInstructions(process_uri, label, i)
+			new_uri, im, err := pr.ProcessURIWithInstructions(ctx, process_uri, label, i)
 
 			if err != nil {
 				err_ch <- fmt.Errorf("Failed to process %s (%s) : %w", u.String(), label, err)

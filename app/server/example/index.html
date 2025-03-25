@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>go-iiif example</title>
+  <link rel="stylesheet" href="leaflet.css" />
+  <style text="text/css">
+
+   body {
+	   margin:2em;
+   }
+   
+   #container {
+	   width:800px !important;
+   }
+   
+   #map {
+	   border: solid thin;
+	   width:800px !important;
+	   height:600px !important;
+   }
+
+   #feedback {
+	   text-align: center;
+	   font-style:italic;
+   }
+   
+   .row {
+	   margin-bottom:.5rem;
+   }
+   
+  </style>
+</head>
+<body>
+    <div id="container">
+	<div class="row">
+	    <div id="map"></div>
+	</div>
+	<div class="row" id="feedback"></div>
+	<div class="row">
+	    <select id="choice">
+		<option value="spanking-cat.jpg">Spanking Cat</option>
+		<option value="walrus.jpg">Airplane Walrus</option>
+	    </select>
+	</div>
+  </div>
+  <script src="leaflet.iiif.bundle.js"></script>  
+  <script type="text/javascript">
+
+   var tile_layer;
+   var current_id;
+
+   var feedback_el = document.getElementById("feedback");
+   var choice_el = document.getElementById("choice");   
+   
+   function load_tiles(id){
+
+       if (id == current_id){
+	   return;
+       }
+       
+       const info = 'http://' + location.host + '/' + id + '/info.json';
+       console.log("Fetch info", info);
+       
+       if (tile_layer){
+	   map.removeLayer(tile_layer);
+       }
+
+       feedback_el.innerText = "loading tiles...";
+       
+       tile_layer = L.tileLayer.iiif(info);
+
+       tile_layer.on("load", function(){
+	   feedback_el.innerHTML = "";
+       });
+       
+       tile_layer.addTo(map);       
+       current_id = id;
+   }
+
+   const map = L.map('map', {
+       center: [0, 0],
+       crs: L.CRS.Simple,
+       zoom: 1,
+       minZoom: 1,
+   });
+   
+   choice.onchange = function(e){
+       load_tiles(choice_el.value);
+       return false;
+   };
+
+   load_tiles('spanking-cat.jpg');
+   
+  </script>
+</body>
+</html>

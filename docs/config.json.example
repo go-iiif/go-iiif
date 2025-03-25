@@ -22,7 +22,7 @@
     "blurhash": { "x": 8, "y": 8, "size": 200 },
     "imagehash": {},
     "graphics": {
-	"source": { "name": "native" }    
+	"driver": "native://"     
     },
     "features": {
 	"enable": {

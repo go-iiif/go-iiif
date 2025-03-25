@@ -13,3 +13,4 @@ vips-*
 *.zip
 docker
 go.work*
+work

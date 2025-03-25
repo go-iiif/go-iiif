@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"io"
 	"log/slog"
@@ -12,8 +11,8 @@ import (
 	"strings"
 
 	"github.com/aaronland/gocloud-blob/bucket"
-	iiifdefaults "github.com/go-iiif/go-iiif/v6/static/defaults"
-	"github.com/sfomuseum/go-flags/lookup"
+	"github.com/brunoga/deep"
+	iiifdefaults "github.com/go-iiif/go-iiif/v7/defaults"
 	"gocloud.dev/blob"
 )
 
@@ -31,12 +30,22 @@ type Config struct {
 	Images ImagesConfig `json:"images"`
 	// Derivatives is a `DerivativesConfig` detailing how and where IIIF derivative images are stored.
 	Derivatives DerivativesConfig `json:"derivatives"`
-	Flickr      FlickrConfig      `json:"flickr,omitempty"`
 	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
 	Palette     PaletteConfig     `json:"palette,omitempty"`
 	BlurHash    BlurHashConfig    `json:"blurhash,omitempty"`
 	ImageHash   ImageHashConfig   `json:"imagehash,omitempty"`
 	Custom      interface{}       `json:"custom,omitempty"`
+}
+
+func (c *Config) Clone() (*Config, error) {
+
+	new_c, err := deep.Copy(c)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return new_c, nil
 }
 
 // ProfileConfig defines configuration details for the IIIF profile in use.
@@ -55,9 +64,19 @@ type ServicesToggle []string
 
 // PaletteConfig details configuration details for colour palette extraction services.
 type PaletteConfig struct {
-	Extruder SourceConfig   `json:"extruder"`
-	Grid     SourceConfig   `json:"grid"`
-	Palettes []SourceConfig `json:"palettes"`
+	Name     string         `json:"name"`
+	Extruder ExtruderConfig `json:"extruder"`
+	Grid     GridConfig     `json:"grid"`
+	Palettes []GridConfig   `json:"palettes"`
+}
+
+type ExtruderConfig struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
+}
+
+type GridConfig struct {
+	Name string `json:"name"`
 }
 
 // BlurHashConfig defines configuration details for blurhash generation services.
@@ -102,30 +121,12 @@ type DerivativesConfig struct {
 
 // GraphicsConfig
 type GraphicsConfig struct {
-	Source SourceConfig `json:"source"`
+	Driver string `json:"driver"`
 }
 
 type SourceConfig struct {
 	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
 	URI string `json:"uri"`
-	// The name of the source provider. Deprecated; Please use the URI property instead.
-	Name string `json:"name"`
-	// Path information for the source provider. Deprecated; Please use the URI property instead.
-	Path string `json:"path,omitempty"`
-	// Path information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.
-	Prefix string `json:"prefix,omitempty"`
-	// Region information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.
-	Region string `json:"region,omitempty"`
-	// Credentials information for the S3 (blob) source provider. Deprecated; Please use the URI property instead.
-	Credentials string `json:"credentials,omitempty"`
-	Tmpdir      string `json:"tmpdir,omitempty"`
-	Count       int    `json:"count,omitempty"` // used by PaletteConfig.Extruder
-}
-
-// FlickrConfig defines configuration details for interacting with the Flickr photo-sharing service.
-type FlickrConfig struct {
-	// A valid `aaronland/go-flickr-api.Client` URI.
-	ClientURI string `json:"client_uri"`
 }
 
 // PrimitiveConfig defines configuration details for using the `fogleman/primitive` package.
@@ -138,20 +139,6 @@ type PrimitiveConfig struct {
 type CacheConfig struct {
 	// A valid go-iiif/cache.Cache URI. If empty this value will be derived from the other values in CacheConfig.
 	URI string `json:"uri"`
-	// The name of the caching source. Deprecated; Please use the URI property instead.
-	Name string `json:"name"`
-	// Path information for the caching source. Deprecated; Please use the URI property instead.
-	Path string `json:"path,omitempty"`
-	// Time-to-live information for the memory caching source. Deprecated; Please use the URI property instead.
-	TTL int `json:"ttl,omitempty"`
-	// Cache limit information for the memory caching source. Deprecated; Please use the URI property instead.
-	Limit int `json:"limit,omitempty"`
-	// Path information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.
-	Prefix string `json:"prefix,omitempty"`
-	// Region information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.
-	Region string `json:"region,omitempty"`
-	// Credentials information for the S3 (blob) caching source. Deprecated; Please use the URI property instead.
-	Credentials string `json:"credentials,omitempty"`
 }
 
 // NewConfigFromFlag is DEPRECATED and will simply hand off to the `NewConfigFromString` method.
@@ -273,41 +260,4 @@ func LoadConfig(ctx context.Context, bucket_uri string, key string) (*Config, er
 	defer config_bucket.Close()
 
 	return NewConfigFromBucket(ctx, config_bucket, key)
-}
-
-func LoadConfigWithFlagSet(ctx context.Context, fs *flag.FlagSet) (*Config, error) {
-
-	config_source, err := lookup.StringVar(fs, "config-source")
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to lookup -config-source flag, %w", err)
-	}
-
-	config_name, err := lookup.StringVar(fs, "config-name")
-
-	if err != nil {
-		return nil, fmt.Errorf("Failed to lookup -config-name flag, %w", err)
-	}
-
-	cfg, err := LoadConfig(ctx, config_source, config_name)
-
-	if err != nil {
-		return nil, err
-	}
-
-	images_source_uri, _ := lookup.StringVar(fs, "config-images-source-uri")
-
-	if images_source_uri != "" {
-		slog.Debug("Reassign images source", "uri", images_source_uri)
-		cfg.Images.Source.URI = images_source_uri
-	}
-
-	derivatives_cache_uri, _ := lookup.StringVar(fs, "config-derivatives-cache-uri")
-
-	if derivatives_cache_uri != "" {
-		slog.Debug("Reassign derivatives cache", "uri", derivatives_cache_uri)
-		cfg.Derivatives.Cache.URI = derivatives_cache_uri
-	}
-
-	return cfg, nil
 }
