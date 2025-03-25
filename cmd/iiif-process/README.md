@@ -36,6 +36,8 @@ Valid options are:
     	Enabled verbose (debug) loggging.
 ```
 
+## Example
+
 Perform a series of IIIF image processing tasks, defined in a JSON-based "instructions" file, on one or more (IIIF) URIs. For example:
 
 ```
@@ -95,7 +97,7 @@ $> ./bin/iiif-process -config config.json -instructions instructions.json -uri s
 
 Images are read-from and stored-to whatever source or derivatives caches defined in your `config.json` file.
 
-#### "instructions" files
+## "Instructions" files
 
 An instruction file is a JSON-encoded dictionary. Keys are user-defined and values are dictionary of IIIF one or more transformation instructions. For example:
 
@@ -122,14 +124,14 @@ type IIIFInstructions struct {
 
 As of this writing there is no explicit response type for image beyond `map[string]interface{}`. There probably could be but it's still early days.
 
-#### "report" files
+## "Report" files
 
 "Report" files are JSON files that contain the list of files created, their dimensions and the output of any (IIIF) services that have been configured.
 
 For example, if you ran the following `iiif-process` command:
 
 ```
-$> go run -mod vendor cmd/iiif-process/main.go \
+$> ./bin/iiif-process \
    -config-source file:///usr/local/go-iiif/docs \
    -instructions-source file:///usr/local/go-iiif/docs \
    -report test.jpg
@@ -189,13 +191,3 @@ Currently, there is only one optional suffix (`{sha256_origin}`) defined but in 
   }
 }
 ```
-
-#### "lambda" mode
-
-If you are running this tool in Lambda mode you will need to map environment variables to their command line flag equivalents. This is handled automatically so long as the environment variables you set follows these conventions:
-
-* The name of a flag is upper-cased
-* Any instances of `-` are replaced by `_`
-* The final environment variable is prefixed by `IIIF_`
-
-For example the command line flag `-mode` becomes the AWS Lambda environment variable `IIIF_MODE`.

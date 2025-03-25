@@ -115,6 +115,8 @@ And see something like this in your web browser:
 
 ![](docs/images/go-iiif-v7-seed.png)
 
+The folder containing the IIIF Level 0 tiles also contains just enough HTML and JavaScript code to show those tiles in a traditional "zoomable image" interface. These views are disabled by default and are mostly meant for reviewing the output of the seeding operation. For a more sophiticated "zoomable image" interface see the [sfomuseum/webcomponent-zoomable-image](https://github.com/sfomuseum/webcomponent-zoomable-image) package.
+
 #### Generating derivatives using an "instructions" file
 
 ```
@@ -145,9 +147,11 @@ $> open fixtures/cache/999/8/index.html
 
 And see something like this in your web browser:
 
-![](docs/images/go-iiif-v7-process.png)
+![](docs/images/go-iiif-v7-process-html.png)
 
-#### Running a IIIF API endpoint
+The folder contained the "processed" derivative images also contains a simple HTML file displaying each of the derivative images. These views are disabled by default and are mostly for reviewing the output of the process(ing) operation.
+
+#### Running a IIIF API (HTTP) endpoint
 
 ```
 $> make debug-server
@@ -165,12 +169,7 @@ And then, because the `-example` flag was specified, when you open your web brow
 
 ![](docs/images/go-iiif-v7-server.png)
 
-> curl http://localhost:8080/spanking-cat.jpg/info.json
-
-```
-{"height":4096,"width":3897,"@context":"http://iiif.io/api/image/2/context.json","@id":"http://localhost:8080/spanking-cat.jpg","protocol":"http://iiif.io/api/image","profile":["http://iiif.io/api/image/2/level2.json",{"formats":["webp","jpg","png","tif","gif"],"qualities":["dither","crisp","default","color"],"supports":["full","regionByPx","regionByPct","regionSquare","full","max","sizeByW","sizeByH","sizeByPct","sizeByDistortedWh","sizeByConfinedWh","sizeByWh","noAutoRotate","none","rotationBy90s","mirroring","baseUriRedirect","cors","jsonldMediaType"]}],"service":[{"@context":"x-urn:service:go-iiif#palette","profile":"x-urn:service:go-iiif#palette","label":"x-urn:service:go-iiif#palette","palette":[{"name":"#4e3c24","hex":"#4e3c24","reference":"vibrant"},{"name":"#9d8959","hex":"#9d8959","reference":"vibrant"},{"name":"#c7bca6","hex":"#c7bca6","reference":"vibrant"},{"name":"#5a4b36","hex":"#5a4b36","reference":"vibrant"}]},{"@context":"x-urn:service:go-iiif#blurhash","profile":"x-urn:service:go-iiif#blurhash","label":"x-urn:service:go-iiif#blurhash","hash":":NOWsZa{_Nt69Fofxuof_2a{M{ofofaej[ay%Nj[IAj[%MayRjj[jZoft7V@WCofaxj[xuoMRjV@j[t7ofWBoeayfRkCayaxofj[WBaxofozayRjaxofRjayt7ofWBayj?ay"},{"@context":"x-urn:service:go-iiif#imagehash","profile":"x-urn:service:go-iiif#imagehash","label":"x-urn:service:go-iiif#imagehash","average":"a:ffffc7e7c3c3c3c3","difference":"d:c48c0c0e8e8f0e0f"}]}
-```
-
+The "example" handler provides just enough HTML and JavaScript code to render tile images in a traditional "zoomable image" interface using the IIIF Image API endpoints. This handler is disabled by default and is mostly meant for ensuring that everything is working. For a more sophiticated "zoomable image" interface see the [sfomuseum/webcomponent-zoomable-image](https://github.com/sfomuseum/webcomponent-zoomable-image) package.
 
 ### Extending the command line tools
 
@@ -189,6 +188,7 @@ import (
 	_ "github.com/go-iiif/go-iiif/v6/native"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
+	_ "gocloud.dev/blob/s3blob"	
         _ "yourprovider.host/go-iiif-cache"	// YOUR CUSTOM CODE
        
 	"github.com/go-iiif/go-iiif/v6/app/seed"

@@ -38,9 +38,17 @@ Valid options are:
     	Enable verbose (debug) logging.
 ```
 
-Generate (seed) all the tiled derivatives for a source image for use with the [Leaflet-IIIF](https://github.com/mejackreed/Leaflet-IIIF) plugin.
+## Example
 
-#### iiif-tile-seed and identifiers
+```
+$> bin/iiif-tile-seed \
+	-config-images-source-uri file:///usr/local/src/go-iiif/static/example/images \
+	-config-derivatives-cache-uri file:///usr/local/src/go-iiif/work \
+	-scale-factors '8,4,2,1' \
+	-verbose \
+	'rewrite:///spanking-cat.jpg?target=spank'
+```
+## URIs and identifiers
 
 Identifiers for source images can be passed to `iiif-tiles-seed` in of two way:
 
@@ -61,7 +69,7 @@ $> ./bin/iiif-tile-seed [options] 191733_5755a1309e4d66a7_k.jpg,191/733/191733_5
 
 In many cases the first option will suffice but sometimes you might need to create new identifiers or structure existing identifiers according to their output, for example avoiding the need to store lots of file in a single directory. It's up to you.
 
-#### CSV input
+## CSV input
 
 You can also run `iiif-tile-seed` pass a list of identifiers as a CSV file. To do so include the `-mode csv` argument, like this:
 

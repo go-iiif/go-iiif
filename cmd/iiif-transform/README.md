@@ -33,3 +33,13 @@ Valid options are:
   -verbose
     	Enabled verbose (debug) loggging.
 ```	
+
+## Example
+
+```
+$> ./bin/iiif-transform \
+	-config config.json \
+	-quality dither \
+	-size ,300
+	/usr/local/cooperhewitt/iiif/images/184512_5f7f47e5b3c66207_x.jpg
+```	

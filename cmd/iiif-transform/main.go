@@ -10,6 +10,7 @@ import (
 	_ "github.com/go-iiif/go-iiif/v6/native"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
+	_ "gocloud.dev/blob/s3blob"	
 
 	"github.com/go-iiif/go-iiif/v6/app/transform"
 )
