@@ -35,7 +35,7 @@ go build -mod vendor -ldflags="-s -w" -o bin/iiif-dump-config cmd/iiif-dump-conf
 
 ### Config files
 
-Detailed documentation for config files has been moved in to [config/README.md](config/README.md].
+Detailed documentation for config files has been moved in to [config/README.md](config/README.md).
 
 In the interest of trying to keep simple things simple all of the command line tools use a default configuration file, indicated by the URI `default://` which is defined in the [defaults/config.json](defaults/config.json) file. The default configuration looks and writes source and cache images, respectively, to an in-memory provider. As such, until you define at least an alternative source location (or your own config file) the tools won't _do_ very much.
 
