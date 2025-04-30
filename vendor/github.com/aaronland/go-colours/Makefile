@@ -1,15 +1,9 @@
-vendor-deps:
-	go mod vendor
+GOMOD=$(shell test -f "go.work" && echo "readonly" || echo "vendor")
+LDFLAGS=-s -w
 
-fmt:
-	go fmt *.go
-	go fmt cmd/*.go
-	go fmt grid/*.go
-	go fmt extruder/*.go
-	go fmt palette/*.go
-
-tools: 	
-	go build -o bin/extrude cmd/extrude/main.go
-	go build -o bin/inspect cmd/inspect/main.go
-	go build -o bin/snap cmd/snap/main.go
+cli: 	
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/extrude cmd/extrude/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/inspect cmd/inspect/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/snap cmd/snap/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/review cmd/review/main.go
 

@@ -54,6 +54,8 @@ func (s *PaletteService) Value() interface{} {
 
 func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
 
+	ctx := context.Background()
+
 	use_extruder := cfg.Extruder.Name
 	count_colours := cfg.Extruder.Count
 
@@ -70,23 +72,23 @@ func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Ser
 		return nil, err
 	}
 
-	ex, err := extruder.NewNamedExtruder(use_extruder)
+	ex, err := extruder.NewExtruder(ctx, use_extruder)
 
 	if err != nil {
 		return nil, err
 	}
 
-	gr, err := grid.NewNamedGrid(use_grid)
+	gr, err := grid.NewGrid(ctx, use_grid)
 
 	if err != nil {
 		return nil, err
 	}
 
-	plts := make([]colours.Palette, len(use_palette))
+	plts := make([]palette.Palette, len(use_palette))
 
 	for i, p := range use_palette {
 
-		pl, err := palette.NewNamedPalette(p)
+		pl, err := palette.NewPalette(ctx, p)
 
 		if err != nil {
 			return nil, err

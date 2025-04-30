@@ -1,24 +1,35 @@
 package grid
 
 import (
-	"errors"
-	"github.com/aaronland/go-colours"
-	"github.com/lucasb-eyer/go-colorful"
-	_ "log"
+	"context"
+	"fmt"
 	"math"
 	"sort"
+	"strings"
+
+	"github.com/aaronland/go-colours"
+	"github.com/aaronland/go-colours/palette"
+	"github.com/lucasb-eyer/go-colorful"
 )
 
 type EuclidianGrid struct {
-	colours.Grid
+	Grid
 }
 
-func NewEuclidianGrid(args ...interface{}) (colours.Grid, error) {
+func init() {
+	ctx := context.Background()
+	err := RegisterGrid(ctx, "euclidian", NewEuclidianGrid)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func NewEuclidianGrid(ctx context.Context, uri string) (Grid, error) {
 	eu := EuclidianGrid{}
 	return &eu, nil
 }
 
-func (eu *EuclidianGrid) Closest(target colours.Colour, palette colours.Palette) (colours.Colour, error) {
+func (eu *EuclidianGrid) Closest(target colours.Colour, plt palette.Palette) (colours.Colour, error) {
 
 	// http://stackoverflow.com/questions/9694165/convert-rgb-color-to-english-color-name-like-green
 	// https://github.com/ubernostrum/webcolors/blob/master/webcolors.py#L473-L485
@@ -26,7 +37,7 @@ func (eu *EuclidianGrid) Closest(target colours.Colour, palette colours.Palette)
 	cl, err := colorful.Hex(target.Hex())
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive hex, %w", err)
 	}
 
 	r1, g1, b1 := cl.RGB255()
@@ -34,7 +45,7 @@ func (eu *EuclidianGrid) Closest(target colours.Colour, palette colours.Palette)
 	lookup := make(map[int]colours.Colour)
 	keys := make([]int, 0)
 
-	for _, candidate := range palette.Colours() {
+	for _, candidate := range plt.Colours() {
 
 		cl, err := colorful.Hex(candidate.Hex())
 
@@ -57,10 +68,17 @@ func (eu *EuclidianGrid) Closest(target colours.Colour, palette colours.Palette)
 	sort.Ints(keys)
 
 	if len(keys) == 0 {
-		return nil, errors.New("Nothing found")
+		return nil, fmt.Errorf("Nothing found")
 	}
 
 	match := lookup[keys[0]]
 
-	return colours.NewColour(match.Hex(), match.Name(), palette.Reference())
+	ctx := context.Background()
+
+	c_hex := match.Hex()
+	c_hex = strings.TrimLeft(c_hex, "#")
+
+	c_uri := fmt.Sprintf("common://?hex=%s&name=%s&ref=%s", c_hex, match.Name(), plt.Reference())
+
+	return colours.NewColour(ctx, c_uri)
 }

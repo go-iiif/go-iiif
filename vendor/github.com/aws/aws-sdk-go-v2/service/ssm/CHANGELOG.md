@@ -1,3 +1,85 @@
+# v1.58.0 (2025-03-24)
+
+* **Feature**: This release adds the AvailableSecurityUpdatesComplianceStatus field to patch baseline operations, as well as the AvailableSecurityUpdateCount and InstancesWithAvailableSecurityUpdates to patch state operations. Applies to Windows Server managed nodes only.
+
+# v1.57.2 (2025-03-04.2)
+
+* **Bug Fix**: Add assurance test for operation order.
+
+# v1.57.1 (2025-02-28)
+
+* **Documentation**: Systems Manager doc-only updates for Feb. 2025.
+
+# v1.57.0 (2025-02-27)
+
+* **Feature**: Track credential providers via User-Agent Feature ids
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.13 (2025-02-18)
+
+* **Bug Fix**: Bump go version to 1.22
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.12 (2025-02-05)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.11 (2025-02-04)
+
+* No change notes available for this release.
+
+# v1.56.10 (2025-01-31)
+
+* **Dependency Update**: Switch to code-generated waiter matchers, removing the dependency on go-jmespath.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.9 (2025-01-30)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.8 (2025-01-24)
+
+* **Documentation**: Systems Manager doc-only update for January, 2025.
+* **Dependency Update**: Updated to the latest SDK module versions
+* **Dependency Update**: Upgrade to smithy-go v1.22.2.
+
+# v1.56.7 (2025-01-17)
+
+* **Bug Fix**: Fix bug where credentials weren't refreshed during retry loop.
+
+# v1.56.6 (2025-01-15)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.5 (2025-01-14)
+
+* **Bug Fix**: Fix issue where waiters were not failing on unmatched errors as they should. This may have breaking behavioral changes for users in fringe cases. See [this announcement](https://github.com/aws/aws-sdk-go-v2/discussions/2954) for more information.
+
+# v1.56.4 (2025-01-09)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.3 (2025-01-08)
+
+* No change notes available for this release.
+
+# v1.56.2 (2024-12-19)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.1 (2024-12-02)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.56.0 (2024-11-21)
+
+* **Feature**: Added support for providing high-level overviews of managed nodes and previewing the potential impact of a runbook execution.
+
+# v1.55.6 (2024-11-18)
+
+* **Dependency Update**: Update to smithy-go v1.22.1.
+* **Dependency Update**: Updated to the latest SDK module versions
+
 # v1.55.5 (2024-11-07)
 
 * **Bug Fix**: Adds case-insensitive handling of error message fields in service responses

@@ -130,14 +130,19 @@ const Scheme = "s3"
 // Use "awssdk=v1" to force using AWS SDK v1, "awssdk=v2" to force using AWS SDK v2,
 // or anything else to accept the default.
 //
+// For V1, see https://pkg.go.dev/gocloud.dev/aws#ConfigFromURLParams for supported query parameters
+// for overriding the aws.Session from the URL.
+// For V2, see https://pkg.go.dev/gocloud.dev/aws#V2ConfigFromURLParams.
+//
 // The following S3-specific query options are also supported:
 //   - ssetype: The type of server side encryption used (AES256, aws:kms, aws:kms:dsse)
 //   - kmskeyid: The KMS key ID for server side encryption
 //   - accelerate: A value of "true" uses the S3 Transfer Accleration endpoints
 //
-// For V1, see gocloud.dev/aws/ConfigFromURLParams for supported query parameters
-// for overriding the aws.Session from the URL.
-// For V2, see gocloud.dev/aws/V2ConfigFromURLParams.
+// V2 additionally supports:
+//   - use_path_style: A value of true sets the UsePathStyle option.
+//   - s3ForcePathStyle: Same as use_path_style, for backwards compatibility with V1.
+//   - disable_https: A value of true disables HTTPS in the Endpoint options.
 type URLOpener struct {
 	// UseV2 indicates whether the AWS SDK V2 should be used.
 	UseV2 bool
@@ -150,11 +155,12 @@ type URLOpener struct {
 }
 
 const (
-	sseTypeParamKey      = "ssetype"
-	kmsKeyIdParamKey     = "kmskeyid"
-	accelerateParamKey   = "accelerate"
-	usePathStyleParamkey = "use_path_style"
-	disableHTTPSParamKey = "disable_https"
+	sseTypeParamKey            = "ssetype"
+	kmsKeyIdParamKey           = "kmskeyid"
+	accelerateParamKey         = "accelerate"
+	usePathStyleParamKey       = "use_path_style"
+	legacyUsePathStyleParamKey = "s3ForcePathStyle" // for backwards compatibility
+	disableHTTPSParamKey       = "disable_https"
 )
 
 func toServerSideEncryptionType(value string) (typesv2.ServerSideEncryption, error) {
@@ -212,15 +218,17 @@ func (o *URLOpener) OpenBucketURL(ctx context.Context, u *url.URL) (*blob.Bucket
 				o.EndpointOptions.DisableHTTPS = value
 			})
 		}
-		if usePathStyleParam := q.Get(usePathStyleParamkey); usePathStyleParam != "" {
-			q.Del(usePathStyleParamkey)
-			value, err := strconv.ParseBool(usePathStyleParam)
-			if err != nil {
-				return nil, fmt.Errorf("invalid value for %q: %v", usePathStyleParamkey, err)
+		for _, key := range []string{usePathStyleParamKey, legacyUsePathStyleParamKey} {
+			if usePathStyleParam := q.Get(key); usePathStyleParam != "" {
+				q.Del(key)
+				value, err := strconv.ParseBool(usePathStyleParam)
+				if err != nil {
+					return nil, fmt.Errorf("invalid value for %q: %v", key, err)
+				}
+				opts = append(opts, func(o *s3v2.Options) {
+					o.UsePathStyle = value
+				})
 			}
-			opts = append(opts, func(o *s3v2.Options) {
-				o.UsePathStyle = value
-			})
 		}
 
 		cfg, err := gcaws.V2ConfigFromURLParams(ctx, q)
@@ -334,7 +342,7 @@ func (r *reader) Close() error {
 	return r.body.Close()
 }
 
-func (r *reader) As(i interface{}) bool {
+func (r *reader) As(i any) bool {
 	if r.useV2 {
 		p, ok := i.(*s3v2.GetObjectOutput)
 		if !ok {
@@ -532,7 +540,7 @@ func (b *bucket) ListPaged(ctx context.Context, opts *driver.ListOptions) (*driv
 					ModTime: *obj.LastModified,
 					Size:    aws.Int64Value(obj.Size),
 					MD5:     eTagToMD5(obj.ETag),
-					AsFunc: func(i interface{}) bool {
+					AsFunc: func(i any) bool {
 						p, ok := i.(*typesv2.Object)
 						if !ok {
 							return false
@@ -547,7 +555,7 @@ func (b *bucket) ListPaged(ctx context.Context, opts *driver.ListOptions) (*driv
 				page.Objects[i+len(resp.Contents)] = &driver.ListObject{
 					Key:   unescapeKey(aws.StringValue(prefix.Prefix)),
 					IsDir: true,
-					AsFunc: func(i interface{}) bool {
+					AsFunc: func(i any) bool {
 						p, ok := i.(*typesv2.CommonPrefix)
 						if !ok {
 							return false
@@ -596,7 +604,7 @@ func (b *bucket) ListPaged(ctx context.Context, opts *driver.ListOptions) (*driv
 					ModTime: *obj.LastModified,
 					Size:    *obj.Size,
 					MD5:     eTagToMD5(obj.ETag),
-					AsFunc: func(i interface{}) bool {
+					AsFunc: func(i any) bool {
 						p, ok := i.(*s3.Object)
 						if !ok {
 							return false
@@ -611,7 +619,7 @@ func (b *bucket) ListPaged(ctx context.Context, opts *driver.ListOptions) (*driv
 				page.Objects[i+len(resp.Contents)] = &driver.ListObject{
 					Key:   unescapeKey(aws.StringValue(prefix.Prefix)),
 					IsDir: true,
-					AsFunc: func(i interface{}) bool {
+					AsFunc: func(i any) bool {
 						p, ok := i.(*s3.CommonPrefix)
 						if !ok {
 							return false
@@ -636,7 +644,7 @@ func (b *bucket) listObjectsV2(ctx context.Context, in *s3v2.ListObjectsV2Input,
 	if !b.useLegacyList {
 		var varopt []func(*s3v2.Options)
 		if opts.BeforeList != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				if p, ok := i.(**s3v2.ListObjectsV2Input); ok {
 					*p = in
 					return true
@@ -665,7 +673,7 @@ func (b *bucket) listObjectsV2(ctx context.Context, in *s3v2.ListObjectsV2Input,
 		RequestPayer: in.RequestPayer,
 	}
 	if opts.BeforeList != nil {
-		asFunc := func(i interface{}) bool {
+		asFunc := func(i any) bool {
 			p, ok := i.(**s3v2.ListObjectsInput)
 			if !ok {
 				return false
@@ -698,7 +706,7 @@ func (b *bucket) listObjectsV2(ctx context.Context, in *s3v2.ListObjectsV2Input,
 func (b *bucket) listObjects(ctx context.Context, in *s3.ListObjectsV2Input, opts *driver.ListOptions) (*s3.ListObjectsV2Output, error) {
 	if !b.useLegacyList {
 		if opts.BeforeList != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				if p, ok := i.(**s3.ListObjectsV2Input); ok {
 					*p = in
 					return true
@@ -723,7 +731,7 @@ func (b *bucket) listObjects(ctx context.Context, in *s3.ListObjectsV2Input, opt
 		RequestPayer: in.RequestPayer,
 	}
 	if opts.BeforeList != nil {
-		asFunc := func(i interface{}) bool {
+		asFunc := func(i any) bool {
 			p, ok := i.(**s3.ListObjectsInput)
 			if !ok {
 				return false
@@ -754,7 +762,7 @@ func (b *bucket) listObjects(ctx context.Context, in *s3.ListObjectsV2Input, opt
 }
 
 // As implements driver.As.
-func (b *bucket) As(i interface{}) bool {
+func (b *bucket) As(i any) bool {
 	if b.useV2 {
 		p, ok := i.(**s3v2.Client)
 		if !ok {
@@ -772,7 +780,7 @@ func (b *bucket) As(i interface{}) bool {
 }
 
 // As implements driver.ErrorAs.
-func (b *bucket) ErrorAs(err error, i interface{}) bool {
+func (b *bucket) ErrorAs(err error, i any) bool {
 	if b.useV2 {
 		return errors.As(err, i)
 	}
@@ -817,7 +825,7 @@ func (b *bucket) Attributes(ctx context.Context, key string) (*driver.Attributes
 			Size:    aws.Int64Value(resp.ContentLength),
 			MD5:     eTagToMD5(resp.ETag),
 			ETag:    aws.StringValue(resp.ETag),
-			AsFunc: func(i interface{}) bool {
+			AsFunc: func(i any) bool {
 				p, ok := i.(*s3v2.HeadObjectOutput)
 				if !ok {
 					return false
@@ -854,7 +862,7 @@ func (b *bucket) Attributes(ctx context.Context, key string) (*driver.Attributes
 			Size:    aws.Int64Value(resp.ContentLength),
 			MD5:     eTagToMD5(resp.ETag),
 			ETag:    aws.StringValue(resp.ETag),
-			AsFunc: func(i interface{}) bool {
+			AsFunc: func(i any) bool {
 				p, ok := i.(*s3.HeadObjectOutput)
 				if !ok {
 					return false
@@ -887,7 +895,7 @@ func (b *bucket) NewRangeReader(ctx context.Context, key string, offset, length 
 		}
 		var varopt []func(*s3v2.Options)
 		if opts.BeforeRead != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				if p, ok := i.(**s3v2.GetObjectInput); ok {
 					*p = in
 					return true
@@ -927,7 +935,7 @@ func (b *bucket) NewRangeReader(ctx context.Context, key string, offset, length 
 			Range:  byteRange,
 		}
 		if opts.BeforeRead != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				if p, ok := i.(**s3.GetObjectInput); ok {
 					*p = in
 					return true
@@ -1076,7 +1084,7 @@ func (b *bucket) NewTypedWriter(ctx context.Context, key, contentType string, op
 			reqV2.SSEKMSKeyId = aws.String(b.kmsKeyId)
 		}
 		if opts.BeforeWrite != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				// Note that since the Go CDK Blob
 				// abstraction does not expose AWS's
 				// Uploader concept, there does not
@@ -1155,7 +1163,7 @@ func (b *bucket) NewTypedWriter(ctx context.Context, key, contentType string, op
 			req.SSEKMSKeyId = aws.String(b.kmsKeyId)
 		}
 		if opts.BeforeWrite != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				pu, ok := i.(**s3manager.Uploader)
 				if ok {
 					*pu = uploader
@@ -1199,7 +1207,7 @@ func (b *bucket) Copy(ctx context.Context, dstKey, srcKey string, opts *driver.C
 			input.SSEKMSKeyId = aws.String(b.kmsKeyId)
 		}
 		if opts.BeforeCopy != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				switch v := i.(type) {
 				case **s3v2.CopyObjectInput:
 					*v = input
@@ -1226,7 +1234,7 @@ func (b *bucket) Copy(ctx context.Context, dstKey, srcKey string, opts *driver.C
 			input.SSEKMSKeyId = aws.String(b.kmsKeyId)
 		}
 		if opts.BeforeCopy != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				switch v := i.(type) {
 				case **s3.CopyObjectInput:
 					*v = input
@@ -1277,7 +1285,7 @@ func (b *bucket) SignedURL(ctx context.Context, key string, opts *driver.SignedU
 				Key:    aws.String(key),
 			}
 			if opts.BeforeSign != nil {
-				asFunc := func(i interface{}) bool {
+				asFunc := func(i any) bool {
 					v, ok := i.(**s3v2.GetObjectInput)
 					if ok {
 						*v = in
@@ -1299,7 +1307,7 @@ func (b *bucket) SignedURL(ctx context.Context, key string, opts *driver.SignedU
 				Key:    aws.String(key),
 			}
 			if opts.BeforeSign != nil {
-				asFunc := func(i interface{}) bool {
+				asFunc := func(i any) bool {
 					v, ok := i.(**s3.GetObjectInput)
 					if ok {
 						*v = in
@@ -1324,7 +1332,7 @@ func (b *bucket) SignedURL(ctx context.Context, key string, opts *driver.SignedU
 				return "", gcerr.New(gcerr.Unimplemented, nil, 1, "s3blob: AWS SDK v2 does not supported enforcing ContentType in SignedURLs for PUT")
 			}
 			if opts.BeforeSign != nil {
-				asFunc := func(i interface{}) bool {
+				asFunc := func(i any) bool {
 					v, ok := i.(**s3v2.PutObjectInput)
 					if ok {
 						*v = in
@@ -1349,7 +1357,7 @@ func (b *bucket) SignedURL(ctx context.Context, key string, opts *driver.SignedU
 				in.ContentType = aws.String(opts.ContentType)
 			}
 			if opts.BeforeSign != nil {
-				asFunc := func(i interface{}) bool {
+				asFunc := func(i any) bool {
 					v, ok := i.(**s3.PutObjectInput)
 					if ok {
 						*v = in
@@ -1373,7 +1381,7 @@ func (b *bucket) SignedURL(ctx context.Context, key string, opts *driver.SignedU
 			Key:    aws.String(key),
 		}
 		if opts.BeforeSign != nil {
-			asFunc := func(i interface{}) bool {
+			asFunc := func(i any) bool {
 				v, ok := i.(**s3.DeleteObjectInput)
 				if ok {
 					*v = in
