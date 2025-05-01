@@ -31,7 +31,7 @@ type Config struct {
 	// Derivatives is a `DerivativesConfig` detailing how and where IIIF derivative images are stored.
 	Derivatives            DerivativesConfig      `json:"derivatives"`
 	Primitive              PrimitiveConfig        `json:"primitive,omitempty"`
-	ColourServiceConfig    ColourServiceConfig    `json:"colour_service,omitempty"`
+	PaletteServiceConfig    PaletteServiceConfig    `json:"palette_service,omitempty"`
 	BlurHashServiceConfig  BlurHashServiceConfig  `json:"blurhash_service,omitempty"`
 	ImageHashServiceConfig ImageHashServiceConfig `json:"imagehash_service,omitempty"`
 	Custom                 interface{}            `json:"custom,omitempty"`
@@ -62,8 +62,8 @@ type ServicesConfig struct {
 
 type ServicesToggle []string
 
-// ColourServiceConfig details configuration details for colour palette extraction services.
-type ColourServiceConfig struct {
+// PaletteServiceConfig details configuration details for colour palette extraction services.
+type PaletteServiceConfig struct {
 	URI      string          `json:"uri"`
 	Extruder ExtruderConfig  `json:"extruder"`
 	Grid     GridConfig      `json:"grid"`

@@ -1,6 +1,58 @@
 # Releases
 
-The current release is `github.com/go-iiif/go-iiif/v6`.
+The current release is `github.com/go-iiif/go-iiif/v8`.
+
+### v8
+
+#### Config changes
+
+For example, this:
+
+```
+    "profile": {
+    	"services": {
+		    "enable": [
+		    	"palette",
+			"blurhash",
+		    	"imagehash"
+		    ]
+	}
+    },
+    "palette": {
+    	"extruder": { "name": "vibrant", "count": 5 },
+    	"grid": { "name": "euclidian" },
+	"palette": [
+		    { "name": "crayola" },
+		    { "name": "css4" }
+        ]
+    },
+    "blurhash": { "x": 8, "y": 8, "size": 200 },
+    "imagehash": {},
+```
+
+Becomes:
+
+```
+    "profile": {
+    	"services": {
+		    "enable": [
+		    	"palette://",
+			"blurhash://",
+		    	"imagehash://"
+		    ]
+	}
+    },
+    "palette_service": {
+    	"extruder": { "uri": "vibrant://", "count": 5 },
+    	"grid": { "uri": "euclidian://" },
+	"palette": [
+		    { "uri": "crayola://" },
+		    { "uri": "css4://" }
+        ]
+    },
+    "blurhash_service": { "x": 8, "y": 8, "size": 200 },
+    "imagehash_service": {},
+```
 
 ### v7
 

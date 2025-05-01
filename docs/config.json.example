@@ -5,13 +5,13 @@
     "profile": {
     	"services": {
 		    "enable": [
-		    	"colour_service",
+		    	"palette_service",
 			"blurhash_service",
 		    	"imagehash_service"
 		    ]
 	}
     },
-    "colour_service": {
+    "palette_service": {
     	"extruder": { "uri": "vibrant://", "count": 5 },
     	"grid": { "uri": "euclidian://" },
 	"palette": [

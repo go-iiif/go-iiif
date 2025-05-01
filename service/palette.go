@@ -5,7 +5,8 @@ package service
 
 import (
 	"context"
-
+	"fmt"
+	
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
@@ -17,18 +18,18 @@ import (
 func init() {
 
 	ctx := context.Background()
-	err := RegisterService(ctx, "palette", initColourService)
+	err := RegisterService(ctx, "palette", initPaletteService)
 
 	if err != nil {
 		panic(err)
 	}
 }
 
-func initColourService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
-	return NewColourService(cfg.ColourServiceConfig, im)
+func initPaletteService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
+	return NewPaletteService(cfg.PaletteServiceConfig, im)
 }
 
-type ColourService struct {
+type PaletteService struct {
 	Service        `json:",omitempty"`
 	PaletteContext string           `json:"@context"`
 	PaletteProfile string           `json:"profile"`
@@ -36,23 +37,23 @@ type ColourService struct {
 	Palette        []colours.Colour `json:"palette,omitempty"`
 }
 
-func (s *ColourService) Context() string {
+func (s *PaletteService) Context() string {
 	return s.PaletteContext
 }
 
-func (s *ColourService) Profile() string {
+func (s *PaletteService) Profile() string {
 	return s.PaletteProfile
 }
 
-func (s *ColourService) Label() string {
+func (s *PaletteService) Label() string {
 	return s.PaletteLabel
 }
 
-func (s *ColourService) Value() interface{} {
+func (s *PaletteService) Value() interface{} {
 	return s.Palette
 }
 
-func NewColourService(cfg iiifconfig.ColourServiceConfig, image iiifimage.Image) (Service, error) {
+func NewPaletteService(cfg iiifconfig.PaletteServiceConfig, image iiifimage.Image) (Service, error) {
 
 	ctx := context.Background()
 
@@ -69,59 +70,59 @@ func NewColourService(cfg iiifconfig.ColourServiceConfig, image iiifimage.Image)
 	im, err := iiifimage.IIIFImageToGolangImage(image)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive image, %w", err)
 	}
 
 	ex, err := extruder.NewExtruder(ctx, extruder_uri)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create new extruder, %w", err)
 	}
 
 	gr, err := grid.NewGrid(ctx, grid_uri)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create new grid, %w", err)
 	}
 
-	plts := make([]palette.Palette, len(palette_uris))
+	palettes := make([]palette.Palette, len(palette_uris))
 
-	for i, p := range palette_uris {
+	for i, uri := range palette_uris {
 
-		pl, err := palette.NewPalette(ctx, p)
+		p, err := palette.NewPalette(ctx, uri)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to create new palette (%s), %w", uri, err)
 		}
 
-		plts[i] = pl
+		palettes[i] = p
 	}
 
 	has_colours, err := ex.Colours(im, extruder_count)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive colours, %w", err)
 	}
 
 	for _, c := range has_colours {
 
-		for _, pl := range plts {
+		for _, pl := range palettes {
 
 			cl, err := gr.Closest(c, pl)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to derive closest match for '%s' from '%s', %w", c, pl.Reference(), err)
 			}
 
 			err = c.AppendClosest(cl)
 
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("Failed to append closest colour to '%s', %w", c, err)
 			}
 		}
 	}
 
-	s := ColourService{
+	s := PaletteService{
 		PaletteContext: "x-urn:service:go-iiif#palette",
 		PaletteProfile: "x-urn:service:go-iiif#palette",
 		PaletteLabel:   "x-urn:service:go-iiif#palette",
