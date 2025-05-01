@@ -7,3 +7,4 @@ cli/cli
 coverage.out
 output.jpg
 output.png
+vendor

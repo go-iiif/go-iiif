@@ -4,7 +4,7 @@ import (
 	"context"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 )
 
 type Label string

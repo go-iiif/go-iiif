@@ -10,9 +10,9 @@ import (
 	"sync"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
-	iiifservice "github.com/go-iiif/go-iiif/v7/service"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
+	iiifservice "github.com/go-iiif/go-iiif/v8/service"
 )
 
 // ParallelProcessURIWithInstructionSet processes 'u' according to each instruction in 'instruction_set' in concurrent processes

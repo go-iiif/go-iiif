@@ -5,12 +5,12 @@ import (
 	"log"
 
 	_ "github.com/aaronland/gocloud-blob/s3"
-	_ "github.com/go-iiif/go-iiif/v7/native"
+	_ "github.com/go-iiif/go-iiif/v8/native"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
 	_ "gocloud.dev/blob/s3blob"
 
-	"github.com/go-iiif/go-iiif/v7/app/process"
+	"github.com/go-iiif/go-iiif/v8/app/process"
 )
 
 func main() {

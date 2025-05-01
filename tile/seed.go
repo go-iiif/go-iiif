@@ -11,13 +11,13 @@ import (
 	"sync"
 	"time"
 
-	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
-	iiifinfo "github.com/go-iiif/go-iiif/v7/info"
-	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
-	iiifsource "github.com/go-iiif/go-iiif/v7/source"
+	iiifcache "github.com/go-iiif/go-iiif/v8/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
+	iiifinfo "github.com/go-iiif/go-iiif/v8/info"
+	iiiflevel "github.com/go-iiif/go-iiif/v8/level"
+	iiifsource "github.com/go-iiif/go-iiif/v8/source"
 )
 
 type TileSeedOnCompleteFunc func(*iiifconfig.Config, string, string, int, error)

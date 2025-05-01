@@ -1,6 +1,71 @@
 # Releases
 
-The current release is `github.com/go-iiif/go-iiif/v6`.
+The current release is `github.com/go-iiif/go-iiif/v8`.
+
+### v8
+
+Version 8.0.0 does NOT change anything in the core IIIF image processing code but has been updated to reflect changes the [aaronland/go-colours](https://github.com/aaronland/go-colours) package which, by extension, introduce a number of backwards incompatible changes to [the "palette" (colour extraction) service](https://github.com/go-iiif/go-iiif/tree/main/service) and the `go-iiif` config file definitions.
+
+#### Config changes
+
+Specific changes to the config file are:
+
+1. The top-level `palette`, `blurhash` and `imagehash` (service) config keys have been replaced with `palette_service`, `blurhash_service` and `imagehash_service` respectively.
+2. The `name` property for `aaronland/go-colours` operators has been replaced with a `uri` property. The URIs for these operators map their corresponding types in the `aaronland/go-colours` package.
+3. The `palette_service` config now expects extruders to be defined as a list (or dictionaries) in the `extruders` key.
+3. The `palette_service` config now expects (colour) palettes to be defined as a list (or dictionaries) in the `palettes` key.
+
+For example, this:
+
+```
+    "profile": {
+    	"services": {
+		    "enable": [
+		    	"palette",
+			"blurhash",
+		    	"imagehash"
+		    ]
+	}
+    },
+    "palette": {
+    	"extruder": { "name": "vibrant", "count": 5 },
+    	"grid": { "name": "euclidian" },
+	"palette": [
+		    { "name": "crayola" },
+		    { "name": "css4" }
+        ]
+    },
+    "blurhash": { "x": 8, "y": 8, "size": 200 },
+    "imagehash": {},
+```
+
+Becomes:
+
+```
+    "profile": {
+    	"services": {
+		    "enable": [
+		    	"palette://",
+			"blurhash://",
+		    	"imagehash://"
+		    ]
+	}
+    },
+    "palette_service": {
+    	"extruders": [
+		{ "uri": "vibrant://", "count": 5 }
+	],
+    	"grid": { "uri": "euclidian://" },
+	"palettes": [
+		    { "uri": "crayola://" },
+		    { "uri": "css4://" }
+        ]
+    },
+    "blurhash_service": { "x": 8, "y": 8, "size": 200 },
+    "imagehash_service": {},
+```
+
+The built-in config file defined in the `defaults` package has been updated accordingly, as have the examples in the [docs/config](docs/config) folder.
 
 ### v7
 

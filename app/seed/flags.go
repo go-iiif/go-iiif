@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 
-	iiifdefaults "github.com/go-iiif/go-iiif/v7/defaults"
+	iiifdefaults "github.com/go-iiif/go-iiif/v8/defaults"
 	"github.com/sfomuseum/go-flags/flagset"
 )
 

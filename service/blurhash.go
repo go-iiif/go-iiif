@@ -6,8 +6,8 @@ import (
 
 	"github.com/aaronland/go-image/resize"
 	"github.com/buckket/go-blurhash"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 )
 
 func init() {
@@ -21,7 +21,7 @@ func init() {
 }
 
 func initBlurHashService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
-	return NewBlurHashService(cfg.BlurHash, im)
+	return NewBlurHashService(cfg.BlurHashServiceConfig, im)
 }
 
 type BlurHashService struct {
@@ -48,7 +48,7 @@ func (s *BlurHashService) Value() interface{} {
 	return s.BlurHash
 }
 
-func NewBlurHashService(cfg iiifconfig.BlurHashConfig, image iiifimage.Image) (Service, error) {
+func NewBlurHashService(cfg iiifconfig.BlurHashServiceConfig, image iiifimage.Image) (Service, error) {
 
 	im, err := iiifimage.IIIFImageToGolangImage(image)
 

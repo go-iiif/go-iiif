@@ -7,9 +7,9 @@ import (
 	"io"
 	"strings"
 
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
-	iiifservice "github.com/go-iiif/go-iiif/v7/service"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v8/level"
+	iiifservice "github.com/go-iiif/go-iiif/v8/service"
 )
 
 // The URI for the IIIF Image API protocol.

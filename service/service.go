@@ -8,8 +8,8 @@ import (
 	"net/url"
 
 	"github.com/aaronland/go-roster"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 )
 
 var service_roster roster.Roster

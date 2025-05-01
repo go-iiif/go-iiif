@@ -36,16 +36,16 @@ Additional configurations for a IIIF profile (aka `info.json`). Currently this i
 
 Services configurations are currently limited to enabling a fixed set of named services, where that fixed set numbers exactly three:
 
-* `blurhash` for generateing a compact base-83 encoded representation of an image using the [BlurHash](https://github.com/woltapp/blurhash/blob/master/Algorithm.md) algorithm.
-* `imagehash` for generating average and difference perceptual hashes of an image (as defined by the `imagehash` configuration below).
-* `palette` for extracting a colour palette for an image (as defined by the `palette` configuration below).
+* `blurhash` for generateing a compact base-83 encoded representation of an image using the [BlurHash](https://github.com/woltapp/blurhash/blob/master/Algorithm.md) algorithm. Details for this service are defined in the `blurhash_service` key/dictionary.
+* `imagehash` for generating average and difference perceptual hashes of an image. Details for this service are defined in the `imagehash_service` key/dictionary.
+* `palette` for extracting a colour palette for an image. Details for this service are defined in the `palette_service` key/dictionary.
 
 As of this writing adding custom services is a nuisance. [There is an open issue](https://github.com/go-iiif/go-iiif/issues/71) to address this problem, but no ETA yet for its completion.
 
-##### blurhash
+##### blurhash_service
 
 ```
-    "blurhash": {
+    "blurhash_service": {
     	"x": 4,
 	"y": 3,
 	"size": 32
@@ -62,10 +62,10 @@ The blurhash service configuration has no specific properties as of this writing
 
 Sample out for the `blurhash` service is included [below](#non-standard-services).
 
-##### imagehash
+##### imagehash_service
 
 ```
-    "imagehash": {}
+    "imagehash_service": {}
 ```
 
 `go-iiif` uses the [goimagehash](https://github.com/corona10/goimagehash) to extract [average](http://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html) and [difference](http://www.hackerfactor.com/blog/index.php?/archives/529-Kind-of-Like-That.html) perceptual hashes.
@@ -77,12 +77,15 @@ Sample out for the `imagehash` service is included [below](#non-standard-service
 ##### palette
 
 ```
-    "palette": {
-    	"extruder": { "name": "vibrant", "count": 5 },
-    	"grid": { "name": "euclidian" },
+    "palette_service": {
+    	"extruders": [
+            { "uri": "vibrant://", "count": 5 },
+            { "uri": "marekm4://", "count": 5 }	    
+	],
+    	"grid": { "uri": "euclidian://" },
 	"palettes": [
-		    { "name": "crayola" },
-		    { "name": "css4" }
+		    { "uri": "crayola://" },
+		    { "uri": "css4://" }
         ]
     }
 ```
@@ -91,11 +94,9 @@ Sample out for the `imagehash` service is included [below](#non-standard-service
 
 A palette service configuration has the following properties:
 
-* **extruder** is a simple dictionary with a `name` and a `count` property. Since there is currently only one extruder (defined by `go-colours`) there is no need to change this.
-* **grid** is a simple dictionary with a `name` property. Since there is currently only one grid (defined by `go-colours`) there is no need to change this.
-* **palettes**  is a list of simple dictionaries, each of which has a `name` property. Valid names are: `crayola`, `css3` or `css4`.
-
-Sample out for the `palette` service is included [below](#non-standard-services).
+* **extruders** is a list of dictionaries containing a `uri` and a `count` property. URIs define known/registered `aaronland/go-colours/extruder.Extruder` implementations.
+* **grid** is a simple dictionary with a `uri` property. URIs define known/registered `aaronland/go-colours/grid.Grid` implementations.
+* **palettes**  is a list of dictionaries, each of which has a `uri` property. URIs define known/registered `aaronland/go-colours/palette.Palette` implementations.
 
 ### graphics
 

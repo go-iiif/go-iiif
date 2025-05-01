@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"regexp"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
 )
 
 // http://iiif.io/api/image/2.1/

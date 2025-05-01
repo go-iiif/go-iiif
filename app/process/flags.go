@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	iiifdefaults "github.com/go-iiif/go-iiif/v7/defaults"
-	iiifprocess "github.com/go-iiif/go-iiif/v7/process"
+	iiifdefaults "github.com/go-iiif/go-iiif/v8/defaults"
+	iiifprocess "github.com/go-iiif/go-iiif/v8/process"
 	"github.com/sfomuseum/go-flags/flagset"
 )
 

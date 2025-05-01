@@ -2,21 +2,13 @@
 
 Go package for working with colours, principally colour extraction and "snap to grid"
 
-## Install
-
-You will need to have both `Go` (specifically [version 1.12](https://golang.org/dl/) or higher because we're using [Go modules](https://github.com/golang/go/wiki/Modules)) and the `make` programs installed on your computer. Assuming you do just type:
-
-```
-make tools
-```
-
-All of this package's dependencies are bundled with the code in the `vendor` directory.
-
 ## Important
 
-This is work in progress. Eventually it will be a complete port of the [py-cooperhewitt-swatchbook](https://github.com/aaronland/py-cooperhewitt-swatchbook) and [py-cooperhewitt-roboteyes-colors](https://github.com/aaronland/py-cooperhewitt-roboteyes-colors) (and by extension [RoyGBiv](https://github.com/givp/RoyGBiv)) packages, but today it is only a partial implementation.
+This is work in progress.
 
-Also, this documentation is incomplete.
+## Documentation
+
+Documentation is incomplete.
 
 ## Example
 
@@ -24,25 +16,25 @@ Also, this documentation is incomplete.
 package main
 
 import (
+	"context"
 	"flag"
-	"github.com/aaronland/go-colours/extruder"
-	"github.com/aaronland/go-colours/grid"
-	"github.com/aaronland/go-colours/palette"
 	"image"
 	_ "image/jpeg"
 	"log"
 	"os"
+
+	"github.com/aaronland/go-colours/extruder"
+	"github.com/aaronland/go-colours/grid"
+	"github.com/aaronland/go-colours/palette"
 )
 
 func main() {
 
 	flag.Parse()
 
-	ex, _ := extruder.NewNamedExtruder("vibrant")
-
-	gr, _ := grid.NewNamedGrid("euclidian")
-
-	p, _ := palette.NewNamedPalette("css4")
+	ex, _ := extruder.NewExtruder(ctx, "vibrant://")
+	gr, _ := grid.NewGrid(ctx, "euclidian://")
+	p, _ := palette.NewPalette(ctx, "css4://")
 
 	for _, path := range flag.Args() {
 
@@ -86,6 +78,7 @@ type Colour interface {
 ```
 type Extruder interface {
 	Colours(image.Image, int) ([]Colour, error)
+	Name() string
 }
 ```
 
@@ -110,31 +103,34 @@ type Palette interface {
 
 Extruders are the things that generate a palette of colours for an `image.Image`.
 
-### vibrant
+### vibrant://
 
-This returns colours using the [vibrant](github.com/RobCherry/vibrant) package but rather than ranking colours using a particular metric it returns specific named "swatches" that are recast as `colours.Colour` interfaces. They are: `VibrantSwatch, LightVibrantSwatch, DarkVibrantSwatch, MutedSwatch, LightMutedSwatch, DarkMutedSwatch`.
+This returns colours using the [vibrant](github.com/RobCherry/vibrant) package.
+
+Importantly, this uses the [sfomuseum/vibrant](https://github.com/sfomuseum/vibrant) fork of the package to enable the filtering out of transparent pixels.
+
+### marekm4://
+
+This returns colours using the [marekm4/color-extractor](https://github.com/marekm4/color-extractor) package.
 
 ### Grids
 
 Grids are the things that perform operations or compare colours.
 
-### euclidian
+### euclidian://
 
 ### Palettes
 
 Palettes are a fixed set of colours.
 
-### crayola
+### crayola://
 
-### css3
+### css3://
 
-### css4
+### css4://
 
 ## See also
 
 * https://github.com/RobCherry/vibrant
-* https://github.com/lucasb-eyer/go-colorful
-
-* https://github.com/aaronland/py-cooperhewitt-swatchbook
-* https://github.com/aaronland/py-cooperhewitt-roboteyes-colors
+* https://github.com/marekm4/color-extractor
 * https://github.com/givp/RoyGBiv

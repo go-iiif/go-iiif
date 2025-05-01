@@ -5,13 +5,14 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
 	"github.com/aaronland/go-colours/palette"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 )
 
 func init() {
@@ -25,7 +26,7 @@ func init() {
 }
 
 func initPaletteService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
-	return NewPaletteService(cfg.Palette, im)
+	return NewPaletteService(cfg.PaletteServiceConfig, im)
 }
 
 type PaletteService struct {
@@ -52,69 +53,78 @@ func (s *PaletteService) Value() interface{} {
 	return s.Palette
 }
 
-func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
+func NewPaletteService(cfg iiifconfig.PaletteServiceConfig, image iiifimage.Image) (Service, error) {
 
-	use_extruder := cfg.Extruder.Name
-	count_colours := cfg.Extruder.Count
-
-	use_grid := cfg.Grid.Name
-	use_palette := make([]string, 0)
-
-	for _, p := range cfg.Palettes {
-		use_palette = append(use_palette, p.Name)
-	}
+	ctx := context.Background()
 
 	im, err := iiifimage.IIIFImageToGolangImage(image)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to derive image, %w", err)
 	}
 
-	ex, err := extruder.NewNamedExtruder(use_extruder)
+	extruders := make([]extruder.Extruder, len(cfg.Extruders))
+	palettes := make([]palette.Palette, len(cfg.Palettes))
 
-	if err != nil {
-		return nil, err
-	}
+	extruder_counts := make(map[string]int)
 
-	gr, err := grid.NewNamedGrid(use_grid)
+	for idx, e_cfg := range cfg.Extruders {
 
-	if err != nil {
-		return nil, err
-	}
-
-	plts := make([]colours.Palette, len(use_palette))
-
-	for i, p := range use_palette {
-
-		pl, err := palette.NewNamedPalette(p)
+		e, err := extruder.NewExtruder(ctx, e_cfg.URI)
 
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("Failed to create new extruder (%s), %w", e_cfg.URI, err)
 		}
 
-		plts[i] = pl
+		extruder_counts[e.Name()] = e_cfg.Count
+		extruders[idx] = e
 	}
 
-	has_colours, err := ex.Colours(im, count_colours)
+	for idx, p_cfg := range cfg.Palettes {
+
+		p, err := palette.NewPalette(ctx, p_cfg.URI)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to create new palette (%s), %w", p_cfg.URI, err)
+		}
+
+		palettes[idx] = p
+	}
+
+	gr, err := grid.NewGrid(ctx, cfg.Grid.URI)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("Failed to create new grid (%s), %w", cfg.Grid.URI, err)
 	}
 
-	for _, c := range has_colours {
+	all_colours := make([]colours.Colour, 0)
 
-		for _, pl := range plts {
+	for _, ex := range extruders {
 
-			cl, err := gr.Closest(c, pl)
+		max_colours := extruder_counts[ex.Name()]
+		has_colours, err := ex.Colours(ctx, im, max_colours)
 
-			if err != nil {
-				return nil, err
-			}
+		if err != nil {
+			return nil, fmt.Errorf("Failed to derive colours for extruder %s, %w", ex.Name(), err)
+		}
 
-			err = c.AppendClosest(cl)
+		for _, c := range has_colours {
 
-			if err != nil {
-				return nil, err
+			for _, pl := range palettes {
+
+				cl, err := gr.Closest(ctx, c, pl)
+
+				if err != nil {
+					return nil, fmt.Errorf("Failed to derive closest match for '%s' from '%s', %w", c, pl.Reference(), err)
+				}
+
+				err = c.AppendClosest(cl)
+
+				if err != nil {
+					return nil, fmt.Errorf("Failed to append closest colour to '%s', %w", c, err)
+				}
+
+				all_colours = append(all_colours, c)
 			}
 		}
 	}
@@ -123,7 +133,7 @@ func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Ser
 		PaletteContext: "x-urn:service:go-iiif#palette",
 		PaletteProfile: "x-urn:service:go-iiif#palette",
 		PaletteLabel:   "x-urn:service:go-iiif#palette",
-		Palette:        has_colours,
+		Palette:        all_colours,
 	}
 
 	return &s, nil
