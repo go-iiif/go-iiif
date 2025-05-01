@@ -5,18 +5,19 @@ import (
 	"fmt"
 	"image"
 	"image/color"
-	"strings"
-	_ "log/slog"
-	
-	"github.com/RobCherry/vibrant"
+	"net/url"
+
 	"github.com/aaronland/go-colours"
 	"github.com/lucasb-eyer/go-colorful"
+	"github.com/sfomuseum/vibrant"
 	"golang.org/x/image/draw"
 )
 
+const VIBRANT string = "vibrant"
+
 // Important: IsTransparentFilter relies on the sfomuseum/vibrant fork
 // which exposes Filter.IsAllowed as a public method
-// github.com/sfomuseum/vibrant v0.0.0-20250430212339-abb21560aa26
+// github.com/sfomuseum/vibrant
 
 type IsTransparentFilter struct {
 	vibrant.Filter
@@ -25,6 +26,21 @@ type IsTransparentFilter struct {
 func (f *IsTransparentFilter) IsAllowed(c color.Color) bool {
 	_, _, _, a := c.RGBA()
 	return a > 0.0
+}
+
+func NewVibrantColour(ctx context.Context, str_hex string) (colours.Colour, error) {
+
+	u := url.URL{}
+	u.Scheme = "common"
+
+	q := url.Values{}
+	q.Set("hex", str_hex)
+	q.Set("name", VIBRANT)
+	q.Set("ref", str_hex)
+
+	u.RawQuery = q.Encode()
+
+	return colours.NewColour(ctx, u.String())
 }
 
 type VibrantExtruder struct {
@@ -46,22 +62,22 @@ func NewVibrantExtruder(ctx context.Context, uri string) (Extruder, error) {
 }
 
 func (ex *VibrantExtruder) Name() string {
-	return "vibrant"
+	return VIBRANT
 }
 
-func (v *VibrantExtruder) Colours(im image.Image, limit int) ([]colours.Colour, error) {
+func (v *VibrantExtruder) Colours(ctx context.Context, im image.Image, limit int) ([]colours.Colour, error) {
 
 	results := make([]colours.Colour, 0)
-	
+
 	pb := vibrant.NewPaletteBuilder(im)
 	pb = pb.MaximumColorCount(uint32(limit))
 	pb = pb.Scaler(draw.ApproxBiLinear)
 
 	f := new(IsTransparentFilter)
 	pb = pb.AddFilter(f)
-	
+
 	palette := pb.Generate()
-	
+
 	for _, sw := range palette.Swatches() {
 
 		if sw == nil {
@@ -75,15 +91,10 @@ func (v *VibrantExtruder) Colours(im image.Image, limit int) ([]colours.Colour, 
 		}
 
 		hex := cl.Hex()
-		hex = strings.TrimLeft(hex, "#")
-
-		ctx := context.Background()
-
-		c_uri := fmt.Sprintf("common://?hex=%s&name=%s&ref=vibrant", hex, hex)
-		c, err := colours.NewColour(ctx, c_uri)
+		c, err := NewVibrantColour(ctx, hex)
 
 		if err != nil {
-			return nil, fmt.Errorf("Failed to create new color '%s', %w", c_uri, err)
+			return nil, fmt.Errorf("Failed to create new color '%s', %w", hex, err)
 		}
 
 		results = append(results, c)

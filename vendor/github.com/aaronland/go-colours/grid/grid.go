@@ -13,7 +13,7 @@ import (
 )
 
 type Grid interface {
-	Closest(colours.Colour, palette.Palette) (colours.Colour, error)
+	Closest(context.Context, colours.Colour, palette.Palette) (colours.Colour, error)
 }
 
 var grid_roster roster.Roster

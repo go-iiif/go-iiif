@@ -6,7 +6,7 @@ package service
 import (
 	"context"
 	"fmt"
-	
+
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
@@ -76,13 +76,13 @@ func NewPaletteService(cfg iiifconfig.PaletteServiceConfig, image iiifimage.Imag
 	ex, err := extruder.NewExtruder(ctx, extruder_uri)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create new extruder, %w", err)
+		return nil, fmt.Errorf("Failed to create new extruder (%s), %w", extruder_uri, err)
 	}
 
 	gr, err := grid.NewGrid(ctx, grid_uri)
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create new grid, %w", err)
+		return nil, fmt.Errorf("Failed to create new grid (%s), %w", grid_uri, err)
 	}
 
 	palettes := make([]palette.Palette, len(palette_uris))
@@ -98,7 +98,7 @@ func NewPaletteService(cfg iiifconfig.PaletteServiceConfig, image iiifimage.Imag
 		palettes[i] = p
 	}
 
-	has_colours, err := ex.Colours(im, extruder_count)
+	has_colours, err := ex.Colours(ctx, im, extruder_count)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to derive colours, %w", err)
@@ -108,7 +108,7 @@ func NewPaletteService(cfg iiifconfig.PaletteServiceConfig, image iiifimage.Imag
 
 		for _, pl := range palettes {
 
-			cl, err := gr.Closest(c, pl)
+			cl, err := gr.Closest(ctx, c, pl)
 
 			if err != nil {
 				return nil, fmt.Errorf("Failed to derive closest match for '%s' from '%s', %w", c, pl.Reference(), err)

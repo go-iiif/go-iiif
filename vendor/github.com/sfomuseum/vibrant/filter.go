@@ -9,7 +9,7 @@ import (
 // are valid within a resulting Palette.
 type Filter interface {
 	// Hook to allow clients to be able filter colors from resulting palette.  Return true if the color is allowed, false if not.
-	isAllowed(c color.Color) bool
+	IsAllowed(c color.Color) bool
 }
 
 // Default values for the default filter.
@@ -28,7 +28,7 @@ type defaultFilter struct {
 	quantizedWhiteMask    uint16
 }
 
-func (f *defaultFilter) isAllowed(c color.Color) bool {
+func (f *defaultFilter) IsAllowed(c color.Color) bool {
 	// Short circuit for quantized colors to allow for faster black/white checking.
 	if q, ok := c.(QuantizedColor); ok && !f.isAllowedQuantizedColor(q) {
 		return false

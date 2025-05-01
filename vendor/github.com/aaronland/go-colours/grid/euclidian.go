@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net/url"
 	"sort"
-	"strings"
 
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/palette"
@@ -29,7 +29,7 @@ func NewEuclidianGrid(ctx context.Context, uri string) (Grid, error) {
 	return &eu, nil
 }
 
-func (eu *EuclidianGrid) Closest(target colours.Colour, plt palette.Palette) (colours.Colour, error) {
+func (eu *EuclidianGrid) Closest(ctx context.Context, target colours.Colour, plt palette.Palette) (colours.Colour, error) {
 
 	// http://stackoverflow.com/questions/9694165/convert-rgb-color-to-english-color-name-like-green
 	// https://github.com/ubernostrum/webcolors/blob/master/webcolors.py#L473-L485
@@ -73,12 +73,14 @@ func (eu *EuclidianGrid) Closest(target colours.Colour, plt palette.Palette) (co
 
 	match := lookup[keys[0]]
 
-	ctx := context.Background()
+	q := url.Values{}
+	q.Set("hex", match.Hex())
+	q.Set("name", match.Name())
+	q.Set("ref", plt.Reference())
 
-	c_hex := match.Hex()
-	c_hex = strings.TrimLeft(c_hex, "#")
+	u := url.URL{}
+	u.Scheme = "common"
+	u.RawQuery = q.Encode()
 
-	c_uri := fmt.Sprintf("common://?hex=%s&name=%s&ref=%s", c_hex, match.Name(), plt.Reference())
-
-	return colours.NewColour(ctx, c_uri)
+	return colours.NewColour(ctx, u.String())
 }

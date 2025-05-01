@@ -13,7 +13,7 @@ import (
 )
 
 type Extruder interface {
-	Colours(image.Image, int) ([]colours.Colour, error)
+	Colours(context.Context, image.Image, int) ([]colours.Colour, error)
 	Name() string
 }
 

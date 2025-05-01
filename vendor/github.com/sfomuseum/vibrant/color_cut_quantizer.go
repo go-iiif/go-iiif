@@ -144,7 +144,7 @@ func (q *ColorCutQuantizer) Quantize(p color.Palette, m image.Image) color.Palet
 
 func (q *ColorCutQuantizer) shouldIgnoreColor(color color.Color) bool {
 	for _, filter := range q.filters {
-		if !filter.isAllowed(color) {
+		if !filter.IsAllowed(color) {
 			return true
 		}
 	}

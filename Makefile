@@ -12,7 +12,7 @@ cli:
 
 debug-seed:
 	if test -d $(CWD)/fixtures/cache/spank; then rm -rf $(CWD)/fixtures/cache/spank; fi
-	go run cmd/iiif-tile-seed/main.go \
+	go run -mod $(GOMOD) cmd/iiif-tile-seed/main.go \
 		-config-images-source-uri file://$(CWD)/fixtures/images \
 		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
 		-verbose \
@@ -26,7 +26,7 @@ debug-seed-csv:
 	echo "source_filename,source_root,target_filename,target_root" > $(CWD)/fixtures/seed.csv
 	echo "spanking-cat.jpg,$(CWD)/fixtures/images,spanking-csv,$(CWD)/fixtures/cache" >> $(CWD)/fixtures/seed.csv
 	echo "walrus.jpg,$(CWD)/fixtures/images,walrus-csv,$(CWD)/fixtures/cache" >> $(CWD)/fixtures/seed.csv
-	go run cmd/iiif-tile-seed/main.go \
+	go run -mod $(GOMOD) cmd/iiif-tile-seed/main.go \
 		-mode csv \
 		-generate-html \
 		-verbose \
@@ -34,7 +34,7 @@ debug-seed-csv:
 
 debug-process:
 	if test -d $(CWD)/fixtures/cache/999; then rm -rf $(CWD)/fixtures/cache/999; fi
-	go run cmd/iiif-process/main.go \
+	go run -mod $(GOMOD) cmd/iiif-process/main.go \
 		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
 		-config-images-source-uri file://$(CWD)/fixtures/images \
 		-report \
@@ -45,7 +45,7 @@ debug-process:
 
 debug-server:
 	mkdir -p fixtures/cache
-	go run cmd/iiif-server/main.go \
+	go run -mod $(GOMOD) cmd/iiif-server/main.go \
 		-config-derivatives-cache-uri file://$(CWD)/fixtures/cache \
 		-config-images-source-uri file://$(CWD)/fixtures/images \
 		-example \

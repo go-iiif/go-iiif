@@ -4,7 +4,7 @@ Go package for working with colours, principally colour extraction and "snap to 
 
 ## Important
 
-This is work in progress. It appears to have bugs.
+This is work in progress.
 
 ## Documentation
 
@@ -107,7 +107,7 @@ Extruders are the things that generate a palette of colours for an `image.Image`
 
 This returns colours using the [vibrant](github.com/RobCherry/vibrant) package.
 
-Importantly, this uses the [sfomuseum/vibrant](https://github.com/sfomuseum/vibrant) of the package to enable the filtering out of transparent pixels.
+Importantly, this uses the [sfomuseum/vibrant](https://github.com/sfomuseum/vibrant) fork of the package to enable the filtering out of transparent pixels.
 
 ### marekm4://
 

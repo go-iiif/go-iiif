@@ -11,16 +11,16 @@
 		    ]
 	}
     },
-    "palette": {
-    	"extruder": { "name": "vibrant", "count": 5 },
-    	"grid": { "name": "euclidian" },
+    "palette_service": {
+    	"extruder": { "uri": "marekm4://", "count": 5 },
+    	"grid": { "uri": "euclidian://" },
 	"palette": [
-		    { "name": "crayola" },
-		    { "name": "css4" }
+	    { "uri": "crayola://" },
+	    { "uri": "css4://" }
         ]
     },
-    "blurhash": { "x": 8, "y": 8, "size": 200 },
-    "imagehash": {},
+    "blurhash_service": { "x": 8, "y": 8, "size": 200 },
+    "imagehash_service": {},
     "graphics": {
 	"driver": "native://"
     },
