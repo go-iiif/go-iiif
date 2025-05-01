@@ -8,7 +8,7 @@
 
 * `blurhash` for generateing a compact base-83 encoded representation of an image.
 * `imagehash` for generating average and difference perceptual hashes of an image.
-* `palette` for extracting a colour palette for an image.
+* `palette` for extracting one or more colour palettes for an image using the [aaronland/go-colours](https://github.com/aaronland/go-colours) package.
 
 Details for configuring these service are discussed [above](#services) but here is the output for a service with the default settings:
 
