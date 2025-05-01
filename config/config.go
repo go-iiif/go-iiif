@@ -65,17 +65,17 @@ type ServicesToggle []string
 // PaletteServiceConfig details configuration details for colour palette extraction services.
 // Under the hood this service uses the `aaronland/go-colours` package to do colour extraction.
 type PaletteServiceConfig struct {
-	URI      string          `json:"uri"`
-	Extruder ExtruderConfig  `json:"extruder"`
-	Grid     GridConfig      `json:"grid"`
-	Palettes []PaletteConfig `json:"palettes"`
+	URI       string           `json:"uri"`
+	Extruders []ExtruderConfig `json:"extruders"`
+	Grid      GridConfig       `json:"grid"`
+	Palettes  []PaletteConfig  `json:"palettes"`
 }
 
 type ExtruderConfig struct {
 	// A registered `aaronland/go-colours/extruder.Extruder` URI.
-	URI   string `json:"uri"`
+	URI string `json:"uri"`
 	// The maximum number of colours for the extruder to return.
-	Count int    `json:"count"`
+	Count int `json:"count"`
 }
 
 type GridConfig struct {
@@ -84,7 +84,7 @@ type GridConfig struct {
 }
 
 type PaletteConfig struct {
-	// A registered `aaronland/go-colours/palette.Palette` URI.	
+	// A registered `aaronland/go-colours/palette.Palette` URI.
 	URI string `json:"uri"`
 }
 

@@ -12,7 +12,9 @@
 	}
     },
     "palette_service": {
-    	"extruder": { "uri": "marekm4://", "count": 5 },
+    	"extruders": [
+	    { "uri": "marekm4://", "count": 5 }	    
+	],
     	"grid": { "uri": "euclidian://" },
 	"palettes": [
 	    { "uri": "crayola://" },
