@@ -25,7 +25,7 @@ func init() {
 }
 
 func initColourService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
-	return NewColourService(cfg.Palette, im)
+	return NewColourService(cfg.ColourServiceConfig, im)
 }
 
 type ColourService struct {
@@ -52,7 +52,7 @@ func (s *ColourService) Value() interface{} {
 	return s.Palette
 }
 
-func NewColourService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
+func NewColourService(cfg iiifconfig.ColourServiceConfig, image iiifimage.Image) (Service, error) {
 
 	ctx := context.Background()
 
@@ -97,7 +97,7 @@ func NewColourService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Serv
 		plts[i] = pl
 	}
 
-	has_colours, err := ex.Colours(im, count_colours)
+	has_colours, err := ex.Colours(im, extruder_count)
 
 	if err != nil {
 		return nil, err
