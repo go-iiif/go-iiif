@@ -6,8 +6,8 @@ package level
 import (
 	"fmt"
 
-	iiifcompliance "github.com/go-iiif/go-iiif/v7/compliance"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifcompliance "github.com/go-iiif/go-iiif/v8/compliance"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
 )
 
 type Level0 struct {

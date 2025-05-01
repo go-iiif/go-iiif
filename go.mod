@@ -1,4 +1,4 @@
-module github.com/go-iiif/go-iiif/v7
+module github.com/go-iiif/go-iiif/v8
 
 go 1.24.2
 

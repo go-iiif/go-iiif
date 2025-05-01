@@ -12,7 +12,7 @@ _And by "forked" I mean that [@greut](https://github.com/greut) and I decided th
 
 ## Releases
 
-The current release is `github.com/go-iiif/go-iiif/v7`.
+The current release is `github.com/go-iiif/go-iiif/v8`.
 
 Documentation for releases has been moved in to [RELEASES.md](RELEASES.md).
 
@@ -238,13 +238,13 @@ import (
 	"log"
 
 	_ "github.com/aaronland/gocloud-blob/s3"
-	_ "github.com/go-iiif/go-iiif/v7/native"
+	_ "github.com/go-iiif/go-iiif/v8/native"
 	_ "gocloud.dev/blob/fileblob"
 	_ "gocloud.dev/blob/memblob"
 	_ "gocloud.dev/blob/s3blob"	
         _ "yourprovider.host/go-iiif-cache"	// YOUR CUSTOM CODE
        
-	"github.com/go-iiif/go-iiif/v7/app/seed"
+	"github.com/go-iiif/go-iiif/v8/app/seed"
 )
 
 func main() {
@@ -336,7 +336,7 @@ For example, here is how you might implement a custom cache implementation:
 import (
        "context"
 
-       iiifcache "github.com/go-iiif/go-iiif/v7/cache"
+       iiifcache "github.com/go-iiif/go-iiif/v8/cache"
 )
 
 type CustomCache struct {

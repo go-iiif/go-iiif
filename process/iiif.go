@@ -5,10 +5,10 @@ import (
 	"log/slog"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifcache "github.com/go-iiif/go-iiif/v8/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 )
 
 type IIIFProcessor struct {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifdefaults "github.com/go-iiif/go-iiif/v7/defaults"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifdefaults "github.com/go-iiif/go-iiif/v8/defaults"
 )
 
 func TestNewImagesCacheFromConfig(t *testing.T) {

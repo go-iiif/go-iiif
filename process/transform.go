@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifcache "github.com/go-iiif/go-iiif/v7/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v7/driver"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
-	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifcache "github.com/go-iiif/go-iiif/v8/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
+	iiiflevel "github.com/go-iiif/go-iiif/v8/level"
 )
 
 func TransformURIWithInstructions(ctx context.Context, u iiifuri.URI, i IIIFInstructions, config *iiifconfig.Config, driver iiifdriver.Driver, source_cache iiifcache.Cache, dest_cache iiifcache.Cache) (iiifuri.URI, iiifimage.Image, error) {

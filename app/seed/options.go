@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
 	"github.com/sfomuseum/go-flags/flagset"
 )
 

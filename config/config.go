@@ -12,7 +12,7 @@ import (
 
 	"github.com/aaronland/gocloud-blob/bucket"
 	"github.com/brunoga/deep"
-	iiifdefaults "github.com/go-iiif/go-iiif/v7/defaults"
+	iiifdefaults "github.com/go-iiif/go-iiif/v8/defaults"
 	"gocloud.dev/blob"
 )
 
@@ -29,12 +29,12 @@ type Config struct {
 	// Images is a `ImagesConfig` detailing how and where IIIF source images are stored.
 	Images ImagesConfig `json:"images"`
 	// Derivatives is a `DerivativesConfig` detailing how and where IIIF derivative images are stored.
-	Derivatives DerivativesConfig `json:"derivatives"`
-	Primitive   PrimitiveConfig   `json:"primitive,omitempty"`
-	Palette     PaletteConfig     `json:"palette,omitempty"`
-	BlurHash    BlurHashConfig    `json:"blurhash,omitempty"`
-	ImageHash   ImageHashConfig   `json:"imagehash,omitempty"`
-	Custom      interface{}       `json:"custom,omitempty"`
+	Derivatives            DerivativesConfig      `json:"derivatives"`
+	Primitive              PrimitiveConfig        `json:"primitive,omitempty"`
+	ColourServiceConfig    ColourServiceConfig    `json:"colour_service,omitempty"`
+	BlurHashServiceConfig  BlurHashServiceConfig  `json:"blurhash_service,omitempty"`
+	ImageHashServiceConfig ImageHashServiceConfig `json:"imagehash_service,omitempty"`
+	Custom                 interface{}            `json:"custom,omitempty"`
 }
 
 func (c *Config) Clone() (*Config, error) {
@@ -62,31 +62,35 @@ type ServicesConfig struct {
 
 type ServicesToggle []string
 
-// PaletteConfig details configuration details for colour palette extraction services.
-type PaletteConfig struct {
-	Name     string         `json:"name"`
-	Extruder ExtruderConfig `json:"extruder"`
-	Grid     GridConfig     `json:"grid"`
-	Palettes []GridConfig   `json:"palettes"`
+// ColourServiceConfig details configuration details for colour palette extraction services.
+type ColourServiceConfig struct {
+	URI      string          `json:"uri"`
+	Extruder ExtruderConfig  `json:"extruder"`
+	Grid     GridConfig      `json:"grid"`
+	Palettes []PaletteConfig `json:"palettes"`
 }
 
 type ExtruderConfig struct {
-	Name  string `json:"name"`
+	URI   string `json:"uri"`
 	Count int    `json:"count"`
 }
 
 type GridConfig struct {
-	Name string `json:"name"`
+	URI string `json:"name"`
+}
+
+type PaletteConfig struct {
+	URI string `json:"name"`
 }
 
 // BlurHashConfig defines configuration details for blurhash generation services.
-type BlurHashConfig struct {
+type BlurHashServiceConfig struct {
 	X    int `json:"x"`
 	Y    int `json:"y"`
 	Size int `json:"size"`
 }
 
-type ImageHashConfig struct {
+type ImageHashServiceConfig struct {
 }
 
 type LevelConfig struct {

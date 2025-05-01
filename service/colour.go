@@ -10,25 +10,25 @@ import (
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
 	"github.com/aaronland/go-colours/palette"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 )
 
 func init() {
 
 	ctx := context.Background()
-	err := RegisterService(ctx, "palette", initPaletteService)
+	err := RegisterService(ctx, "palette", initColourService)
 
 	if err != nil {
 		panic(err)
 	}
 }
 
-func initPaletteService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
-	return NewPaletteService(cfg.Palette, im)
+func initColourService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
+	return NewColourService(cfg.Palette, im)
 }
 
-type PaletteService struct {
+type ColourService struct {
 	Service        `json:",omitempty"`
 	PaletteContext string           `json:"@context"`
 	PaletteProfile string           `json:"profile"`
@@ -36,34 +36,34 @@ type PaletteService struct {
 	Palette        []colours.Colour `json:"palette,omitempty"`
 }
 
-func (s *PaletteService) Context() string {
+func (s *ColourService) Context() string {
 	return s.PaletteContext
 }
 
-func (s *PaletteService) Profile() string {
+func (s *ColourService) Profile() string {
 	return s.PaletteProfile
 }
 
-func (s *PaletteService) Label() string {
+func (s *ColourService) Label() string {
 	return s.PaletteLabel
 }
 
-func (s *PaletteService) Value() interface{} {
+func (s *ColourService) Value() interface{} {
 	return s.Palette
 }
 
-func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
+func NewColourService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Service, error) {
 
 	ctx := context.Background()
 
-	use_extruder := cfg.Extruder.Name
-	count_colours := cfg.Extruder.Count
+	extruder_uri := cfg.Extruder.URI
+	extruder_count := cfg.Extruder.Count
 
-	use_grid := cfg.Grid.Name
-	use_palette := make([]string, 0)
+	grid_uri := cfg.Grid.URI
+	palette_uris := make([]string, 0)
 
 	for _, p := range cfg.Palettes {
-		use_palette = append(use_palette, p.Name)
+		palette_uris = append(palette_uris, p.URI)
 	}
 
 	im, err := iiifimage.IIIFImageToGolangImage(image)
@@ -72,21 +72,21 @@ func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Ser
 		return nil, err
 	}
 
-	ex, err := extruder.NewExtruder(ctx, use_extruder)
+	ex, err := extruder.NewExtruder(ctx, extruder_uri)
 
 	if err != nil {
 		return nil, err
 	}
 
-	gr, err := grid.NewGrid(ctx, use_grid)
+	gr, err := grid.NewGrid(ctx, grid_uri)
 
 	if err != nil {
 		return nil, err
 	}
 
-	plts := make([]palette.Palette, len(use_palette))
+	plts := make([]palette.Palette, len(palette_uris))
 
-	for i, p := range use_palette {
+	for i, p := range palette_uris {
 
 		pl, err := palette.NewPalette(ctx, p)
 
@@ -121,7 +121,7 @@ func NewPaletteService(cfg iiifconfig.PaletteConfig, image iiifimage.Image) (Ser
 		}
 	}
 
-	s := PaletteService{
+	s := ColourService{
 		PaletteContext: "x-urn:service:go-iiif#palette",
 		PaletteProfile: "x-urn:service:go-iiif#palette",
 		PaletteLabel:   "x-urn:service:go-iiif#palette",

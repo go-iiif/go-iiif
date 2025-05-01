@@ -5,8 +5,8 @@ import (
 	_ "log"
 
 	"github.com/corona10/goimagehash"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifimage "github.com/go-iiif/go-iiif/v7/image"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 )
 
 func init() {
@@ -20,7 +20,7 @@ func init() {
 }
 
 func initImageHashService(ctx context.Context, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {
-	return NewImageHashService(cfg.ImageHash, im)
+	return NewImageHashService(cfg.ImageHashServiceConfig, im)
 }
 
 type ImageHashService struct {
@@ -51,7 +51,7 @@ func (s *ImageHashService) Value() interface{} {
 	}
 }
 
-func NewImageHashService(cfg iiifconfig.ImageHashConfig, image iiifimage.Image) (Service, error) {
+func NewImageHashService(cfg iiifconfig.ImageHashServiceConfig, image iiifimage.Image) (Service, error) {
 
 	im, err := iiifimage.IIIFImageToGolangImage(image)
 

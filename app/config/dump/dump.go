@@ -7,8 +7,8 @@ import (
 	"log/slog"
 	"sort"
 
-	iiifcompliance "github.com/go-iiif/go-iiif/v7/compliance"
-	iiiflevel "github.com/go-iiif/go-iiif/v7/level"
+	iiifcompliance "github.com/go-iiif/go-iiif/v8/compliance"
+	iiiflevel "github.com/go-iiif/go-iiif/v8/level"
 )
 
 type FeatureDetails struct {

@@ -7,8 +7,8 @@ import (
 	"log/slog"
 
 	iiifuri "github.com/go-iiif/go-iiif-uri"
-	iiifconfig "github.com/go-iiif/go-iiif/v7/config"
-	iiifprocess "github.com/go-iiif/go-iiif/v7/process"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifprocess "github.com/go-iiif/go-iiif/v8/process"
 	"github.com/sfomuseum/go-flags/flagset"
 )
 

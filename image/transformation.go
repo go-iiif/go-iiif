@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	iiifcompliance "github.com/go-iiif/go-iiif/v7/compliance"
+	iiifcompliance "github.com/go-iiif/go-iiif/v8/compliance"
 )
 
 type RegionInstruction struct {
