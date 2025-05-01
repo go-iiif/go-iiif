@@ -80,7 +80,7 @@ type GridConfig struct {
 }
 
 type PaletteConfig struct {
-	URI string `json:"name"`
+	URI string `json:"uri"`
 }
 
 // BlurHashConfig defines configuration details for blurhash generation services.

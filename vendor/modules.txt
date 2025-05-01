@@ -1,7 +1,10 @@
+# github.com/RobCherry/vibrant v0.0.0-20250501174501-d90de4256706
+## explicit; go 1.24.2
+github.com/RobCherry/vibrant
 # github.com/aaronland/go-aws-auth v1.7.0
 ## explicit; go 1.22.1
 github.com/aaronland/go-aws-auth
-# github.com/aaronland/go-colours v0.7.0
+# github.com/aaronland/go-colours v0.7.1
 ## explicit; go 1.24.2
 github.com/aaronland/go-colours
 github.com/aaronland/go-colours/extruder
@@ -411,9 +414,6 @@ github.com/sfomuseum/go-exif-update/tags
 # github.com/sfomuseum/go-flags v0.10.0
 ## explicit; go 1.16
 github.com/sfomuseum/go-flags/flagset
-# github.com/sfomuseum/vibrant v0.0.1
-## explicit; go 1.24.2
-github.com/sfomuseum/vibrant
 # github.com/tidwall/gjson v1.18.0
 ## explicit; go 1.12
 github.com/tidwall/gjson

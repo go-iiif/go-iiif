@@ -45,7 +45,7 @@ Becomes:
     "palette_service": {
     	"extruder": { "uri": "vibrant://", "count": 5 },
     	"grid": { "uri": "euclidian://" },
-	"palette": [
+	"palettes": [
 		    { "uri": "crayola://" },
 		    { "uri": "css4://" }
         ]

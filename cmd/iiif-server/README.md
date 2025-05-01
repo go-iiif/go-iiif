@@ -62,38 +62,38 @@ $> curl -s http://localhost:8080/spanking-cat.jpg/info.json | python -mjson.tool
     "http://iiif.io/api/image/2/level2.json",
     {
       "formats": [
-        "webp",
         "jpg",
         "png",
         "tif",
-        "gif"
+        "gif",
+        "webp"
       ],
       "qualities": [
         "dither",
+        "crisp",
         "default",
-        "color",
-        "crisp"
+        "color"
       ],
       "supports": [
-        "regionSquare",
         "full",
         "regionByPx",
         "regionByPct",
-        "sizeByPct",
-        "sizeByDistortedWh",
+        "regionSquare",
         "full",
         "max",
-        "sizeByConfinedWh",
+        "sizeByPct",
         "sizeByWh",
         "sizeByW",
         "sizeByH",
-        "mirroring",
-        "noAutoRotate",
+        "sizeByConfinedWh",
+        "sizeByDistortedWh",
         "none",
         "rotationBy90s",
+        "mirroring",
+        "noAutoRotate",
+        "baseUriRedirect",
         "cors",
-        "jsonldMediaType",
-        "baseUriRedirect"
+        "jsonldMediaType"
       ]
     }
   ],
@@ -104,29 +104,72 @@ $> curl -s http://localhost:8080/spanking-cat.jpg/info.json | python -mjson.tool
       "label": "x-urn:service:go-iiif#palette",
       "palette": [
         {
-          "name": "6b5c43",
-          "hex": "#6b5c43",
-          "reference": "vibrant"
+          "name": "marekm4",
+          "hex": "#dddad7",
+          "reference": "dddad7",
+          "closest": [
+            {
+              "name": "Timberwolf",
+              "hex": "#dbd7d2",
+              "reference": "crayola"
+            },
+            {
+              "name": "gainsboro",
+              "hex": "#dcdcdc",
+              "reference": "css4"
+            }
+          ]
         },
         {
-          "name": "cfcbc9",
-          "hex": "#cfcbc9",
-          "reference": "vibrant"
+          "name": "marekm4",
+          "hex": "#594a36",
+          "reference": "594a36",
+          "closest": [
+            {
+              "name": "Raw Umber",
+              "hex": "#714b23",
+              "reference": "crayola"
+            },
+            {
+              "name": "darkolivegreen",
+              "hex": "#556b2f",
+              "reference": "css4"
+            }
+          ]
         },
         {
-          "name": "a69f92",
-          "hex": "#a69f92",
-          "reference": "vibrant"
+          "name": "marekm4",
+          "hex": "#9b8e6f",
+          "reference": "9b8e6f",
+          "closest": [
+            {
+              "name": "Beaver",
+              "hex": "#9f8170",
+              "reference": "crayola"
+            },
+            {
+              "name": "grey",
+              "hex": "#808080",
+              "reference": "css4"
+            }
+          ]
         },
         {
-          "name": "e7e5e0",
-          "hex": "#e7e5e0",
-          "reference": "vibrant"
-        },
-        {
-          "name": "dad8d7",
-          "hex": "#dad8d7",
-          "reference": "vibrant"
+          "name": "marekm4",
+          "hex": "#88775a",
+          "reference": "88775a",
+          "closest": [
+            {
+              "name": "Shadow",
+              "hex": "#8a795d",
+              "reference": "crayola"
+            },
+            {
+              "name": "dimgrey",
+              "hex": "#696969",
+              "reference": "css4"
+            }
+          ]
         }
       ]
     },

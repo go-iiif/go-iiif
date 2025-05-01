@@ -9,7 +9,7 @@ import (
 
 	"github.com/aaronland/go-colours"
 	"github.com/lucasb-eyer/go-colorful"
-	"github.com/sfomuseum/vibrant"
+	"github.com/RobCherry/vibrant"
 	"golang.org/x/image/draw"
 )
 
