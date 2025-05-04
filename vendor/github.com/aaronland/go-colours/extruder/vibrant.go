@@ -7,9 +7,9 @@ import (
 	"image/color"
 	"net/url"
 
+	"github.com/RobCherry/vibrant"
 	"github.com/aaronland/go-colours"
 	"github.com/lucasb-eyer/go-colorful"
-	"github.com/RobCherry/vibrant"
 	"golang.org/x/image/draw"
 )
 
