@@ -3,7 +3,7 @@ module github.com/go-iiif/go-iiif/v8
 go 1.24.2
 
 require (
-	github.com/aaronland/go-colours v0.7.1
+	github.com/aaronland/go-colours v0.10.0
 	github.com/aaronland/go-flickr-api v1.1.6
 	github.com/aaronland/go-http-server v1.5.0
 	github.com/aaronland/go-image v1.3.1
@@ -83,6 +83,7 @@ require (
 	github.com/marekm4/color-extractor v1.2.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
 	github.com/sfomuseum/go-exif-update v0.1.3 // indirect
+	github.com/soniakeys/quant v1.0.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
