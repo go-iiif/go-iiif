@@ -6,7 +6,7 @@ package service
 import (
 	"context"
 	"fmt"
-
+	
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
@@ -111,7 +111,7 @@ func NewPaletteService(cfg iiifconfig.PaletteServiceConfig, image iiifimage.Imag
 		for _, c := range has_colours {
 
 			for _, pl := range palettes {
-
+				
 				cl, err := gr.Closest(ctx, c, pl)
 
 				if err != nil {
@@ -123,9 +123,9 @@ func NewPaletteService(cfg iiifconfig.PaletteServiceConfig, image iiifimage.Imag
 				if err != nil {
 					return nil, fmt.Errorf("Failed to append closest colour to '%s', %w", c, err)
 				}
-
-				all_colours = append(all_colours, c)
 			}
+
+			all_colours = append(all_colours, c)			
 		}
 	}
 
