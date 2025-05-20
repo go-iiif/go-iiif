@@ -51,8 +51,6 @@ github.com/aaronland/go-http-server v1.5.0 h1:5yEan85iJrECOHDVmDn/noU7vbDEN50aQR
 github.com/aaronland/go-http-server v1.5.0/go.mod h1:BJqspPR3LgC3CReChGY9p783zzk5dDegDVNWwgHW2TM=
 github.com/aaronland/go-image/v2 v2.1.0 h1:LvBfPhwuIJWXw2LrVuWdmkdB3sxjKod6Tk4htpRg+vA=
 github.com/aaronland/go-image/v2 v2.1.0/go.mod h1:f4LaEmnI5JU7yLzJm+ZbCVxHhcEbnYns1QeRr8hd0IY=
-github.com/aaronland/go-mimetypes v0.0.2 h1:Gsi1ak00V+m+g8lVIROkM2mIdj7aLnvaF1iqfVkhHHc=
-github.com/aaronland/go-mimetypes v0.0.2/go.mod h1:bFXDLXp+3bRrzRhoD7RY2vSKTcsVjgdSckHxbuIdTLA=
 github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUmyQtI=
 github.com/aaronland/go-roster v1.0.0/go.mod h1:KIsYZgrJlAsyb9LsXSCvlqvbcCBVjCSqcQiZx42i9ro=
 github.com/aaronland/go-string v1.0.0 h1:fPHmC1i9JhGzgi4qdCSXKc4xTCaLLe0uvlJMu9dHhco=

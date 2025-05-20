@@ -13,7 +13,6 @@ import (
 
 	"github.com/aaronland/go-image/v2/colour"
 	"github.com/aaronland/go-image/v2/encode"
-	"github.com/aaronland/go-mimetypes"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
 	"github.com/anthonynsimon/bild/transform"
@@ -78,11 +77,7 @@ func (im *NativeImage) ColourModel() colour.Model {
 }
 
 func (im *NativeImage) ContentType() string {
-
-	format := im.Format()
-
-	t := mimetypes.TypesByExtension(format)
-	return t[0]
+	return im.Format()
 }
 
 func (im *NativeImage) Identifier() string {

@@ -28,10 +28,6 @@ github.com/aaronland/go-image/v2/imaging
 github.com/aaronland/go-image/v2/resize
 github.com/aaronland/go-image/v2/rotate
 github.com/aaronland/go-image/v2/transform
-# github.com/aaronland/go-mimetypes v0.0.2
-## explicit; go 1.12
-github.com/aaronland/go-mimetypes
-github.com/aaronland/go-mimetypes/lookup
 # github.com/aaronland/go-roster v1.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-roster
