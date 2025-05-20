@@ -12,7 +12,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/aaronland/go-image/colour"
+	"github.com/aaronland/go-image/v2/colour"
 	"github.com/dgraph-io/ristretto/v2"
 )
 

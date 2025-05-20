@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"image"
 	"log/slog"
 
-	"github.com/aaronland/go-image/colour"
-	"github.com/aaronland/go-image/rotate"
+	"github.com/aaronland/go-image/v2/colour"
+	"github.com/aaronland/go-image/v2/decode"
+	"github.com/aaronland/go-image/v2/rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v8/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
@@ -51,7 +51,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(ctx context.Context, config
 
 	buf := bytes.NewReader(body)
 
-	img, img_fmt, err := image.Decode(buf)
+	img, img_fmt, _, err := decode.DecodeImage(ctx, buf)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to decode image, %w", err)

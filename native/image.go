@@ -5,14 +5,14 @@ package native
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"image"
 	"image/gif"
-	"image/jpeg"
-	"image/png"
 	_ "log/slog"
 
-	"github.com/aaronland/go-image/colour"
+	"github.com/aaronland/go-image/v2/colour"
+	"github.com/aaronland/go-image/v2/encode"
 	"github.com/aaronland/go-mimetypes"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
@@ -22,9 +22,6 @@ import (
 	iiifsource "github.com/go-iiif/go-iiif/v8/source"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
-	"golang.org/x/image/bmp"
-	"golang.org/x/image/tiff"
-	_ "golang.org/x/image/webp"
 )
 
 type NativeImage struct {
@@ -272,6 +269,8 @@ func decodeImageBytes(body []byte) (image.Image, string, error) {
 
 func encodeImage(im image.Image, format string) ([]byte, error) {
 
+	ctx := context.Background()
+
 	var b bytes.Buffer
 	wr := bufio.NewWriter(&b)
 
@@ -279,18 +278,18 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 
 	switch format {
 	case "bmp":
-		bmp.Encode(wr, im)
+		err = encode.EncodeBMP(ctx, wr, im, nil)
 	case "jpg", "jpeg":
-		opts := jpeg.Options{Quality: 100}
-		err = jpeg.Encode(wr, im, &opts)
+		err = encode.EncodeJPEG(ctx, wr, im, nil, nil)
 	case "png":
-		err = png.Encode(wr, im)
+		err = encode.EncodePNG(ctx, wr, im, nil)
 	case "gif":
 		opts := gif.Options{}
 		err = gif.Encode(wr, im, &opts)
 	case "tiff":
-		opts := tiff.Options{}
-		err = tiff.Encode(wr, im, &opts)
+		err = encode.EncodeJPEG(ctx, wr, im, nil, nil)
+	case "heic":
+		err = encode.EncodeHEIC(ctx, wr, im, nil)
 	default:
 		err = fmt.Errorf("Unsupported encoding, '%s'", format)
 	}
