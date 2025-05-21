@@ -2,17 +2,20 @@ package image
 
 import (
 	"bytes"
+	"context"
 	"fmt"
-	"golang.org/x/image/tiff"
-	"golang.org/x/image/webp"
+	_ "golang.org/x/image/tiff"
+	_ "golang.org/x/image/webp"
 	"image"
-	"image/gif"
-	"image/jpeg"
-	"image/png"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"log/slog"
 	"time"
 
 	"github.com/aaronland/go-image/v2/colour"
+	"github.com/aaronland/go-image/v2/decode"
+	"github.com/aaronland/go-image/v2/encode"
 	"github.com/dgraph-io/ristretto/v2"
 )
 
@@ -74,39 +77,48 @@ func IIIFImageToGolangImage(im Image) (image.Image, error) {
 		logger.Debug("Cache MISS")
 	}
 
-	var goimg image.Image
-	var err error
+	ctx := context.Background()
 
-	content_type := im.ContentType()
+	im_buf := bytes.NewReader(im.Body())
+	goimg, _, _, err := decode.DecodeImage(ctx, im_buf)
 
-	if content_type == "image/gif" {
+	/*
+		var goimg image.Image
+		var err error
 
-		buf := bytes.NewBuffer(im.Body())
-		goimg, err = gif.Decode(buf)
+		content_type := im.ContentType()
 
-	} else if content_type == "image/jpeg" {
+		slog.Info("WTF", "content type", content_type)
 
-		buf := bytes.NewBuffer(im.Body())
-		goimg, err = jpeg.Decode(buf)
+		if content_type == "image/gif" {
 
-	} else if content_type == "image/png" {
+			buf := bytes.NewBuffer(im.Body())
+			goimg, err = gif.Decode(buf)
 
-		buf := bytes.NewBuffer(im.Body())
-		goimg, err = png.Decode(buf)
+		} else if content_type == "image/jpeg" {
 
-	} else if content_type == "image/tiff" {
+			buf := bytes.NewBuffer(im.Body())
+			goimg, err = jpeg.Decode(buf)
 
-		buf := bytes.NewBuffer(im.Body())
-		goimg, err = tiff.Decode(buf)
+		} else if content_type == "image/png" {
 
-	} else if content_type == "image/webp" {
+			buf := bytes.NewBuffer(im.Body())
+			goimg, err = png.Decode(buf)
 
-		buf := bytes.NewBuffer(im.Body())
-		goimg, err = webp.Decode(buf)
+		} else if content_type == "image/tiff" {
 
-	} else {
-		err = fmt.Errorf("Unsupported content type '%s' for decoding", content_type)
-	}
+			buf := bytes.NewBuffer(im.Body())
+			goimg, err = tiff.Decode(buf)
+
+		} else if content_type == "image/webp" {
+
+			buf := bytes.NewBuffer(im.Body())
+			goimg, err = webp.Decode(buf)
+
+		} else {
+			err = fmt.Errorf("Unsupported content type '%s' for decoding", content_type)
+		}
+	*/
 
 	if err != nil {
 		logger.Error("Failed to convert image", "error", err)
@@ -141,45 +153,66 @@ func GolangImageToIIIFImage(goimg image.Image, im Image) error {
 // Encode a Go language image.Image instance to a byte array.
 func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) {
 
-	var out *bytes.Buffer
+	ctx := context.Background()
+	wr := new(bytes.Buffer)
 	var err error
 
-	if content_type == "image/gif" {
-
-		/*
-			opts := gif.Options{
-				NumColors: 256,
-			}
-		*/
-
-		out = new(bytes.Buffer)
-		err = gif.Encode(out, goimg, nil)
-
-	} else if content_type == "image/jpeg" {
-
-		out = new(bytes.Buffer)
-		err = jpeg.Encode(out, goimg, nil)
-
-	} else if content_type == "image/png" {
-
-		out = new(bytes.Buffer)
-		err = png.Encode(out, goimg)
-
-	} else if content_type == "image/tiff" {
-
-		out = new(bytes.Buffer)
-		err = tiff.Encode(out, goimg, nil)
-
-	} else {
-
-		err = fmt.Errorf("Unsupported content type '%s' for encoding", content_type)
+	switch content_type {
+	case "jpg", "jpeg", "image/jpeg":
+		err = encode.EncodeJPEG(ctx, wr, goimg, nil, nil)
+	case "png", "image/png":
+		err = encode.EncodePNG(ctx, wr, goimg, nil)
+	case "tiff", "image/tiff":
+		err = encode.EncodeTIFF(ctx, wr, goimg, nil, nil)
+	case "bmp", "image/bmp":
+		err = encode.EncodeBMP(ctx, wr, goimg, nil)
+	case "heic", "image/heic":
+		err = encode.EncodeHEIC(ctx, wr, goimg, nil)
+	default:
+		err = fmt.Errorf("Unsupported filetype (%s)", content_type)
 	}
 
 	if err != nil {
 		return nil, err
 	}
 
-	return out.Bytes(), nil
+	return wr.Bytes(), nil
+
+	/*
+		var out *bytes.Buffer
+		var err error
+
+		if content_type == "image/gif" {
+
+			out = new(bytes.Buffer)
+			err = gif.Encode(out, goimg, nil)
+
+		} else if content_type == "image/jpeg" {
+
+			out = new(bytes.Buffer)
+			err = jpeg.Encode(out, goimg, nil)
+
+		} else if content_type == "image/png" {
+
+			out = new(bytes.Buffer)
+			err = png.Encode(out, goimg)
+
+		} else if content_type == "image/tiff" {
+
+			out = new(bytes.Buffer)
+			err = tiff.Encode(out, goimg, nil)
+
+		} else {
+
+			err = fmt.Errorf("Unsupported content type '%s' for encoding", content_type)
+		}
+
+		if err != nil {
+			return nil, err
+		}
+
+		return out.Bytes(), nil
+	*/
 }
 
 func ApplyColourModel(im image.Image, model colour.Model) image.Image {
