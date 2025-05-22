@@ -5,7 +5,7 @@ This is a from scratch implementation of the ideas from https://github.com/barki
 
 It should support most Go types. Specificaly, it does not support functions, channels and unsafe.Pointers unless they are nil. Also it might have weird interactions with structs that include any synchronization primitives (mutexes, for example. They should still be copied but if they are usable after that is left as an exercise to the reader).
 
-One possible usage scenario would be, for example, to negate the use of the deepcopy-gen tool described in [Kubernetes code generation](https://www.redhat.com/en/blog/kubernetes-deep-dive-code-generation-customresources). For any type T, the DeepEqual method can be implemented more or less like this:
+One possible usage scenario would be, for example, to negate the use of the deepcopy-gen tool described in [Kubernetes code generation](https://www.redhat.com/en/blog/kubernetes-deep-dive-code-generation-customresources). For any type T, the DeepCopy method can be implemented more or less like this:
 
 ```
 func (t* T) DeepCopy() *T {

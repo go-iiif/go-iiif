@@ -5,15 +5,15 @@ package native
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"image"
 	"image/gif"
-	"image/jpeg"
-	"image/png"
-	_ "log/slog"
+	"log/slog"
 
-	"github.com/aaronland/go-image/colour"
-	"github.com/aaronland/go-mimetypes"
+	"github.com/aaronland/go-image/v2/colour"
+	"github.com/aaronland/go-image/v2/decode"
+	"github.com/aaronland/go-image/v2/encode"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
 	"github.com/anthonynsimon/bild/transform"
@@ -22,9 +22,6 @@ import (
 	iiifsource "github.com/go-iiif/go-iiif/v8/source"
 	"github.com/muesli/smartcrop"
 	"github.com/muesli/smartcrop/nfnt"
-	"golang.org/x/image/bmp"
-	"golang.org/x/image/tiff"
-	_ "golang.org/x/image/webp"
 )
 
 type NativeImage struct {
@@ -81,11 +78,7 @@ func (im *NativeImage) ColourModel() colour.Model {
 }
 
 func (im *NativeImage) ContentType() string {
-
-	format := im.Format()
-
-	t := mimetypes.TypesByExtension(format)
-	return t[0]
+	return im.Format()
 }
 
 func (im *NativeImage) Identifier() string {
@@ -232,7 +225,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		// sigh... computers, amirite?
 
-		if fi.Format == "jpg" && im.format == "jpeg" {
+		if fi.Format == "jpg" && im.format == "image/jpeg" {
 			encode = false
 		}
 	}
@@ -245,14 +238,14 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 			return fmt.Errorf("Failed to encode image, %w", err)
 		}
 
-		img, format, err := decodeImageBytes(body)
+		img, img_fmt, err := decodeImageBytes(body)
 
 		if err != nil {
 			return fmt.Errorf("Failed to decode image, %w", err)
 		}
 
 		im.img = img
-		im.format = format
+		im.format = img_fmt
 	}
 
 	err = iiifimage.ApplyCustomTransformations(t, im)
@@ -266,11 +259,27 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 func decodeImageBytes(body []byte) (image.Image, string, error) {
 
-	buf := bytes.NewBuffer(body)
-	return image.Decode(buf)
+	ctx := context.Background()
+	br := bytes.NewReader(body)
+
+	// There should not be any need to rotate the image since it
+	// will have already been rotated in NewImageFromConfigWithSource
+	decode_opts := &decode.DecodeImageOptions{
+		Rotate: false,
+	}
+
+	im, content_type, _, err := decode.DecodeImageWithOptions(ctx, br, decode_opts)
+
+	if err != nil {
+		return nil, "", err
+	}
+
+	return im, content_type, nil
 }
 
 func encodeImage(im image.Image, format string) ([]byte, error) {
+
+	ctx := context.Background()
 
 	var b bytes.Buffer
 	wr := bufio.NewWriter(&b)
@@ -278,24 +287,25 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 	var err error
 
 	switch format {
-	case "bmp":
-		bmp.Encode(wr, im)
-	case "jpg", "jpeg":
-		opts := jpeg.Options{Quality: 100}
-		err = jpeg.Encode(wr, im, &opts)
-	case "png":
-		err = png.Encode(wr, im)
-	case "gif":
+	case "bmp", "image/bmp":
+		err = encode.EncodeBMP(ctx, wr, im, nil)
+	case "jpg", "jpeg", "image/jpeg":
+		err = encode.EncodeJPEG(ctx, wr, im, nil, nil)
+	case "png", "image/png":
+		err = encode.EncodePNG(ctx, wr, im, nil)
+	case "gif", "image/gif":
 		opts := gif.Options{}
 		err = gif.Encode(wr, im, &opts)
-	case "tiff":
-		opts := tiff.Options{}
-		err = tiff.Encode(wr, im, &opts)
+	case "tiff", "image/tiff":
+		err = encode.EncodeJPEG(ctx, wr, im, nil, nil)
+	case "heic", "image/heic":
+		err = encode.EncodeHEIC(ctx, wr, im, nil)
 	default:
 		err = fmt.Errorf("Unsupported encoding, '%s'", format)
 	}
 
 	if err != nil {
+		slog.Error("Failed to encode image", "error", err)
 		return nil, err
 	}
 
