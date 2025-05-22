@@ -262,8 +262,10 @@ func decodeImageBytes(body []byte) (image.Image, string, error) {
 	ctx := context.Background()
 	br := bytes.NewReader(body)
 
+	// There should not be any need to rotate the image since it
+	// will have already been rotated in NewImageFromConfigWithSource
 	decode_opts := &decode.DecodeImageOptions{
-		Rotate: true,
+		Rotate: false,
 	}
 
 	im, content_type, _, err := decode.DecodeImageWithOptions(ctx, br, decode_opts)
