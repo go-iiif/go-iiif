@@ -509,7 +509,7 @@ The following image decoders are supported by default (but you should consult th
 
 #### HEIC images
 
-By default this package supports decoding HEIC images using the [strukturag/libheif-go](http://github.com/strukturag/libheif-go) package which, in turn, depends on the presence of the `libheif` library when you are compiling your code (or the command line tools) you will need to pass in the `-tags libheif` flag.
+By default this package supports decoding HEIC images using the [strukturag/libheif-go](http://github.com/strukturag/libheif-go) package which, in turn, depends on the presence of the `libheif` library when you are compiling your code (or the command line tools) so you will need to pass in the `-tags libheif` flag.
 
 ### Encoders
 
@@ -523,7 +523,7 @@ The following image encoders are supported by default (but you should consult th
 
 #### HEIC images
 
-By default this package supports encoding HEIC images using the [strukturag/libheif-go](http://github.com/strukturag/libheif-go) package which, in turn, depends on the presence of the `libheif` library when you are compiling your code (or the command line tools) you will need to pass in the `-tags libheif` flag.
+By default this package supports encoding HEIC images using the [strukturag/libheif-go](http://github.com/strukturag/libheif-go) package which, in turn, depends on the presence of the `libheif` library when you are compiling your code (or the command line tools) so you will need to pass in the `-tags libheif` flag.
 
 ## Performance and load testing
 
