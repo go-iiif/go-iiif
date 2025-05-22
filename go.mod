@@ -13,7 +13,7 @@ require (
 	github.com/aws/aws-lambda-go v1.48.0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3
-	github.com/brunoga/deep v1.2.4
+	github.com/brunoga/deep v1.2.5
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.1.0
 	github.com/dgraph-io/ristretto/v2 v2.2.0
@@ -23,7 +23,6 @@ require (
 	github.com/jtacoma/uritemplates v1.0.0
 	github.com/koyachi/go-atkinson v0.0.0-20141206131144-dacd7cb9e0c5
 	github.com/muesli/smartcrop v0.3.0
-	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd
 	github.com/sfomuseum/go-csvdict/v2 v2.0.1
 	github.com/sfomuseum/go-flags v0.10.0
 	github.com/tidwall/gjson v1.18.0
@@ -85,6 +84,7 @@ require (
 	github.com/mandykoh/prism v0.35.3 // indirect
 	github.com/marekm4/color-extractor v1.2.1 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646 // indirect
+	github.com/rwcarlsen/goexif v0.0.0-20190401172101-9e8deecbddbd // indirect
 	github.com/sfomuseum/go-exif-update v0.2.0 // indirect
 	github.com/soniakeys/quant v1.0.0 // indirect
 	github.com/strukturag/libheif-go v0.0.0-20250130134905-55b3482bea15 // indirect

@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"image"
 	"image/gif"
-	_ "log/slog"
+	"log/slog"
 
 	"github.com/aaronland/go-image/v2/colour"
+	"github.com/aaronland/go-image/v2/decode"
 	"github.com/aaronland/go-image/v2/encode"
 	"github.com/anthonynsimon/bild/effect"
 	"github.com/anthonynsimon/bild/segment"
@@ -224,7 +225,7 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 		// sigh... computers, amirite?
 
-		if fi.Format == "jpg" && im.format == "jpeg" {
+		if fi.Format == "jpg" && im.format == "image/jpeg" {
 			encode = false
 		}
 	}
@@ -237,14 +238,14 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 			return fmt.Errorf("Failed to encode image, %w", err)
 		}
 
-		img, format, err := decodeImageBytes(body)
+		img, img_fmt, err := decodeImageBytes(body)
 
 		if err != nil {
 			return fmt.Errorf("Failed to decode image, %w", err)
 		}
 
 		im.img = img
-		im.format = format
+		im.format = img_fmt
 	}
 
 	err = iiifimage.ApplyCustomTransformations(t, im)
@@ -258,8 +259,20 @@ func (im *NativeImage) Transform(t *iiifimage.Transformation) error {
 
 func decodeImageBytes(body []byte) (image.Image, string, error) {
 
-	buf := bytes.NewBuffer(body)
-	return image.Decode(buf)
+	ctx := context.Background()
+	br := bytes.NewReader(body)
+
+	decode_opts := &decode.DecodeImageOptions{
+		Rotate: true,
+	}
+
+	im, content_type, _, err := decode.DecodeImageWithOptions(ctx, br, decode_opts)
+
+	if err != nil {
+		return nil, "", err
+	}
+
+	return im, content_type, nil
 }
 
 func encodeImage(im image.Image, format string) ([]byte, error) {
@@ -272,24 +285,25 @@ func encodeImage(im image.Image, format string) ([]byte, error) {
 	var err error
 
 	switch format {
-	case "bmp":
+	case "bmp", "image/bmp":
 		err = encode.EncodeBMP(ctx, wr, im, nil)
-	case "jpg", "jpeg":
+	case "jpg", "jpeg", "image/jpeg":
 		err = encode.EncodeJPEG(ctx, wr, im, nil, nil)
-	case "png":
+	case "png", "image/png":
 		err = encode.EncodePNG(ctx, wr, im, nil)
-	case "gif":
+	case "gif", "image/gif":
 		opts := gif.Options{}
 		err = gif.Encode(wr, im, &opts)
-	case "tiff":
+	case "tiff", "image/tiff":
 		err = encode.EncodeJPEG(ctx, wr, im, nil, nil)
-	case "heic":
+	case "heic", "image/heic":
 		err = encode.EncodeHEIC(ctx, wr, im, nil)
 	default:
 		err = fmt.Errorf("Unsupported encoding, '%s'", format)
 	}
 
 	if err != nil {
+		slog.Error("Failed to encode image", "error", err)
 		return nil, err
 	}
 

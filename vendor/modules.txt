@@ -262,7 +262,7 @@ github.com/aws/smithy-go/tracing
 github.com/aws/smithy-go/transport/http
 github.com/aws/smithy-go/transport/http/internal/io
 github.com/aws/smithy-go/waiter
-# github.com/brunoga/deep v1.2.4
+# github.com/brunoga/deep v1.2.5
 ## explicit; go 1.20.0
 github.com/brunoga/deep
 # github.com/buckket/go-blurhash v1.1.0

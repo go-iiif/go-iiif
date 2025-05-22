@@ -8,13 +8,11 @@ import (
 
 	"github.com/aaronland/go-image/v2/colour"
 	"github.com/aaronland/go-image/v2/decode"
-	"github.com/aaronland/go-image/v2/rotate"
 	iiifcache "github.com/go-iiif/go-iiif/v8/cache"
 	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
 	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
 	iiifimage "github.com/go-iiif/go-iiif/v8/image"
 	iiifsource "github.com/go-iiif/go-iiif/v8/source"
-	"github.com/rwcarlsen/goexif/exif"
 )
 
 func init() {
@@ -43,6 +41,7 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(ctx context.Context, config
 
 	// logger.Debug("New image from config with source")
 
+	// New a src.NewReader(id) method...
 	body, err := src.Read(id)
 
 	if err != nil {
@@ -51,7 +50,11 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(ctx context.Context, config
 
 	buf := bytes.NewReader(body)
 
-	img, img_fmt, _, err := decode.DecodeImage(ctx, buf)
+	decode_opts := &decode.DecodeImageOptions{
+		Rotate: true,
+	}
+
+	img, img_fmt, _, err := decode.DecodeImageWithOptions(ctx, buf, decode_opts)
 
 	if err != nil {
 		return nil, fmt.Errorf("Failed to decode image, %w", err)
@@ -81,35 +84,6 @@ func (dr *NativeDriver) NewImageFromConfigWithSource(ctx context.Context, config
 		// pass
 	default:
 		// pass
-	}
-
-	if img_fmt == "jpeg" {
-
-		_, err = buf.Seek(0, 0)
-
-		if err != nil {
-			return nil, fmt.Errorf("Failed to rewind buffer, %w", err)
-		}
-
-		ctx := context.Background()
-
-		o, err := rotate.GetImageOrientation(ctx, buf)
-
-		if err != nil && !exif.IsCriticalError(err) {
-			return nil, fmt.Errorf("Failed to derive image orientation for '%s', %w", id, err)
-		}
-
-		if o != "0" {
-
-			new_img, err := rotate.RotateImageWithOrientation(ctx, img, o)
-
-			if err != nil {
-				return nil, fmt.Errorf("Failed to rotate image with orientation '%s' for '%s', %w", o, id, err)
-			}
-
-			img = new_img
-		}
-
 	}
 
 	im := NativeImage{

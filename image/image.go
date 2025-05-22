@@ -79,46 +79,10 @@ func IIIFImageToGolangImage(im Image) (image.Image, error) {
 
 	ctx := context.Background()
 
+	logger.Info("WTF", "len", len(im.Body()), "type", im.ContentType())
+
 	im_buf := bytes.NewReader(im.Body())
 	goimg, _, _, err := decode.DecodeImage(ctx, im_buf)
-
-	/*
-		var goimg image.Image
-		var err error
-
-		content_type := im.ContentType()
-
-		slog.Info("WTF", "content type", content_type)
-
-		if content_type == "image/gif" {
-
-			buf := bytes.NewBuffer(im.Body())
-			goimg, err = gif.Decode(buf)
-
-		} else if content_type == "image/jpeg" {
-
-			buf := bytes.NewBuffer(im.Body())
-			goimg, err = jpeg.Decode(buf)
-
-		} else if content_type == "image/png" {
-
-			buf := bytes.NewBuffer(im.Body())
-			goimg, err = png.Decode(buf)
-
-		} else if content_type == "image/tiff" {
-
-			buf := bytes.NewBuffer(im.Body())
-			goimg, err = tiff.Decode(buf)
-
-		} else if content_type == "image/webp" {
-
-			buf := bytes.NewBuffer(im.Body())
-			goimg, err = webp.Decode(buf)
-
-		} else {
-			err = fmt.Errorf("Unsupported content type '%s' for decoding", content_type)
-		}
-	*/
 
 	if err != nil {
 		logger.Error("Failed to convert image", "error", err)
@@ -177,42 +141,6 @@ func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) 
 	}
 
 	return wr.Bytes(), nil
-
-	/*
-		var out *bytes.Buffer
-		var err error
-
-		if content_type == "image/gif" {
-
-			out = new(bytes.Buffer)
-			err = gif.Encode(out, goimg, nil)
-
-		} else if content_type == "image/jpeg" {
-
-			out = new(bytes.Buffer)
-			err = jpeg.Encode(out, goimg, nil)
-
-		} else if content_type == "image/png" {
-
-			out = new(bytes.Buffer)
-			err = png.Encode(out, goimg)
-
-		} else if content_type == "image/tiff" {
-
-			out = new(bytes.Buffer)
-			err = tiff.Encode(out, goimg, nil)
-
-		} else {
-
-			err = fmt.Errorf("Unsupported content type '%s' for encoding", content_type)
-		}
-
-		if err != nil {
-			return nil, err
-		}
-
-		return out.Bytes(), nil
-	*/
 }
 
 func ApplyColourModel(im image.Image, model colour.Model) image.Image {
