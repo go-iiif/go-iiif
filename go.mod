@@ -6,13 +6,13 @@ require (
 	github.com/aaronland/go-colours v0.10.0
 	github.com/aaronland/go-flickr-api v1.1.6
 	github.com/aaronland/go-http-server v1.5.0
-	github.com/aaronland/go-image/v2 v2.1.0
+	github.com/aaronland/go-image/v2 v2.1.1
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aaronland/gocloud-blob v0.5.0
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/aws/aws-lambda-go v1.48.0
 	github.com/aws/aws-sdk-go-v2 v1.36.3
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.3
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.79.4
 	github.com/brunoga/deep v1.2.5
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.1.0
@@ -49,7 +49,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentity v1.27.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/iam v1.37.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.7.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.7.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.58.0 // indirect

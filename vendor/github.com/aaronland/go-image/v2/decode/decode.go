@@ -3,6 +3,7 @@ package decode
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"image"
 	"io"
@@ -186,6 +187,11 @@ func rotateFromOrientation(ctx context.Context, im image.Image, mtype *mimetype.
 	results, err := ifd.FindTagWithName("Orientation")
 
 	if err != nil {
+
+		if errors.Is(err, exif.ErrTagNotFound) {
+			return false, im, nil
+		}
+
 		return false, nil, err
 	}
 
