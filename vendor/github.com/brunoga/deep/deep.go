@@ -30,7 +30,11 @@ func MustCopy[T any](src T) T {
 	return dst
 }
 
-type pointersMap map[uintptr]map[string]reflect.Value
+type pointersMapKey struct {
+	ptr uintptr
+	typ reflect.Type
+}
+type pointersMap map[pointersMapKey]reflect.Value
 
 func copy[T any](src T, skipUnsupported bool) (T, error) {
 	v := reflect.ValueOf(src)
@@ -152,24 +156,19 @@ func recursiveCopyPtr(v reflect.Value, pointers pointersMap,
 		return v, nil
 	}
 
-	typeName := v.Type().String()
+	ptr := v.Pointer()
+	typ := v.Type()
+	key := pointersMapKey{ptr, typ}
 
 	// If the pointer is already in the pointers map, return it.
-	ptr := v.Pointer()
-	if dstMap, ok := pointers[ptr]; ok {
-		if dst, ok := dstMap[typeName]; ok {
-			return dst, nil
-		}
+	if dst, ok := pointers[key]; ok {
+		return dst, nil
 	}
 
 	// Otherwise, create a new pointer and add it to the pointers map.
 	dst := reflect.New(v.Type().Elem())
 
-	if pointers[ptr] == nil {
-		pointers[ptr] = make(map[string]reflect.Value)
-	}
-
-	pointers[ptr][typeName] = dst
+	pointers[key] = dst
 
 	// Proceed with the copy.
 	elem := v.Elem()

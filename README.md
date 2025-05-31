@@ -491,6 +491,40 @@ go func(ctx context.Context, u iiifuri.URI, label Label, i IIIFInstructions) {
 }(...)
 ```
 
+## Image formats
+
+Under the hood this package uses the [aaronland/go-image/v2](https://github.com/aaronland/go-image) package for encoding and decoding images.
+
+### Decoders
+
+The following image decoders are supported by default (but you should consult the `aaronland/go-image` documentation for an authoritative list):
+
+* `image/bmp`
+* `image/gif`
+* `image/heic` (if built with `libheif` tag)
+* `image/jpeg`
+* `image/png`
+* `image/tiff`
+* `image/webp`
+
+#### HEIC images
+
+By default this package supports decoding HEIC images using the [strukturag/libheif-go](http://github.com/strukturag/libheif-go) package which, in turn, depends on the presence of the `libheif` library when you are compiling your code (or the command line tools) so you will need to pass in the `-tags libheif` flag.
+
+### Encoders
+
+The following image encoders are supported by default (but you should consult the `aaronland/go-image` documentation for an authoritative list):
+
+* `image/bmp`
+* `image/heic` (if built with `libheif` tag)
+* `image/jpeg`
+* `image/png`
+* `image/tiff`
+
+#### HEIC images
+
+By default this package supports encoding HEIC images using the [strukturag/libheif-go](http://github.com/strukturag/libheif-go) package which, in turn, depends on the presence of the `libheif` library when you are compiling your code (or the command line tools) so you will need to pass in the `-tags libheif` flag.
+
 ## Performance and load testing
 
 For processing large, or large volumes of, images the bottlenecks will be:
@@ -507,7 +541,7 @@ The current strategy for seeding tiles may also be directly responsible for some
 
 ## Bugs?
 
-Probably. Please consult [the currently known-known issues](https://github.com/go-iiif/go-iiif/issues) and if you don't see what ails you please feel free to add it.
+Sure, maybe. Please consult [the currently known-known issues](https://github.com/go-iiif/go-iiif/issues) and if you don't see what ails you please feel free to add it.
 
 ## See also
 

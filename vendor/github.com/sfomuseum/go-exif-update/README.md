@@ -23,9 +23,10 @@ package main
 
 import (
 	"flag"
-	"github.com/sfomuseum/go-exif-update"
 	"log"
 	"os"
+
+	"github.com/sfomuseum/go-exif-update"
 )
 
 func main() {
