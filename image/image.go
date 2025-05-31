@@ -132,6 +132,8 @@ func GolangImageToBytes(goimg image.Image, content_type string) ([]byte, error) 
 		err = encode.EncodeBMP(ctx, wr, goimg, nil)
 	case "heic", "image/heic":
 		err = encode.EncodeHEIC(ctx, wr, goimg, nil)
+	case "gif", "image/gif":
+		err = encode.EncodeGIF(ctx, wr, goimg, nil, nil)
 	default:
 		err = fmt.Errorf("Unsupported filetype (%s)", content_type)
 	}
