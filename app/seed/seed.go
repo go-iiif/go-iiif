@@ -74,7 +74,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 				return nil
 			}
 
-			logger.Info("Generate HTML index page for tiles")
+			logger.Debug("Generate HTML index page for tiles")
 
 			derivatives_cache, err := iiifcache.NewCache(ctx, cfg.Derivatives.Cache.URI)
 
@@ -298,7 +298,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 						u.Scheme = "file"
 					}
 
-					logger.Info("Assign new source URI", "uri", u.String())
+					logger.Debug("Assign new source URI", "uri", u.String())
 					ts_cfg.Images.Source.URI = u.String()
 				}
 
@@ -325,7 +325,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 						u.Scheme = "file"
 					}
 
-					logger.Info("Assign new cache URI", "uri", u.String())
+					logger.Debug("Assign new cache URI", "uri", u.String())
 					ts_cfg.Derivatives.Cache.URI = u.String()
 				}
 
@@ -334,7 +334,7 @@ func RunWithOptions(ctx context.Context, opts *RunOptions) error {
 					Target: target_id,
 				}
 
-				logger.Info("Seed tiles", "source", source_id, "target", target_id)
+				logger.Debug("Seed tiles", "source", source_id, "target", target_id)
 				err = tile_func(ctx, ts_cfg, tiled_im, wg)
 
 				if err != nil {

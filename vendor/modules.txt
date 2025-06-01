@@ -18,7 +18,7 @@ github.com/aaronland/go-flickr-api/response
 # github.com/aaronland/go-http-server v1.5.0
 ## explicit; go 1.22
 github.com/aaronland/go-http-server
-# github.com/aaronland/go-image/v2 v2.1.1
+# github.com/aaronland/go-image/v2 v2.1.2
 ## explicit; go 1.24
 github.com/aaronland/go-image/v2/colour
 github.com/aaronland/go-image/v2/decode

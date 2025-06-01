@@ -94,7 +94,7 @@ func (ts *TileSeed) SeedTiles(ctx context.Context, src_id string, alt_id string,
 	logger = logger.With("source id", src_id)
 	logger = logger.With("alt id", alt_id)
 
-	logger.Info("Seed tiles for image", "image cache", ts.images_cache, "derivatives cache", ts.derivatives_cache, "processes", ts.procs, "scales", scales)
+	logger.Debug("Seed tiles for image", "image cache", ts.images_cache, "derivatives cache", ts.derivatives_cache, "processes", ts.procs, "scales", scales)
 
 	count := 0
 

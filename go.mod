@@ -6,7 +6,7 @@ require (
 	github.com/aaronland/go-colours v0.10.0
 	github.com/aaronland/go-flickr-api v1.1.6
 	github.com/aaronland/go-http-server v1.5.0
-	github.com/aaronland/go-image/v2 v2.1.1
+	github.com/aaronland/go-image/v2 v2.1.2
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aaronland/gocloud-blob v0.5.0
 	github.com/anthonynsimon/bild v0.14.0

@@ -15,7 +15,7 @@ import (
 
 func EncodeHEIC(ctx context.Context, wr io.Writer, im image.Image, ib *exif.IfdBuilder) error {
 
-	slog.Warn("WriteHEIC method does not support writing EXIF data.")
+	slog.Debug("WriteHEIC method does not support writing EXIF data.")
 
 	codec := libheif.CompressionHEVC
 

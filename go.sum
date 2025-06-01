@@ -49,8 +49,8 @@ github.com/aaronland/go-flickr-api v1.1.6 h1:UQ8F7Ez6b69mI9z/qODw+qKDvHN1dOBTys6
 github.com/aaronland/go-flickr-api v1.1.6/go.mod h1:RxW73Kssv8xPpwkb++QMNbnmo4IAMEqxNcRH5gMNmaE=
 github.com/aaronland/go-http-server v1.5.0 h1:5yEan85iJrECOHDVmDn/noU7vbDEN50aQR7gXbZpSf8=
 github.com/aaronland/go-http-server v1.5.0/go.mod h1:BJqspPR3LgC3CReChGY9p783zzk5dDegDVNWwgHW2TM=
-github.com/aaronland/go-image/v2 v2.1.1 h1:BrkJ50xlgAA0WsPXj64lTzhXfaJCZCo0qVMWwX5273Q=
-github.com/aaronland/go-image/v2 v2.1.1/go.mod h1:f4LaEmnI5JU7yLzJm+ZbCVxHhcEbnYns1QeRr8hd0IY=
+github.com/aaronland/go-image/v2 v2.1.2 h1:41/gJE6eP7buDaU6lBMWx9zAIXy1jgkdQIOGaao+wQo=
+github.com/aaronland/go-image/v2 v2.1.2/go.mod h1:f4LaEmnI5JU7yLzJm+ZbCVxHhcEbnYns1QeRr8hd0IY=
 github.com/aaronland/go-roster v1.0.0 h1:FRDGrTqsYySKjWnAhbBGXyeGlI/o5/t9FZYCbUmyQtI=
 github.com/aaronland/go-roster v1.0.0/go.mod h1:KIsYZgrJlAsyb9LsXSCvlqvbcCBVjCSqcQiZx42i9ro=
 github.com/aaronland/go-string v1.0.0 h1:fPHmC1i9JhGzgi4qdCSXKc4xTCaLLe0uvlJMu9dHhco=

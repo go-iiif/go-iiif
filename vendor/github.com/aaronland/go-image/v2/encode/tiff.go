@@ -16,6 +16,6 @@ func EncodeTIFF(ctx context.Context, wr io.Writer, im image.Image, ib *exif.IfdB
 		return tiff.Encode(wr, im, tiff_opts)
 	}
 
-	slog.Warn("WriteTIFF method does not support writing EXIF data.")
+	slog.Debug("WriteTIFF method does not support writing EXIF data.")
 	return tiff.Encode(wr, im, tiff_opts)
 }

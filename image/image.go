@@ -62,7 +62,7 @@ func IIIFImageToGolangImage(im Image) (image.Image, error) {
 
 	t1 := time.Now()
 	defer func() {
-		logger.Info("Time to transform image", "time", time.Since(t1))
+		logger.Debug("Time to transform image", "time", time.Since(t1))
 	}()
 
 	if golang_image_cache != nil {

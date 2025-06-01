@@ -16,6 +16,6 @@ func EncodeBMP(ctx context.Context, wr io.Writer, im image.Image, ib *exif.IfdBu
 		return bmp.Encode(wr, im)
 	}
 
-	slog.Warn("WriteBMP method does not support writing EXIF data.")
+	slog.Debug("WriteBMP method does not support writing EXIF data.")
 	return bmp.Encode(wr, im)
 }
