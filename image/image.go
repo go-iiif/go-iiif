@@ -79,8 +79,6 @@ func IIIFImageToGolangImage(im Image) (image.Image, error) {
 
 	ctx := context.Background()
 
-	logger.Info("WTF", "len", len(im.Body()), "type", im.ContentType())
-
 	im_buf := bytes.NewReader(im.Body())
 	goimg, _, _, err := decode.DecodeImage(ctx, im_buf)
 
