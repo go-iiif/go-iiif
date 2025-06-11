@@ -28,7 +28,7 @@ func init() {
 func NewCommonColour(ctx context.Context, uri string) (Colour, error) {
 
 	hex := "###"
-	name := "unknown"
+	name := "###"
 	ref := "unknown"
 
 	var closest []Colour

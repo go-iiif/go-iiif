@@ -17,5 +17,6 @@ func toHexColor(c color.Color) string {
 		return h
 	}
 
-	return toS(uint8(r)) + toS(uint8(g)) + toS(uint8(b))
+	hex := toS(uint8(r)) + toS(uint8(g)) + toS(uint8(b))
+	return fmt.Sprintf("#%s", hex)
 }

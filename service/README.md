@@ -13,8 +13,7 @@
 Details for configuring these service are discussed [above](#services) but here is the output for a service with the default settings:
 
 ```
-$> curl -s localhost:8080/spanking.jpg/info.json | jq '.service'
-
+$> curl -s localhost:8080/spanking-cat.jpg/info.json | jq '.service'
 [
   {
     "@context": "x-urn:service:go-iiif#palette",
@@ -22,24 +21,72 @@ $> curl -s localhost:8080/spanking.jpg/info.json | jq '.service'
     "label": "x-urn:service:go-iiif#palette",
     "palette": [
       {
-        "name": "#4e3c24",
-        "hex": "#4e3c24",
-        "reference": "vibrant"
+        "name": "#dddad7",
+        "hex": "#dddad7",
+        "reference": "marekm4",
+        "closest": [
+          {
+            "name": "Timberwolf",
+            "hex": "#dbd7d2",
+            "reference": "crayola"
+          },
+          {
+            "name": "gainsboro",
+            "hex": "#dcdcdc",
+            "reference": "css4"
+          }
+        ]
       },
       {
-        "name": "#9d8959",
-        "hex": "#9d8959",
-        "reference": "vibrant"
+        "name": "#594a36",
+        "hex": "#594a36",
+        "reference": "marekm4",
+        "closest": [
+          {
+            "name": "Raw Umber",
+            "hex": "#714b23",
+            "reference": "crayola"
+          },
+          {
+            "name": "darkolivegreen",
+            "hex": "#556b2f",
+            "reference": "css4"
+          }
+        ]
       },
       {
-        "name": "#c7bca6",
-        "hex": "#c7bca6",
-        "reference": "vibrant"
+        "name": "#9b8e6f",
+        "hex": "#9b8e6f",
+        "reference": "marekm4",
+        "closest": [
+          {
+            "name": "Beaver",
+            "hex": "#9f8170",
+            "reference": "crayola"
+          },
+          {
+            "name": "grey",
+            "hex": "#808080",
+            "reference": "css4"
+          }
+        ]
       },
       {
-        "name": "#5a4b36",
-        "hex": "#5a4b36",
-        "reference": "vibrant"
+        "name": "#88775a",
+        "hex": "#88775a",
+        "reference": "marekm4",
+        "closest": [
+          {
+            "name": "Shadow",
+            "hex": "#8a795d",
+            "reference": "crayola"
+          },
+          {
+            "name": "dimgrey",
+            "hex": "#696969",
+            "reference": "css4"
+          }
+        ]
       }
     ]
   },
@@ -47,7 +94,7 @@ $> curl -s localhost:8080/spanking.jpg/info.json | jq '.service'
     "@context": "x-urn:service:go-iiif#blurhash",
     "profile": "x-urn:service:go-iiif#blurhash",
     "label": "x-urn:service:go-iiif#blurhash",
-    "hash": "LOOWsZxu_4-;~pj[Rjof-;kBIAWB"
+    "hash": ":NOWsZa{_Nt69Fofxuof_2a{M{ofofaej[ay%Nj[IAj[%MayRjj[jZoft7V@WCofaxj[xuoMRjV@j[t7ofWBoeayfRkCayaxofj[WBaxofozayRjaxofRjayt7ofWBayj?ay"
   },
   {
     "@context": "x-urn:service:go-iiif#imagehash",
@@ -59,7 +106,7 @@ $> curl -s localhost:8080/spanking.jpg/info.json | jq '.service'
 ]
 ```
 
-_Please remember that `go-colours` itself is a work in progress so you should approach the `palette` service accordingly._
+_Please remember that the [aaronland/go-colours](https://github.com/aaronland/go-colours) package, used "under the hood", is itself is a work in progress so you should approach the `palette` service accordingly._
 
 ### Writing your own non-standard services
 
@@ -85,9 +132,9 @@ package example	// for example "github.com/example/go-iiif-example"
 import (
 	"context"
 	
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifimage "github.com/go-iiif/go-iiif/v6/image"	
-	iiifservice "github.com/go-iiif/go-iiif/v6/service"	
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifimage "github.com/go-iiif/go-iiif/v8/image"	
+	iiifservice "github.com/go-iiif/go-iiif/v8/service"	
 )
 
 func init() {
@@ -132,10 +179,10 @@ import (
 	
         _ "github.com/example/go-iiif-example"
 	_ "github.com/aaronland/go-cloud-s3blob"
-	_ "github.com/go-iiif/go-iiif/v6/native"
+	_ "github.com/go-iiif/go-iiif/v8/native"
 	_ "gocloud.dev/blob/fileblob"       
 
-	"github.com/go-iiif/go-iiif/v6/tools"
+	"github.com/go-iiif/go-iiif/v8/tools"
 )
 
 func main() {

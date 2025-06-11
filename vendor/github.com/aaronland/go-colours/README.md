@@ -103,9 +103,9 @@ $> ./bin/extrude  https://static.sfomuseum.org/media/176/270/453/3/1762704533_jn
         "swatches": [
           {
             "colour": {
-              "name": "marekm4",
+              "name": "b6baa1",
               "hex": "#b6baa1",
-              "reference": "b6baa1"
+              "reference": "marekm4"
             },
             "closest": [
               {
@@ -136,10 +136,11 @@ $> ./bin/extrude  https://static.sfomuseum.org/media/176/270/453/3/1762704533_jn
           },
           {
             "colour": {
-              "name": "marekm4",
+              "name": "728c9a",
               "hex": "#728c9a",
-              "reference": "728c9a"
+              "reference": "marekm4"
             },
+            "closest": [
 	    ...and so on
 ```
 
@@ -249,6 +250,76 @@ Palettes are a fixed set of colours.
 ### css3://
 
 ### css4://
+
+## WebAssembly (WASM)
+
+This package exports a WebAssembly binary to export the functionality of the `extrude.Extrude` function in JavaScript.
+
+### Building
+
+This repository contains a pre-compiled `extrude.wasm` binary (found in the [www/wasm](www/wasm) folder). If you need or want to recompile the binary the easiest way is to use the handy `wasmjs` Makefile target:
+
+```
+$> make wasmjs
+GOOS=js GOARCH=wasm \
+		go build -mod vendor -ldflags="-s -w" -tags wasmjs \
+		-o www/wasm/extrude.wasm \
+		cmd/extrude-wasm/main.go
+```
+
+### Example
+
+For a working example serve the `www` folder from a web server. I like using the `fileserver` tool provided by the [aaronland/go-http-fileserver](https://github.com/aaronland/go-http-fileserver) package mostly because I wrote it but any old web server will do. For example:
+
+```
+$> fileserver -root www
+2025/06/05 10:15:55 Serving www and listening for requests on http://localhost:8080
+```
+
+Open your web browser to `http://localhost:8080` you'll see something like this:
+
+![](docs/images/go-colours-wasm-launch.png)
+
+You can extract (extrude) colours from a single image on disk. For example:
+
+![](docs/images/go-colours-wasm-image.png)
+
+Or extract (extrude) colours, in real-time, from a video feed. For example:
+
+![](docs/images/go-colours-wasm-video.png)
+
+Under the hood, this is an abbreviated version of what's going on:
+
+```
+function derive_colours(im_b64){
+
+	const opts = {
+		"grid": "euclidian://",
+		"palettes": [ "crayola://" ],
+		"extruders": [ "marekm4://" ],
+	};
+
+	const str_opts = JSON.stringify(opts);
+
+	// Where im_b64 is a base64-encoded image (NOT a data URI)
+
+	colours_extrude(str_opts, im_b64).then((rsp) => {
+		show_colours(rsp);
+	}).catch((err) => {
+		console.log("SAD", err);
+	});
+}
+```
+
+The `colours_extrude` JavaScript function is the code to extract (extrude) colours which has been exported from the `extrude.wasm` WebAssembly binary. This example uses the [sfomuseum/js-sfomuseum-golang-wasm](https://github.com/sfomuseum/js-sfomuseum-golang-wasm) library for taking care of all the mechanics for loading Go/WebAssembly binaries. For example:
+
+```
+sfomuseum.golang.wasm.fetch("wasm/extrude.wasm").then((rsp) => {
+	// do something here
+}).catch((err) => {
+	console.error("Failed to load WASM binary", err);	       
+});
+```
 
 ## See also
 

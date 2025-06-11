@@ -4,7 +4,7 @@ import (
 	"context"
 	"image"
 	"net/url"
-
+	
 	"github.com/aaronland/go-colours"
 	"github.com/marekm4/color-extractor"
 )
@@ -30,8 +30,8 @@ func NewMarekm4Colour(ctx context.Context, str_hex string) (colours.Colour, erro
 
 	q := url.Values{}
 	q.Set("hex", str_hex)
-	q.Set("name", MAREKM4)
-	q.Set("ref", str_hex)
+	q.Set("name", str_hex)
+	q.Set("ref", MAREKM4)
 
 	u.RawQuery = q.Encode()
 
@@ -63,6 +63,7 @@ func (ex *Marekm4Extruder) Colours(ctx context.Context, im image.Image, limit in
 		c := rsp[i]
 
 		hex_value := toHexColor(c)
+		
 		colour, err := NewMarekm4Colour(ctx, hex_value)
 
 		if err != nil {

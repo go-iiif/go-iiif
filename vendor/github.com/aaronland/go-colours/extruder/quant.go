@@ -30,8 +30,8 @@ func NewQuantColour(ctx context.Context, str_hex string) (colours.Colour, error)
 
 	q := url.Values{}
 	q.Set("hex", str_hex)
-	q.Set("name", QUANT)
-	q.Set("ref", str_hex)
+	q.Set("name", str_hex)
+	q.Set("ref", QUANT)
 
 	u.RawQuery = q.Encode()
 

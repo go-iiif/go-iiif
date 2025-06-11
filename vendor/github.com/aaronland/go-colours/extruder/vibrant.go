@@ -35,8 +35,8 @@ func NewVibrantColour(ctx context.Context, str_hex string) (colours.Colour, erro
 
 	q := url.Values{}
 	q.Set("hex", str_hex)
-	q.Set("name", VIBRANT)
-	q.Set("ref", str_hex)
+	q.Set("name", str_hex)
+	q.Set("ref", VIBRANT)
 
 	u.RawQuery = q.Encode()
 

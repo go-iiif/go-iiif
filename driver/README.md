@@ -8,9 +8,9 @@ Support for alternative image processing libraries, like `libvips` is supported 
 
 ```
 import (
-	iiifcache "github.com/go-iiif/go-iiif/v6/cache"
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifsource "github.com/go-iiif/go-iiif/v6/source"
+	iiifcache "github.com/go-iiif/go-iiif/v8/cache"
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifsource "github.com/go-iiif/go-iiif/v8/source"
 )
 
 type Driver interface {
@@ -28,7 +28,7 @@ Drivers are expected to "register" themselves through the `driver.RegisterDriver
 package native
 
 import (
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"
+	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
 )
 
 func init() {
@@ -42,11 +42,11 @@ And then in your code you might do something like this:
 import (
 	"context"
 
-	_ "github.com/go-iiif/go-iiif/v6/native"
+	_ "github.com/go-iiif/go-iiif/v8/native"
 	
 	"github.com/aaronland/gocloud-blob/bucket"	
-	iiifconfig "github.com/go-iiif/go-iiif/v6/config"
-	iiifdriver "github.com/go-iiif/go-iiif/v6/driver"	
+	iiifconfig "github.com/go-iiif/go-iiif/v8/config"
+	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"	
 )
 
 ctx := context.Background()
@@ -76,5 +76,5 @@ Becomes:
 
 The value of the `graphics.driver` property should match the URI that driver used to register itself with `go-iiif`. For working examples you should consult either of the following packages:
 
-* https://github.com/go-iiif/go-iiif/v6/tree/main/native
+* https://github.com/go-iiif/go-iiif/tree/main/native
 * https://github.com/go-iiif/go-iiif-vips

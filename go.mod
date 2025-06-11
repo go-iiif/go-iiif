@@ -3,16 +3,16 @@ module github.com/go-iiif/go-iiif/v8
 go 1.24.2
 
 require (
-	github.com/aaronland/go-colours v0.10.0
+	github.com/aaronland/go-colours v0.12.1
 	github.com/aaronland/go-flickr-api v1.1.6
 	github.com/aaronland/go-http-server v1.5.0
 	github.com/aaronland/go-image/v2 v2.1.2
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aaronland/gocloud-blob v0.5.0
 	github.com/anthonynsimon/bild v0.14.0
-	github.com/aws/aws-lambda-go v1.48.0
-	github.com/aws/aws-sdk-go-v2 v1.36.3
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.80.0
+	github.com/aws/aws-lambda-go v1.49.0
+	github.com/aws/aws-sdk-go-v2 v1.36.4
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.80.2
 	github.com/brunoga/deep v1.2.5
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.1.0
@@ -28,7 +28,7 @@ require (
 	github.com/tidwall/gjson v1.18.0
 	github.com/whosonfirst/go-sanitize v0.1.0
 	gocloud.dev v0.41.0
-	golang.org/x/image v0.27.0
+	golang.org/x/image v0.28.0
 )
 
 require (
@@ -42,16 +42,16 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.65 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.30 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.69 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.34 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.3.35 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.6.35 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.34 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.3.35 // indirect
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentity v1.27.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/iam v1.37.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.12.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.7.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.15 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.7.3 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.12.16 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.18.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.58.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.25.2 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.0 // indirect
@@ -95,7 +95,7 @@ require (
 	go4.org v0.0.0-20200411211856-f5505b9728dd // indirect
 	golang.org/x/net v0.39.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/api v0.228.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
