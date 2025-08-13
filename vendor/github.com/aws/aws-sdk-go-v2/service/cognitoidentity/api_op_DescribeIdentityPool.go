@@ -14,7 +14,7 @@ import (
 // Gets details about a particular identity pool, including the pool name, ID
 // description, creation date, and current number of users.
 //
-// You must use AWS Developer credentials to call this API.
+// You must use Amazon Web Services developer credentials to call this operation.
 func (c *Client) DescribeIdentityPool(ctx context.Context, params *DescribeIdentityPoolInput, optFns ...func(*Options)) (*DescribeIdentityPoolOutput, error) {
 	if params == nil {
 		params = &DescribeIdentityPoolInput{}
@@ -154,6 +154,9 @@ func (c *Client) addOperationDescribeIdentityPoolMiddlewares(stack *middleware.S
 		return err
 	}
 	if err = addUserAgentRetryMode(stack, options); err != nil {
+		return err
+	}
+	if err = addCredentialSource(stack, options); err != nil {
 		return err
 	}
 	if err = addOpDescribeIdentityPoolValidationMiddleware(stack); err != nil {

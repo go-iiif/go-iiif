@@ -1,3 +1,97 @@
+# v1.29.9 (2025-07-22)
+
+* No change notes available for this release.
+
+# v1.29.8 (2025-07-21)
+
+* No change notes available for this release.
+
+# v1.29.7 (2025-07-19)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.29.6 (2025-06-17)
+
+* **Dependency Update**: Update to smithy-go v1.22.4.
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.29.5 (2025-06-10)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.29.4 (2025-04-03)
+
+* No change notes available for this release.
+
+# v1.29.3 (2025-03-14)
+
+* **Documentation**: Updated API model build artifacts for identity pools
+
+# v1.29.2 (2025-03-07)
+
+* No change notes available for this release.
+
+# v1.29.1 (2025-03-04.2)
+
+* **Bug Fix**: Add assurance test for operation order.
+
+# v1.29.0 (2025-02-27)
+
+* **Feature**: Track credential providers via User-Agent Feature ids
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.28.6 (2025-02-18)
+
+* **Bug Fix**: Bump go version to 1.22
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.28.5 (2025-02-05)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.28.4 (2025-01-31)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.28.3 (2025-01-30)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.28.2 (2025-01-24)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+* **Dependency Update**: Upgrade to smithy-go v1.22.2.
+
+# v1.28.1 (2025-01-17)
+
+* **Bug Fix**: Fix bug where credentials weren't refreshed during retry loop.
+
+# v1.28.0 (2025-01-15)
+
+* **Feature**: corrects the dual-stack endpoint configuration
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.27.10 (2025-01-09)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.27.9 (2024-12-19)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.27.8 (2024-12-09)
+
+* No change notes available for this release.
+
+# v1.27.7 (2024-12-02)
+
+* **Dependency Update**: Updated to the latest SDK module versions
+
+# v1.27.6 (2024-11-18)
+
+* **Dependency Update**: Update to smithy-go v1.22.1.
+* **Dependency Update**: Updated to the latest SDK module versions
+
 # v1.27.5 (2024-11-07)
 
 * **Bug Fix**: Adds case-insensitive handling of error message fields in service responses

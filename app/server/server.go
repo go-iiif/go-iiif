@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/aaronland/go-http-server"
+	"github.com/aaronland/go-http/v3/server"
 	iiifexample "github.com/go-iiif/go-iiif/v8/app/server/example"
 	iiifcache "github.com/go-iiif/go-iiif/v8/cache"
 	iiifdriver "github.com/go-iiif/go-iiif/v8/driver"
