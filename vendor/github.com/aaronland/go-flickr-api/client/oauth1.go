@@ -3,14 +3,15 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-flickr-api/auth"
-	"github.com/whosonfirst/go-ioutil"
 	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/aaronland/go-flickr-api/auth"
+	"github.com/whosonfirst/go-ioutil"
 )
 
 // The default Flickr endpoint for OAuth1 authorization requests.

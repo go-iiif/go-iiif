@@ -17,7 +17,7 @@ import (
 // database and returned as a part of the response. If you supply both,
 // DeveloperUserIdentifier will be matched against IdentityID . If the values are
 // verified against the database, the response returns both values and is the same
-// as the request. Otherwise a ResourceConflictException is thrown.
+// as the request. Otherwise, a ResourceConflictException is thrown.
 //
 // LookupDeveloperIdentity is intended for low-throughput control plane
 // operations: for example, to enable customer service to locate an identity ID by
@@ -25,7 +25,7 @@ import (
 // authentication, your requests are likely to be throttled. GetOpenIdTokenForDeveloperIdentityis a better option
 // for higher-volume operations for user authentication.
 //
-// You must use AWS Developer credentials to call this API.
+// You must use Amazon Web Services developer credentials to call this operation.
 func (c *Client) LookupDeveloperIdentity(ctx context.Context, params *LookupDeveloperIdentityInput, optFns ...func(*Options)) (*LookupDeveloperIdentityOutput, error) {
 	if params == nil {
 		params = &LookupDeveloperIdentityInput{}
@@ -160,6 +160,9 @@ func (c *Client) addOperationLookupDeveloperIdentityMiddlewares(stack *middlewar
 	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
+	if err = addCredentialSource(stack, options); err != nil {
+		return err
+	}
 	if err = addOpLookupDeveloperIdentityValidationMiddleware(stack); err != nil {
 		return err
 	}
@@ -179,6 +182,36 @@ func (c *Client) addOperationLookupDeveloperIdentityMiddlewares(stack *middlewar
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeRetryLoop(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAttempt(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptExecution(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeSerialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterSerialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeSigning(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterSigning(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptTransmit(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeDeserialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterDeserialization(stack, options); err != nil {
 		return err
 	}
 	if err = addSpanInitializeStart(stack); err != nil {

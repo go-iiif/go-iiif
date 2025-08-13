@@ -8,7 +8,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/aaronland/gocloud-blob/bucket"
+	"github.com/aaronland/gocloud/blob/bucket"
 	iiifdefaults "github.com/go-iiif/go-iiif/v8/defaults"
 	"gocloud.dev/blob"
 )

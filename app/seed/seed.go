@@ -23,7 +23,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/aaronland/gocloud-blob/bucket"
+	"github.com/aaronland/gocloud/blob/bucket"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/fsnotify/fsnotify"
 	iiifhtml "github.com/go-iiif/go-iiif/v8/app/seed/html"

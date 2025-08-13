@@ -10,7 +10,7 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Generates (or retrieves) a Cognito ID. Supplying multiple logins will create an
+// Generates (or retrieves) IdentityID. Supplying multiple logins will create an
 // implicit linked account.
 //
 // This is a public API. You do not need any credentials to call this API.
@@ -37,7 +37,7 @@ type GetIdInput struct {
 	// This member is required.
 	IdentityPoolId *string
 
-	// A standard AWS account ID (9+ digits).
+	// A standard Amazon Web Services account ID (9+ digits).
 	AccountId *string
 
 	// A set of optional name-value pairs that map provider names to provider tokens.
@@ -133,6 +133,9 @@ func (c *Client) addOperationGetIdMiddlewares(stack *middleware.Stack, options O
 	if err = addUserAgentRetryMode(stack, options); err != nil {
 		return err
 	}
+	if err = addCredentialSource(stack, options); err != nil {
+		return err
+	}
 	if err = addOpGetIdValidationMiddleware(stack); err != nil {
 		return err
 	}
@@ -152,6 +155,36 @@ func (c *Client) addOperationGetIdMiddlewares(stack *middleware.Stack, options O
 		return err
 	}
 	if err = addDisableHTTPSMiddleware(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeRetryLoop(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAttempt(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptExecution(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeSerialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterSerialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeSigning(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterSigning(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptTransmit(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptBeforeDeserialization(stack, options); err != nil {
+		return err
+	}
+	if err = addInterceptAfterDeserialization(stack, options); err != nil {
 		return err
 	}
 	if err = addSpanInitializeStart(stack); err != nil {
