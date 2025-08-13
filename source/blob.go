@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/aaronland/gocloud-blob/bucket"
+	"github.com/aaronland/gocloud/blob/bucket"
 	"gocloud.dev/blob"
 )
 

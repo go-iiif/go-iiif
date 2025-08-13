@@ -1,14 +1,14 @@
 module github.com/go-iiif/go-iiif/v8
 
-go 1.24.5
+go 1.23
 
 require (
 	github.com/aaronland/go-colours v0.12.1
-	github.com/aaronland/go-flickr-api v1.1.6
+	github.com/aaronland/go-flickr-api v1.1.7
 	github.com/aaronland/go-http/v3 v3.0.0
 	github.com/aaronland/go-image/v2 v2.1.2
 	github.com/aaronland/go-roster v1.0.0
-	github.com/aaronland/gocloud-blob v0.6.2
+	github.com/aaronland/gocloud v1.0.0
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/aws/aws-lambda-go v1.49.0
 	github.com/aws/aws-sdk-go-v2 v1.38.0
@@ -33,29 +33,29 @@ require (
 
 require (
 	github.com/RobCherry/vibrant v0.0.0-20250501174501-d90de4256706 // indirect
-	github.com/aaronland/go-aws-auth/v2 v2.0.1 // indirect
+	github.com/aaronland/go-aws/v3 v3.0.0 // indirect
 	github.com/aaronland/go-string v1.0.0 // indirect
 	github.com/akrylysov/algnhsa v1.1.0 // indirect
 	github.com/aws/aws-sdk-go v1.55.7 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.0 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.29.18 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.17.71 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.16.33 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.31.0 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.18.4 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.3 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.84 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.3 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.3 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.3 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/cognitoidentity v1.29.9 // indirect
-	github.com/aws/aws-sdk-go-v2/service/iam v1.43.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/cognitoidentity v1.32.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/iam v1.46.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.8.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.3 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssm v1.60.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.25.6 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.30.4 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.34.1 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssm v1.63.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.28.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.33.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.37.0 // indirect
 	github.com/aws/smithy-go v1.22.5 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dsoprea/go-exif/v3 v3.0.1 // indirect

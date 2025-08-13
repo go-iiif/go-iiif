@@ -3,8 +3,9 @@ package response
 import (
 	"context"
 	"fmt"
-	"github.com/tidwall/gjson"
 	"io"
+
+	"github.com/tidwall/gjson"
 )
 
 // Pagination is a struct containing pagination metrics for a given API response.

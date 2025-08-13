@@ -7,12 +7,13 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/aaronland/go-flickr-api/auth"
-	"github.com/aaronland/go-flickr-api/response"
 	"io"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/aaronland/go-flickr-api/auth"
+	"github.com/aaronland/go-flickr-api/response"
 )
 
 // The default Flickr API endpoint.
