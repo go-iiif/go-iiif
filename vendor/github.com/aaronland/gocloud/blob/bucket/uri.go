@@ -55,7 +55,30 @@ func ParseURI(uri string) (string, string, error) {
 		root = strings.TrimRight(root, "/")
 		root = fmt.Sprintf("%s/", root)
 
-		u.Path = root
+		q := u.Query()
+
+		switch u.Scheme {
+		case "s3", "s3blob":
+
+			if q.Has("prefix") {
+				root = filepath.Join(q.Get("prefix"), root)
+				q.Del("prefix")
+			}
+
+			root = strings.TrimLeft(root, "/")
+
+			if !strings.HasSuffix(root, "/") {
+				root = fmt.Sprintf("%s/", root)
+			}
+
+			q.Set("prefix", root)
+			u.Path = ""
+
+		default:
+			u.Path = root
+		}
+
+		u.RawQuery = q.Encode()
 
 		bucket_uri = u.String()
 		bucket_key = base

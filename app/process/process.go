@@ -34,7 +34,7 @@ import (
 	"gocloud.dev/blob"
 )
 
-type ProcessResultsReport map[string]interface{}
+type ProcessResultsReport map[string]any
 
 type ProcessOptions struct {
 	Config             *iiifconfig.Config
@@ -306,17 +306,15 @@ func ProcessMany(ctx context.Context, opts *ProcessOptions, uris ...iiifuri.URI)
 					}
 
 					key := filepath.Join(root, report_name)
-					wg.Add(1)
 
-					go func() {
+					wg.Go(func() {
 
-						defer wg.Done()
 						err := GenerateReports(ctx, opts, key, rsp)
 
 						if err != nil {
 							logger.Error("Unable to write process report", "key", key, "error", err)
 						}
-					}()
+					})
 
 				} else {
 					logger.Error("Unable to generate report name", "error", err)

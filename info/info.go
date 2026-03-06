@@ -49,7 +49,7 @@ type Info struct {
 	// The IIIF API protocol used to describe this image.
 	Protocol string `json:"protocol"`
 	// The IIIF profile (level) used to described this image.
-	Profile []interface{} `json:"profile"`
+	Profile []any `json:"profile"`
 	// Zero or more `Tile` entries describing zoomable tiles for this image.
 	Tiles []*Tile `json:"tiles,omitempty"`
 	// Zero or more `Size` entries describing deriative sizes for this image.
@@ -75,7 +75,7 @@ func New(iiif_context string, l iiiflevel.Level, im iiifimage.Image) (*Info, err
 		Context:  iiif_context,
 		Protocol: IMAGE_PROTOCOL,
 		Id:       id,
-		Profile: []interface{}{
+		Profile: []any{
 			l.Profile(),
 			l,
 		},

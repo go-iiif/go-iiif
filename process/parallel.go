@@ -16,14 +16,14 @@ import (
 )
 
 // ParallelProcessURIWithInstructionSet processes 'u' according to each instruction in 'instruction_set' in concurrent processes
-func ParallelProcessURIWithInstructionSet(ctx context.Context, cfg *iiifconfig.Config, driver iiifdriver.Driver, pr Processor, instruction_set IIIFInstructionSet, u iiifuri.URI) (map[string]interface{}, error) {
+func ParallelProcessURIWithInstructionSet(ctx context.Context, cfg *iiifconfig.Config, driver iiifdriver.Driver, pr Processor, instruction_set IIIFInstructionSet, u iiifuri.URI) (map[string]any, error) {
 
 	done_ch := make(chan bool)
 	err_ch := make(chan error)
 
 	remaining := len(instruction_set) + 1 // + 1 because we fetch the palette for the source image
 
-	results := make(map[string]interface{})
+	results := make(map[string]any)
 	results["origin"] = u.Origin()
 	results["origin_uri"] = u.String()
 

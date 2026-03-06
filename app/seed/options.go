@@ -64,7 +64,7 @@ func RunOptionsFromFlagSet(ctx context.Context, fs *flag.FlagSet) (*RunOptions, 
 
 	scales := make([]int, 0)
 
-	for _, s := range strings.Split(scale_factors, ",") {
+	for s := range strings.SplitSeq(scale_factors, ",") {
 
 		s = strings.Trim(s, " ")
 		scale, err := strconv.Atoi(s)

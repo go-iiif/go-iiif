@@ -44,7 +44,7 @@ func (s *ImageHashService) Label() string {
 	return s.ImageHashLabel
 }
 
-func (s *ImageHashService) Value() interface{} {
+func (s *ImageHashService) Value() any {
 	return map[string]string{
 		"average":    s.ImageHashAvg,
 		"difference": s.ImageHashDiff,

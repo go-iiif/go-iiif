@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: © Hypermode Inc. <hello@hypermode.com>
+ * SPDX-FileCopyrightText: © 2017-2025 Istari Digital, Inc.
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -152,7 +152,7 @@ type Config[K Key, V any] struct {
 	// is not set, the default keyToHash function is used.
 	//
 	// Ristretto has a variety of defaults depending on the underlying interface type
-	// https://github.com/hypermodeinc/ristretto/blob/main/z/z.go#L19-L41).
+	// https://github.com/dgraph-io/ristretto/blob/main/z/z.go#L19-L41).
 	//
 	// Note that if you want 128bit hashes you should use the both the values
 	// in the return of the function. If you want to use 64bit hashes, you can
@@ -207,15 +207,15 @@ func NewCache[K Key, V any](config *Config[K, V]) (*Cache[K, V], error) {
 	case config.NumCounters == 0:
 		return nil, errors.New("NumCounters can't be zero")
 	case config.NumCounters < 0:
-		return nil, errors.New("NumCounters can't be negative number")
+		return nil, errors.New("NumCounters can't be negative")
 	case config.MaxCost == 0:
 		return nil, errors.New("MaxCost can't be zero")
 	case config.MaxCost < 0:
-		return nil, errors.New("MaxCost can't be be negative number")
+		return nil, errors.New("MaxCost can't be negative")
 	case config.BufferItems == 0:
 		return nil, errors.New("BufferItems can't be zero")
 	case config.BufferItems < 0:
-		return nil, errors.New("BufferItems can't be be negative number")
+		return nil, errors.New("BufferItems can't be negative")
 	case config.TtlTickerDurationInSec == 0:
 		config.TtlTickerDurationInSec = bucketDurationSecs
 	}
@@ -414,6 +414,16 @@ func (c *Cache[K, V]) GetTTL(key K) (time.Duration, bool) {
 	return time.Until(expiration), true
 }
 
+// IterValues iterates the values of the Map, passing them to the callback.
+// It guarantees that any value in the Map will be visited only once.
+// The set of values visited by IterValues is non-deterministic.
+func (c *Cache[K, V]) IterValues(cb func(v V) (stop bool)) {
+	if c == nil || c.isClosed.Load() {
+		return
+	}
+	c.storedItems.IterValues(cb)
+}
+
 // Close stops all goroutines and closes all channels.
 func (c *Cache[K, V]) Close() {
 	if c == nil || c.isClosed.Load() {
@@ -487,6 +497,14 @@ func (c *Cache[K, V]) UpdateMaxCost(maxCost int64) {
 		return
 	}
 	c.cachePolicy.UpdateMaxCost(maxCost)
+}
+
+// RemainingCost returns the remaining cost capacity (MaxCost - Used) of an existing cache.
+func (c *Cache[K, V]) RemainingCost() int64 {
+	if c == nil {
+		return 0
+	}
+	return c.cachePolicy.Cap()
 }
 
 // processItems is ran by goroutines processing the Set buffer.

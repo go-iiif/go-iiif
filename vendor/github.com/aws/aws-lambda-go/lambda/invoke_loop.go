@@ -27,16 +27,13 @@ func unixMS(ms int64) time.Time {
 	return time.Unix(ms/msPerS, (ms%msPerS)*nsPerMS)
 }
 
-// startRuntimeAPILoop will return an error if handling a particular invoke resulted in a non-recoverable error
-func startRuntimeAPILoop(api string, handler Handler) error {
-	client := newRuntimeAPIClient(api)
-	h := newHandler(handler)
+func doRuntimeAPILoop(ctx context.Context, client *runtimeAPIClient, handler *handlerOptions) error {
 	for {
-		invoke, err := client.next()
+		invoke, err := client.next(ctx)
 		if err != nil {
 			return err
 		}
-		if err = handleInvoke(invoke, h); err != nil {
+		if err := handleInvoke(invoke, handler); err != nil {
 			return err
 		}
 	}
@@ -56,6 +53,7 @@ func handleInvoke(invoke *invoke, handler *handlerOptions) error {
 	lc := lambdacontext.LambdaContext{
 		AwsRequestID:       invoke.id,
 		InvokedFunctionArn: invoke.headers.Get(headerInvokedFunctionARN),
+		TenantID:           invoke.headers.Get(headerTenantID),
 	}
 	if err := parseClientContext(invoke, &lc.ClientContext); err != nil {
 		return reportFailure(invoke, lambdaErrorResponse(err))
@@ -67,12 +65,14 @@ func handleInvoke(invoke *invoke, handler *handlerOptions) error {
 
 	// set the trace id
 	traceID := invoke.headers.Get(headerTraceID)
-	os.Setenv("_X_AMZN_TRACE_ID", traceID)
+	if lambdacontext.MaxConcurrency() == 1 {
+		os.Setenv("_X_AMZN_TRACE_ID", traceID)
+	}
 	// nolint:staticcheck
 	ctx = context.WithValue(ctx, "x-amzn-trace-id", traceID)
 
 	// call the handler, marshal any returned error
-	response, invokeErr := callBytesHandlerFunc(ctx, invoke.payload, handler.handlerFunc)
+	response, invokeErr := callBytesHandlerFunc(ctx, invoke.payload.Bytes(), handler.handlerFunc)
 	if invokeErr != nil {
 		if err := reportFailure(invoke, invokeErr); err != nil {
 			return err
@@ -107,7 +107,7 @@ func reportFailure(invoke *invoke, invokeErr *messages.InvokeResponse_Error) err
 
 	causeForXRay, err := json.Marshal(makeXRayError(invokeErr))
 	if err != nil {
-		return fmt.Errorf("unexpected error occured when serializing the function error cause for X-Ray: %v", err)
+		return fmt.Errorf("unexpected error occurred when serializing the function error cause for X-Ray: %v", err)
 	}
 
 	if err := invoke.failure(bytes.NewReader(errorPayload), contentTypeJSON, causeForXRay); err != nil {

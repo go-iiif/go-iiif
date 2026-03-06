@@ -163,7 +163,7 @@ func (bc *BlobCache) Set(uri string, body []byte) error {
 			return fmt.Errorf("Failed to derive ACL object, %w", err)
 		}
 
-		before := func(asFunc func(interface{}) bool) error {
+		before := func(asFunc func(any) bool) error {
 
 			req := &aws_s3.PutObjectInput{}
 			ok := asFunc(&req)

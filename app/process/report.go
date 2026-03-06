@@ -11,7 +11,7 @@ import (
 	iiifprocess "github.com/go-iiif/go-iiif/v8/process"
 )
 
-func GenerateReports(ctx context.Context, opts *ProcessOptions, key string, rsp map[string]interface{}) error {
+func GenerateReports(ctx context.Context, opts *ProcessOptions, key string, rsp map[string]any) error {
 
 	rsp_body, err := json.Marshal(rsp)
 

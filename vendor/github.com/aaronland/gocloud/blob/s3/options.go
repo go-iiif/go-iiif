@@ -8,7 +8,7 @@ import (
 	"gocloud.dev/blob"
 )
 
-type AsFunc func(func(interface{}) bool) error
+type AsFunc func(func(any) bool) error
 
 // SetACLWriterOptionsWithContext return a new context.Context instance with a gocloud.dev/blob.WriterOptions
 // instance whose properties are assigned according to 'opt_key' and 'opt_value', where the latter is a valid
@@ -18,7 +18,7 @@ type AsFunc func(func(interface{}) bool) error
 //
 // The WriterOptions instance is assigned to the new context with key 'ctx_key' and is assumed to be retrieved later
 // by code using blob.NewWriter instances.
-func SetWriterOptionsWithContext(ctx context.Context, ctx_key interface{}, opt_key string, opt_value interface{}) (context.Context, error) {
+func SetWriterOptionsWithContext(ctx context.Context, ctx_key any, opt_key string, opt_value any) (context.Context, error) {
 
 	var wr_opts *blob.WriterOptions
 
@@ -114,7 +114,7 @@ func SetWriterOptionsWithContext(ctx context.Context, ctx_key interface{}, opt_k
 			return nil, fmt.Errorf("Failed to derive canned ACL from string, %w", err)
 		}
 
-		before := func(asFunc func(interface{}) bool) error {
+		before := func(asFunc func(any) bool) error {
 
 			req := &aws_s3.PutObjectInput{}
 			ok := asFunc(&req)
@@ -139,7 +139,7 @@ func SetWriterOptionsWithContext(ctx context.Context, ctx_key interface{}, opt_k
 
 // SetWriterOptionsWithContextAndMap is a convenience method for invoking SetWriterOptionsWithContext
 // multiple times.
-func SetWriterOptionsWithContextAndMap(ctx context.Context, ctx_key interface{}, opts map[string]interface{}) (context.Context, error) {
+func SetWriterOptionsWithContextAndMap(ctx context.Context, ctx_key any, opts map[string]any) (context.Context, error) {
 
 	var err error
 

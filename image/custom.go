@@ -29,7 +29,7 @@ func ApplyCustomTransformations(t *Transformation, im Image) error {
 	// 2021/07/04 10:35:49 Invalid IIIF 2.1 feature property quality crisp:2.0,1.0,0.025;dither
 	// https://github.com/go-iiif/go-iiif/issues/89
 
-	for _, q := range strings.Split(t.Quality, ";") {
+	for q := range strings.SplitSeq(t.Quality, ";") {
 
 		if q == "dither" {
 

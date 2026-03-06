@@ -291,9 +291,9 @@ func (ts *TileSeed) TileSizes(im iiifimage.Image, sf int) ([]*iiifimage.Transfor
 	ty := int(math.Ceil(float64(h) / float64(ts.Height*sf)))
 	tx := int(math.Ceil(float64(w) / float64(ts.Width*sf)))
 
-	for ypos := 0; ypos < ty; ypos++ {
+	for ypos := range ty {
 
-		for xpos := 0; xpos < tx; xpos++ {
+		for xpos := range tx {
 
 			crop := make(map[string]int)
 

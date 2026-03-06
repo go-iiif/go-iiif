@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"slices"
 
 	"github.com/aaronland/go-aws/v3/auth"
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -15,15 +16,7 @@ import (
 const Scheme = "s3blob"
 
 func init() {
-	is_registered := false
-
-	for _, scheme := range blob.DefaultURLMux().BucketSchemes() {
-
-		if scheme == Scheme {
-			is_registered = true
-			break
-		}
-	}
+	is_registered := slices.Contains(blob.DefaultURLMux().BucketSchemes(), Scheme)
 
 	if !is_registered {
 		blob.DefaultURLMux().RegisterBucket(Scheme, new(sessionOpener))

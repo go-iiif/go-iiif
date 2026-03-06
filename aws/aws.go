@@ -144,11 +144,11 @@ func (event *Event) mapSQSEventRecords(sqsEvent *aws_events.SQSEvent) error {
 }
 
 func (event *Event) getEventType(data []byte) eventType {
-	temp := make(map[string]interface{})
+	temp := make(map[string]any)
 	json.Unmarshal(data, &temp)
 
-	recordsList, _ := temp["Records"].([]interface{})
-	record, _ := recordsList[0].(map[string]interface{})
+	recordsList, _ := temp["Records"].([]any)
+	record, _ := recordsList[0].(map[string]any)
 
 	var eventSource string
 

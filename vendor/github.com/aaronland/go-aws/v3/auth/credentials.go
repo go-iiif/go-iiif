@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	config "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sts/types"
-	"github.com/go-ini/ini"
+	"gopkg.in/ini.v1"
 )
 
 // type Credentials defines a struct for encapsulating information about an .ini style AWS credentials file

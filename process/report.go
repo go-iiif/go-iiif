@@ -24,7 +24,7 @@ const REPORTNAME_TEMPLATE string = "process_{sha256_origin}.json"
 
 func DeriveReportNameFromURI(ctx context.Context, u iiifuri.URI, uri_template string) (string, error) {
 
-	report_vars := make(map[string]interface{})
+	report_vars := make(map[string]any)
 
 	if strings.Contains(uri_template, "{sha256_origin}") {
 

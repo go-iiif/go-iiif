@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"slices"
 
 	gc_blob "gocloud.dev/blob"
 )
@@ -59,11 +60,8 @@ func allowsToSkipMetadata(u *url.URL) bool {
 
 	scheme := u.Scheme
 
-	for _, s := range allowed_schemes {
-		if scheme == s {
-			allowed = true
-			break
-		}
+	if slices.Contains(allowed_schemes, scheme) {
+		allowed = true
 	}
 
 	return allowed

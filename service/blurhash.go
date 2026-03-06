@@ -44,7 +44,7 @@ func (s *BlurHashService) Label() string {
 	return s.BlurHashLabel
 }
 
-func (s *BlurHashService) Value() interface{} {
+func (s *BlurHashService) Value() any {
 	return s.BlurHash
 }
 

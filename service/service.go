@@ -20,7 +20,7 @@ type Service interface {
 	Context() string
 	Profile() string
 	Label() string
-	Value() interface{}
+	Value() any
 }
 
 func NewService(ctx context.Context, uri string, cfg *iiifconfig.Config, im iiifimage.Image) (Service, error) {

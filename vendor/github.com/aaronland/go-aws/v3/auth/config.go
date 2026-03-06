@@ -9,10 +9,13 @@ import (
 	"path/filepath"
 	_ "sort"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
 )
 
 // null_cfg is a placeholder to return in error contexts.
@@ -73,6 +76,7 @@ func CredentialsStringPatterns() []string {
 //	`anon:` Use anonymous credentials
 //	`env:` Use credentials derived from "AWS_" environment variables
 //	`iam:` Use IAM credentials
+//	`iam:{REGION}:{ARN}` Use IAM credentials after assuming the role defined by {ARN} (in {REGION})
 //	`{PROFILE}` Use a specific profile defined by {PROFILE} from the default credentials file
 //	`{PATH}:{PROFILE}` Use a specific profile definied by {PROFILE} from the credentials file defined by {PATH}
 //	`static:{KEY}:{SECRET}:{TOKEN}` Read credentials as positional elements in a string
@@ -111,6 +115,7 @@ func NewConfig(ctx context.Context, uri string) (aws.Config, error) {
 //	`anon:` Use anonymous credentials
 //	`env:` Use credentials derived from "AWS_" environment variables
 //	`iam:` Use IAM credentials
+//	`iam:{REGION}:{ARN}` Use IAM credentials after assuming the role defined by {ARN} (in {REGION})
 //	`{PROFILE}` Use a specific profile defined by {PROFILE} from the default credentials file
 //	`{PATH}:{PROFILE}` Use a specific profile definied by {PROFILE} from the credentials file defined by {PATH}
 //	`static:{KEY}:{SECRET}:{TOKEN}` Read credentials as positional elements in a string
@@ -146,6 +151,40 @@ func NewConfigWithCredentialsString(ctx context.Context, str_creds string) (aws.
 	} else if str_creds == "iam:" || str_creds == "env:" {
 
 		return config.LoadDefaultConfig(ctx)
+
+	} else if strings.HasPrefix(str_creds, "iam:") {
+
+		cfg, err := config.LoadDefaultConfig(ctx)
+
+		if err != nil {
+			return cfg, err
+		}
+
+		details := strings.SplitN(str_creds, ":", 3)
+
+		if len(details) != 3 {
+			return cfg, fmt.Errorf("Credentials string expected to have 3 elements (iam:{REGION}:{ARN})")
+		}
+
+		region := details[1]
+		arn := details[2]
+
+		cfg.Region = region
+
+		now := time.Now()
+		session := fmt.Sprintf("assume-%d", now.Unix())
+
+		sts_cl := sts.NewFromConfig(cfg)
+
+		role_pr := stscreds.NewAssumeRoleProvider(sts_cl, arn, func(o *stscreds.AssumeRoleOptions) {
+			o.RoleSessionName = session
+		})
+
+		role_cfg := aws.Config{
+			Credentials: role_pr,
+		}
+
+		return role_cfg, nil
 
 	} else if str_creds != "" {
 

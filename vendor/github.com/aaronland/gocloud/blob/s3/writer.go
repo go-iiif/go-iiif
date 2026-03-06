@@ -19,7 +19,7 @@ func NewWriterWithACL(ctx context.Context, bucket *blob.Bucket, path string, str
 		return nil, fmt.Errorf("Failed to derive canned ACL from string, %w", err)
 	}
 
-	before := func(asFunc func(interface{}) bool) error {
+	before := func(asFunc func(any) bool) error {
 
 		req := &aws_s3.PutObjectInput{}
 		ok := asFunc(&req)

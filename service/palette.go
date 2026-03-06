@@ -6,7 +6,7 @@ package service
 import (
 	"context"
 	"fmt"
-	
+
 	"github.com/aaronland/go-colours"
 	"github.com/aaronland/go-colours/extruder"
 	"github.com/aaronland/go-colours/grid"
@@ -49,7 +49,7 @@ func (s *PaletteService) Label() string {
 	return s.PaletteLabel
 }
 
-func (s *PaletteService) Value() interface{} {
+func (s *PaletteService) Value() any {
 	return s.Palette
 }
 

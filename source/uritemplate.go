@@ -58,7 +58,7 @@ func (us *URITemplateSource) String() string {
 
 func (us *URITemplateSource) Read(id string) ([]byte, error) {
 
-	values := make(map[string]interface{})
+	values := make(map[string]any)
 	values["id"] = id
 
 	uri, err := us.template.Expand(values)
