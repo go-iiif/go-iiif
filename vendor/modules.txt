@@ -10,7 +10,7 @@ github.com/aaronland/go-colours
 github.com/aaronland/go-colours/extruder
 github.com/aaronland/go-colours/grid
 github.com/aaronland/go-colours/palette
-# github.com/aaronland/go-flickr-api v1.1.7
+# github.com/aaronland/go-flickr-api v1.1.8
 ## explicit; go 1.25.0
 github.com/aaronland/go-flickr-api/auth
 github.com/aaronland/go-flickr-api/client
@@ -18,7 +18,7 @@ github.com/aaronland/go-flickr-api/response
 # github.com/aaronland/go-http/v4 v4.0.2
 ## explicit; go 1.25.0
 github.com/aaronland/go-http/v4/server
-# github.com/aaronland/go-image/v2 v2.1.4
+# github.com/aaronland/go-image/v2 v2.1.5
 ## explicit; go 1.25.0
 github.com/aaronland/go-image/v2/colour
 github.com/aaronland/go-image/v2/decode
@@ -55,14 +55,14 @@ github.com/anthonynsimon/bild/parallel
 github.com/anthonynsimon/bild/segment
 github.com/anthonynsimon/bild/transform
 github.com/anthonynsimon/bild/util
-# github.com/aws/aws-lambda-go v1.53.0
+# github.com/aws/aws-lambda-go v1.54.0
 ## explicit; go 1.18
 github.com/aws/aws-lambda-go/events
 github.com/aws/aws-lambda-go/lambda
 github.com/aws/aws-lambda-go/lambda/handlertrace
 github.com/aws/aws-lambda-go/lambda/messages
 github.com/aws/aws-lambda-go/lambdacontext
-# github.com/aws/aws-sdk-go-v2 v1.41.3
+# github.com/aws/aws-sdk-go-v2 v1.41.4
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/aws
 github.com/aws/aws-sdk-go-v2/aws/arn
@@ -90,7 +90,7 @@ github.com/aws/aws-sdk-go-v2/internal/shareddefaults
 github.com/aws/aws-sdk-go-v2/internal/strings
 github.com/aws/aws-sdk-go-v2/internal/sync/singleflight
 github.com/aws/aws-sdk-go-v2/internal/timeconv
-# github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.6
+# github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.8
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream
 github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream/eventstreamapi
@@ -114,16 +114,16 @@ github.com/aws/aws-sdk-go-v2/feature/ec2/imds/internal/config
 # github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.12
 ## explicit; go 1.23
 github.com/aws/aws-sdk-go-v2/feature/s3/manager
-# github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.19
+# github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.20
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/internal/configsources
-# github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.19
+# github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.20
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/internal/endpoints/v2
 # github.com/aws/aws-sdk-go-v2/internal/ini v1.8.4
 ## explicit; go 1.23
 github.com/aws/aws-sdk-go-v2/internal/ini
-# github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.20
+# github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.21
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/internal/v4a
 github.com/aws/aws-sdk-go-v2/internal/v4a/internal/crypto
@@ -138,21 +138,21 @@ github.com/aws/aws-sdk-go-v2/service/cognitoidentity/types
 github.com/aws/aws-sdk-go-v2/service/iam
 github.com/aws/aws-sdk-go-v2/service/iam/internal/endpoints
 github.com/aws/aws-sdk-go-v2/service/iam/types
-# github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.6
+# github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.7
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding
-# github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.11
+# github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.12
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/service/internal/checksum
-# github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.19
+# github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.20
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url
-# github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.19
+# github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.20
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared/arn
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared/config
-# github.com/aws/aws-sdk-go-v2/service/s3 v1.96.4
+# github.com/aws/aws-sdk-go-v2/service/s3 v1.97.2
 ## explicit; go 1.24
 github.com/aws/aws-sdk-go-v2/service/s3
 github.com/aws/aws-sdk-go-v2/service/s3/internal/arn
@@ -279,7 +279,7 @@ github.com/fogleman/primitive/primitive
 ## explicit; go 1.17
 github.com/fsnotify/fsnotify
 github.com/fsnotify/fsnotify/internal
-# github.com/gabriel-vasile/mimetype v1.4.10
+# github.com/gabriel-vasile/mimetype v1.4.13
 ## explicit; go 1.21
 github.com/gabriel-vasile/mimetype
 github.com/gabriel-vasile/mimetype/internal/charset
@@ -470,8 +470,8 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/openurl
 gocloud.dev/internal/otel
 gocloud.dev/internal/retry
-# golang.org/x/image v0.36.0
-## explicit; go 1.24.0
+# golang.org/x/image v0.38.0
+## explicit; go 1.25.0
 golang.org/x/image/bmp
 golang.org/x/image/ccitt
 golang.org/x/image/draw
@@ -501,8 +501,8 @@ golang.org/x/net/trace
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/windows/registry
-# golang.org/x/text v0.34.0
-## explicit; go 1.24.0
+# golang.org/x/text v0.35.0
+## explicit; go 1.25.0
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
 golang.org/x/text/unicode/bidi

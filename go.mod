@@ -4,15 +4,15 @@ go 1.25.0
 
 require (
 	github.com/aaronland/go-colours v0.12.1
-	github.com/aaronland/go-flickr-api v1.1.7
+	github.com/aaronland/go-flickr-api v1.1.8
 	github.com/aaronland/go-http/v4 v4.0.2
-	github.com/aaronland/go-image/v2 v2.1.4
+	github.com/aaronland/go-image/v2 v2.1.5
 	github.com/aaronland/go-roster v1.0.0
 	github.com/aaronland/gocloud v1.0.4
 	github.com/anthonynsimon/bild v0.14.0
-	github.com/aws/aws-lambda-go v1.53.0
-	github.com/aws/aws-sdk-go-v2 v1.41.3
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.96.4
+	github.com/aws/aws-lambda-go v1.54.0
+	github.com/aws/aws-sdk-go-v2 v1.41.4
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.97.2
 	github.com/brunoga/deep v1.3.1
 	github.com/buckket/go-blurhash v1.1.0
 	github.com/corona10/goimagehash v1.1.0
@@ -28,7 +28,7 @@ require (
 	github.com/tidwall/gjson v1.18.0
 	github.com/whosonfirst/go-sanitize v0.1.0
 	gocloud.dev v0.45.0
-	golang.org/x/image v0.36.0
+	golang.org/x/image v0.38.0
 )
 
 require (
@@ -36,21 +36,21 @@ require (
 	github.com/aaronland/go-aws/v3 v3.5.0 // indirect
 	github.com/aaronland/go-string v1.0.0 // indirect
 	github.com/akrylysov/algnhsa v1.1.0 // indirect
-	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.6 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.8 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.32.9 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.9 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.17 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.12 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.19 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.19 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.20 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.20 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/ini v1.8.4 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.20 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.21 // indirect
 	github.com/aws/aws-sdk-go-v2/service/cognitoidentity v1.33.18 // indirect
 	github.com/aws/aws-sdk-go-v2/service/iam v1.53.2 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.6 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.19 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.19 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.13.7 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.9.12 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.13.20 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.19.20 // indirect
 	github.com/aws/aws-sdk-go-v2/service/signin v1.0.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.67.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.30.10 // indirect
@@ -69,7 +69,7 @@ require (
 	github.com/dsoprea/go-utility/v2 v2.0.0-20221003172846-a3e1774ef349 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
-	github.com/gabriel-vasile/mimetype v1.4.10 // indirect
+	github.com/gabriel-vasile/mimetype v1.4.13 // indirect
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
@@ -100,7 +100,7 @@ require (
 	go4.org v0.0.0-20200411211856-f5505b9728dd // indirect
 	golang.org/x/net v0.51.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
-	golang.org/x/text v0.34.0 // indirect
+	golang.org/x/text v0.35.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/api v0.256.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251124214823-79d6a2a48846 // indirect
