@@ -11,10 +11,9 @@ import (
 	smithyhttp "github.com/aws/smithy-go/transport/http"
 )
 
-// Amazon Web Services Systems Manager Change Manager will no longer be open to
-// new customers starting November 7, 2025. If you would like to use Change
-// Manager, sign up prior to that date. Existing customers can continue to use the
-// service as normal. For more information, see [Amazon Web Services Systems Manager Change Manager availability change].
+// Amazon Web Services Systems Manager Change Manager is no longer open to new
+// customers. Existing customers can continue to use the service as normal. For
+// more information, see [Amazon Web Services Systems Manager Change Manager availability change].
 //
 // Information about approval reviews for a version of a change template in Change
 // Manager.
@@ -121,7 +120,7 @@ func (c *Client) addOperationListDocumentMetadataHistoryMiddlewares(stack *middl
 	if err = addComputePayloadSHA256(stack); err != nil {
 		return err
 	}
-	if err = addRetry(stack, options); err != nil {
+	if err = addRetry(stack, options, c); err != nil {
 		return err
 	}
 	if err = addRawResponseToMetadata(stack); err != nil {
@@ -143,9 +142,6 @@ func (c *Client) addOperationListDocumentMetadataHistoryMiddlewares(stack *middl
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
-		return err
-	}
-	if err = addTimeOffsetBuild(stack, c); err != nil {
 		return err
 	}
 	if err = addUserAgentRetryMode(stack, options); err != nil {

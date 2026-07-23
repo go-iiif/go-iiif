@@ -21,7 +21,19 @@ func OpenBucket(ctx context.Context, bucket_uri string) (*gc_blob.Bucket, error)
 		return nil, fmt.Errorf("Failed to parse bucket URI, %w", err)
 	}
 
-	if u.Scheme == "cwd" {
+	switch u.Scheme {
+	case "":
+
+		abs_path, err := filepath.Abs(u.Path)
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to derive absolute path, %w", err)
+		}
+
+		u.Scheme = "file"
+		u.Path = abs_path
+
+	case "cwd":
 
 		cwd, err := os.Getwd()
 

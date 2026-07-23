@@ -398,9 +398,11 @@ ShutterSpeedValue
 ShutterSpeedValue
 Software
 SpectralSensitivity
+SpectralSensitivity
 SubSecTime
 SubSecTimeDigitized
 SubSecTimeOriginal
+SubjectDistance
 SubjectDistance
 TIFFEPStandardID
 TargetPrinter

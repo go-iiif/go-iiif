@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-func AppendGPSPropertiesWithLatitudeAndLongitude(exif_props map[string]interface{}, lat float64, lon float64) error {
+func AppendGPSPropertiesWithLatitudeAndLongitude(exif_props map[string]any, lat float64, lon float64) error {
 
 	gps_lat, err := PrepareDecimalGPSLatitudeTag(lat)
 

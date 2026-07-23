@@ -85,6 +85,21 @@ type UpdateAssociationInput struct {
 	// [About target updates with Automation runbooks]: https://docs.aws.amazon.com/systems-manager/latest/userguide/state-manager-about.html#runbook-target-updates
 	ApplyOnlyAtCronInterval bool
 
+	// A role used by association to take actions on your behalf. State Manager will
+	// assume this role and call required APIs when dispatching configurations to
+	// nodes. If not specified, [service-linked role for Systems Manager]will be used by default.
+	//
+	// It is recommended that you define a custom IAM role so that you have full
+	// control of the permissions that State Manager has when taking actions on your
+	// behalf.
+	//
+	// Service-linked role support in State Manager is being phased out. Associations
+	// relying on service-linked role may require updates in the future to continue
+	// functioning properly.
+	//
+	// [service-linked role for Systems Manager]: https://docs.aws.amazon.com/systems-manager/latest/userguide/using-service-linked-roles.html
+	AssociationDispatchAssumeRole *string
+
 	// The name of the association that you want to update.
 	AssociationName *string
 
@@ -285,7 +300,7 @@ func (c *Client) addOperationUpdateAssociationMiddlewares(stack *middleware.Stac
 	if err = addComputePayloadSHA256(stack); err != nil {
 		return err
 	}
-	if err = addRetry(stack, options); err != nil {
+	if err = addRetry(stack, options, c); err != nil {
 		return err
 	}
 	if err = addRawResponseToMetadata(stack); err != nil {
@@ -307,9 +322,6 @@ func (c *Client) addOperationUpdateAssociationMiddlewares(stack *middleware.Stac
 		return err
 	}
 	if err = addSetLegacyContextSigningOptionsMiddleware(stack); err != nil {
-		return err
-	}
-	if err = addTimeOffsetBuild(stack, c); err != nil {
 		return err
 	}
 	if err = addUserAgentRetryMode(stack, options); err != nil {

@@ -5,6 +5,7 @@ import (
 	"github.com/dsoprea/go-exif/v3/common"
 	"gopkg.in/yaml.v2"
 	_ "log"
+	"slices"
 	"sync"
 )
 
@@ -69,11 +70,8 @@ func IsSupported(t string) (bool, error) {
 		return false, err
 	}
 
-	for _, this_t := range supported {
-
-		if this_t == t {
-			return true, nil
-		}
+	if slices.Contains(supported, t) {
+		return true, nil
 	}
 
 	return false, nil
@@ -101,15 +99,7 @@ func SupportedTags() ([]string, error) {
 
 			for _, t := range ifdtags {
 
-				include := true
-
-				for _, ts := range UnsupportedTypesString {
-
-					if t.TypeName == ts {
-						include = false
-						break
-					}
-				}
+				include := !slices.Contains(UnsupportedTypesString, t.TypeName)
 
 				if include {
 					tags_supported = append(tags_supported, t.Name)

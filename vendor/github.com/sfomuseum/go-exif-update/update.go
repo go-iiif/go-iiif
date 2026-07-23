@@ -38,9 +38,9 @@ func init() {
 // prefixed with X- and used to populate known EXIF properties. These are:
 //   - X-Latitude and X-Longitude, which convert and assign decimal latitude and longitude coordinates
 //     in to their GPSLatitude/Longitude and GPSLatitude/LongitudeRef EXIF properties.
-func PrepareAndUpdateExif(r io.Reader, wr io.Writer, exif_props map[string]interface{}) error {
+func PrepareAndUpdateExif(r io.Reader, wr io.Writer, exif_props map[string]any) error {
 
-	prepared := make(map[string]interface{})
+	prepared := make(map[string]any)
 
 	var lat float64
 	var lon float64
@@ -120,7 +120,7 @@ func PrepareAndUpdateExif(r io.Reader, wr io.Writer, exif_props map[string]inter
 // dsoprea's go-jpeg-image-structure package.
 
 // UpdateExif updates the EXIF data encoded in r and writes that data to wr.
-func UpdateExif(r io.Reader, wr io.Writer, exif_props map[string]interface{}) error {
+func UpdateExif(r io.Reader, wr io.Writer, exif_props map[string]any) error {
 
 	img_data, err := io.ReadAll(r)
 
@@ -199,7 +199,7 @@ func GetIndexedTagFromName(k string) (*exifcommon.IfdIdentity, *exif.IndexedTag,
 
 // Cribbed from https://github.com/dsoprea/go-exif/issues/11
 
-func setExifTag(rootIB *exif.IfdBuilder, ifdPath string, tagName string, tagValue interface{}) error {
+func setExifTag(rootIB *exif.IfdBuilder, ifdPath string, tagName string, tagValue any) error {
 
 	// log.Printf("setTag(): ifdPath: %v, tagName: %v, tagValue: %v", ifdPath, tagName, tagValue)
 

@@ -10,7 +10,7 @@ import (
 
 // Translate a decimal latitude value into a list of exifcommon.Rational instances
 // (which in turn are an  an exifcommon.EncodedData instance)
-func PrepareDecimalGPSLatitudeTag(lat float64) (interface{}, error) {
+func PrepareDecimalGPSLatitudeTag(lat float64) (any, error) {
 
 	var orientation string
 
@@ -32,7 +32,7 @@ func PrepareDecimalGPSLatitudeTag(lat float64) (interface{}, error) {
 	return exif_gps.Raw(), nil
 }
 
-func PrepareDecimalGPSLatitudeRefTag(lat float64) (interface{}, error) {
+func PrepareDecimalGPSLatitudeRefTag(lat float64) (any, error) {
 
 	var orientation string
 
@@ -47,7 +47,7 @@ func PrepareDecimalGPSLatitudeRefTag(lat float64) (interface{}, error) {
 
 // Translate a decimal longitude value into a list of exifcommon.Rational instances
 // (which in turn are an  an exifcommon.EncodedData instance)
-func PrepareDecimalGPSLongitudeTag(lon float64) (interface{}, error) {
+func PrepareDecimalGPSLongitudeTag(lon float64) (any, error) {
 
 	var orientation string
 
@@ -69,7 +69,7 @@ func PrepareDecimalGPSLongitudeTag(lon float64) (interface{}, error) {
 	return exif_gps.Raw(), nil
 }
 
-func PrepareDecimalGPSLongitudeRefTag(lon float64) (interface{}, error) {
+func PrepareDecimalGPSLongitudeRefTag(lon float64) (any, error) {
 
 	var orientation string
 
@@ -84,7 +84,7 @@ func PrepareDecimalGPSLongitudeRefTag(lon float64) (interface{}, error) {
 
 // PrepareTag attempts to translate and prepare an EXIF tag value into an exifcommon.EncodedData
 // instance.
-func PrepareTag(k string, v string) (interface{}, error) {
+func PrepareTag(k string, v string) (any, error) {
 
 	_, t, err := GetIndexedTagFromName(k)
 

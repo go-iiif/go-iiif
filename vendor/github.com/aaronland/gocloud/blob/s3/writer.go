@@ -3,6 +3,7 @@ package s3
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	aws_s3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"gocloud.dev/blob"
@@ -12,6 +13,8 @@ import (
 // `blob.WriterOptions` to ensure that files written to S3 will be done using AWS ACL permissions
 // defined in 'acl'.
 func NewWriterWithACL(ctx context.Context, bucket *blob.Bucket, path string, str_acl string) (*blob.Writer, error) {
+
+	slog.Warn("This method (s3.NewWriterWithACL) is deprecated. Please use write.NewWriterWithACL instead.")
 
 	acl, err := StringACLToObjectCannedACL(str_acl)
 
